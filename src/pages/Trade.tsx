@@ -3,12 +3,32 @@ import { PortfolioSummary } from "@/components/trade/PortfolioSummary";
 import { AssetAllocation } from "@/components/trade/AssetAllocation";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 
 interface TradeProps {
   onNavigate: (tab: string) => void;
 }
 
 const Trade = ({ onNavigate }: TradeProps) => {
+  const { user } = useAuth();
+
+  const { data: portfolio } = useQuery({
+    queryKey: ["portfolio", user?.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("portfolios")
+        .select("*")
+        .eq("user_id", user?.id)
+        .single();
+      
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!user?.id,
+  });
+
   return (
     <div className="space-y-6 pb-24">
       <div className="flex items-center gap-3 animate-fade-in">

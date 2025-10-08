@@ -1,38 +1,32 @@
 import { Gamepad2, Brain, Target, Zap } from "lucide-react";
 import { GameCard } from "@/components/games/GameCard";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 interface GamesProps {
   onNavigate: (tab: string) => void;
 }
 
-const games = [
-  {
-    id: 1,
-    title: "Investment Quiz Adventure",
-    description: "Test your knowledge and earn rewards with scenario-based questions",
-    icon: <Brain className="w-7 h-7 text-white" />,
-    reward: 50,
-    difficulty: "Easy" as const,
-  },
-  {
-    id: 2,
-    title: "Market Battle",
-    description: "Catch the right investments before they hit the ground",
-    icon: <Target className="w-7 h-7 text-white" />,
-    reward: 75,
-    difficulty: "Medium" as const,
-  },
-  {
-    id: 3,
-    title: "Portfolio Builder",
-    description: "Build and manage a portfolio through market events",
-    icon: <Zap className="w-7 h-7 text-white" />,
-    reward: 100,
-    difficulty: "Hard" as const,
-  },
-];
+const gameIcons: Record<string, React.ReactNode> = {
+  "Investment Quiz Adventure": <Brain className="w-7 h-7 text-white" />,
+  "Market Battle": <Target className="w-7 h-7 text-white" />,
+  "Portfolio Builder": <Zap className="w-7 h-7 text-white" />,
+};
 
 const Games = ({ onNavigate }: GamesProps) => {
+  const { data: games = [] } = useQuery({
+    queryKey: ["games"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("games")
+        .select("*")
+        .order("base_reward");
+      
+      if (error) throw error;
+      return data;
+    },
+  });
+
   const handleGameClick = () => {
     console.log("Starting game...");
   };
@@ -59,9 +53,9 @@ const Games = ({ onNavigate }: GamesProps) => {
             <GameCard
               title={game.title}
               description={game.description}
-              icon={game.icon}
-              reward={game.reward}
-              difficulty={game.difficulty}
+              icon={gameIcons[game.title] || <Gamepad2 className="w-7 h-7 text-white" />}
+              reward={game.base_reward}
+              difficulty={game.difficulty as "Easy" | "Medium" | "Hard"}
               onClick={handleGameClick}
             />
           </div>

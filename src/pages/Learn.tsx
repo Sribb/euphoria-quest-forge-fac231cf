@@ -1,53 +1,50 @@
-import { useState } from "react";
 import { LessonCard } from "@/components/learn/LessonCard";
 import { BookOpen } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 
 interface LearnProps {
   onNavigate: (tab: string) => void;
 }
 
-const lessons = [
-  {
-    id: 1,
-    title: "Introduction to Investing",
-    description: "Learn the basics of stocks, bonds, and portfolio management",
-    duration: "15 min",
-    progress: 100,
-    completed: true,
-    locked: false,
-  },
-  {
-    id: 2,
-    title: "Understanding Risk & Return",
-    description: "Discover how risk and return are related in investing",
-    duration: "20 min",
-    progress: 65,
-    completed: false,
-    locked: false,
-  },
-  {
-    id: 3,
-    title: "Market Volatility Explained",
-    description: "Learn how to navigate market ups and downs",
-    duration: "18 min",
-    progress: 0,
-    completed: false,
-    locked: false,
-  },
-  {
-    id: 4,
-    title: "Advanced Portfolio Strategies",
-    description: "Master diversification and asset allocation",
-    duration: "25 min",
-    progress: 0,
-    completed: false,
-    locked: true,
-  },
-];
-
 const Learn = ({ onNavigate }: LearnProps) => {
+  const { user } = useAuth();
+
+  const { data: lessons = [] } = useQuery({
+    queryKey: ["lessons", user?.id],
+    queryFn: async () => {
+      // Fetch all lessons
+      const { data: lessonsData, error: lessonsError } = await supabase
+        .from("lessons")
+        .select("*")
+        .order("order_index");
+      
+      if (lessonsError) throw lessonsError;
+
+      // Fetch user's progress for each lesson
+      const { data: progressData, error: progressError } = await supabase
+        .from("user_lesson_progress")
+        .select("*")
+        .eq("user_id", user?.id);
+      
+      if (progressError) throw progressError;
+
+      // Merge lesson data with progress
+      return lessonsData.map((lesson) => {
+        const progress = progressData?.find((p) => p.lesson_id === lesson.id);
+        return {
+          ...lesson,
+          progress: progress?.progress || 0,
+          completed: progress?.completed || false,
+          duration: `${lesson.duration_minutes} min`,
+        };
+      });
+    },
+    enabled: !!user?.id,
+  });
+
   const handleLessonClick = () => {
-    // In a real app, this would navigate to the lesson content
     console.log("Opening lesson...");
   };
 
@@ -75,7 +72,7 @@ const Learn = ({ onNavigate }: LearnProps) => {
               description={lesson.description}
               duration={lesson.duration}
               progress={lesson.progress}
-              locked={lesson.locked}
+              locked={lesson.is_locked}
               completed={lesson.completed}
               onClick={handleLessonClick}
             />
