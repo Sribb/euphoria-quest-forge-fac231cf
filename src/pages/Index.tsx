@@ -4,6 +4,9 @@ import Dashboard from "./Dashboard";
 import Learn from "./Learn";
 import Trade from "./Trade";
 import Games from "./Games";
+import Analytics from "./Analytics";
+import Community from "./Community";
+import Certificates from "./Certificates";
 import Profile from "./Profile";
 
 const Index = () => {
@@ -23,6 +26,12 @@ const Index = () => {
         return <Trade onNavigate={handleNavigate} />;
       case "games":
         return <Games onNavigate={handleNavigate} />;
+      case "analytics":
+        return <Analytics onNavigate={handleNavigate} />;
+      case "community":
+        return <Community onNavigate={handleNavigate} />;
+      case "certificates":
+        return <Certificates onNavigate={handleNavigate} />;
       case "profile":
         return <Profile onNavigate={handleNavigate} />;
       default:

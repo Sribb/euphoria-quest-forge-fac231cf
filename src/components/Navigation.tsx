@@ -1,4 +1,4 @@
-import { Home, BookOpen, TrendingUp, Gamepad2, User } from "lucide-react";
+import { Home, BookOpen, TrendingUp, Gamepad2, BarChart3, Users, Award, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface NavigationProps {
@@ -11,6 +11,9 @@ const tabs = [
   { id: "learn", label: "Learn", icon: BookOpen },
   { id: "trade", label: "Trade", icon: TrendingUp },
   { id: "games", label: "Games", icon: Gamepad2 },
+  { id: "analytics", label: "Analytics", icon: BarChart3 },
+  { id: "community", label: "Community", icon: Users },
+  { id: "certificates", label: "Certificates", icon: Award },
   { id: "profile", label: "Profile", icon: User },
 ];
 
