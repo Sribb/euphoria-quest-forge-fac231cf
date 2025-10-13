@@ -1,4 +1,6 @@
+import { useState } from "react";
 import { LessonCard } from "@/components/learn/LessonCard";
+import { LessonViewer } from "@/components/learn/LessonViewer";
 import { BookOpen } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -44,9 +46,15 @@ const Learn = ({ onNavigate }: LearnProps) => {
     enabled: !!user?.id,
   });
 
-  const handleLessonClick = () => {
-    console.log("Opening lesson...");
+  const [selectedLesson, setSelectedLesson] = useState<string | null>(null);
+
+  const handleLessonClick = (lessonId: string) => {
+    setSelectedLesson(lessonId);
   };
+
+  if (selectedLesson) {
+    return <LessonViewer lessonId={selectedLesson} onClose={() => setSelectedLesson(null)} />;
+  }
 
   return (
     <div className="space-y-6 pb-24">
@@ -74,7 +82,7 @@ const Learn = ({ onNavigate }: LearnProps) => {
               progress={lesson.progress}
               locked={lesson.is_locked}
               completed={lesson.completed}
-              onClick={handleLessonClick}
+              onClick={() => handleLessonClick(lesson.id)}
             />
           </div>
         ))}
