@@ -8,6 +8,7 @@ import { TradingQuizGame } from "@/components/games/TradingQuizGame";
 import { PortfolioRaceGame } from "@/components/games/PortfolioRaceGame";
 import { MarketBattleGame } from "@/components/games/MarketBattleGame";
 import { FinancialRPG } from "@/components/games/FinancialRPG";
+import { InvestmentQuizAdventure } from "@/components/games/InvestmentQuizAdventure";
 
 interface GamesProps {
   onNavigate: (tab: string) => void;
@@ -21,7 +22,7 @@ const iconMap: Record<string, any> = {
 };
 
 const Games = ({ onNavigate }: GamesProps) => {
-  const [activeGame, setActiveGame] = useState<"stock-prediction" | "trading-quiz" | "portfolio-race" | "market-battle" | "financial-rpg" | null>(null);
+  const [activeGame, setActiveGame] = useState<"stock-prediction" | "trading-quiz" | "portfolio-race" | "market-battle" | "financial-rpg" | "quiz-adventure" | null>(null);
 
   const { data: games = [] } = useQuery({
     queryKey: ["games"],
@@ -37,7 +38,7 @@ const Games = ({ onNavigate }: GamesProps) => {
   });
 
   const handlePlayGame = (gameId: string) => {
-    if (gameId === "stock-prediction" || gameId === "trading-quiz" || gameId === "portfolio-race" || gameId === "market-battle" || gameId === "financial-rpg") {
+    if (gameId === "stock-prediction" || gameId === "trading-quiz" || gameId === "portfolio-race" || gameId === "market-battle" || gameId === "financial-rpg" || gameId === "quiz-adventure") {
       setActiveGame(gameId);
     }
   };
@@ -66,6 +67,10 @@ const Games = ({ onNavigate }: GamesProps) => {
     return <FinancialRPG onClose={handleCloseGame} />;
   }
 
+  if (activeGame === "quiz-adventure") {
+    return <InvestmentQuizAdventure onClose={handleCloseGame} />;
+  }
+
   return (
     <div className="space-y-6 pb-24">
       <div className="flex items-center gap-3 animate-fade-in">
@@ -88,6 +93,7 @@ const Games = ({ onNavigate }: GamesProps) => {
           else if (game.title.includes("Portfolio Race")) gameId = "portfolio-race";
           else if (game.title.includes("Market Battle")) gameId = "market-battle";
           else if (game.title.includes("Financial") || game.title.includes("Life")) gameId = "financial-rpg";
+          else if (game.title.includes("Quiz") || game.title.includes("Adventure")) gameId = "quiz-adventure";
 
           return (
             <div

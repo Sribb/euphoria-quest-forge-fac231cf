@@ -11,6 +11,7 @@ import Profile from "./Profile";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
+  const [selectedLesson, setSelectedLesson] = useState<string | null>(null);
 
   const handleNavigate = (tab: string) => {
     setActiveTab(tab);
@@ -21,7 +22,7 @@ const Index = () => {
       case "dashboard":
         return <Dashboard onNavigate={handleNavigate} />;
       case "learn":
-        return <Learn onNavigate={handleNavigate} />;
+        return <Learn onNavigate={handleNavigate} selectedLesson={selectedLesson} onLessonSelect={setSelectedLesson} />;
       case "trade":
         return <Trade onNavigate={handleNavigate} />;
       case "games":

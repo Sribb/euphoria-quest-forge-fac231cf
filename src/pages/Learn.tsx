@@ -8,9 +8,11 @@ import { useAuth } from "@/hooks/useAuth";
 
 interface LearnProps {
   onNavigate: (tab: string) => void;
+  selectedLesson: string | null;
+  onLessonSelect: (lessonId: string | null) => void;
 }
 
-const Learn = ({ onNavigate }: LearnProps) => {
+const Learn = ({ onNavigate, selectedLesson, onLessonSelect }: LearnProps) => {
   const { user } = useAuth();
 
   const { data: lessons = [] } = useQuery({
@@ -46,14 +48,8 @@ const Learn = ({ onNavigate }: LearnProps) => {
     enabled: !!user?.id,
   });
 
-  const [selectedLesson, setSelectedLesson] = useState<string | null>(null);
-
-  const handleLessonClick = (lessonId: string) => {
-    setSelectedLesson(lessonId);
-  };
-
   if (selectedLesson) {
-    return <LessonViewer lessonId={selectedLesson} onClose={() => setSelectedLesson(null)} />;
+    return <LessonViewer lessonId={selectedLesson} onClose={() => onLessonSelect(null)} />;
   }
 
   return (
@@ -82,7 +78,7 @@ const Learn = ({ onNavigate }: LearnProps) => {
               progress={lesson.progress}
               locked={lesson.is_locked}
               completed={lesson.completed}
-              onClick={() => handleLessonClick(lesson.id)}
+              onClick={() => onLessonSelect(lesson.id)}
             />
           </div>
         ))}

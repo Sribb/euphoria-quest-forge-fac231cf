@@ -1,10 +1,31 @@
 import { TrendingUp, TrendingDown, DollarSign } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 
 export const PortfolioSummary = () => {
-  const totalValue = 10500;
-  const change = 12.5;
-  const changeAmount = 1312.5;
+  const { user } = useAuth();
+
+  const { data: portfolio } = useQuery({
+    queryKey: ["portfolio", user?.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("portfolios")
+        .select("*")
+        .eq("user_id", user?.id)
+        .single();
+      
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!user?.id,
+  });
+
+  const totalValue = portfolio ? portfolio.total_value : 10000;
+  const startingValue = 10000;
+  const changeAmount = totalValue - startingValue;
+  const change = ((changeAmount / startingValue) * 100);
   const isPositive = change >= 0;
 
   return (
@@ -26,14 +47,14 @@ export const PortfolioSummary = () => {
             <TrendingDown className="w-5 h-5 text-destructive" />
           )}
           <span className={`text-lg font-semibold ${isPositive ? "text-success" : "text-destructive"}`}>
-            {isPositive ? "+" : ""}{change}%
+            {isPositive ? "+" : ""}{change.toFixed(2)}%
           </span>
           <span className="text-muted-foreground">
-            (${changeAmount.toLocaleString()})
+            (${Math.abs(changeAmount).toFixed(2)})
           </span>
         </div>
 
-        <p className="text-sm text-muted-foreground">This week</p>
+        <p className="text-sm text-muted-foreground">Since inception</p>
       </div>
     </Card>
   );
