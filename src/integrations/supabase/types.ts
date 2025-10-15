@@ -371,6 +371,42 @@ export type Database = {
         }
         Relationships: []
       }
+      stocks: {
+        Row: {
+          created_at: string
+          description: string | null
+          exchange: string
+          id: string
+          industry: string | null
+          market_cap: number | null
+          name: string
+          sector: string | null
+          symbol: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          exchange: string
+          id?: string
+          industry?: string | null
+          market_cap?: number | null
+          name: string
+          sector?: string | null
+          symbol: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          exchange?: string
+          id?: string
+          industry?: string | null
+          market_cap?: number | null
+          name?: string
+          sector?: string | null
+          symbol?: string
+        }
+        Relationships: []
+      }
       streaks: {
         Row: {
           created_at: string

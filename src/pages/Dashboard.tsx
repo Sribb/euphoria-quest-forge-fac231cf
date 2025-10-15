@@ -8,12 +8,13 @@ import { EconomicCalendar } from "@/components/dashboard/EconomicCalendar";
 
 interface DashboardProps {
   onNavigate: (tab: string) => void;
+  onStockSearch?: () => void;
 }
 
-const Dashboard = ({ onNavigate }: DashboardProps) => {
+const Dashboard = ({ onNavigate, onStockSearch }: DashboardProps) => {
   return (
     <div className="space-y-6 pb-24">
-      <UserSummary />
+      <UserSummary onNavigate={onNavigate} />
       <StreakPanel />
       <MarketTrends />
       <EconomicNews />

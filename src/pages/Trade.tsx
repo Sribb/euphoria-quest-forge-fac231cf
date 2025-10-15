@@ -13,9 +13,10 @@ import { TradingViewChart } from "@/components/learn/TradingViewChart";
 
 interface TradeProps {
   onNavigate: (tab: string) => void;
+  onStockSearch?: () => void;
 }
 
-const Trade = ({ onNavigate }: TradeProps) => {
+const Trade = ({ onNavigate, onStockSearch }: TradeProps) => {
   const { user } = useAuth();
 
   const { data: portfolio } = useQuery({
@@ -55,6 +56,19 @@ const Trade = ({ onNavigate }: TradeProps) => {
         <TabsContent value="overview" className="space-y-6 mt-6">
           <PortfolioSummary />
           <AssetAllocation />
+
+          <Card className="p-6 bg-gradient-accent border-0">
+            <h3 className="text-lg font-bold mb-3 text-white">Explore Individual Stocks</h3>
+            <p className="text-sm text-white/80 mb-4">
+              Search and analyze individual stocks with real-time data and advanced charts.
+            </p>
+            <Button 
+              className="w-full bg-white text-primary hover:bg-white/90 font-semibold"
+              onClick={onStockSearch}
+            >
+              Search Stocks
+            </Button>
+          </Card>
 
           <Card className="p-6 bg-gradient-hero border-0">
             <h3 className="text-lg font-bold mb-3">Ready for Real Trading?</h3>

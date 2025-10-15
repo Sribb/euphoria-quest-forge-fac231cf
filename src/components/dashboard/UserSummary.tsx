@@ -7,7 +7,11 @@ import { useAuth } from "@/hooks/useAuth";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
-export const UserSummary = () => {
+interface UserSummaryProps {
+  onNavigate?: (tab: string) => void;
+}
+
+export const UserSummary = ({ onNavigate }: UserSummaryProps = {}) => {
   const { user, signOut } = useAuth();
 
   const { data: profile } = useQuery({
@@ -53,7 +57,12 @@ export const UserSummary = () => {
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-1">
             <h2 className="text-2xl font-bold">Welcome, {displayName}!</h2>
-            <Crown className="w-5 h-5 text-warning animate-bounce-subtle" />
+            <div title="View Premium">
+              <Crown 
+                className="w-5 h-5 text-warning animate-bounce-subtle cursor-pointer hover:scale-110 transition-transform" 
+                onClick={() => onNavigate?.("settings")}
+              />
+            </div>
           </div>
           <p className="text-muted-foreground">Ready to learn and grow today?</p>
           

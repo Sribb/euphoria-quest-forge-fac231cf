@@ -232,6 +232,44 @@ const Settings = ({ onNavigate }: SettingsProps) => {
         </div>
       </Card>
 
+      <Card className="p-6 bg-gradient-gold border-0">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
+            <span className="text-xl">👑</span>
+          </div>
+          <h2 className="text-xl font-bold text-white">Premium Subscription</h2>
+        </div>
+        <div className="space-y-4">
+          <p className="text-white/90">
+            Upgrade to Premium to unlock exclusive features:
+          </p>
+          <ul className="space-y-2 text-sm text-white/80">
+            <li className="flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-white/80" />
+              Real-time market data and advanced charts
+            </li>
+            <li className="flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-white/80" />
+              Unlimited stock analysis tools
+            </li>
+            <li className="flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-white/80" />
+              Priority support and exclusive lessons
+            </li>
+            <li className="flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-white/80" />
+              Ad-free experience
+            </li>
+          </ul>
+          <Button 
+            className="w-full bg-white text-primary hover:bg-white/90 font-bold"
+            disabled
+          >
+            Coming Soon - $9.99/month
+          </Button>
+        </div>
+      </Card>
+
       <Card className="p-6">
         <div className="flex items-center gap-3 mb-4">
           <Lock className="w-5 h-5 text-primary" />
