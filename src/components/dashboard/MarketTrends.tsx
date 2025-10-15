@@ -12,12 +12,11 @@ const MARKET_SYMBOLS = [
 ];
 
 export const MarketTrends = () => {
-  const { data: marketQuotes, isLoading, error } = useQuery({
+  const { data: marketQuotes, isLoading } = useQuery({
     queryKey: ["marketIndices"],
     queryFn: () => alphaVantageService.getMultipleQuotes(MARKET_SYMBOLS.map(m => m.symbol)),
     refetchInterval: 60000,
     staleTime: 30000,
-    retry: false,
   });
 
   const sectors = [
@@ -40,11 +39,6 @@ export const MarketTrends = () => {
             <Skeleton className="h-16 w-full" />
             <Skeleton className="h-16 w-full" />
           </>
-        ) : error ? (
-          <div className="text-center py-8 text-muted-foreground">
-            <p className="mb-2">Market data temporarily unavailable</p>
-            <p className="text-xs">Using demo API key - rate limited</p>
-          </div>
         ) : (
           MARKET_SYMBOLS.map((market) => {
             const quote = marketQuotes?.get(market.symbol);

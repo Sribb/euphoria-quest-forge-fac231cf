@@ -15,7 +15,7 @@ interface LearnProps {
 const Learn = ({ onNavigate, selectedLesson, onLessonSelect }: LearnProps) => {
   const { user } = useAuth();
 
-  const { data: lessons = [] } = useQuery({
+  const { data: lessons = [], isLoading } = useQuery({
     queryKey: ["lessons", user?.id],
     queryFn: async () => {
       // Fetch all lessons
@@ -26,11 +26,20 @@ const Learn = ({ onNavigate, selectedLesson, onLessonSelect }: LearnProps) => {
       
       if (lessonsError) throw lessonsError;
 
-      // Fetch user's progress for each lesson
+      // Fetch user's progress if user is logged in
+      if (!user?.id) {
+        return lessonsData.map((lesson) => ({
+          ...lesson,
+          progress: 0,
+          completed: false,
+          duration: `${lesson.duration_minutes} min`,
+        }));
+      }
+
       const { data: progressData, error: progressError } = await supabase
         .from("user_lesson_progress")
         .select("*")
-        .eq("user_id", user?.id);
+        .eq("user_id", user.id);
       
       if (progressError) throw progressError;
 
@@ -45,7 +54,8 @@ const Learn = ({ onNavigate, selectedLesson, onLessonSelect }: LearnProps) => {
         };
       });
     },
-    enabled: !!user?.id,
+    retry: 2,
+    staleTime: 30000,
   });
 
   if (selectedLesson) {
@@ -64,25 +74,33 @@ const Learn = ({ onNavigate, selectedLesson, onLessonSelect }: LearnProps) => {
         </div>
       </div>
 
-      <div className="space-y-4">
-        {lessons.map((lesson, index) => (
-          <div
-            key={lesson.id}
-            className="animate-fade-in"
-            style={{ animationDelay: `${index * 100}ms` }}
-          >
-            <LessonCard
-              title={lesson.title}
-              description={lesson.description}
-              duration={lesson.duration}
-              progress={lesson.progress}
-              locked={lesson.is_locked}
-              completed={lesson.completed}
-              onClick={() => onLessonSelect(lesson.id)}
-            />
-          </div>
-        ))}
-      </div>
+      {isLoading ? (
+        <div className="space-y-4">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="h-32 bg-card animate-pulse rounded-lg" />
+          ))}
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {lessons.map((lesson, index) => (
+            <div
+              key={lesson.id}
+              className="animate-fade-in"
+              style={{ animationDelay: `${index * 100}ms` }}
+            >
+              <LessonCard
+                title={lesson.title}
+                description={lesson.description}
+                duration={lesson.duration}
+                progress={lesson.progress}
+                locked={lesson.is_locked}
+                completed={lesson.completed}
+                onClick={() => onLessonSelect(lesson.id)}
+              />
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

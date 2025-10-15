@@ -26,7 +26,7 @@ const iconMap: Record<string, any> = {
 const Games = ({ onNavigate }: GamesProps) => {
   const [activeGame, setActiveGame] = useState<"stock-prediction" | "trading-quiz" | "portfolio-race" | "market-battle" | "financial-rpg" | "quiz-adventure" | "market-timing" | "diversification" | null>(null);
 
-  const { data: games = [] } = useQuery({
+  const { data: games = [], isLoading } = useQuery({
     queryKey: ["games"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -37,6 +37,8 @@ const Games = ({ onNavigate }: GamesProps) => {
       if (error) throw error;
       return data;
     },
+    retry: 2,
+    staleTime: 60000,
   });
 
   const handlePlayGame = (gameId: string) => {
@@ -93,8 +95,15 @@ const Games = ({ onNavigate }: GamesProps) => {
         </div>
       </div>
 
-      <div className="grid gap-4">
-        {games.map((game, index) => {
+      {isLoading ? (
+        <div className="grid gap-4">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="h-28 bg-card animate-pulse rounded-lg" />
+          ))}
+        </div>
+      ) : (
+        <div className="grid gap-4">
+          {games.map((game, index) => {
           const Icon = Trophy;
           let gameId = "";
           
@@ -122,9 +131,10 @@ const Games = ({ onNavigate }: GamesProps) => {
                 onClick={() => handlePlayGame(gameId)}
               />
             </div>
-          );
-        })}
-      </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 };
