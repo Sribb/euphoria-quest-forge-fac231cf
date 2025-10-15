@@ -1,4 +1,4 @@
-const ALPHA_VANTAGE_API_KEY = import.meta.env.VITE_ALPHA_VANTAGE_API_KEY;
+const ALPHA_VANTAGE_API_KEY = import.meta.env.VITE_ALPHA_VANTAGE_API_KEY || "demo";
 const BASE_URL = "https://www.alphavantage.co/query";
 
 export interface StockQuote {
@@ -113,7 +113,8 @@ export const alphaVantageService = {
       try {
         const quote = await this.getGlobalQuote(symbol);
         results.set(symbol, quote);
-        await new Promise(resolve => setTimeout(resolve, 12000));
+        // Reduced delay to avoid rate limits but keep reasonable speed
+        await new Promise(resolve => setTimeout(resolve, 1000));
       } catch (error) {
         console.error(`Failed to fetch ${symbol}:`, error);
       }
