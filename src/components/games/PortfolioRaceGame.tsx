@@ -24,23 +24,21 @@ export const PortfolioRaceGame = ({ onClose }: PortfolioRaceGameProps) => {
 
     const timer = setInterval(() => {
       // Update prices randomly
-      setPrices((prevPrices) => ({
-        stocks: Math.max(50, prevPrices.stocks + (Math.random() - 0.5) * 10),
-        bonds: Math.max(40, prevPrices.bonds + (Math.random() - 0.5) * 3),
-        crypto: Math.max(100, prevPrices.crypto + (Math.random() - 0.5) * 30),
-      }));
-
-      setDay((prevDay) => {
-        const newDay = prevDay + 1;
-        if (newDay >= 30) {
-          endGame();
-        }
-        return newDay;
+      setPrices({
+        stocks: Math.max(50, prices.stocks + (Math.random() - 0.5) * 10),
+        bonds: Math.max(40, prices.bonds + (Math.random() - 0.5) * 3),
+        crypto: Math.max(100, prices.crypto + (Math.random() - 0.5) * 30),
       });
+
+      setDay(day + 1);
+
+      if (day >= 30) {
+        endGame();
+      }
     }, 2000);
 
     return () => clearInterval(timer);
-  }, [gameActive, day]);
+  }, [day, gameActive, prices]);
 
   const buyAsset = (asset: keyof typeof portfolio, amount: number) => {
     const cost = prices[asset] * amount;

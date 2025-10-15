@@ -46,7 +46,7 @@ export const MarketTimingChallenge = ({ onClose }: MarketTimingChallengeProps) =
     if (gameActive && round <= totalRounds) {
       selectNewStock();
     }
-  }, [gameActive, round, totalRounds]);
+  }, [round]);
 
   useEffect(() => {
     if (!gameActive || position === "none") return;

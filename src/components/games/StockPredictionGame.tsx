@@ -21,11 +21,9 @@ export const StockPredictionGame = ({ onClose }: StockPredictionGameProps) => {
   const [hasGuessed, setHasGuessed] = useState(false);
 
   useEffect(() => {
-    if (hasGuessed) return;
-    
     const timer = setInterval(() => {
       setTimeLeft((prev) => {
-        if (prev <= 1) {
+        if (prev <= 1 && !hasGuessed) {
           handleMissed();
           return 10;
         }
