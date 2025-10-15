@@ -8,6 +8,7 @@ import Analytics from "./Analytics";
 import Community from "./Community";
 import Certificates from "./Certificates";
 import Profile from "./Profile";
+import Settings from "./Settings";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
@@ -35,6 +36,8 @@ const Index = () => {
         return <Certificates onNavigate={handleNavigate} />;
       case "profile":
         return <Profile onNavigate={handleNavigate} />;
+      case "settings":
+        return <Settings onNavigate={handleNavigate} />;
       default:
         return <Dashboard onNavigate={handleNavigate} />;
     }

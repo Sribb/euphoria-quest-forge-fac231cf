@@ -3,11 +3,12 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Search, TrendingUp, TrendingDown, DollarSign, ShoppingCart, Wallet } from "lucide-react";
+import { Search, TrendingUp, TrendingDown, DollarSign, ShoppingCart, Wallet, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { alphaVantageService } from "@/lib/alphaVantageService";
 
 const popularStocks = [
   { symbol: "AAPL", name: "Apple Inc.", price: 185.92, change: 2.34, changePercent: 1.27, sector: "Technology" },
@@ -26,6 +27,7 @@ export const StockTrading = () => {
   const [selectedStock, setSelectedStock] = useState(popularStocks[0]);
   const [quantity, setQuantity] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
+  const [liveSymbol, setLiveSymbol] = useState("AAPL");
 
   const { data: portfolio } = useQuery({
     queryKey: ["portfolio", user?.id],
@@ -35,12 +37,36 @@ export const StockTrading = () => {
         .select("*")
         .eq("user_id", user?.id)
         .single();
-      
+
       if (error) throw error;
       return data;
     },
     enabled: !!user?.id,
   });
+
+  const { data: liveQuote, isLoading: quoteLoading } = useQuery({
+    queryKey: ["stockQuote", liveSymbol],
+    queryFn: () => alphaVantageService.getGlobalQuote(liveSymbol),
+    enabled: !!liveSymbol,
+    refetchInterval: 60000,
+    retry: 1,
+  });
+
+  const handleSearchLive = async () => {
+    if (!searchQuery || searchQuery.length < 1) return;
+    
+    try {
+      const results = await alphaVantageService.searchSymbol(searchQuery);
+      if (results.length > 0) {
+        setLiveSymbol(results[0].symbol);
+        toast.success(`Found: ${results[0].name}`);
+      } else {
+        toast.error("No stocks found");
+      }
+    } catch (error) {
+      toast.error("Search failed");
+    }
+  };
 
   const filteredStocks = searchQuery
     ? popularStocks.filter(
@@ -60,7 +86,6 @@ export const StockTrading = () => {
     }
 
     try {
-      // Update cash balance
       const newCashBalance = portfolio.cash_balance - totalCost;
       const { error: portfolioError } = await supabase
         .from("portfolios")
@@ -73,7 +98,6 @@ export const StockTrading = () => {
 
       if (portfolioError) throw portfolioError;
 
-      // Check if asset already exists
       const { data: existingAsset } = await supabase
         .from("portfolio_assets")
         .select("*")
@@ -82,7 +106,6 @@ export const StockTrading = () => {
         .single();
 
       if (existingAsset) {
-        // Update existing asset
         const newQuantity = existingAsset.quantity + quantity;
         const avgPrice = ((existingAsset.purchase_price * existingAsset.quantity) + (selectedStock.price * quantity)) / newQuantity;
         
@@ -98,7 +121,6 @@ export const StockTrading = () => {
 
         if (assetError) throw assetError;
       } else {
-        // Create new asset
         const { error: assetError } = await supabase
           .from("portfolio_assets")
           .insert({
@@ -124,20 +146,73 @@ export const StockTrading = () => {
 
   return (
     <div className="space-y-6">
+      {liveQuote && (
+        <Card className="p-6 bg-gradient-hero border-0">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h3 className="text-2xl font-bold">{liveSymbol}</h3>
+              <p className="text-sm text-muted-foreground">Live Market Data</p>
+            </div>
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => queryClient.invalidateQueries({ queryKey: ["stockQuote", liveSymbol] })}
+              disabled={quoteLoading}
+            >
+              <RefreshCw className={`w-4 h-4 ${quoteLoading ? "animate-spin" : ""}`} />
+            </Button>
+          </div>
+          
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <p className="text-sm text-muted-foreground">Price</p>
+              <p className="text-3xl font-bold">${liveQuote.price.toFixed(2)}</p>
+            </div>
+            <div className={`text-right ${liveQuote.change >= 0 ? "text-success" : "text-destructive"}`}>
+              <p className="text-sm">Change</p>
+              <p className="text-xl font-bold">
+                {liveQuote.change >= 0 ? "+" : ""}{liveQuote.change.toFixed(2)} ({liveQuote.changePercent.toFixed(2)}%)
+              </p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-4 gap-3 mt-4 text-sm">
+            <div>
+              <p className="text-muted-foreground">Open</p>
+              <p className="font-bold">${liveQuote.open.toFixed(2)}</p>
+            </div>
+            <div>
+              <p className="text-muted-foreground">High</p>
+              <p className="font-bold">${liveQuote.high.toFixed(2)}</p>
+            </div>
+            <div>
+              <p className="text-muted-foreground">Low</p>
+              <p className="font-bold">${liveQuote.low.toFixed(2)}</p>
+            </div>
+            <div>
+              <p className="text-muted-foreground">Volume</p>
+              <p className="font-bold">{(liveQuote.volume / 1000000).toFixed(2)}M</p>
+            </div>
+          </div>
+
+          <div className="flex gap-2 mt-4">
+            <Input
+              placeholder="Search live data (e.g., AAPL)"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleSearchLive()}
+            />
+            <Button onClick={handleSearchLive}>
+              <Search className="w-4 h-4" />
+            </Button>
+          </div>
+        </Card>
+      )}
+
       <Card className="p-6">
         <div className="flex items-center gap-3 mb-4">
           <ShoppingCart className="w-6 h-6 text-primary" />
           <h3 className="text-xl font-bold">Buy Stocks</h3>
-        </div>
-
-        <div className="relative mb-4">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-          <Input
-            placeholder="Search stocks by symbol or name..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10"
-          />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6 max-h-[400px] overflow-y-auto">

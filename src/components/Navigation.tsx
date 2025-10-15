@@ -1,4 +1,14 @@
-import { Home, BookOpen, TrendingUp, Gamepad2, BarChart3, Users, Award, User } from "lucide-react";
+import {
+  Home,
+  BookOpen,
+  TrendingUp,
+  Gamepad2,
+  BarChart3,
+  Users,
+  Award,
+  User,
+  Settings,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface NavigationProps {
@@ -15,6 +25,7 @@ const tabs = [
   { id: "community", label: "Community", icon: Users },
   { id: "certificates", label: "Certificates", icon: Award },
   { id: "profile", label: "Profile", icon: User },
+  { id: "settings", label: "Settings", icon: Settings },
 ];
 
 export const Navigation = ({ activeTab, onTabChange }: NavigationProps) => {

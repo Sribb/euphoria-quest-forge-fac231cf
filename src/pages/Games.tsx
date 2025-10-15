@@ -9,6 +9,8 @@ import { PortfolioRaceGame } from "@/components/games/PortfolioRaceGame";
 import { MarketBattleGame } from "@/components/games/MarketBattleGame";
 import { FinancialRPG } from "@/components/games/FinancialRPG";
 import { InvestmentQuizAdventure } from "@/components/games/InvestmentQuizAdventure";
+import { MarketTimingChallenge } from "@/components/games/MarketTimingChallenge";
+import { DiversificationMaster } from "@/components/games/DiversificationMaster";
 
 interface GamesProps {
   onNavigate: (tab: string) => void;
@@ -22,7 +24,7 @@ const iconMap: Record<string, any> = {
 };
 
 const Games = ({ onNavigate }: GamesProps) => {
-  const [activeGame, setActiveGame] = useState<"stock-prediction" | "trading-quiz" | "portfolio-race" | "market-battle" | "financial-rpg" | "quiz-adventure" | null>(null);
+  const [activeGame, setActiveGame] = useState<"stock-prediction" | "trading-quiz" | "portfolio-race" | "market-battle" | "financial-rpg" | "quiz-adventure" | "market-timing" | "diversification" | null>(null);
 
   const { data: games = [] } = useQuery({
     queryKey: ["games"],
@@ -38,7 +40,7 @@ const Games = ({ onNavigate }: GamesProps) => {
   });
 
   const handlePlayGame = (gameId: string) => {
-    if (gameId === "stock-prediction" || gameId === "trading-quiz" || gameId === "portfolio-race" || gameId === "market-battle" || gameId === "financial-rpg" || gameId === "quiz-adventure") {
+    if (gameId === "stock-prediction" || gameId === "trading-quiz" || gameId === "portfolio-race" || gameId === "market-battle" || gameId === "financial-rpg" || gameId === "quiz-adventure" || gameId === "market-timing" || gameId === "diversification") {
       setActiveGame(gameId);
     }
   };
@@ -71,6 +73,14 @@ const Games = ({ onNavigate }: GamesProps) => {
     return <InvestmentQuizAdventure onClose={handleCloseGame} />;
   }
 
+  if (activeGame === "market-timing") {
+    return <MarketTimingChallenge onClose={handleCloseGame} />;
+  }
+
+  if (activeGame === "diversification") {
+    return <DiversificationMaster onClose={handleCloseGame} />;
+  }
+
   return (
     <div className="space-y-6 pb-24">
       <div className="flex items-center gap-3 animate-fade-in">
@@ -94,6 +104,8 @@ const Games = ({ onNavigate }: GamesProps) => {
           else if (game.title.includes("Market Battle")) gameId = "market-battle";
           else if (game.title.includes("Financial") || game.title.includes("Life")) gameId = "financial-rpg";
           else if (game.title.includes("Quiz") || game.title.includes("Adventure")) gameId = "quiz-adventure";
+          else if (game.title.includes("Timing")) gameId = "market-timing";
+          else if (game.title.includes("Diversification")) gameId = "diversification";
 
           return (
             <div
