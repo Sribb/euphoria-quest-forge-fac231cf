@@ -279,10 +279,12 @@ const Settings = ({ onNavigate }: SettingsProps) => {
           <Button
             variant="outline"
             onClick={async () => {
-              const { error } = await supabase.auth.signOut();
-              if (!error) {
+              try {
+                await supabase.auth.signOut();
                 toast.success("Signed out successfully");
-                onNavigate("auth");
+                window.location.href = "/auth";
+              } catch (error) {
+                toast.error("Failed to sign out");
               }
             }}
             className="w-full"

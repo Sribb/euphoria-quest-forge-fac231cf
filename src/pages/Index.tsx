@@ -52,11 +52,11 @@ const Index = () => {
   // Show stock detail page
   if (selectedStock) {
     return (
-      <div className="min-h-screen bg-background">
-        <div className="max-w-2xl mx-auto px-4 pt-6">
+      <div className="min-h-screen bg-background pt-20 pb-20">
+        <div className="max-w-2xl mx-auto px-4">
           <StockDetail symbol={selectedStock} onBack={handleBackToStockSearch} />
         </div>
-        <Navigation activeTab={activeTab} onTabChange={handleNavigate} />
+        <Navigation activeTab={activeTab} onTabChange={handleNavigate} onSelectStock={handleStockSelect} />
       </div>
     );
   }
@@ -64,15 +64,15 @@ const Index = () => {
   // Show stock search page
   if (showStockSearch) {
     return (
-      <div className="min-h-screen bg-background">
-        <div className="max-w-2xl mx-auto px-4 pt-6">
+      <div className="min-h-screen bg-background pt-20 pb-20">
+        <div className="max-w-2xl mx-auto px-4">
           <StockSearch 
             onNavigate={handleNavigate}
             onSelectStock={handleStockSelect}
             onBack={handleBackFromStockSearch}
           />
         </div>
-        <Navigation activeTab={activeTab} onTabChange={handleNavigate} />
+        <Navigation activeTab={activeTab} onTabChange={handleNavigate} onSelectStock={handleStockSelect} />
       </div>
     );
   }
@@ -103,11 +103,11 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="max-w-2xl mx-auto px-4 pt-6">
+    <div className="min-h-screen bg-background pt-20 pb-20">
+      <div className="max-w-2xl mx-auto px-4">
         {renderContent()}
       </div>
-      <Navigation activeTab={activeTab} onTabChange={handleNavigate} />
+      <Navigation activeTab={activeTab} onTabChange={handleNavigate} onSelectStock={handleStockSelect} />
     </div>
   );
 };

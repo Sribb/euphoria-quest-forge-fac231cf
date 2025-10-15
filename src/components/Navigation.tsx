@@ -10,10 +10,12 @@ import {
   Settings,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { GlobalStockSearch } from "./GlobalStockSearch";
 
 interface NavigationProps {
   activeTab: string;
   onTabChange: (tab: string) => void;
+  onSelectStock: (symbol: string) => void;
 }
 
 const tabs = [
@@ -28,10 +30,16 @@ const tabs = [
   { id: "settings", label: "Settings", icon: Settings },
 ];
 
-export const Navigation = ({ activeTab, onTabChange }: NavigationProps) => {
+export const Navigation = ({ activeTab, onTabChange, onSelectStock }: NavigationProps) => {
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-card border-t border-border z-50 safe-bottom">
-      <div className="flex items-center justify-around max-w-lg mx-auto px-2 py-2">
+    <>
+      <div className="fixed top-0 left-0 right-0 bg-card border-b border-border z-50 px-4 py-3">
+        <div className="max-w-2xl mx-auto flex items-center justify-center">
+          <GlobalStockSearch onSelectStock={onSelectStock} />
+        </div>
+      </div>
+      <nav className="fixed bottom-0 left-0 right-0 bg-card border-t border-border z-50 safe-bottom">
+        <div className="flex items-center justify-around max-w-lg mx-auto px-2 py-2">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -53,5 +61,6 @@ export const Navigation = ({ activeTab, onTabChange }: NavigationProps) => {
         })}
       </div>
     </nav>
+    </>
   );
 };
