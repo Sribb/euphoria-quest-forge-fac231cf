@@ -1,11 +1,10 @@
-import { useState } from "react";
-import { BarChart3, TrendingUp, Award, Target } from "lucide-react";
+import { BarChart3, TrendingUp, Target, Award } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import { Progress } from "@/components/ui/progress";
-import { LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, BarChart, Bar } from "recharts";
+import { alphaVantageService } from "@/lib/alphaVantageService";
 
 interface AnalyticsProps {
   onNavigate: (tab: string) => void;
@@ -13,20 +12,6 @@ interface AnalyticsProps {
 
 const Analytics = ({ onNavigate }: AnalyticsProps) => {
   const { user } = useAuth();
-
-  const { data: profile } = useQuery({
-    queryKey: ["profile", user?.id],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("id", user?.id)
-        .single();
-      if (error) throw error;
-      return data;
-    },
-    enabled: !!user?.id,
-  });
 
   const { data: portfolio } = useQuery({
     queryKey: ["portfolio", user?.id],
@@ -36,55 +21,67 @@ const Analytics = ({ onNavigate }: AnalyticsProps) => {
         .select("*")
         .eq("user_id", user?.id)
         .single();
+      
       if (error) throw error;
       return data;
     },
     enabled: !!user?.id,
   });
 
-  const { data: lessonProgress } = useQuery({
-    queryKey: ["lessonProgress", user?.id],
+  const { data: assets } = useQuery({
+    queryKey: ["portfolio_assets", portfolio?.id],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("user_lesson_progress")
-        .select("*, lessons(*)")
-        .eq("user_id", user?.id);
+        .from("portfolio_assets")
+        .select("*")
+        .eq("portfolio_id", portfolio?.id);
+      
       if (error) throw error;
       return data;
     },
-    enabled: !!user?.id,
+    enabled: !!portfolio?.id,
   });
 
   const { data: gameSessions } = useQuery({
-    queryKey: ["gameSessions", user?.id],
+    queryKey: ["game_sessions", user?.id],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("game_sessions")
         .select("*")
         .eq("user_id", user?.id)
-        .order("created_at", { ascending: false });
+        .order("created_at", { ascending: false })
+        .limit(10);
+      
       if (error) throw error;
       return data;
     },
     enabled: !!user?.id,
   });
 
-  // Calculate portfolio performance data
-  const portfolioData = [
-    { month: "Jan", value: 9500 },
-    { month: "Feb", value: 9800 },
-    { month: "Mar", value: 10200 },
-    { month: "Apr", value: 10100 },
-    { month: "May", value: 10500 },
-    { month: "Jun", value: portfolio?.total_value || 10000 },
-  ];
+  const { data: spy } = useQuery({
+    queryKey: ["benchmark_spy"],
+    queryFn: () => alphaVantageService.getGlobalQuote("SPY"),
+    refetchInterval: 300000,
+  });
 
-  // Asset allocation data
-  const assetData = [
-    { name: "Stocks", value: 45, color: "#8b5cf6" },
-    { name: "Bonds", value: 25, color: "#10b981" },
-    { name: "Crypto", value: 15, color: "#f59e0b" },
-    { name: "Cash", value: 15, color: "#6366f1" },
+  const portfolioReturn = portfolio
+    ? ((Number(portfolio.total_value) - 10000) / 10000) * 100
+    : 0;
+
+  const performanceData = gameSessions?.slice(0, 7).reverse().map((session, idx) => ({
+    name: `Day ${idx + 1}`,
+    score: session.score,
+    coins: session.coins_earned,
+  })) || [];
+
+  const assetDistribution = assets?.map(asset => ({
+    name: asset.asset_name,
+    value: Number(asset.current_price) * Number(asset.quantity),
+  })) || [];
+
+  const benchmarkComparison = [
+    { name: "Your Portfolio", return: portfolioReturn },
+    { name: "S&P 500 (SPY)", return: spy ? spy.changePercent : 0 },
   ];
 
   const completedLessons = lessonProgress?.filter(l => l.completed).length || 0;

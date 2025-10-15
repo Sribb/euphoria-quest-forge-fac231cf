@@ -96,4 +96,29 @@ export const alphaVantageService = {
       return [];
     }
   },
+
+  async getMarketIndex(symbol: string): Promise<StockQuote | null> {
+    try {
+      return await this.getGlobalQuote(symbol);
+    } catch (error) {
+      console.error(`Error fetching market index ${symbol}:`, error);
+      return null;
+    }
+  },
+
+  async getMultipleQuotes(symbols: string[]): Promise<Map<string, StockQuote>> {
+    const results = new Map<string, StockQuote>();
+    
+    for (const symbol of symbols) {
+      try {
+        const quote = await this.getGlobalQuote(symbol);
+        results.set(symbol, quote);
+        await new Promise(resolve => setTimeout(resolve, 12000));
+      } catch (error) {
+        console.error(`Failed to fetch ${symbol}:`, error);
+      }
+    }
+    
+    return results;
+  },
 };
