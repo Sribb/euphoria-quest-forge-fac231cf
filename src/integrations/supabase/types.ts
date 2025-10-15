@@ -498,6 +498,33 @@ export type Database = {
           },
         ]
       }
+      user_onboarding: {
+        Row: {
+          completed_at: string
+          id: string
+          investment_level: string
+          preferences: Json | null
+          quiz_score: number
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string
+          id?: string
+          investment_level: string
+          preferences?: Json | null
+          quiz_score: number
+          user_id: string
+        }
+        Update: {
+          completed_at?: string
+          id?: string
+          investment_level?: string
+          preferences?: Json | null
+          quiz_score?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string

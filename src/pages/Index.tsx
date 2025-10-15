@@ -9,14 +9,24 @@ import Community from "./Community";
 import Certificates from "./Certificates";
 import Profile from "./Profile";
 import Settings from "./Settings";
+import Onboarding from "./Onboarding";
+import { useOnboarding } from "@/hooks/useOnboarding";
+import { useAuth } from "@/hooks/useAuth";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
   const [selectedLesson, setSelectedLesson] = useState<string | null>(null);
+  const { user } = useAuth();
+  const { hasCompletedOnboarding, isLoading } = useOnboarding();
 
   const handleNavigate = (tab: string) => {
     setActiveTab(tab);
   };
+
+  // Show onboarding if user is logged in and hasn't completed it
+  if (user && !isLoading && !hasCompletedOnboarding) {
+    return <Onboarding onComplete={() => window.location.reload()} />;
+  }
 
   const renderContent = () => {
     switch (activeTab) {
