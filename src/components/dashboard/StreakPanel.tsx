@@ -2,10 +2,71 @@ import { Flame, Gift, Trophy } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
+import { toast } from "sonner";
+import { useEffect } from "react";
 
 export const StreakPanel = () => {
-  const currentStreak = 7;
-  const nextMilestone = 10;
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+
+  // Fetch user's streak data
+  const { data: streakData } = useQuery({
+    queryKey: ["streak", user?.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("streaks")
+        .select("*")
+        .eq("user_id", user?.id)
+        .single();
+      
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!user?.id,
+  });
+
+  // Auto-update streak on component mount
+  useEffect(() => {
+    if (user?.id && streakData) {
+      const today = new Date().toISOString().split('T')[0];
+      const lastLogin = streakData.last_login_date;
+      
+      // Only update if not already updated today
+      if (lastLogin !== today) {
+        updateStreakMutation.mutate();
+      }
+    }
+  }, [user?.id, streakData?.last_login_date]);
+
+  const updateStreakMutation = useMutation({
+    mutationFn: async () => {
+      const { data, error } = await supabase.functions.invoke('update-streak', {
+        headers: {
+          Authorization: `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`,
+        },
+      });
+      
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["streak", user?.id] });
+      queryClient.invalidateQueries({ queryKey: ["profile", user?.id] });
+      
+      if (data?.streak?.current_streak && [3, 7, 10, 14, 30].includes(data.streak.current_streak)) {
+        toast.success(`🎉 ${data.streak.current_streak}-day streak! You earned ${data.streak.current_streak * 10} coins!`);
+      }
+    },
+    onError: () => {
+      toast.error("Failed to update streak");
+    },
+  });
+
+  const currentStreak = streakData?.current_streak || 0;
+  const nextMilestone = [3, 7, 10, 14, 30].find(m => m > currentStreak) || 30;
   const progress = (currentStreak / nextMilestone) * 100;
 
   return (
@@ -43,9 +104,16 @@ export const StreakPanel = () => {
           ))}
         </div>
 
-        <Button className="w-full bg-gradient-gold hover:opacity-90 transition-opacity">
+        <Button 
+          className="w-full bg-gradient-gold hover:opacity-90 transition-opacity"
+          onClick={() => updateStreakMutation.mutate()}
+          disabled={updateStreakMutation.isPending || streakData?.last_login_date === new Date().toISOString().split('T')[0]}
+        >
           <Gift className="w-4 h-4 mr-2" />
-          Claim Today's Reward
+          {streakData?.last_login_date === new Date().toISOString().split('T')[0] 
+            ? "Already Claimed Today" 
+            : "Claim Today's Reward"
+          }
         </Button>
       </div>
     </Card>
