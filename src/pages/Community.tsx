@@ -1,80 +1,136 @@
-import { Users, MessageSquare, Trophy, TrendingUp } from "lucide-react";
+import { useState } from "react";
+import { MessageCircle, Heart, Send, Trash2, ImagePlus } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
+import { toast } from "sonner";
+import { Input } from "@/components/ui/input";
 
 interface CommunityProps {
   onNavigate: (tab: string) => void;
 }
 
 const Community = ({ onNavigate }: CommunityProps) => {
-  const suggestedGroups = [
-    { name: "Beginner Investors", members: 1234, level: "Beginner", icon: "📚" },
-    { name: "Value Investing Club", members: 892, level: "Intermediate", icon: "💎" },
-    { name: "Dividend Strategy", members: 567, level: "Advanced", icon: "💰" },
-    { name: "Crypto Explorers", members: 2103, level: "Intermediate", icon: "🚀" },
-  ];
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+  const [newPost, setNewPost] = useState("");
+  const [newComment, setNewComment] = useState<Record<string, string>>({});
+  const [showComments, setShowComments] = useState<Record<string, boolean>>({});
 
-  const trendingPosts = [
-    {
-      author: "Sarah M.",
-      avatar: "SM",
-      title: "My journey from $1,000 to $10,000 in simulated trading",
-      excerpt: "After 3 months of consistent learning and applying Warren Buffett's principles...",
-      likes: 234,
-      comments: 45,
-      time: "2 hours ago",
+  const { data: posts } = useQuery({
+    queryKey: ["posts"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("posts")
+        .select(`
+          *,
+          profiles(display_name)
+        `)
+        .order("created_at", { ascending: false });
+      
+      if (error) throw error;
+      return data;
     },
-    {
-      author: "John D.",
-      avatar: "JD",
-      title: "Understanding P/E ratios: A complete guide",
-      excerpt: "Price-to-Earnings ratio is one of the most important metrics for value investors...",
-      likes: 189,
-      comments: 32,
-      time: "5 hours ago",
-    },
-    {
-      author: "Emily R.",
-      avatar: "ER",
-      title: "How I achieved a 30-day streak",
-      excerpt: "Consistency is key! Here are my top tips for maintaining daily learning habits...",
-      likes: 156,
-      comments: 28,
-      time: "1 day ago",
-    },
-  ];
+  });
 
-  const challenges = [
-    {
-      title: "7-Day Learning Sprint",
-      description: "Complete 7 lessons in 7 days",
-      reward: "500 coins + Sprint Badge",
-      participants: 456,
-      daysLeft: 3,
+  const { data: profile } = useQuery({
+    queryKey: ["profile", user?.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", user?.id)
+        .single();
+      
+      if (error) throw error;
+      return data;
     },
-    {
-      title: "Portfolio Challenge",
-      description: "Grow your portfolio by 5% this month",
-      reward: "1000 coins + Growth Badge",
-      participants: 789,
-      daysLeft: 12,
+    enabled: !!user?.id,
+  });
+
+  const createPostMutation = useMutation({
+    mutationFn: async (content: string) => {
+      const { error } = await supabase
+        .from("posts")
+        .insert({ user_id: user?.id, content });
+      
+      if (error) throw error;
     },
-    {
-      title: "Game Master",
-      description: "Score 90+ on all 5 financial games",
-      reward: "750 coins + Master Badge",
-      participants: 234,
-      daysLeft: 20,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
+      setNewPost("");
+      toast.success("Post created!");
     },
-  ];
+    onError: () => {
+      toast.error("Failed to create post");
+    },
+  });
+
+  const toggleLikeMutation = useMutation({
+    mutationFn: async (postId: string) => {
+      const { data: existingLike } = await supabase
+        .from("likes")
+        .select("id")
+        .eq("post_id", postId)
+        .eq("user_id", user?.id)
+        .single();
+
+      if (existingLike) {
+        await supabase.from("likes").delete().eq("id", existingLike.id);
+      } else {
+        await supabase.from("likes").insert({ post_id: postId, user_id: user?.id });
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
+    },
+  });
+
+  const createCommentMutation = useMutation({
+    mutationFn: async ({ postId, content }: { postId: string; content: string }) => {
+      const { error } = await supabase
+        .from("comments")
+        .insert({ post_id: postId, user_id: user?.id, content });
+      
+      if (error) throw error;
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["comments", variables.postId] });
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
+      setNewComment(prev => ({ ...prev, [variables.postId]: "" }));
+      toast.success("Comment added!");
+    },
+  });
+
+  const getComments = (postId: string) => {
+    return useQuery({
+      queryKey: ["comments", postId],
+      queryFn: async () => {
+        const { data, error } = await supabase
+          .from("comments")
+          .select(`
+            *,
+            profiles(display_name)
+          `)
+          .eq("post_id", postId)
+          .order("created_at", { ascending: true });
+        
+        if (error) throw error;
+        return data;
+      },
+      enabled: showComments[postId] === true,
+    });
+  };
 
   return (
     <div className="space-y-6 pb-24">
       <div className="flex items-center gap-3 animate-fade-in">
-        <div className="w-12 h-12 rounded-xl bg-gradient-success flex items-center justify-center shadow-glow">
-          <Users className="w-6 h-6 text-white" />
+        <div className="w-12 h-12 rounded-xl bg-gradient-accent flex items-center justify-center shadow-glow">
+          <MessageCircle className="w-6 h-6 text-white" />
         </div>
         <div>
           <h1 className="text-2xl font-bold">Community</h1>
@@ -82,123 +138,108 @@ const Community = ({ onNavigate }: CommunityProps) => {
         </div>
       </div>
 
-      {/* Suggested Groups */}
-      <div>
-        <h2 className="text-xl font-bold mb-4">Suggested Groups</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {suggestedGroups.map((group, index) => (
-            <Card
-              key={group.name}
-              className="p-4 bg-gradient-hero border-0 hover:scale-105 transition-transform cursor-pointer animate-fade-in"
-              style={{ animationDelay: `${index * 100}ms` }}
-            >
-              <div className="flex items-start gap-3">
-                <div className="text-4xl">{group.icon}</div>
-                <div className="flex-1">
-                  <h3 className="font-bold mb-1">{group.name}</h3>
-                  <p className="text-sm text-muted-foreground mb-2">{group.members.toLocaleString()} members</p>
-                  <Badge variant="outline">{group.level}</Badge>
-                </div>
-                <Button size="sm" className="bg-gradient-primary">Join</Button>
-              </div>
-            </Card>
-          ))}
-        </div>
-      </div>
+      <Card className="p-6">
+        <h3 className="text-lg font-bold mb-4">Create a Post</h3>
+        <Textarea
+          placeholder="Share your investing insights, wins, or questions..."
+          value={newPost}
+          onChange={(e) => setNewPost(e.target.value)}
+          className="mb-3"
+          rows={4}
+        />
+        <Button
+          onClick={() => createPostMutation.mutate(newPost)}
+          disabled={!newPost.trim() || createPostMutation.isPending}
+          className="w-full"
+        >
+          <Send className="w-4 h-4 mr-2" />
+          Post
+        </Button>
+      </Card>
 
-      {/* Active Challenges */}
-      <div>
-        <h2 className="text-xl font-bold mb-4">Active Challenges</h2>
-        <div className="space-y-4">
-          {challenges.map((challenge, index) => (
-            <Card
-              key={challenge.title}
-              className="p-6 bg-gradient-hero border-primary/20 animate-fade-in"
-              style={{ animationDelay: `${(index + 4) * 100}ms` }}
-            >
-              <div className="flex items-start justify-between mb-4">
-                <div className="flex items-start gap-3">
-                  <Trophy className="w-6 h-6 text-warning mt-1" />
-                  <div>
-                    <h3 className="font-bold mb-1">{challenge.title}</h3>
-                    <p className="text-sm text-muted-foreground mb-2">{challenge.description}</p>
-                    <div className="flex items-center gap-4 text-sm">
-                      <span className="flex items-center gap-1">
-                        <Users className="w-4 h-4" />
-                        {challenge.participants} joined
-                      </span>
-                      <span className="text-warning">{challenge.daysLeft} days left</span>
-                    </div>
-                  </div>
-                </div>
-                <Button className="bg-gradient-primary">Join Challenge</Button>
-              </div>
-              <div className="p-3 bg-background/50 rounded-lg">
-                <p className="text-sm">
-                  <span className="font-semibold">Reward:</span> {challenge.reward}
-                </p>
-              </div>
-            </Card>
-          ))}
-        </div>
-      </div>
-
-      {/* Trending Posts */}
-      <div>
-        <h2 className="text-xl font-bold mb-4">Trending Discussions</h2>
-        <div className="space-y-4">
-          {trendingPosts.map((post, index) => (
-            <Card
-              key={post.title}
-              className="p-6 bg-gradient-hero border-0 hover:border-primary/30 transition-all cursor-pointer animate-fade-in"
-              style={{ animationDelay: `${(index + 7) * 100}ms` }}
-            >
-              <div className="flex items-start gap-4">
-                <Avatar className="w-12 h-12">
-                  <AvatarFallback className="bg-gradient-primary text-white font-bold">
-                    {post.avatar}
-                  </AvatarFallback>
+      <div className="space-y-4">
+        {posts?.map((post) => {
+          const commentsQuery = getComments(post.id);
+          const displayName = (post.profiles as any)?.display_name || "Investor";
+          
+          return (
+            <Card key={post.id} className="p-6">
+              <div className="flex items-start gap-3 mb-4">
+                <Avatar>
+                  <AvatarFallback>{displayName[0]}</AvatarFallback>
                 </Avatar>
                 <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="font-semibold">{post.author}</span>
-                    <span className="text-sm text-muted-foreground">{post.time}</span>
-                  </div>
-                  <h3 className="font-bold mb-2">{post.title}</h3>
-                  <p className="text-sm text-muted-foreground mb-3">{post.excerpt}</p>
-                  <div className="flex items-center gap-4 text-sm">
-                    <button className="flex items-center gap-1 hover:text-primary transition-colors">
-                      <TrendingUp className="w-4 h-4" />
-                      {post.likes} likes
-                    </button>
-                    <button className="flex items-center gap-1 hover:text-primary transition-colors">
-                      <MessageSquare className="w-4 h-4" />
-                      {post.comments} comments
-                    </button>
-                  </div>
+                  <p className="font-bold">{displayName}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {new Date(post.created_at).toLocaleDateString()}
+                  </p>
                 </div>
               </div>
-            </Card>
-          ))}
-        </div>
-      </div>
 
-      {/* Discussion Topics */}
-      <Card className="p-6 bg-gradient-hero border-0 animate-fade-in" style={{ animationDelay: "1000ms" }}>
-        <h3 className="text-lg font-bold mb-4">Popular Topics</h3>
-        <div className="flex flex-wrap gap-2">
-          {["Value Investing", "Dividend Stocks", "Portfolio Diversification", "Risk Management", 
-            "Market Analysis", "Warren Buffett Strategy", "Long-term Growth", "Index Funds"].map((topic) => (
-            <Badge
-              key={topic}
-              variant="outline"
-              className="px-3 py-1 cursor-pointer hover:bg-primary/20 transition-colors"
-            >
-              {topic}
-            </Badge>
-          ))}
-        </div>
-      </Card>
+              <p className="mb-4 whitespace-pre-wrap">{post.content}</p>
+
+              <div className="flex items-center gap-4 pt-3 border-t">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => toggleLikeMutation.mutate(post.id)}
+                  className="gap-2"
+                >
+                  <Heart className="w-4 h-4" />
+                  {post.likes_count}
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowComments(prev => ({ ...prev, [post.id]: !prev[post.id] }))}
+                  className="gap-2"
+                >
+                  <MessageCircle className="w-4 h-4" />
+                  {post.comments_count}
+                </Button>
+              </div>
+
+              {showComments[post.id] && (
+                <div className="mt-4 pt-4 border-t space-y-3">
+                  <div className="flex gap-2">
+                    <Input
+                      placeholder="Write a comment..."
+                      value={newComment[post.id] || ""}
+                      onChange={(e) => setNewComment(prev => ({ ...prev, [post.id]: e.target.value }))}
+                    />
+                    <Button
+                      size="sm"
+                      onClick={() => createCommentMutation.mutate({
+                        postId: post.id,
+                        content: newComment[post.id],
+                      })}
+                      disabled={!newComment[post.id]?.trim()}
+                    >
+                      <Send className="w-4 h-4" />
+                    </Button>
+                  </div>
+
+                  {commentsQuery.data?.map((comment) => (
+                    <div key={comment.id} className="flex gap-2 p-3 bg-muted rounded-lg">
+                      <Avatar className="w-8 h-8">
+                        <AvatarFallback className="text-xs">
+                          {((comment.profiles as any)?.display_name || "I")[0]}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="flex-1">
+                        <p className="text-sm font-semibold">
+                          {(comment.profiles as any)?.display_name || "Investor"}
+                        </p>
+                        <p className="text-sm">{comment.content}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </Card>
+          );
+        })}
+      </div>
     </div>
   );
 };

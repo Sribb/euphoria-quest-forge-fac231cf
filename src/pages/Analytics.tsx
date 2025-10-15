@@ -13,6 +13,21 @@ interface AnalyticsProps {
 const Analytics = ({ onNavigate }: AnalyticsProps) => {
   const { user } = useAuth();
 
+  const { data: profile } = useQuery({
+    queryKey: ["profile", user?.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", user?.id)
+        .single();
+      
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!user?.id,
+  });
+
   const { data: portfolio } = useQuery({
     queryKey: ["portfolio", user?.id],
     queryFn: async () => {
@@ -84,10 +99,6 @@ const Analytics = ({ onNavigate }: AnalyticsProps) => {
     { name: "S&P 500 (SPY)", return: spy ? spy.changePercent : 0 },
   ];
 
-  const completedLessons = lessonProgress?.filter(l => l.completed).length || 0;
-  const totalLessons = lessonProgress?.length || 1;
-  const completionRate = Math.round((completedLessons / totalLessons) * 100);
-
   const totalGames = gameSessions?.length || 0;
   const totalCoinsEarned = gameSessions?.reduce((sum, session) => sum + (session.coins_earned || 0), 0) || 0;
   const avgGameScore = gameSessions?.reduce((sum, session) => sum + (session.score || 0), 0) / (totalGames || 1) || 0;
@@ -95,136 +106,106 @@ const Analytics = ({ onNavigate }: AnalyticsProps) => {
   return (
     <div className="space-y-6 pb-24">
       <div className="flex items-center gap-3 animate-fade-in">
-        <div className="w-12 h-12 rounded-xl bg-gradient-primary flex items-center justify-center shadow-glow">
+        <div className="w-12 h-12 rounded-xl bg-gradient-accent flex items-center justify-center shadow-glow">
           <BarChart3 className="w-6 h-6 text-white" />
         </div>
         <div>
-          <h1 className="text-2xl font-bold">Analytics Dashboard</h1>
-          <p className="text-muted-foreground">Track your investing journey and progress</p>
+          <h1 className="text-2xl font-bold">Analytics</h1>
+          <p className="text-muted-foreground">Track your performance and progress</p>
         </div>
       </div>
 
-      {/* Key Metrics */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <Card className="p-4 bg-gradient-hero border-primary/20 animate-fade-in">
+      <div className="grid grid-cols-2 gap-4">
+        <Card className="p-4 bg-gradient-success border-0">
           <div className="flex items-center gap-2 mb-2">
-            <Target className="w-5 h-5 text-primary" />
-            <span className="text-sm text-muted-foreground">Level</span>
+            <TrendingUp className="w-5 h-5 text-white" />
+            <span className="text-sm text-white/80">Portfolio Value</span>
           </div>
-          <p className="text-3xl font-bold">{profile?.level || 1}</p>
+          <p className="text-2xl font-bold text-white">
+            ${portfolio?.total_value.toLocaleString() || "0"}
+          </p>
+          <p className="text-sm text-white/80 mt-1">
+            {portfolioReturn >= 0 ? "+" : ""}{portfolioReturn.toFixed(2)}% return
+          </p>
         </Card>
 
-        <Card className="p-4 bg-gradient-hero border-success/20 animate-fade-in" style={{ animationDelay: "100ms" }}>
+        <Card className="p-4 bg-gradient-primary border-0">
           <div className="flex items-center gap-2 mb-2">
-            <TrendingUp className="w-5 h-5 text-success" />
-            <span className="text-sm text-muted-foreground">Portfolio</span>
+            <Target className="w-5 h-5 text-white" />
+            <span className="text-sm text-white/80">Total Games</span>
           </div>
-          <p className="text-3xl font-bold">${portfolio?.total_value?.toFixed(0) || "10,000"}</p>
-        </Card>
-
-        <Card className="p-4 bg-gradient-hero border-warning/20 animate-fade-in" style={{ animationDelay: "200ms" }}>
-          <div className="flex items-center gap-2 mb-2">
-            <Award className="w-5 h-5 text-warning" />
-            <span className="text-sm text-muted-foreground">Coins</span>
-          </div>
-          <p className="text-3xl font-bold">{profile?.coins || 0}</p>
-        </Card>
-
-        <Card className="p-4 bg-gradient-hero border-info/20 animate-fade-in" style={{ animationDelay: "300ms" }}>
-          <div className="flex items-center gap-2 mb-2">
-            <BarChart3 className="w-5 h-5 text-info" />
-            <span className="text-sm text-muted-foreground">Games</span>
-          </div>
-          <p className="text-3xl font-bold">{totalGames}</p>
+          <p className="text-2xl font-bold text-white">{gameSessions?.length || 0}</p>
+          <p className="text-sm text-white/80 mt-1">Games completed</p>
         </Card>
       </div>
 
-      {/* Portfolio Performance Chart */}
-      <Card className="p-6 bg-gradient-hero border-0 animate-fade-in" style={{ animationDelay: "400ms" }}>
-        <h3 className="text-lg font-bold mb-4">Portfolio Performance</h3>
-        <ResponsiveContainer width="100%" height={300}>
-          <LineChart data={portfolioData}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-            <XAxis dataKey="month" stroke="#9ca3af" />
-            <YAxis stroke="#9ca3af" />
-            <Tooltip contentStyle={{ backgroundColor: "#1f2937", border: "1px solid #374151" }} />
+      <Card className="p-6">
+        <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
+          <Award className="w-5 h-5" />
+          Benchmark Comparison
+        </h3>
+        <ResponsiveContainer width="100%" height={250}>
+          <BarChart data={benchmarkComparison}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="name" />
+            <YAxis />
+            <Tooltip />
+            <Bar dataKey="return" fill="hsl(var(--primary))" />
+          </BarChart>
+        </ResponsiveContainer>
+        <p className="text-sm text-muted-foreground mt-3">
+          {portfolioReturn > (spy?.changePercent || 0) 
+            ? "🎉 You're outperforming the S&P 500!" 
+            : "📊 Keep learning to beat the market benchmark"}
+        </p>
+      </Card>
+
+      <Card className="p-6">
+        <h3 className="text-lg font-bold mb-4">Game Performance Trend</h3>
+        <ResponsiveContainer width="100%" height={250}>
+          <LineChart data={performanceData}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="name" />
+            <YAxis />
+            <Tooltip />
             <Legend />
-            <Line type="monotone" dataKey="value" stroke="#8b5cf6" strokeWidth={3} name="Portfolio Value" />
+            <Line type="monotone" dataKey="score" stroke="hsl(var(--primary))" strokeWidth={2} />
+            <Line type="monotone" dataKey="coins" stroke="hsl(var(--accent))" strokeWidth={2} />
           </LineChart>
         </ResponsiveContainer>
       </Card>
 
-      {/* Asset Allocation */}
-      <Card className="p-6 bg-gradient-hero border-0 animate-fade-in" style={{ animationDelay: "500ms" }}>
-        <h3 className="text-lg font-bold mb-4">Asset Allocation</h3>
-        <ResponsiveContainer width="100%" height={300}>
-          <PieChart>
-            <Pie
-              data={assetData}
-              cx="50%"
-              cy="50%"
-              labelLine={false}
-              label={({ name, value }) => `${name}: ${value}%`}
-              outerRadius={100}
-              fill="#8884d8"
-              dataKey="value"
-            >
-              {assetData.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={entry.color} />
-              ))}
-            </Pie>
-            <Tooltip />
-          </PieChart>
-        </ResponsiveContainer>
+      <Card className="p-6">
+        <h3 className="text-lg font-bold mb-4">Asset Distribution</h3>
+        {assetDistribution.length > 0 ? (
+          <ResponsiveContainer width="100%" height={250}>
+            <BarChart data={assetDistribution}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="name" />
+              <YAxis />
+              <Tooltip />
+              <Bar dataKey="value" fill="hsl(var(--chart-1))" />
+            </BarChart>
+          </ResponsiveContainer>
+        ) : (
+          <p className="text-center text-muted-foreground py-12">
+            Start trading to see your asset distribution
+          </p>
+        )}
       </Card>
 
-      {/* Learning Progress */}
-      <Card className="p-6 bg-gradient-hero border-0 animate-fade-in" style={{ animationDelay: "600ms" }}>
-        <h3 className="text-lg font-bold mb-4">Learning Progress</h3>
-        <div className="space-y-4">
-          <div>
-            <div className="flex justify-between mb-2">
-              <span className="text-sm">Lessons Completed</span>
-              <span className="text-sm font-bold">{completedLessons}/{totalLessons}</span>
-            </div>
-            <Progress value={completionRate} className="h-3" />
+      <Card className="p-6">
+        <h3 className="text-lg font-bold mb-4">Performance Insights</h3>
+        <div className="grid grid-cols-2 gap-4">
+          <div className="p-4 bg-gradient-hero rounded-lg">
+            <p className="text-sm text-muted-foreground mb-1">Total Coins from Games</p>
+            <p className="text-2xl font-bold">{totalCoinsEarned}</p>
           </div>
-          <div className="grid grid-cols-2 gap-4 mt-4">
-            <div className="p-4 bg-background/50 rounded-lg">
-              <p className="text-sm text-muted-foreground mb-1">Total Coins from Games</p>
-              <p className="text-2xl font-bold text-warning">{totalCoinsEarned}</p>
-            </div>
-            <div className="p-4 bg-background/50 rounded-lg">
-              <p className="text-sm text-muted-foreground mb-1">Avg Game Score</p>
-              <p className="text-2xl font-bold text-success">{avgGameScore.toFixed(0)}</p>
-            </div>
+          <div className="p-4 bg-gradient-hero rounded-lg">
+            <p className="text-sm text-muted-foreground mb-1">Avg Game Score</p>
+            <p className="text-2xl font-bold">{avgGameScore.toFixed(0)}</p>
           </div>
         </div>
-      </Card>
-
-      {/* AI Improvement Tips */}
-      <Card className="p-6 bg-gradient-hero border-primary/20 animate-fade-in" style={{ animationDelay: "700ms" }}>
-        <h3 className="text-lg font-bold mb-3">AI Improvement Tips</h3>
-        <ul className="space-y-3">
-          <li className="flex items-start gap-3">
-            <div className="w-2 h-2 rounded-full bg-primary mt-2" />
-            <p className="text-sm">
-              <span className="font-semibold">Diversification:</span> Consider spreading your investments across 3-4 asset classes to reduce risk. Warren Buffett advises: "Don't put all your eggs in one basket."
-            </p>
-          </li>
-          <li className="flex items-start gap-3">
-            <div className="w-2 h-2 rounded-full bg-success mt-2" />
-            <p className="text-sm">
-              <span className="font-semibold">Learning Streak:</span> Complete 3 more lessons this week to unlock advanced strategies. Consistent learning leads to better investment decisions.
-            </p>
-          </li>
-          <li className="flex items-start gap-3">
-            <div className="w-2 h-2 rounded-full bg-warning mt-2" />
-            <p className="text-sm">
-              <span className="font-semibold">Risk Management:</span> Your portfolio shows 60% in growth assets. Consider rebalancing to match your risk tolerance and time horizon.
-            </p>
-          </li>
-        </ul>
       </Card>
     </div>
   );
