@@ -82,7 +82,7 @@ export const EconomicNews = () => {
   const [lastUpdate, setLastUpdate] = useState(new Date());
 
   useEffect(() => {
-    // Simulate real-time updates by refreshing timestamps every minute
+    // Auto-refresh timestamps every 10 minutes to stay current
     const interval = setInterval(() => {
       setNewsItems((prev) =>
         prev.map((item) => ({
@@ -91,7 +91,7 @@ export const EconomicNews = () => {
         }))
       );
       setLastUpdate(new Date());
-    }, 60000); // Update every minute
+    }, 600000); // Update every 10 minutes
 
     return () => clearInterval(interval);
   }, []);
@@ -110,15 +110,15 @@ export const EconomicNews = () => {
   };
 
   return (
-    <Card className="p-6 animate-fade-in" style={{ animationDelay: "100ms" }}>
+    <Card className="p-6 animate-fade-in bg-card border-border" style={{ animationDelay: "100ms" }}>
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <Newspaper className="w-5 h-5 text-primary" />
-          <h3 className="text-xl font-bold">Live Economic Headlines</h3>
+          <h3 className="text-xl font-bold text-foreground">Live Economic Headlines</h3>
         </div>
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
           <TrendingUp className="w-3 h-3 text-success animate-pulse" />
-          <span>Live Updates</span>
+          <span>Auto-refreshing</span>
         </div>
       </div>
 
@@ -129,7 +129,7 @@ export const EconomicNews = () => {
             href={news.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="block p-4 bg-gradient-hero rounded-lg border border-border hover:border-primary transition-all group"
+            className="block p-4 bg-card/50 rounded-lg border border-border hover:border-primary hover:shadow-md transition-all group"
           >
             <div className="flex items-start justify-between gap-3">
               <div className="flex-1 min-w-0">

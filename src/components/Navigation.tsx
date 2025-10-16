@@ -39,7 +39,8 @@ export const Navigation = ({ activeTab, onTabChange, onSelectStock }: Navigation
         </div>
       </div>
       <nav className="fixed bottom-0 left-0 right-0 bg-card border-t border-border z-50 safe-bottom">
-        <div className="flex items-center justify-around max-w-lg mx-auto px-2 py-2">
+        <div className="flex items-center justify-center max-w-7xl mx-auto px-2 py-2">
+          <div className="flex items-center justify-around gap-1 w-full max-w-4xl">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -59,8 +60,9 @@ export const Navigation = ({ activeTab, onTabChange, onSelectStock }: Navigation
             </button>
           );
         })}
-      </div>
-    </nav>
+          </div>
+        </div>
+      </nav>
     </>
   );
 };

@@ -35,10 +35,10 @@ export const EconomicCalendar = () => {
   }, []);
 
   return (
-    <Card className="p-6 animate-fade-in" style={{ animationDelay: "200ms" }}>
+    <Card className="p-6 animate-fade-in bg-card border-border" style={{ animationDelay: "200ms" }}>
       <div className="flex items-center gap-2 mb-4">
         <Calendar className="w-5 h-5 text-primary" />
-        <h3 className="text-xl font-bold">Economic Calendar</h3>
+        <h3 className="text-xl font-bold text-foreground">Economic Calendar</h3>
       </div>
 
       <Tabs defaultValue="today" className="w-full">
@@ -75,7 +75,7 @@ export const EconomicCalendar = () => {
 
       <div className="mt-4 p-3 bg-primary/10 rounded-lg border border-primary/20">
         <p className="text-sm text-muted-foreground">
-          <span className="font-semibold">Pro Tip:</span> High-impact events can create significant market volatility.
+          <span className="font-semibold text-foreground">Pro Tip:</span> High-impact events can create significant market volatility.
           Plan your trading strategy accordingly and consider reducing position sizes before major announcements.
         </p>
       </div>
