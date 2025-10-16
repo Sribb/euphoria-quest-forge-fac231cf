@@ -78,28 +78,29 @@ export const StockPredictionGame = ({ onClose }: StockPredictionGameProps) => {
 
   const endGame = async () => {
     const coins = Math.floor(score / 10);
-    
-    // Get current coins
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("coins")
-      .eq("id", user?.id)
-      .single();
 
-    const { error: sessionError } = await supabase.from("game_sessions").insert({
-      user_id: user?.id,
-      game_id: "stock-prediction",
-      score,
-      coins_earned: coins,
-      completed: true,
-    });
+    try {
+      // Update coins atomically
+      const { error: coinsError } = await supabase.rpc('increment_coins', {
+        user_id_param: user?.id,
+        amount: coins,
+      });
 
-    if (!sessionError && profile) {
-      await supabase.from("profiles").update({ 
-        coins: profile.coins + coins
-      }).eq("id", user?.id);
-      
+      if (coinsError) throw coinsError;
+
+      const { error: sessionError } = await supabase.from("game_sessions").insert({
+        user_id: user?.id,
+        game_id: "stock-prediction",
+        score,
+        coins_earned: coins,
+        completed: true,
+      });
+
+      if (sessionError) throw sessionError;
+
       toast.success(`Game Over! You earned ${coins} coins!`);
+    } catch (error) {
+      console.error('Error saving game:', error);
     }
 
     onClose();

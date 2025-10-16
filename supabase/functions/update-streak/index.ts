@@ -97,19 +97,27 @@ serve(async (req) => {
     if (milestones.includes(newStreak)) {
       const coinReward = newStreak * 10; // 10 coins per streak day at milestones
       
-      // Update user coins
-      const { error: coinsError } = await supabase.rpc('increment', {
-        row_id: user.id,
-        x: coinReward,
+      // Update user coins atomically
+      const { error: coinsError } = await supabase.rpc('increment_coins', {
+        user_id_param: user.id,
+        amount: coinReward,
       });
 
-      // Record transaction
-      await supabase.from('transactions').insert({
+      if (coinsError) {
+        console.error('Error awarding coins:', coinsError);
+      }
+
+      // Record transaction (service role bypasses RLS)
+      const { error: txError } = await supabase.from('transactions').insert({
         user_id: user.id,
         amount: coinReward,
         transaction_type: 'reward',
         description: `${newStreak}-day streak milestone reward`,
       });
+
+      if (txError) {
+        console.error('Error recording transaction:', txError);
+      }
     }
 
     return new Response(

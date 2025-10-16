@@ -89,27 +89,27 @@ export const TradingQuizGame = ({ onClose }: TradingQuizGameProps) => {
   const endGame = async () => {
     const coins = Math.floor(score / 2);
 
-    // Get current coins
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("coins")
-      .eq("id", user?.id)
-      .single();
+    try {
+      const { error: coinsError } = await supabase.rpc('increment_coins', {
+        user_id_param: user?.id,
+        amount: coins,
+      });
 
-    const { error } = await supabase.from("game_sessions").insert({
-      user_id: user?.id,
-      game_id: "trading-quiz",
-      score,
-      coins_earned: coins,
-      completed: true,
-    });
+      if (coinsError) throw coinsError;
 
-    if (!error && profile) {
-      await supabase.from("profiles").update({
-        coins: profile.coins + coins,
-      }).eq("id", user?.id);
+      const { error: sessionError } = await supabase.from("game_sessions").insert({
+        user_id: user?.id,
+        game_id: "trading-quiz",
+        score,
+        coins_earned: coins,
+        completed: true,
+      });
+
+      if (sessionError) throw sessionError;
 
       toast.success(`Quiz Complete! You earned ${coins} coins!`);
+    } catch (error) {
+      console.error('Error saving game:', error);
     }
 
     onClose();

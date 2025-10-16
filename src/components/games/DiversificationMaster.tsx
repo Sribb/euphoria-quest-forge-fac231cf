@@ -169,19 +169,15 @@ export const DiversificationMaster = ({ onClose }: DiversificationMasterProps) =
   const endGame = async () => {
     const coinsEarned = score * 10;
 
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("coins")
-      .eq("id", user?.id)
-      .single();
+    try {
+      const { error: coinsError } = await supabase.rpc('increment_coins', {
+        user_id_param: user?.id,
+        amount: coinsEarned,
+      });
 
-    if (profile) {
-      await supabase
-        .from("profiles")
-        .update({ coins: profile.coins + coinsEarned })
-        .eq("id", user?.id);
+      if (coinsError) throw coinsError;
 
-      await supabase.from("game_sessions").insert({
+      const { error: sessionError } = await supabase.from("game_sessions").insert({
         user_id: user?.id,
         game_id: "00000000-0000-0000-0000-000000000004",
         score: score,
@@ -189,7 +185,11 @@ export const DiversificationMaster = ({ onClose }: DiversificationMasterProps) =
         completed: true,
       });
 
+      if (sessionError) throw sessionError;
+
       toast.success(`Game complete! Earned ${coinsEarned} coins`);
+    } catch (error) {
+      console.error('Error saving game:', error);
     }
 
     onClose();

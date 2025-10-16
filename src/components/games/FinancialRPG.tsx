@@ -197,27 +197,27 @@ export const FinancialRPG = ({ onClose }: FinancialRPGProps) => {
     const finalScore = wealth + portfolio + happiness * 100;
     const coins = Math.floor(finalScore / 500);
 
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("coins")
-      .eq("id", user?.id)
-      .single();
+    try {
+      const { error: coinsError } = await supabase.rpc('increment_coins', {
+        user_id_param: user?.id,
+        amount: coins,
+      });
 
-    const { error: sessionError } = await supabase.from("game_sessions").insert({
-      user_id: user?.id,
-      game_id: "financial-rpg",
-      score: finalScore,
-      coins_earned: coins,
-      completed: true,
-    });
+      if (coinsError) throw coinsError;
 
-    if (!sessionError && profile) {
-      await supabase
-        .from("profiles")
-        .update({ coins: profile.coins + coins })
-        .eq("id", user?.id);
+      const { error: sessionError } = await supabase.from("game_sessions").insert({
+        user_id: user?.id,
+        game_id: "financial-rpg",
+        score: finalScore,
+        coins_earned: coins,
+        completed: true,
+      });
+
+      if (sessionError) throw sessionError;
 
       toast.success(`Journey Complete! You earned ${coins} coins!`);
+    } catch (error) {
+      console.error('Error saving game:', error);
     }
 
     setTimeout(() => onClose(), 2000);
