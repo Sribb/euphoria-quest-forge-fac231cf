@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { LessonCard } from "@/components/learn/LessonCard";
-import { InteractiveLessonViewer } from "@/components/learn/InteractiveLessonViewer";
-import { BookOpen } from "lucide-react";
+import { LessonViewer } from "@/components/learn/LessonViewer";
+import { BookOpen, Trophy } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -15,7 +15,7 @@ interface LearnProps {
 const Learn = ({ onNavigate, selectedLesson, onLessonSelect }: LearnProps) => {
   const { user } = useAuth();
 
-  const { data: lessons = [], isLoading } = useQuery({
+  const { data: lessons = [], isLoading, refetch } = useQuery({
     queryKey: ["lessons", user?.id],
     queryFn: async () => {
       // Fetch all lessons
@@ -28,13 +28,12 @@ const Learn = ({ onNavigate, selectedLesson, onLessonSelect }: LearnProps) => {
 
       // Fetch user's progress if user is logged in
       if (!user?.id) {
-        // For non-logged in users, only first lesson is unlocked
         return lessonsData.map((lesson, index) => ({
           ...lesson,
           progress: 0,
           completed: false,
           duration: `${lesson.duration_minutes} min`,
-          is_locked: index !== 0,
+          is_locked: index !== 0, // Only first lesson unlocked
         }));
       }
 
@@ -45,19 +44,21 @@ const Learn = ({ onNavigate, selectedLesson, onLessonSelect }: LearnProps) => {
       
       if (progressError) throw progressError;
 
-      // Merge lesson data with progress and handle sequential unlocking
+      // Merge lesson data with progress and implement sequential unlocking
       let lastCompletedIndex = -1;
-      
       return lessonsData.map((lesson, index) => {
         const progress = progressData?.find((p) => p.lesson_id === lesson.id);
         const isCompleted = progress?.completed || false;
         
-        if (isCompleted) {
+        // Track the last completed lesson
+        if (isCompleted && index > lastCompletedIndex) {
           lastCompletedIndex = index;
         }
         
-        // Lesson is unlocked if it's the first one or the previous one is completed
-        const isUnlocked = index === 0 || index <= lastCompletedIndex + 1;
+        // A lesson is unlocked if:
+        // 1. It's the first lesson, OR
+        // 2. The previous lesson is completed
+        const isUnlocked = index === 0 || (index > 0 && lastCompletedIndex >= index - 1);
         
         return {
           ...lesson,
@@ -72,47 +73,83 @@ const Learn = ({ onNavigate, selectedLesson, onLessonSelect }: LearnProps) => {
     staleTime: 30000,
   });
 
-  if (selectedLesson) {
-    return <InteractiveLessonViewer lessonId={selectedLesson} onClose={() => onLessonSelect(null)} />;
-  }
-
+  // Calculate overall progress
   const completedLessons = lessons.filter(l => l.completed).length;
   const totalLessons = lessons.length;
   const overallProgress = totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
 
+  // Calculate milestone achievements
+  const getMilestone = () => {
+    if (completedLessons >= 12) return { text: "Master Investor", icon: "🏆" };
+    if (completedLessons >= 9) return { text: "Advanced Investor", icon: "💎" };
+    if (completedLessons >= 6) return { text: "Intermediate Investor", icon: "⭐" };
+    if (completedLessons >= 3) return { text: "Beginner Investor", icon: "🌱" };
+    return { text: "New Investor", icon: "🎯" };
+  };
+
+  const milestone = getMilestone();
+
+  if (selectedLesson) {
+    return (
+      <LessonViewer 
+        lessonId={selectedLesson} 
+        onClose={() => {
+          onLessonSelect(null);
+          refetch();
+        }} 
+      />
+    );
+  }
+
   return (
     <div className="space-y-6 pb-24">
-      <div className="flex items-center gap-3 animate-fade-in">
-        <div className="w-12 h-12 rounded-xl bg-gradient-primary flex items-center justify-center shadow-glow">
-          <BookOpen className="w-6 h-6 text-white" />
-        </div>
-        <div className="flex-1">
-          <h1 className="text-2xl font-bold">Investment Learning Pathway</h1>
-          <p className="text-muted-foreground">Master investing through 12 sequential lessons from legendary investors</p>
-        </div>
-      </div>
-
-      {/* Progress Overview */}
-      <div className="bg-gradient-to-r from-primary/10 to-success/10 rounded-xl p-6 border border-primary/20 animate-fade-in" style={{ animationDelay: "100ms" }}>
-        <div className="flex items-center justify-between mb-3">
-          <div>
-            <h3 className="font-bold text-lg">Your Learning Progress</h3>
-            <p className="text-sm text-muted-foreground">
-              {completedLessons} of {totalLessons} lessons completed
-            </p>
+      <div className="animate-fade-in">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-12 h-12 rounded-xl bg-gradient-primary flex items-center justify-center shadow-glow">
+            <BookOpen className="w-6 h-6 text-white" />
           </div>
-          <div className="text-right">
-            <div className="text-3xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-              {overallProgress}%
+          <div className="flex-1">
+            <h1 className="text-2xl font-bold">Interactive Investing Pathway</h1>
+            <p className="text-muted-foreground">Master investing through 12 expert-sourced lessons</p>
+          </div>
+        </div>
+        
+        {/* Overall Progress Card */}
+        <div className="mt-4 p-5 bg-card border border-border rounded-lg shadow-md">
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <span className="text-2xl">{milestone.icon}</span>
+              <div>
+                <p className="text-sm font-semibold">{milestone.text}</p>
+                <p className="text-xs text-muted-foreground">Your current level</p>
+              </div>
             </div>
-            <p className="text-xs text-muted-foreground">Complete</p>
+            <div className="text-right">
+              <p className="text-lg font-bold text-primary">{completedLessons}/{totalLessons}</p>
+              <p className="text-xs text-muted-foreground">Completed</p>
+            </div>
           </div>
+          <div className="w-full bg-muted rounded-full h-3">
+            <div 
+              className="bg-gradient-primary h-3 rounded-full transition-all duration-500"
+              style={{ width: `${overallProgress}%` }}
+            />
+          </div>
+          {overallProgress === 100 && (
+            <div className="mt-3 p-3 bg-success/10 border border-success/20 rounded-lg animate-fade-in">
+              <p className="text-sm text-success font-semibold flex items-center gap-2">
+                <Trophy className="w-4 h-4" />
+                Congratulations! You've completed the entire investing pathway!
+              </p>
+            </div>
+          )}
         </div>
-        <div className="w-full bg-muted rounded-full h-3">
-          <div 
-            className="bg-gradient-primary h-3 rounded-full transition-all duration-500"
-            style={{ width: `${overallProgress}%` }}
-          />
+
+        {/* Learning Source Credit */}
+        <div className="mt-4 p-4 bg-primary/5 border border-primary/20 rounded-lg">
+          <p className="text-xs text-muted-foreground leading-relaxed">
+            <span className="font-semibold text-foreground">Expert-Sourced Content:</span> All lessons are based on proven principles from Warren Buffett, Benjamin Graham's "The Intelligent Investor", Peter Lynch's "One Up on Wall Street", Ray Dalio's "Principles", Investopedia educational modules, and Federal Reserve resources.
+          </p>
         </div>
       </div>
 
@@ -128,7 +165,7 @@ const Learn = ({ onNavigate, selectedLesson, onLessonSelect }: LearnProps) => {
             <div
               key={lesson.id}
               className="animate-fade-in"
-              style={{ animationDelay: `${index * 100}ms` }}
+              style={{ animationDelay: `${index * 50}ms` }}
             >
               <LessonCard
                 title={lesson.title}
@@ -137,7 +174,9 @@ const Learn = ({ onNavigate, selectedLesson, onLessonSelect }: LearnProps) => {
                 progress={lesson.progress}
                 locked={lesson.is_locked}
                 completed={lesson.completed}
-                onClick={() => onLessonSelect(lesson.id)}
+                difficulty={lesson.difficulty}
+                orderIndex={lesson.order_index}
+                onClick={() => !lesson.is_locked && onLessonSelect(lesson.id)}
               />
             </div>
           ))}

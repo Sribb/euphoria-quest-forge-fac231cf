@@ -2,12 +2,13 @@ import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { X, ChevronRight, CheckCircle2 } from "lucide-react";
+import { X, ChevronRight, CheckCircle2, Trophy } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { TradingViewChart } from "./TradingViewChart";
 import { ChartInsight } from "./ChartInsight";
+import { getLessonContent } from "./InteractiveLessonContent";
 
 interface LessonViewerProps {
   lessonId: string;
@@ -67,7 +68,11 @@ export const LessonViewer = ({ lessonId, onClose }: LessonViewerProps) => {
     }
   };
 
-  const sections: LessonContent[] = [
+  const sections: LessonContent[] = lesson ? getLessonContent(lesson.order_index) : [];
+  
+  // Remove old hardcoded sections - now using dynamic content
+  /*
+  const oldSections: LessonContent[] = [
     {
       section: "Introduction to Value Investing",
       content: "Value investing is a proven investment strategy focused on purchasing securities that appear underpriced based on fundamental analysis. This approach, popularized by legendary investor Warren Buffett, centers on identifying companies whose market price falls below their calculated intrinsic value—essentially acquiring quality assets at a significant discount. The live market chart demonstrates how stock prices fluctuate driven by investor sentiment and market psychology, often diverging from a company's true worth. These temporary mispricings create strategic opportunities for disciplined, patient investors who focus on long-term value creation rather than short-term price movements.",
@@ -168,9 +173,10 @@ export const LessonViewer = ({ lessonId, onClose }: LessonViewerProps) => {
     },
     {
       section: "Completion - Your Value Investing Foundation",
-      content: "Congratulations! You've completed the comprehensive value investing course. You now understand: price vs. value, margin of safety, fundamental analysis, compound interest, long-term thinking, competitive moats, market psychology, portfolio diversification, financial statements, and common mistakes. Remember: 'The stock market is a device for transferring money from the impatient to the patient.' - Warren Buffett. Keep learning, stay disciplined, and invest for the long term. Watch real charts daily to see these principles in action!",
+      content: "Congratulations! You've completed the comprehensive value investing course.",
     },
   ];
+  */
 
   const handleNext = async () => {
     if (currentSection < sections.length - 1) {
@@ -263,8 +269,8 @@ export const LessonViewer = ({ lessonId, onClose }: LessonViewerProps) => {
                       key={index}
                       variant={
                         showQuizFeedback
-                          ? index === currentContent.quiz!.correctAnswer
-                            ? "default"
+                     ? index === currentContent.quiz.correctAnswer
+                             ? "default"
                             : quizAnswer === index
                             ? "destructive"
                             : "outline"
@@ -277,18 +283,23 @@ export const LessonViewer = ({ lessonId, onClose }: LessonViewerProps) => {
                       disabled={showQuizFeedback}
                     >
                       {option}
-                      {showQuizFeedback && index === currentContent.quiz!.correctAnswer && (
+                      {showQuizFeedback && index === currentContent.quiz.correctAnswer && (
                         <CheckCircle2 className="w-4 h-4 ml-auto" />
                       )}
                     </Button>
                   ))}
                 </div>
-                {showQuizFeedback && (
-                  <p className="text-sm mt-2">
-                    {quizAnswer === currentContent.quiz.correctAnswer
-                      ? "✓ Correct! Great job!"
-                      : "✗ Not quite. The correct answer is highlighted."}
-                  </p>
+                {showQuizFeedback && currentContent.quiz && (
+                  <div className="mt-3 p-3 bg-muted rounded-lg">
+                    <p className="text-sm font-semibold mb-1">
+                      {quizAnswer === currentContent.quiz.correctAnswer
+                        ? "✓ Correct! Excellent work!"
+                        : "✗ Not quite right."}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {currentContent.quiz.explanation}
+                    </p>
+                  </div>
                 )}
               </div>
             )}
