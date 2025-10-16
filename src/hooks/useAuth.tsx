@@ -16,15 +16,6 @@ export const useAuth = () => {
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
-
-        // Update streak when user signs in
-        if (event === 'SIGNED_IN' && session) {
-          try {
-            await supabase.functions.invoke('update-streak');
-          } catch (error) {
-            console.error('Error updating streak:', error);
-          }
-        }
       }
     );
 
@@ -33,15 +24,6 @@ export const useAuth = () => {
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
-
-      // Update streak on initial load if user is already logged in
-      if (session) {
-        try {
-          await supabase.functions.invoke('update-streak');
-        } catch (error) {
-          console.error('Error updating streak:', error);
-        }
-      }
     });
 
     return () => subscription.unsubscribe();

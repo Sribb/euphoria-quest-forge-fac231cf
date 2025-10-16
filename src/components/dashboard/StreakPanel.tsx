@@ -1,4 +1,4 @@
-import { Flame, Gift, Trophy } from "lucide-react";
+import { Flame, Gift, Trophy, Clock } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
@@ -6,11 +6,12 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export const StreakPanel = () => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
+  const [timeUntilReset, setTimeUntilReset] = useState("");
 
   // Fetch user's streak data
   const { data: streakData } = useQuery({
@@ -28,18 +29,36 @@ export const StreakPanel = () => {
     enabled: !!user?.id,
   });
 
-  // Auto-update streak on component mount
+  // Countdown timer for next claim
   useEffect(() => {
-    if (user?.id && streakData) {
-      const today = new Date().toISOString().split('T')[0];
-      const lastLogin = streakData.last_login_date;
+    if (!streakData?.last_login_date) return;
+
+    const updateCountdown = () => {
+      const now = new Date();
+      const lastClaim = new Date(streakData.last_login_date);
+      const tomorrow = new Date(lastClaim);
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      tomorrow.setHours(0, 0, 0, 0);
+
+      const diff = tomorrow.getTime() - now.getTime();
       
-      // Only update if not already updated today
-      if (lastLogin !== today) {
-        updateStreakMutation.mutate();
+      if (diff <= 0) {
+        setTimeUntilReset("Available now!");
+        return;
       }
-    }
-  }, [user?.id, streakData?.last_login_date]);
+
+      const hours = Math.floor(diff / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+      
+      setTimeUntilReset(`${hours}h ${minutes}m ${seconds}s`);
+    };
+
+    updateCountdown();
+    const interval = setInterval(updateCountdown, 1000);
+
+    return () => clearInterval(interval);
+  }, [streakData?.last_login_date]);
 
   const updateStreakMutation = useMutation({
     mutationFn: async () => {
@@ -56,25 +75,43 @@ export const StreakPanel = () => {
       queryClient.invalidateQueries({ queryKey: ["streak", user?.id] });
       queryClient.invalidateQueries({ queryKey: ["profile", user?.id] });
       
-      if (data?.streak?.current_streak && [3, 7, 10, 14, 30].includes(data.streak.current_streak)) {
-        toast.success(`🎉 ${data.streak.current_streak}-day streak! You earned ${data.streak.current_streak * 10} coins!`);
+      const newStreak = data?.streak?.current_streak || 0;
+      
+      if (newStreak === 1) {
+        toast.success("🔥 Daily reward claimed! Streak started!", {
+          description: "Come back tomorrow to keep your streak going!",
+          duration: 4000,
+        });
+      } else if ([3, 7, 10, 14, 30].includes(newStreak)) {
+        toast.success(`🎉 ${newStreak}-day streak milestone!`, {
+          description: `You earned ${newStreak * 10} bonus coins!`,
+          duration: 5000,
+        });
+      } else {
+        toast.success(`🔥 Daily reward claimed! ${newStreak}-day streak!`, {
+          description: "Keep it up! Next milestone coming soon.",
+          duration: 4000,
+        });
       }
     },
-    onError: () => {
-      toast.error("Failed to update streak");
+    onError: (error: any) => {
+      toast.error("Failed to claim daily reward", {
+        description: error.message || "Please try again later",
+      });
     },
   });
 
   const currentStreak = streakData?.current_streak || 0;
   const nextMilestone = [3, 7, 10, 14, 30].find(m => m > currentStreak) || 30;
   const progress = (currentStreak / nextMilestone) * 100;
+  const isClaimedToday = streakData?.last_login_date === new Date().toISOString().split('T')[0];
 
   return (
     <Card className="p-6 animate-fade-in" style={{ animationDelay: "100ms" }}>
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <Flame className="w-6 h-6 text-orange-500 animate-bounce-subtle" />
-          <h3 className="text-xl font-bold">Daily Streak</h3>
+          <h3 className="text-xl font-bold">Daily Rewards</h3>
         </div>
         <Trophy className="w-5 h-5 text-warning" />
       </div>
@@ -82,8 +119,12 @@ export const StreakPanel = () => {
       <div className="space-y-4">
         <div>
           <div className="flex justify-between text-sm mb-2">
-            <span className="text-muted-foreground">{currentStreak} days</span>
-            <span className="text-muted-foreground">Next: {nextMilestone} days</span>
+            <span className="text-muted-foreground font-semibold">
+              {currentStreak} day streak 🔥
+            </span>
+            <span className="text-muted-foreground">
+              Next milestone: {nextMilestone} days
+            </span>
           </div>
           <Progress value={progress} className="h-3" />
         </div>
@@ -100,19 +141,31 @@ export const StreakPanel = () => {
             >
               <Gift className="w-4 h-4" />
               <span className="text-xs font-bold">{day}d</span>
+              <span className="text-[10px]">+{day * 10}</span>
             </div>
           ))}
         </div>
 
+        {isClaimedToday && (
+          <div className="flex items-center justify-center gap-2 p-3 bg-muted rounded-lg">
+            <Clock className="w-4 h-4 text-muted-foreground" />
+            <span className="text-sm text-muted-foreground">
+              Next claim in: <span className="font-bold">{timeUntilReset}</span>
+            </span>
+          </div>
+        )}
+
         <Button 
-          className="w-full bg-gradient-gold hover:opacity-90 transition-opacity"
+          className="w-full bg-gradient-gold hover:opacity-90 transition-all disabled:opacity-50"
           onClick={() => updateStreakMutation.mutate()}
-          disabled={updateStreakMutation.isPending || streakData?.last_login_date === new Date().toISOString().split('T')[0]}
+          disabled={updateStreakMutation.isPending || isClaimedToday}
         >
           <Gift className="w-4 h-4 mr-2" />
-          {streakData?.last_login_date === new Date().toISOString().split('T')[0] 
-            ? "Already Claimed Today" 
-            : "Claim Today's Reward"
+          {updateStreakMutation.isPending 
+            ? "Claiming..." 
+            : isClaimedToday 
+            ? "Claimed Today ✓" 
+            : "Claim Daily Reward"
           }
         </Button>
       </div>
