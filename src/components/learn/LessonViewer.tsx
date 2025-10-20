@@ -53,20 +53,22 @@ export const LessonViewer = ({ lessonId, onClose }: LessonViewerProps) => {
     }
 
     setLesson(data);
-    loadProgress();
-  };
-
-  const loadProgress = async () => {
-    const { data } = await supabase
+    
+    // Load progress after setting lesson
+    const lessonSections = getLessonContent(data.order_index);
+    const { data: progressData } = await supabase
       .from("user_lesson_progress")
-      .select("progress")
+      .select("progress, completed")
       .eq("lesson_id", lessonId)
       .eq("user_id", user?.id)
       .single();
 
-    if (data) {
-      setProgress(data.progress);
-      setCurrentSection(Math.floor((data.progress / 100) * sections.length));
+    if (progressData && lessonSections.length > 0) {
+      setProgress(progressData.progress);
+      // Calculate current section based on completed sections
+      const completedSections = Math.floor((progressData.progress / 100) * lessonSections.length);
+      const currentSectionIndex = progressData.completed ? lessonSections.length - 1 : Math.min(completedSections, lessonSections.length - 1);
+      setCurrentSection(currentSectionIndex);
     }
   };
 
@@ -76,24 +78,26 @@ export const LessonViewer = ({ lessonId, onClose }: LessonViewerProps) => {
     if (currentSection < sections.length - 1) {
       const newSection = currentSection + 1;
       setCurrentSection(newSection);
-      const newProgress = Math.round(((newSection + 1) / sections.length) * 100);
+      // Progress represents completed sections: if we're moving to section 1, we completed section 0, so 1/total sections
+      const completedSections = currentSection + 1;
+      const newProgress = Math.round((completedSections / sections.length) * 100);
       setProgress(newProgress);
       setQuizAnswer(null);
       setShowQuizFeedback(false);
 
-      await updateProgress(newProgress);
+      await updateProgress(newProgress, false);
     } else {
       await completeLesson();
     }
   };
 
-  const updateProgress = async (newProgress: number) => {
+  const updateProgress = async (newProgress: number, isCompleted: boolean = false) => {
     const { error } = await supabase.from("user_lesson_progress").upsert({
       user_id: user?.id,
       lesson_id: lessonId,
       progress: newProgress,
-      completed: newProgress === 100,
-      completed_at: newProgress === 100 ? new Date().toISOString() : null,
+      completed: isCompleted || newProgress >= 100,
+      completed_at: (isCompleted || newProgress >= 100) ? new Date().toISOString() : null,
     });
 
     if (error) {
@@ -102,7 +106,7 @@ export const LessonViewer = ({ lessonId, onClose }: LessonViewerProps) => {
   };
 
   const completeLesson = async () => {
-    await updateProgress(100);
+    await updateProgress(100, true);
     
     // Get current coins
     const { data: profile } = await supabase
@@ -118,11 +122,12 @@ export const LessonViewer = ({ lessonId, onClose }: LessonViewerProps) => {
         .eq("id", user?.id);
 
       if (!coinsError) {
-        toast.success("Lesson completed! +50 coins");
+        toast.success("🎉 Lesson completed! +50 coins");
       }
     }
 
-    onClose();
+    // Small delay to ensure DB update completes before closing
+    setTimeout(() => onClose(), 500);
   };
 
   const handleQuizAnswer = (index: number) => {
