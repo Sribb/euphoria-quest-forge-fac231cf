@@ -98,10 +98,13 @@ export const LessonViewer = ({ lessonId, onClose }: LessonViewerProps) => {
       progress: newProgress,
       completed: isCompleted || newProgress >= 100,
       completed_at: (isCompleted || newProgress >= 100) ? new Date().toISOString() : null,
+    }, {
+      onConflict: 'user_id,lesson_id'
     });
 
     if (error) {
       console.error("Failed to update progress:", error);
+      toast.error("Failed to save progress");
     }
   };
 
