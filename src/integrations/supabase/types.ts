@@ -299,32 +299,38 @@ export type Database = {
       }
       posts: {
         Row: {
+          category: string | null
           comments_count: number
           content: string
           created_at: string
           id: string
           image_url: string | null
           likes_count: number
+          media_type: string | null
           updated_at: string
           user_id: string
         }
         Insert: {
+          category?: string | null
           comments_count?: number
           content: string
           created_at?: string
           id?: string
           image_url?: string | null
           likes_count?: number
+          media_type?: string | null
           updated_at?: string
           user_id: string
         }
         Update: {
+          category?: string | null
           comments_count?: number
           content?: string
           created_at?: string
           id?: string
           image_url?: string | null
           likes_count?: number
+          media_type?: string | null
           updated_at?: string
           user_id?: string
         }

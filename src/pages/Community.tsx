@@ -1,28 +1,38 @@
 import { useState, useEffect } from "react";
-import { MessageCircle, Send, TrendingUp, Clock } from "lucide-react";
+import { Users, TrendingUp, Clock, Filter } from "lucide-react";
 import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { PostCard } from "@/components/community/PostCard";
+import { CreatePostDialog } from "@/components/community/CreatePostDialog";
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface CommunityProps {
   onNavigate: (tab: string) => void;
 }
 
+const CATEGORIES = [
+  { value: "all", label: "All Posts", icon: "🌐" },
+  { value: "strategy", label: "Strategies", icon: "📊" },
+  { value: "screenshot", label: "Screenshots", icon: "📸" },
+  { value: "question", label: "Questions", icon: "❓" },
+  { value: "success", label: "Success Stories", icon: "🎉" },
+  { value: "discussion", label: "Discussions", icon: "💬" },
+];
+
 const Community = ({ onNavigate }: CommunityProps) => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
-  const [newPost, setNewPost] = useState("");
   const [sortBy, setSortBy] = useState<"recent" | "popular">("recent");
+  const [categoryFilter, setCategoryFilter] = useState("all");
 
   const { data: posts, isLoading, refetch } = useQuery({
-    queryKey: ["posts", sortBy],
+    queryKey: ["posts", sortBy, categoryFilter],
     queryFn: async () => {
       let query = supabase
         .from("posts")
@@ -30,6 +40,10 @@ const Community = ({ onNavigate }: CommunityProps) => {
           *,
           profiles(display_name, avatar_url)
         `);
+      
+      if (categoryFilter !== "all") {
+        query = query.eq("category", categoryFilter);
+      }
       
       if (sortBy === "recent") {
         query = query.order("created_at", { ascending: false });
@@ -42,7 +56,7 @@ const Community = ({ onNavigate }: CommunityProps) => {
       if (error) throw error;
       return data;
     },
-    staleTime: 30000, // Consider data fresh for 30 seconds
+    staleTime: 30000,
   });
 
   const { data: userLikes } = useQuery({
@@ -108,55 +122,6 @@ const Community = ({ onNavigate }: CommunityProps) => {
     };
   }, [user?.id, refetch, queryClient]);
 
-  const createPostMutation = useMutation({
-    mutationFn: async (content: string) => {
-      if (content.trim().length < 3) {
-        throw new Error("Post must be at least 3 characters");
-      }
-      if (content.length > 2000) {
-        throw new Error("Post must be less than 2000 characters");
-      }
-
-      const { error } = await supabase
-        .from("posts")
-        .insert({ user_id: user?.id, content: content.trim() });
-      
-      if (error) throw error;
-    },
-    onMutate: async (content) => {
-      // Cancel outgoing refetches
-      await queryClient.cancelQueries({ queryKey: ["posts"] });
-
-      // Snapshot previous value
-      const previousPosts = queryClient.getQueryData(["posts", sortBy]);
-
-      // Optimistically update
-      queryClient.setQueryData(["posts", sortBy], (old: any[]) => [{
-        id: 'temp-' + Date.now(),
-        content: content.trim(),
-        created_at: new Date().toISOString(),
-        likes_count: 0,
-        comments_count: 0,
-        user_id: user?.id,
-        profiles: { display_name: 'You' }
-      }, ...(old || [])]);
-
-      return { previousPosts };
-    },
-    onSuccess: () => {
-      setNewPost("");
-      toast.success("Post created!");
-      refetch();
-    },
-    onError: (error: any, newPost, context) => {
-      // Rollback on error
-      if (context?.previousPosts) {
-        queryClient.setQueryData(["posts", sortBy], context.previousPosts);
-      }
-      toast.error(error.message || "Failed to create post");
-    },
-  });
-
   const toggleLikeMutation = useMutation({
     mutationFn: async (postId: string) => {
       const { data: existingLike } = await supabase
@@ -185,7 +150,7 @@ const Community = ({ onNavigate }: CommunityProps) => {
       const previousLikes = queryClient.getQueryData(["user_likes", user?.id]);
 
       // Optimistically update posts
-      queryClient.setQueryData(["posts", sortBy], (old: any[]) => 
+      queryClient.setQueryData(["posts", sortBy, categoryFilter], (old: any[]) => 
         old?.map(post => {
           if (post.id === postId) {
             const isLiked = (previousLikes as string[] || []).includes(postId);
@@ -211,7 +176,7 @@ const Community = ({ onNavigate }: CommunityProps) => {
     onError: (error, postId, context) => {
       // Rollback on error
       if (context?.previousPosts) {
-        queryClient.setQueryData(["posts", sortBy], context.previousPosts);
+        queryClient.setQueryData(["posts", sortBy, categoryFilter], context.previousPosts);
       }
       if (context?.previousLikes) {
         queryClient.setQueryData(["user_likes", user?.id], context.previousLikes);
@@ -226,70 +191,112 @@ const Community = ({ onNavigate }: CommunityProps) => {
 
   return (
     <div className="space-y-6 pb-24">
-      <div className="flex items-center gap-3 animate-fade-in">
-        <div className="w-12 h-12 rounded-xl bg-gradient-accent flex items-center justify-center shadow-glow">
-          <MessageCircle className="w-6 h-6 text-white" />
+      {/* Header */}
+      <div className="flex items-center justify-between animate-fade-in">
+        <div className="flex items-center gap-3">
+          <div className="w-12 h-12 rounded-xl bg-gradient-accent flex items-center justify-center shadow-glow">
+            <Users className="w-6 h-6 text-white" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold">Community</h1>
+            <p className="text-sm text-muted-foreground">Share strategies, wins, and insights</p>
+          </div>
         </div>
-        <div>
-          <h1 className="text-2xl font-bold">Community</h1>
-          <p className="text-muted-foreground">Connect with fellow investors</p>
+        <CreatePostDialog />
+      </div>
+
+      {/* Stats Cards */}
+      <div className="grid grid-cols-3 gap-3 animate-fade-in">
+        <Card className="p-4 bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20">
+          <p className="text-xs text-muted-foreground mb-1">Total Posts</p>
+          <p className="text-2xl font-bold">{posts?.length || 0}</p>
+        </Card>
+        <Card className="p-4 bg-gradient-to-br from-success/10 to-success/5 border-success/20">
+          <p className="text-xs text-muted-foreground mb-1">Active Today</p>
+          <p className="text-2xl font-bold">
+            {posts?.filter(p => 
+              new Date(p.created_at).toDateString() === new Date().toDateString()
+            ).length || 0}
+          </p>
+        </Card>
+        <Card className="p-4 bg-gradient-to-br from-accent/10 to-accent/5 border-accent/20">
+          <p className="text-xs text-muted-foreground mb-1">Categories</p>
+          <p className="text-2xl font-bold">{CATEGORIES.length - 1}</p>
+        </Card>
+      </div>
+
+      {/* Filters */}
+      <div className="flex flex-col sm:flex-row gap-3 animate-fade-in">
+        <div className="flex-1">
+          <div className="flex items-center gap-2 mb-2">
+            <Filter className="w-4 h-4 text-muted-foreground" />
+            <span className="text-sm font-medium">Category</span>
+          </div>
+          <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {CATEGORIES.map((cat) => (
+                <SelectItem key={cat.value} value={cat.value}>
+                  <span className="flex items-center gap-2">
+                    <span>{cat.icon}</span>
+                    <span>{cat.label}</span>
+                  </span>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="flex-1">
+          <div className="flex items-center gap-2 mb-2">
+            <TrendingUp className="w-4 h-4 text-muted-foreground" />
+            <span className="text-sm font-medium">Sort By</span>
+          </div>
+          <Tabs value={sortBy} onValueChange={(v) => setSortBy(v as "recent" | "popular")}>
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="recent" className="flex items-center gap-2">
+                <Clock className="w-4 h-4" />
+                <span className="hidden sm:inline">Recent</span>
+              </TabsTrigger>
+              <TabsTrigger value="popular" className="flex items-center gap-2">
+                <TrendingUp className="w-4 h-4" />
+                <span className="hidden sm:inline">Popular</span>
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
         </div>
       </div>
 
-      <Card className="p-6 animate-fade-in">
-        <h3 className="text-lg font-bold mb-4">Create a Post</h3>
-        <Textarea
-          placeholder="Share your investing insights, wins, or questions..."
-          value={newPost}
-          onChange={(e) => setNewPost(e.target.value)}
-          className="mb-3"
-          rows={4}
-          maxLength={2000}
-        />
-        <div className="flex justify-between items-center">
-          <span className="text-xs text-muted-foreground">
-            {newPost.length}/2000 characters
-          </span>
-          <Button
-            onClick={() => createPostMutation.mutate(newPost)}
-            disabled={!newPost.trim() || newPost.trim().length < 3 || createPostMutation.isPending}
-            className="bg-gradient-primary"
-          >
-            <Send className="w-4 h-4 mr-2" />
-            {createPostMutation.isPending ? "Posting..." : "Post"}
-          </Button>
+      {/* Active Filter Badge */}
+      {categoryFilter !== "all" && (
+        <div className="flex items-center gap-2 animate-fade-in">
+          <Badge variant="secondary" className="text-sm">
+            {CATEGORIES.find(c => c.value === categoryFilter)?.icon}{" "}
+            {CATEGORIES.find(c => c.value === categoryFilter)?.label}
+          </Badge>
         </div>
-      </Card>
+      )}
 
-      <div className="animate-fade-in">
-        <Tabs value={sortBy} onValueChange={(v) => setSortBy(v as "recent" | "popular")} className="mb-4">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="recent" className="flex items-center gap-2">
-              <Clock className="w-4 h-4" />
-              Recent
-            </TabsTrigger>
-            <TabsTrigger value="popular" className="flex items-center gap-2">
-              <TrendingUp className="w-4 h-4" />
-              Popular
-            </TabsTrigger>
-          </TabsList>
-        </Tabs>
-      </div>
-
+      {/* Posts Feed */}
       <div className="space-y-4">
         {isLoading ? (
           <>
             {[1, 2, 3].map((i) => (
-              <Card key={i} className="p-6 space-y-3">
-                <div className="flex items-start gap-3">
-                  <Skeleton className="w-10 h-10 rounded-full" />
-                  <div className="flex-1 space-y-2">
-                    <Skeleton className="h-4 w-32" />
-                    <Skeleton className="h-3 w-24" />
+              <Card key={i} className="overflow-hidden">
+                <div className="p-4 space-y-3">
+                  <div className="flex items-start gap-3">
+                    <Skeleton className="w-10 h-10 rounded-full" />
+                    <div className="flex-1 space-y-2">
+                      <Skeleton className="h-4 w-32" />
+                      <Skeleton className="h-3 w-24" />
+                    </div>
                   </div>
+                  <Skeleton className="h-20 w-full" />
                 </div>
-                <Skeleton className="h-20 w-full" />
-                <div className="flex gap-4">
+                <Skeleton className="h-64 w-full" />
+                <div className="p-4 flex gap-4">
                   <Skeleton className="h-8 w-20" />
                   <Skeleton className="h-8 w-20" />
                 </div>
@@ -306,10 +313,17 @@ const Community = ({ onNavigate }: CommunityProps) => {
             />
           ))
         ) : (
-          <Card className="p-12 text-center">
-            <MessageCircle className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-            <h3 className="text-lg font-semibold mb-2">No posts yet</h3>
-            <p className="text-muted-foreground">Be the first to share something with the community!</p>
+          <Card className="p-12 text-center border-dashed">
+            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-muted flex items-center justify-center">
+              <Users className="w-8 h-8 text-muted-foreground" />
+            </div>
+            <h3 className="text-lg font-semibold mb-2">No posts in this category</h3>
+            <p className="text-muted-foreground mb-4">
+              {categoryFilter === "all" 
+                ? "Be the first to share something with the community!" 
+                : "No posts found. Try a different category or create the first post!"}
+            </p>
+            <CreatePostDialog />
           </Card>
         )}
       </div>
