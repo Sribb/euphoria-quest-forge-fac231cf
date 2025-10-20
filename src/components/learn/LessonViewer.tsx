@@ -2,12 +2,10 @@ import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { X, ChevronRight, CheckCircle2, Trophy } from "lucide-react";
+import { X, ChevronRight, CheckCircle2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
-import { TradingViewChart } from "./TradingViewChart";
-import { ChartInsight } from "./ChartInsight";
 import { getLessonContent } from "./InteractiveLessonContent";
 
 interface LessonViewerProps {
@@ -37,7 +35,6 @@ export const LessonViewer = ({ lessonId, onClose }: LessonViewerProps) => {
   const [progress, setProgress] = useState(0);
   const [quizAnswer, setQuizAnswer] = useState<number | null>(null);
   const [showQuizFeedback, setShowQuizFeedback] = useState(false);
-  const [chartData, setChartData] = useState({ price: 0, change: 0 });
 
   useEffect(() => {
     loadLesson();
@@ -152,7 +149,7 @@ export const LessonViewer = ({ lessonId, onClose }: LessonViewerProps) => {
 
         <Progress value={progress} className="mb-6 h-3" />
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="max-w-4xl mx-auto">
           <Card className="p-6">
             <h2 className="text-2xl font-bold mb-4">{currentContent.title}</h2>
             <p className="text-lg leading-relaxed mb-6">{currentContent.content}</p>
@@ -216,10 +213,6 @@ export const LessonViewer = ({ lessonId, onClose }: LessonViewerProps) => {
             </div>
           </Card>
 
-          <div className="space-y-4">
-            <TradingViewChart onPriceUpdate={setChartData} />
-            <ChartInsight chartData={chartData} lessonSection={currentContent.title} />
-          </div>
         </div>
       </div>
     </div>

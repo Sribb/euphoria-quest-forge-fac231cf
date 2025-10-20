@@ -70,15 +70,6 @@ const Trade = ({ onNavigate, onStockSearch }: TradeProps) => {
             </Button>
           </Card>
 
-          <Card className="p-6 bg-gradient-hero border-0">
-            <h3 className="text-lg font-bold mb-3">Ready for Real Trading?</h3>
-            <p className="text-sm text-muted-foreground mb-4">
-              Complete 5 more lessons and maintain a 10-day streak to unlock real investing.
-            </p>
-            <Button className="w-full bg-gradient-primary hover:opacity-90" disabled>
-              Unlock Real Trading
-            </Button>
-          </Card>
         </TabsContent>
 
         <TabsContent value="trade" className="mt-6">

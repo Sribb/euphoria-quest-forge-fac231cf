@@ -22,6 +22,17 @@ export const getLessonContent = (lessonOrderIndex: number): LessonSection[] => {
       {
         title: "What is Investing?",
         content: "Investing is the act of allocating money with the expectation of generating income or profit over time. Unlike saving—which focuses on preserving capital—investing aims to grow wealth by purchasing assets that appreciate in value or generate returns. According to Benjamin Graham's 'The Intelligent Investor', successful investing requires patience, discipline, and a clear understanding of fundamental principles. The Federal Reserve emphasizes that investing is essential for long-term financial security and retirement planning.",
+        quiz: {
+          question: "What is the primary goal of investing compared to saving?",
+          options: [
+            "To preserve capital safely",
+            "To grow wealth through assets that appreciate over time",
+            "To keep money liquid for emergencies",
+            "To avoid all financial risks"
+          ],
+          correctAnswer: 1,
+          explanation: "Unlike saving which focuses on preservation, investing aims to grow wealth by purchasing assets that appreciate in value or generate returns over time."
+        }
       },
       {
         title: "Saving vs. Investing",
@@ -41,6 +52,17 @@ export const getLessonContent = (lessonOrderIndex: number): LessonSection[] => {
       {
         title: "The Power of Compound Interest",
         content: "Albert Einstein called compound interest 'the eighth wonder of the world.' It's the process where your investment earnings generate their own earnings. For example: $10,000 invested at 10% annually becomes $25,937 in 10 years, $67,275 in 20 years, and $174,494 in 30 years. Warren Buffett's wealth stems not from stock-picking genius alone, but from 80+ years of compounding. Start early—a 25-year-old investing $200 monthly until 65 accumulates $1.4 million at 8% returns, while a 35-year-old doing the same accumulates just $640,000.",
+        quiz: {
+          question: "If you invest $10,000 at 10% annually, approximately how much will you have in 30 years through compound interest?",
+          options: [
+            "$40,000",
+            "$67,000",
+            "$174,000",
+            "$250,000"
+          ],
+          correctAnswer: 2,
+          explanation: "Through compound interest, $10,000 grows to approximately $174,494 in 30 years at 10% annual returns, demonstrating the exponential power of compounding."
+        }
       },
       {
         title: "Time in Market vs. Timing the Market",
@@ -63,6 +85,17 @@ export const getLessonContent = (lessonOrderIndex: number): LessonSection[] => {
       {
         title: "Understanding Investment Risk",
         content: "Risk in investing refers to the possibility of losing some or all of your investment capital. According to Modern Portfolio Theory, risk and return are directly correlated—higher potential returns come with higher risk exposure. However, risk isn't inherently bad; it's the price of opportunity. Ray Dalio's 'Principles' emphasizes understanding your risk tolerance—your psychological and financial capacity to withstand losses without panic-selling during downturns.",
+        quiz: {
+          question: "According to Modern Portfolio Theory, what is the relationship between risk and return?",
+          options: [
+            "They are inversely related",
+            "They are directly correlated",
+            "They are not related at all",
+            "Risk always exceeds return"
+          ],
+          correctAnswer: 1,
+          explanation: "Risk and return are directly correlated—higher potential returns come with higher risk exposure, which is a fundamental principle of investing."
+        }
       },
       {
         title: "The Risk-Return Spectrum",
@@ -82,20 +115,31 @@ export const getLessonContent = (lessonOrderIndex: number): LessonSection[] => {
       {
         title: "Assessing Your Risk Tolerance",
         content: "Your risk tolerance depends on three factors: Time horizon—investors with 30+ years can weather short-term volatility. Financial capacity—never invest money you'll need within 5 years. Emotional temperament—can you sleep soundly if your portfolio drops 30%? A simple test: If a $100,000 portfolio dropped to $70,000 tomorrow, would you: A) Panic and sell everything? B) Feel concerned but stay invested? C) See it as a buying opportunity? Answer honestly. Your comfort with volatility determines your optimal asset mix.",
+        quiz: {
+          question: "What is one of the three key factors that determines your risk tolerance?",
+          options: [
+            "Your favorite color",
+            "Your time horizon for investments",
+            "Your height",
+            "The current market conditions"
+          ],
+          correctAnswer: 1,
+          explanation: "Time horizon is a critical factor—investors with longer time frames (30+ years) can weather short-term volatility better than those needing money soon."
+        }
       },
       {
         title: "Managing Risk Through Diversification",
         content: "Ray Dalio's 'All Weather Portfolio' demonstrates risk management through diversification—spreading investments across uncorrelated assets. When stocks fall 40% (as in 2008), bonds often rise, cushioning losses. The key insight: you can't eliminate risk, but you can manage it intelligently. Diversification is the only 'free lunch' in investing—it reduces portfolio volatility without sacrificing expected returns. We'll explore diversification strategies in depth in Lesson 5.",
         quiz: {
-          question: "What is the 'free lunch' in investing?",
+          question: "When stocks fall significantly, what typically happens to bonds?",
           options: [
-            "Zero-fee index funds",
-            "Diversification",
-            "Government bonds",
-            "Market timing"
+            "They also fall proportionally",
+            "They often rise, cushioning losses",
+            "Nothing happens",
+            "They become worthless"
           ],
           correctAnswer: 1,
-          explanation: "Diversification is often called the only 'free lunch' in investing because it reduces risk without necessarily reducing expected returns."
+          explanation: "Bonds often move inversely to stocks—when stocks fall, bonds frequently rise, which is why diversification across both helps manage portfolio risk."
         }
       },
     ],
@@ -104,6 +148,17 @@ export const getLessonContent = (lessonOrderIndex: number): LessonSection[] => {
       {
         title: "The Mathematics of Compounding",
         content: "Compound interest is interest earning interest. Simple formula: Future Value = Present Value × (1 + rate)^years. But the magic lies in time and consistency. Warren Buffett started investing at age 11—giving him 80+ years of compounding. He often jokes his biggest investing mistake was 'starting too late.' The difference between 7% and 10% annual returns over 40 years on $10,000: at 7% = $149,744; at 10% = $452,592. Just 3% more annually triples your wealth through compounding.",
+        quiz: {
+          question: "At what age did Warren Buffett start investing?",
+          options: [
+            "Age 7",
+            "Age 11",
+            "Age 18",
+            "Age 25"
+          ],
+          correctAnswer: 1,
+          explanation: "Warren Buffett started investing at age 11, giving him 80+ years of compounding, which he credits as a key factor in his wealth accumulation."
+        }
       },
       {
         title: "The Rule of 72",
@@ -123,6 +178,17 @@ export const getLessonContent = (lessonOrderIndex: number): LessonSection[] => {
       {
         title: "Starting Early: The Greatest Advantage",
         content: "Consider two investors: Early Eddie invests $5,000 annually from age 25-35 (10 years, $50,000 total) then stops. Late Larry invests $5,000 annually from age 35-65 (30 years, $150,000 total). At 8% returns, Eddie ends with $787,174 while Larry has $566,416. Eddie invested 1/3 the amount but has 40% more wealth—purely from starting 10 years earlier. The Federal Reserve emphasizes this in retirement planning: time is your greatest asset, far more valuable than perfect stock selection.",
+        quiz: {
+          question: "In the Early Eddie vs Late Larry example, who ends up with more wealth despite investing less total money?",
+          options: [
+            "Late Larry, because he invested more total",
+            "Early Eddie, because he started 10 years earlier",
+            "They end up with the same amount",
+            "Neither, they both lose money"
+          ],
+          correctAnswer: 1,
+          explanation: "Early Eddie ends with more wealth ($787,174 vs $566,416) despite investing 1/3 the total amount, demonstrating the power of starting early."
+        }
       },
       {
         title: "Reinvesting Dividends: Compound Your Compounding",
@@ -145,6 +211,17 @@ export const getLessonContent = (lessonOrderIndex: number): LessonSection[] => {
       {
         title: "Understanding Stocks (Equities)",
         content: "Stocks represent ownership shares in a company. When you buy Apple stock, you own a fraction of Apple Inc. As part-owner, you benefit from company growth and profit distribution (dividends). According to Jack Bogle's research, stocks have historically returned 9-10% annually over long periods, outpacing inflation and building real wealth. However, stocks are volatile—prices fluctuate daily based on earnings, sentiment, and economic conditions. Stocks are optimal for long-term goals (10+ years) due to their higher growth potential.",
+        quiz: {
+          question: "What do stocks represent when you purchase them?",
+          options: [
+            "A loan to the company",
+            "Ownership shares in the company",
+            "A temporary rental agreement",
+            "Government bonds"
+          ],
+          correctAnswer: 1,
+          explanation: "Stocks represent ownership shares—when you buy stock, you become a partial owner of that company and benefit from its growth and profits."
+        }
       },
       {
         title: "Understanding Bonds (Fixed Income)",
@@ -164,20 +241,31 @@ export const getLessonContent = (lessonOrderIndex: number): LessonSection[] => {
       {
         title: "Asset Allocation Strategies",
         content: "Asset allocation—your mix of stocks vs. bonds—is the single most important investment decision, accounting for 90% of portfolio performance variability. A common rule of thumb: subtract your age from 110 to get your stock percentage. At 30 years old: 80% stocks, 20% bonds. At 60: 50% stocks, 50% bonds. This shifts from growth to preservation as you age. Ray Dalio's 'All Weather' portfolio uses 30% stocks, 40% long-term bonds, 15% intermediate bonds, 7.5% gold, and 7.5% commodities for balance across economic conditions.",
+        quiz: {
+          question: "According to the age-based rule of thumb, what percentage should a 30-year-old have in stocks?",
+          options: [
+            "30% stocks",
+            "50% stocks",
+            "80% stocks",
+            "100% stocks"
+          ],
+          correctAnswer: 2,
+          explanation: "Using the 110 minus age rule: 110 - 30 = 80% stocks, which balances growth potential with appropriate risk for a younger investor."
+        }
       },
       {
         title: "Rebalancing Your Portfolio",
         content: "Over time, strong stock performance can skew your allocation. If your 70/30 stock/bond split becomes 85/15 after a bull market, you're taking more risk than intended. Rebalancing means selling some winners (stocks) to buy losers (bonds), returning to target allocation. This discipline forces you to 'sell high and buy low' systematically. Experts recommend annual rebalancing or when allocations drift 5+ percentage points from targets. While counterintuitive, rebalancing both reduces risk and often improves returns.",
         quiz: {
-          question: "Why is portfolio rebalancing important?",
+          question: "How often do experts recommend rebalancing your portfolio?",
           options: [
-            "To pay more fees to brokers",
-            "To maintain your target risk level and enforce buying low/selling high",
-            "To increase taxes",
-            "It's not important"
+            "Daily",
+            "Weekly",
+            "Annually or when allocations drift 5+ percentage points",
+            "Never"
           ],
-          correctAnswer: 1,
-          explanation: "Rebalancing maintains your intended risk profile and forces disciplined buying of undervalued assets while trimming overvalued positions."
+          correctAnswer: 2,
+          explanation: "Experts recommend rebalancing annually or when your allocations drift 5+ percentage points from targets to maintain your intended risk level."
         }
       },
     ],
@@ -186,6 +274,17 @@ export const getLessonContent = (lessonOrderIndex: number): LessonSection[] => {
       {
         title: "The Diversification Principle",
         content: "Based on Modern Portfolio Theory by Harry Markowitz, diversification reduces unsystematic risk (company-specific risk) without eliminating systematic risk (market risk). Peter Lynch explained: 'Not putting all eggs in one basket means if one egg breaks, you still have breakfast.' Historical data shows a portfolio of 20-30 stocks from different sectors captures most diversification benefits. Beyond 30 stocks, additional diversification yields diminishing returns. The goal: maximize return per unit of risk taken.",
+        quiz: {
+          question: "What type of risk does diversification primarily reduce?",
+          options: [
+            "All investment risk",
+            "Company-specific (unsystematic) risk",
+            "Market (systematic) risk only",
+            "Currency risk"
+          ],
+          correctAnswer: 1,
+          explanation: "Diversification primarily reduces unsystematic risk (company-specific risk) but cannot eliminate systematic risk (overall market risk)."
+        }
       },
       {
         title: "Diversifying Across Asset Classes",
@@ -205,6 +304,17 @@ export const getLessonContent = (lessonOrderIndex: number): LessonSection[] => {
       {
         title: "Sector and Geographic Diversification",
         content: "Don't concentrate in one industry. In the 2000 dot-com crash, tech-heavy portfolios lost 80%+. In 2008, financial sector stocks collapsed. Spreading across technology, healthcare, consumer goods, energy, and financial sectors protects against sector-specific downturns. Geographic diversification is equally critical—US stocks represent only 55% of global market cap. International exposure provides growth opportunities and reduces reliance on any single economy. Warren Buffett owns international stocks through Berkshire Hathaway despite his 'America-first' reputation.",
+        quiz: {
+          question: "What percentage of global market capitalization do US stocks represent?",
+          options: [
+            "About 25%",
+            "About 55%",
+            "About 75%",
+            "About 95%"
+          ],
+          correctAnswer: 1,
+          explanation: "US stocks represent approximately 55% of global market capitalization, highlighting the importance of international diversification for complete exposure."
+        }
       },
       {
         title: "The Dangers of Over-Diversification",
@@ -227,6 +337,17 @@ export const getLessonContent = (lessonOrderIndex: number): LessonSection[] => {
       {
         title: "Fear and Greed: The Market's Emotions",
         content: "Warren Buffett's most famous quote: 'Be fearful when others are greedy, and greedy when others are fearful.' Markets are driven by human emotions, not rational analysis. During greed-fueled bubbles (2000 tech bubble, 2021 meme stocks), valuations become absurd and crashes follow. Fear-driven selloffs (2008 financial crisis, 2020 COVID crash) create generational buying opportunities. The chart's daily swings reflect this emotional pendulum. Successful investors recognize and exploit these psychological extremes, buying quality assets when panic creates fire-sale prices.",
+        quiz: {
+          question: "According to Warren Buffett, what should you do when others are fearful?",
+          options: [
+            "Be fearful as well",
+            "Be greedy and look for opportunities",
+            "Exit the market completely",
+            "Stop investing"
+          ],
+          correctAnswer: 1,
+          explanation: "Buffett advises to 'be greedy when others are fearful'—meaning look for buying opportunities when panic creates undervalued assets."
+        }
       },
       {
         title: "The 2008 Financial Crisis Case Study",
@@ -246,6 +367,17 @@ export const getLessonContent = (lessonOrderIndex: number): LessonSection[] => {
       {
         title: "Bubble Psychology and Warning Signs",
         content: "Every bubble follows the same pattern: Innovation/story (internet, crypto, AI). Initial success. Media hype. FOMO (Fear Of Missing Out). Parabolic price rises. 'This time is different' narrative. Bubble burst. Warning signs according to Benjamin Graham: Prices disconnected from fundamentals. Everyone from taxi drivers to bartenders giving stock tips. Extreme valuations (P/E ratios 50+). Margin debt at record highs. When you see these signs, exercise caution. As Howard Marks wrote, 'We can't predict, but we can prepare.'",
+        quiz: {
+          question: "What does FOMO stand for in market psychology?",
+          options: [
+            "Fear Of Market Operations",
+            "Fear Of Missing Out",
+            "Fear Of Money Options",
+            "Fear Of Making Orders"
+          ],
+          correctAnswer: 1,
+          explanation: "FOMO (Fear Of Missing Out) is a powerful psychological driver during bubbles, causing investors to buy at inflated prices out of fear of missing gains."
+        }
       },
       {
         title: "Contrarian Investing Strategy",
@@ -268,6 +400,17 @@ export const getLessonContent = (lessonOrderIndex: number): LessonSection[] => {
       {
         title: "Benjamin Graham's Core Principle",
         content: "Value investing originated with Benjamin Graham's 1949 masterpiece 'The Intelligent Investor.' The core concept: every asset has an intrinsic value based on fundamentals (earnings, assets, growth). Market price fluctuates wildly around this intrinsic value, driven by emotion. Value investors calculate intrinsic value through fundamental analysis, then buy when market price falls significantly below it. Graham's metaphor: 'Mr. Market' is a manic-depressive business partner who offers to buy or sell every day. Ignore his mood swings; focus on underlying value.",
+        quiz: {
+          question: "What does Benjamin Graham's 'Mr. Market' metaphor represent?",
+          options: [
+            "A wise investment advisor",
+            "A manic-depressive partner offering daily prices",
+            "The government regulator",
+            "Your broker"
+          ],
+          correctAnswer: 1,
+          explanation: "Mr. Market is Graham's metaphor for the market as a manic-depressive partner making irrational daily offers, teaching us to focus on value, not mood swings."
+        }
       },
       {
         title: "Price vs. Intrinsic Value",
@@ -287,6 +430,17 @@ export const getLessonContent = (lessonOrderIndex: number): LessonSection[] => {
       {
         title: "Margin of Safety",
         content: "Graham's margin of safety principle: never pay full calculated value for any investment. If you determine a stock is worth $100, only buy at $60-70. This safety margin: Protects against analytical errors (your calculation might be wrong). Cushions against unexpected events. Improves returns (buying at 30% discount instantly gives 43% upside to fair value). Reduces emotional stress during volatility. Buffett considers margin of safety the three most important words in investing. It's your insurance policy against uncertainty.",
+        quiz: {
+          question: "If you calculate a stock is worth $100, at what price should you buy it according to margin of safety?",
+          options: [
+            "$100 exactly",
+            "$110 to account for growth",
+            "$60-70 for a safety margin",
+            "$50 or less only"
+          ],
+          correctAnswer: 2,
+          explanation: "Margin of safety means buying at $60-70 when intrinsic value is $100, providing cushion against errors and enhancing returns."
+        }
       },
       {
         title: "Finding Undervalued Companies",
@@ -309,6 +463,17 @@ export const getLessonContent = (lessonOrderIndex: number): LessonSection[] => {
       {
         title: "The Three Financial Statements",
         content: "Three statements reveal a company's financial health: 1) Balance Sheet: Assets (what it owns), Liabilities (what it owes), Equity (net worth). Look for: low debt, high cash, growing equity. 2) Income Statement: Revenue (sales), Expenses (costs), Net Income (profit). Look for: growing revenues, expanding margins, consistent profits. 3) Cash Flow Statement: Cash from operations, investing, financing. Look for: positive free cash flow, operating cash exceeds net income. Master these and you'll see through accounting gimmicks to business reality.",
+        quiz: {
+          question: "Which financial statement shows Assets, Liabilities, and Equity?",
+          options: [
+            "Income Statement",
+            "Cash Flow Statement",
+            "Balance Sheet",
+            "Tax Return"
+          ],
+          correctAnswer: 2,
+          explanation: "The Balance Sheet shows what a company owns (Assets), owes (Liabilities), and its net worth (Equity) at a specific point in time."
+        }
       },
       {
         title: "Return on Equity (ROE)",
@@ -328,6 +493,17 @@ export const getLessonContent = (lessonOrderIndex: number): LessonSection[] => {
       {
         title: "Debt-to-Equity Ratio",
         content: "This ratio reveals financial leverage and bankruptcy risk. Formula: Total Debt ÷ Shareholder Equity. A ratio of 0.5 means the company has 50 cents of debt for every dollar of equity. Lower is generally better—less debt means less financial risk. However, context matters: Utilities and real estate naturally carry more debt. Technology and services should have minimal debt. In 2008, overleveraged companies (debt/equity >2.0) collapsed while conservatively financed firms survived. Peter Lynch: 'Debt is Wall Street's way of turning a sure thing into a long shot.'",
+        quiz: {
+          question: "What does a Debt-to-Equity ratio of 0.5 indicate?",
+          options: [
+            "The company has 50% more debt than equity",
+            "The company has 50 cents of debt for every dollar of equity",
+            "The company has no debt",
+            "The company is bankrupt"
+          ],
+          correctAnswer: 1,
+          explanation: "A debt-to-equity ratio of 0.5 means the company has 50 cents of debt for every dollar of equity, indicating moderate leverage."
+        }
       },
       {
         title: "Free Cash Flow (FCF)",
@@ -347,6 +523,17 @@ export const getLessonContent = (lessonOrderIndex: number): LessonSection[] => {
       {
         title: "Management Quality Assessment",
         content: "Numbers matter, but so do the people running the company. Warren Buffett: 'Look for three qualities: integrity, intelligence, and energy. Without the first, the other two will kill you.' Assess management by: Track record of capital allocation. Honest communication (admitting mistakes). Owner-operator mindset (significant stock ownership). Long-term strategic thinking vs. quarterly earnings obsession. Read annual letters to shareholders—great managers explain clearly and take responsibility. Be wary of excessive executive compensation, frequent acquisitions, and overly promotional language.",
+        quiz: {
+          question: "According to Buffett, which quality is most important in management?",
+          options: [
+            "Intelligence",
+            "Energy",
+            "Integrity",
+            "Charisma"
+          ],
+          correctAnswer: 2,
+          explanation: "Buffett emphasizes integrity as the most crucial quality—without it, intelligence and energy can actually harm the company and shareholders."
+        }
       },
     ],
 
@@ -354,6 +541,17 @@ export const getLessonContent = (lessonOrderIndex: number): LessonSection[] => {
       {
         title: "What is an Economic Moat?",
         content: "Warren Buffett popularized the 'moat' concept—competitive advantages that protect companies from rivals, like a castle's moat protects from invaders. Companies with wide moats sustain high returns on capital for decades, compounding shareholder wealth. Moats allow pricing power, customer retention, and resilience during downturns. Michael Porter's competitive strategy framework identifies how companies build and maintain these advantages. Buffett: 'We're trying to find a business with a wide and long-lasting moat protecting a terrific economic castle.'",
+        quiz: {
+          question: "What does an economic moat represent?",
+          options: [
+            "A company's physical location",
+            "Competitive advantages protecting from rivals",
+            "The company's debt level",
+            "Marketing budget"
+          ],
+          correctAnswer: 1,
+          explanation: "An economic moat represents durable competitive advantages that protect a company from competitors, like a castle's moat protects from invaders."
+        }
       },
       {
         title: "Brand Power Moat",
@@ -373,6 +571,17 @@ export const getLessonContent = (lessonOrderIndex: number): LessonSection[] => {
       {
         title: "Network Effects Moat",
         content: "Network effects occur when a product becomes more valuable as more people use it. Examples: Visa/Mastercard: More cardholders attract more merchants; more merchants attract more cardholders. Facebook: Value increases with more friends/connections. Amazon Marketplace: More sellers attract buyers; more buyers attract sellers. This creates winner-take-most markets—the largest network has geometric advantages. Once established, network effect moats are nearly impregnable. Competitors face a 'chicken-and-egg' problem: they need users to attract users.",
+        quiz: {
+          question: "What makes network effects a powerful moat?",
+          options: [
+            "Lower production costs",
+            "Products become more valuable as more people use them",
+            "Patent protection",
+            "Brand recognition"
+          ],
+          correctAnswer: 1,
+          explanation: "Network effects create value that grows with each user, creating winner-take-most markets where the largest network has geometric advantages."
+        }
       },
       {
         title: "Cost Advantage Moat",
@@ -396,6 +605,17 @@ export const getLessonContent = (lessonOrderIndex: number): LessonSection[] => {
       {
         title: "Intangible Assets Moat",
         content: "Patents, licenses, and regulations create exclusive advantages. Examples: Pharmaceutical patents: 20-year monopolies on drugs. Media licenses: FCC broadcast licenses worth billions. Regulatory approvals: FDA approval creates barriers. While patents eventually expire, the lead time to develop competing products maintains advantages. Companies with regulatory moats (utilities, defense contractors) enjoy stable cash flows and limited competition. Charlie Munger: 'A great business is one that will still be great in 25 years.' Moats determine which businesses achieve this.",
+        quiz: {
+          question: "How long do pharmaceutical patents typically provide monopoly protection?",
+          options: [
+            "5 years",
+            "10 years",
+            "20 years",
+            "Forever"
+          ],
+          correctAnswer: 2,
+          explanation: "Pharmaceutical patents typically provide 20-year monopolies on drugs, creating powerful intangible asset moats during that period."
+        }
       },
     ],
 
