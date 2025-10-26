@@ -107,60 +107,60 @@ export const StreakPanel = () => {
   const isClaimedToday = streakData?.last_login_date === new Date().toISOString().split('T')[0];
 
   return (
-    <Card className="p-10 animate-fade-in shadow-lg rounded-2xl" style={{ animationDelay: "100ms" }}>
-      <div className="flex items-center justify-between mb-8">
-        <div className="flex items-center gap-3">
-          <Flame className="w-8 h-8 text-orange-500 animate-bounce-subtle" />
-          <h3 className="text-3xl font-bold">Daily Rewards</h3>
+    <Card className="p-6 animate-fade-in" style={{ animationDelay: "100ms" }}>
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2">
+          <Flame className="w-6 h-6 text-orange-500 animate-bounce-subtle" />
+          <h3 className="text-xl font-bold">Daily Rewards</h3>
         </div>
-        <Trophy className="w-7 h-7 text-warning" />
+        <Trophy className="w-5 h-5 text-warning" />
       </div>
 
-      <div className="space-y-6">
+      <div className="space-y-4">
         <div>
-          <div className="flex justify-between text-base mb-3">
-            <span className="text-muted-foreground font-semibold text-lg">
+          <div className="flex justify-between text-sm mb-2">
+            <span className="text-muted-foreground font-semibold">
               {currentStreak} day streak 🔥
             </span>
-            <span className="text-muted-foreground text-lg">
+            <span className="text-muted-foreground">
               Next milestone: {nextMilestone} days
             </span>
           </div>
-          <Progress value={progress} className="h-4" />
+          <Progress value={progress} className="h-3" />
         </div>
 
-        <div className="flex gap-4">
+        <div className="flex gap-2">
           {[3, 7, 10, 14, 30].map((day) => (
             <div
               key={day}
-              className={`flex-1 flex flex-col items-center gap-2 p-4 rounded-xl transition-all ${
+              className={`flex-1 flex flex-col items-center gap-1 p-2 rounded-lg transition-all ${
                 currentStreak >= day
                   ? "bg-gradient-success text-success-foreground shadow-md scale-105"
                   : "bg-muted text-muted-foreground"
               }`}
             >
-              <Gift className="w-6 h-6" />
-              <span className="text-sm font-bold">{day}d</span>
-              <span className="text-xs">+{day * 10}</span>
+              <Gift className="w-4 h-4" />
+              <span className="text-xs font-bold">{day}d</span>
+              <span className="text-[10px]">+{day * 10}</span>
             </div>
           ))}
         </div>
 
         {isClaimedToday && (
-          <div className="flex items-center justify-center gap-3 p-4 bg-muted rounded-xl">
-            <Clock className="w-5 h-5 text-muted-foreground" />
-            <span className="text-base text-muted-foreground">
+          <div className="flex items-center justify-center gap-2 p-3 bg-muted rounded-lg">
+            <Clock className="w-4 h-4 text-muted-foreground" />
+            <span className="text-sm text-muted-foreground">
               Next claim in: <span className="font-bold">{timeUntilReset}</span>
             </span>
           </div>
         )}
 
         <Button 
-          className="w-full bg-gradient-gold hover:opacity-90 transition-all disabled:opacity-50 h-12 text-base"
+          className="w-full bg-gradient-gold hover:opacity-90 transition-all disabled:opacity-50"
           onClick={() => updateStreakMutation.mutate()}
           disabled={updateStreakMutation.isPending || isClaimedToday}
         >
-          <Gift className="w-5 h-5 mr-2" />
+          <Gift className="w-4 h-4 mr-2" />
           {updateStreakMutation.isPending 
             ? "Claiming..." 
             : isClaimedToday 
