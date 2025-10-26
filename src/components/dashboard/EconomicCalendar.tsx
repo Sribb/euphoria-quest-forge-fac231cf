@@ -35,14 +35,14 @@ export const EconomicCalendar = () => {
   }, []);
 
   return (
-    <Card className="p-8 animate-fade-in bg-card border-border shadow-lg rounded-2xl" style={{ animationDelay: "200ms" }}>
-      <div className="flex items-center gap-3 mb-6">
-        <Calendar className="w-6 h-6 text-primary" />
-        <h3 className="text-2xl font-bold text-foreground">Economic Calendar</h3>
+    <Card className="p-6 animate-fade-in bg-card border-border" style={{ animationDelay: "200ms" }}>
+      <div className="flex items-center gap-2 mb-4">
+        <Calendar className="w-5 h-5 text-primary" />
+        <h3 className="text-xl font-bold text-foreground">Economic Calendar</h3>
       </div>
 
       <Tabs defaultValue="today" className="w-full">
-        <TabsList className="grid w-full grid-cols-3 mb-6">
+        <TabsList className="grid w-full grid-cols-3 mb-4">
           <TabsTrigger value="today">Today</TabsTrigger>
           <TabsTrigger value="week">This Week</TabsTrigger>
           <TabsTrigger value="month">This Month</TabsTrigger>

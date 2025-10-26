@@ -107,8 +107,8 @@ export const StreakPanel = () => {
   const isClaimedToday = streakData?.last_login_date === new Date().toISOString().split('T')[0];
 
   return (
-    <Card className="p-12 animate-fade-in shadow-lg rounded-2xl" style={{ animationDelay: "100ms" }}>
-      <div className="flex items-center justify-between mb-10">
+    <Card className="p-10 animate-fade-in shadow-lg rounded-2xl" style={{ animationDelay: "100ms" }}>
+      <div className="flex items-center justify-between mb-8">
         <div className="flex items-center gap-3">
           <Flame className="w-8 h-8 text-orange-500 animate-bounce-subtle" />
           <h3 className="text-3xl font-bold">Daily Rewards</h3>
@@ -116,9 +116,9 @@ export const StreakPanel = () => {
         <Trophy className="w-7 h-7 text-warning" />
       </div>
 
-      <div className="space-y-8">
+      <div className="space-y-6">
         <div>
-          <div className="flex justify-between text-base mb-4">
+          <div className="flex justify-between text-base mb-3">
             <span className="text-muted-foreground font-semibold text-lg">
               {currentStreak} day streak 🔥
             </span>
@@ -126,37 +126,37 @@ export const StreakPanel = () => {
               Next milestone: {nextMilestone} days
             </span>
           </div>
-          <Progress value={progress} className="h-5" />
+          <Progress value={progress} className="h-4" />
         </div>
 
-        <div className="flex gap-5">
+        <div className="flex gap-4">
           {[3, 7, 10, 14, 30].map((day) => (
             <div
               key={day}
-              className={`flex-1 flex flex-col items-center gap-3 p-5 rounded-xl transition-all ${
+              className={`flex-1 flex flex-col items-center gap-2 p-4 rounded-xl transition-all ${
                 currentStreak >= day
                   ? "bg-gradient-success text-success-foreground shadow-md scale-105"
                   : "bg-muted text-muted-foreground"
               }`}
             >
-              <Gift className="w-7 h-7" />
-              <span className="text-base font-bold">{day}d</span>
-              <span className="text-sm">+{day * 10}</span>
+              <Gift className="w-6 h-6" />
+              <span className="text-sm font-bold">{day}d</span>
+              <span className="text-xs">+{day * 10}</span>
             </div>
           ))}
         </div>
 
         {isClaimedToday && (
-          <div className="flex items-center justify-center gap-3 p-5 bg-muted rounded-xl">
-            <Clock className="w-6 h-6 text-muted-foreground" />
-            <span className="text-lg text-muted-foreground">
+          <div className="flex items-center justify-center gap-3 p-4 bg-muted rounded-xl">
+            <Clock className="w-5 h-5 text-muted-foreground" />
+            <span className="text-base text-muted-foreground">
               Next claim in: <span className="font-bold">{timeUntilReset}</span>
             </span>
           </div>
         )}
 
         <Button 
-          className="w-full bg-gradient-gold hover:opacity-90 transition-all disabled:opacity-50 h-14 text-lg"
+          className="w-full bg-gradient-gold hover:opacity-90 transition-all disabled:opacity-50 h-12 text-base"
           onClick={() => updateStreakMutation.mutate()}
           disabled={updateStreakMutation.isPending || isClaimedToday}
         >
