@@ -45,49 +45,56 @@ export const UserSummary = ({ onNavigate }: UserSummaryProps = {}) => {
   const streak = profile?.streak?.current_streak || 0;
 
   return (
-    <Card className="p-6 bg-gradient-hero border-0 shadow-md animate-fade-in">
-      <div className="flex items-center gap-4">
-        <Avatar className="w-16 h-16 border-4 border-primary shadow-glow">
-          <AvatarImage src={profile?.avatar_url || "/placeholder.svg"} alt="User" />
-          <AvatarFallback className="bg-gradient-primary text-primary-foreground text-xl font-bold">
-            {displayName.charAt(0).toUpperCase()}
-          </AvatarFallback>
-        </Avatar>
-        
-        <div className="flex-1">
-          <div className="flex items-center gap-2 mb-1">
-            <h2 className="text-2xl font-bold">Welcome, {displayName}!</h2>
-            <div title="View Premium">
-              <Crown 
-                className="w-5 h-5 text-warning animate-bounce-subtle cursor-pointer hover:scale-110 transition-transform" 
-                onClick={() => onNavigate?.("settings")}
-              />
-            </div>
-          </div>
-          <p className="text-muted-foreground">Ready to learn and grow today?</p>
+    <Card className="p-10 bg-gradient-hero border-0 shadow-lg rounded-2xl animate-fade-in">
+      <div className="flex items-center justify-between">
+        {/* Left: User Info */}
+        <div className="flex items-center gap-6">
+          <Avatar className="w-20 h-20 border-4 border-primary shadow-glow">
+            <AvatarImage src={profile?.avatar_url || "/placeholder.svg"} alt="User" />
+            <AvatarFallback className="bg-gradient-primary text-primary-foreground text-2xl font-bold">
+              {displayName.charAt(0).toUpperCase()}
+            </AvatarFallback>
+          </Avatar>
           
-          <div className="flex items-center gap-4 mt-3">
-            <Badge variant="secondary" className="gap-1.5">
-              <Flame className="w-4 h-4 text-orange-500" />
-              <span className="font-bold">{streak} Day Streak</span>
-            </Badge>
-            <Badge className="bg-gradient-gold text-warning-foreground">
-              Level {level}
-            </Badge>
-            <Badge className="bg-gradient-success text-success-foreground">
-              {coins} Coins
-            </Badge>
+          <div>
+            <div className="flex items-center gap-3 mb-2">
+              <h2 className="text-3xl font-bold">Welcome, {displayName}!</h2>
+              <div title="View Premium">
+                <Crown 
+                  className="w-6 h-6 text-warning animate-bounce-subtle cursor-pointer hover:scale-110 transition-transform" 
+                  onClick={() => onNavigate?.("settings")}
+                />
+              </div>
+            </div>
+            <p className="text-muted-foreground text-lg">Ready to learn and grow today?</p>
+            
+            <div className="flex items-center gap-4 mt-4">
+              <Badge className="bg-gradient-gold text-warning-foreground text-sm px-4 py-1.5">
+                Level {level}
+              </Badge>
+              <Badge className="bg-gradient-success text-success-foreground text-sm px-4 py-1.5">
+                {coins} Coins
+              </Badge>
+            </div>
           </div>
         </div>
 
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={signOut}
-          className="hover:bg-destructive/10 hover:text-destructive"
-        >
-          <LogOut className="w-5 h-5" />
-        </Button>
+        {/* Right: Streak & Logout */}
+        <div className="flex items-center gap-6">
+          <Badge variant="secondary" className="gap-2 px-6 py-3 text-base">
+            <Flame className="w-5 h-5 text-orange-500" />
+            <span className="font-bold">{streak} Day Streak</span>
+          </Badge>
+
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={signOut}
+            className="hover:bg-destructive/10 hover:text-destructive h-12 w-12"
+          >
+            <LogOut className="w-6 h-6" />
+          </Button>
+        </div>
       </div>
     </Card>
   );
