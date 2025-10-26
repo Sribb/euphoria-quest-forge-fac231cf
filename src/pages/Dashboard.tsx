@@ -13,32 +13,21 @@ interface DashboardProps {
 
 const Dashboard = ({ onNavigate, onStockSearch }: DashboardProps) => {
   return (
-    <div className="min-h-screen bg-background pt-24">
-      <div className="max-w-[1920px] mx-auto px-8 lg:px-12 space-y-8 pb-12">
+    <div className="min-h-screen bg-background">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6 pb-24 pt-20">
         <UserSummary onNavigate={onNavigate} />
-        
-        {/* Center the Daily Rewards */}
-        <div className="max-w-5xl mx-auto">
-          <StreakPanel />
-        </div>
-        
-        {/* Multi-column Grid Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <MarketTrends />
-          <div className="space-y-8">
-            <QuickAccessTiles onNavigate={onNavigate} />
-            <AISuggestions />
-          </div>
-        </div>
+        <StreakPanel />
+        <MarketTrends />
         
         {/* Economic Dashboard Section */}
-        <div className="space-y-8 mt-8">
-          <h2 className="text-3xl font-bold text-center">Economic Dashboard</h2>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <EconomicNews />
-            <EconomicCalendar />
-          </div>
+        <div className="space-y-6">
+          <h2 className="text-2xl font-bold text-center mb-6">Economic Dashboard</h2>
+          <EconomicNews />
+          <EconomicCalendar />
         </div>
+        
+        <QuickAccessTiles onNavigate={onNavigate} />
+        <AISuggestions />
       </div>
     </div>
   );
