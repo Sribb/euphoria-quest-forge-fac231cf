@@ -110,11 +110,11 @@ export const EconomicNews = () => {
   };
 
   return (
-    <Card className="p-6 animate-fade-in bg-card border-border" style={{ animationDelay: "100ms" }}>
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2">
-          <Newspaper className="w-5 h-5 text-primary" />
-          <h3 className="text-xl font-bold text-foreground">Live Economic Headlines</h3>
+    <Card className="p-8 animate-fade-in bg-card border-border shadow-lg rounded-2xl" style={{ animationDelay: "100ms" }}>
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center gap-3">
+          <Newspaper className="w-6 h-6 text-primary" />
+          <h3 className="text-2xl font-bold text-foreground">Live Economic Headlines</h3>
         </div>
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
           <TrendingUp className="w-3 h-3 text-success animate-pulse" />
@@ -122,14 +122,14 @@ export const EconomicNews = () => {
         </div>
       </div>
 
-      <div className="space-y-3">
+      <div className="space-y-4">
         {newsItems.map((news) => (
           <a
             key={news.id}
             href={news.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="block p-4 bg-card/50 rounded-lg border border-border hover:border-primary hover:shadow-md transition-all group"
+            className="block p-5 bg-card/50 rounded-xl border border-border hover:border-primary hover:shadow-md transition-all group"
           >
             <div className="flex items-start justify-between gap-3">
               <div className="flex-1 min-w-0">

@@ -45,7 +45,7 @@ export const UserSummary = ({ onNavigate }: UserSummaryProps = {}) => {
   const streak = profile?.streak?.current_streak || 0;
 
   return (
-    <Card className="p-8 bg-gradient-hero border-0 shadow-lg rounded-2xl animate-fade-in">
+    <Card className="p-10 bg-gradient-hero border-0 shadow-lg rounded-2xl animate-fade-in">
       <div className="flex items-center justify-between">
         {/* Left: User Info */}
         <div className="flex items-center gap-6">
