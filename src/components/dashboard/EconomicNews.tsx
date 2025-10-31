@@ -1,7 +1,10 @@
 import { useEffect, useState } from "react";
-import { Newspaper, Clock, ExternalLink, TrendingUp } from "lucide-react";
+import { Newspaper, Clock, ExternalLink, TrendingUp, AlertCircle } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 interface NewsItem {
   id: number;
@@ -14,100 +17,52 @@ interface NewsItem {
   publishedAt: Date;
 }
 
-const initialNewsItems: NewsItem[] = [
-  {
-    id: 1,
-    title: "Federal Reserve Signals Data-Dependent Approach to Interest Rates",
-    summary: "Fed officials emphasize careful monitoring of economic indicators before making policy decisions amid ongoing inflation concerns.",
-    source: "Reuters",
-    url: "https://www.reuters.com/markets/us/",
-    time: "2 hours ago",
-    impact: "high",
-    publishedAt: new Date(Date.now() - 2 * 60 * 60 * 1000),
-  },
-  {
-    id: 2,
-    title: "Tech Giants Report Strong Q4 Earnings on AI Innovation",
-    summary: "Major technology companies exceed Wall Street expectations as artificial intelligence investments drive revenue growth and market optimism.",
-    source: "CNBC",
-    url: "https://www.cnbc.com/technology/",
-    time: "3 hours ago",
-    impact: "high",
-    publishedAt: new Date(Date.now() - 3 * 60 * 60 * 1000),
-  },
-  {
-    id: 3,
-    title: "U.S. Job Market Shows Resilience with Steady Employment Growth",
-    summary: "Latest employment data reveals continued strength in labor markets, with unemployment remaining near historic lows.",
-    source: "Bloomberg",
-    url: "https://www.bloomberg.com/economics",
-    time: "5 hours ago",
-    impact: "medium",
-    publishedAt: new Date(Date.now() - 5 * 60 * 60 * 1000),
-  },
-  {
-    id: 4,
-    title: "Global Energy Markets Stabilize After Supply Concerns",
-    summary: "Oil and natural gas prices find equilibrium as production increases offset geopolitical tensions and seasonal demand fluctuations.",
-    source: "MarketWatch",
-    url: "https://www.marketwatch.com/investing/commodities",
-    time: "6 hours ago",
-    impact: "medium",
-    publishedAt: new Date(Date.now() - 6 * 60 * 60 * 1000),
-  },
-  {
-    id: 5,
-    title: "Retail Sales Data Beats Forecasts, Consumer Spending Remains Strong",
-    summary: "Monthly retail figures show robust consumer demand continuing into the new year, supporting economic growth outlook.",
-    source: "Bloomberg",
-    url: "https://www.bloomberg.com/economics",
-    time: "8 hours ago",
-    impact: "high",
-    publishedAt: new Date(Date.now() - 8 * 60 * 60 * 1000),
-  },
-  {
-    id: 6,
-    title: "Housing Market Shows Signs of Recovery Amid Lower Rates",
-    summary: "Home sales and construction activity increase as mortgage rates decline from recent peaks, boosting sector optimism.",
-    source: "Reuters",
-    url: "https://www.reuters.com/markets/us/",
-    time: "12 hours ago",
-    impact: "medium",
-    publishedAt: new Date(Date.now() - 12 * 60 * 60 * 1000),
-  },
-];
 
 export const EconomicNews = () => {
-  const [newsItems, setNewsItems] = useState<NewsItem[]>(initialNewsItems);
+  const [newsItems, setNewsItems] = useState<NewsItem[]>([]);
   const [lastUpdate, setLastUpdate] = useState(new Date());
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const { toast } = useToast();
+
+  const fetchNews = async () => {
+    try {
+      setError(null);
+      const { data, error: fetchError } = await supabase.functions.invoke('fetch-economic-news');
+
+      if (fetchError) throw fetchError;
+
+      if (data?.success && data?.data) {
+        setNewsItems(data.data);
+        setLastUpdate(new Date());
+      } else {
+        throw new Error(data?.error || 'Failed to fetch news');
+      }
+    } catch (err) {
+      console.error('Error fetching economic news:', err);
+      setError(err instanceof Error ? err.message : 'Failed to fetch news');
+      toast({
+        title: "Failed to load news",
+        description: "Unable to fetch latest economic headlines. Please try again later.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
-    // Auto-refresh timestamps every 10 minutes to stay current
+    // Initial fetch
+    fetchNews();
+
+    // Auto-refresh every 5 minutes
     const interval = setInterval(() => {
-      setNewsItems((prev) =>
-        prev.map((item) => ({
-          ...item,
-          time: getRelativeTime(item.publishedAt),
-        }))
-      );
-      setLastUpdate(new Date());
-    }, 600000); // Update every 10 minutes
+      fetchNews();
+    }, 300000); // 5 minutes
 
     return () => clearInterval(interval);
   }, []);
 
-  const getRelativeTime = (date: Date): string => {
-    const now = new Date();
-    const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
-    
-    if (diffInHours < 1) {
-      const diffInMinutes = Math.floor((now.getTime() - date.getTime()) / (1000 * 60));
-      return diffInMinutes <= 1 ? "Just now" : `${diffInMinutes} minutes ago`;
-    }
-    if (diffInHours < 24) return `${diffInHours} hours ago`;
-    const diffInDays = Math.floor(diffInHours / 24);
-    return diffInDays === 1 ? "1 day ago" : `${diffInDays} days ago`;
-  };
 
   return (
     <Card className="p-6 animate-fade-in bg-card border-border" style={{ animationDelay: "100ms" }}>
@@ -122,8 +77,35 @@ export const EconomicNews = () => {
         </div>
       </div>
 
-      <div className="space-y-3">
-        {newsItems.map((news) => (
+      {isLoading ? (
+        <div className="space-y-3">
+          {[1, 2, 3, 4, 5].map((i) => (
+            <div key={i} className="p-4 bg-card/50 rounded-lg border border-border">
+              <div className="space-y-3">
+                <div className="flex gap-2">
+                  <Skeleton className="h-5 w-24" />
+                  <Skeleton className="h-5 w-32" />
+                </div>
+                <Skeleton className="h-6 w-full" />
+                <Skeleton className="h-4 w-3/4" />
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : error ? (
+        <div className="p-8 text-center">
+          <AlertCircle className="w-12 h-12 text-destructive mx-auto mb-4" />
+          <p className="text-muted-foreground mb-4">{error}</p>
+          <button
+            onClick={fetchNews}
+            className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+          >
+            Try Again
+          </button>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {newsItems.map((news) => (
           <a
             key={news.id}
             href={news.url}
@@ -154,14 +136,17 @@ export const EconomicNews = () => {
               <ExternalLink className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors flex-shrink-0 mt-1" />
             </div>
           </a>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
 
-      <div className="mt-4 pt-4 border-t border-border">
-        <p className="text-xs text-muted-foreground text-center">
-          Headlines sourced from Reuters, Bloomberg, CNBC, and MarketWatch • Last updated: {lastUpdate.toLocaleTimeString()}
-        </p>
-      </div>
+      {!isLoading && !error && (
+        <div className="mt-4 pt-4 border-t border-border">
+          <p className="text-xs text-muted-foreground text-center">
+            Real-time headlines powered by Alpha Vantage • Last updated: {lastUpdate.toLocaleTimeString()} • Auto-refreshes every 5 minutes
+          </p>
+        </div>
+      )}
     </Card>
   );
 };
