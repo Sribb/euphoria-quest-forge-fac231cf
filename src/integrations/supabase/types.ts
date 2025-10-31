@@ -226,6 +226,24 @@ export type Database = {
           },
         ]
       }
+      news_cache: {
+        Row: {
+          id: number
+          news_items: Json
+          updated_at: string | null
+        }
+        Insert: {
+          id?: number
+          news_items: Json
+          updated_at?: string | null
+        }
+        Update: {
+          id?: number
+          news_items?: Json
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       portfolio_assets: {
         Row: {
           asset_name: string
