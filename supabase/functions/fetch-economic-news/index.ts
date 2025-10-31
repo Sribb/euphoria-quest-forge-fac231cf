@@ -65,16 +65,16 @@ serve(async (req) => {
     const { data: cachedData } = await supabaseClient
       .from('news_cache')
       .select('*')
-      .single();
+      .maybeSingle();
 
     const now = new Date();
-    const cacheAge = cachedData ? (now.getTime() - new Date(cachedData.cached_at).getTime()) / (1000 * 60 * 60) : CACHE_DURATION_HOURS + 1;
+    const cacheAge = cachedData ? (now.getTime() - new Date(cachedData.updated_at).getTime()) / (1000 * 60 * 60) : CACHE_DURATION_HOURS + 1;
 
     // Return cached data if still valid
     if (cachedData && cacheAge < CACHE_DURATION_HOURS) {
       console.log('Returning cached news data');
       return new Response(
-        JSON.stringify({ success: true, data: cachedData.news_data, cached: true }),
+        JSON.stringify({ success: true, data: cachedData.news_items, cached: true }),
         { 
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
           status: 200,
@@ -103,7 +103,7 @@ serve(async (req) => {
     if (!response.ok) {
       console.log('API request failed, using fallback');
       return new Response(
-        JSON.stringify({ success: true, data: cachedData?.news_data || FALLBACK_NEWS, fallback: true }),
+        JSON.stringify({ success: true, data: cachedData?.news_items || FALLBACK_NEWS, fallback: true }),
         { 
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
           status: 200,
@@ -117,7 +117,7 @@ serve(async (req) => {
     if (data.Information) {
       console.log('Rate limit hit, using cached or fallback data');
       return new Response(
-        JSON.stringify({ success: true, data: cachedData?.news_data || FALLBACK_NEWS, cached: !!cachedData, fallback: !cachedData }),
+        JSON.stringify({ success: true, data: cachedData?.news_items || FALLBACK_NEWS, cached: !!cachedData, fallback: !cachedData }),
         { 
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
           status: 200,
@@ -128,7 +128,7 @@ serve(async (req) => {
     if (!data.feed || !Array.isArray(data.feed)) {
       console.log('Invalid response format, using fallback');
       return new Response(
-        JSON.stringify({ success: true, data: cachedData?.news_data || FALLBACK_NEWS, fallback: true }),
+        JSON.stringify({ success: true, data: cachedData?.news_items || FALLBACK_NEWS, fallback: true }),
         { 
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
           status: 200,
@@ -167,8 +167,8 @@ serve(async (req) => {
       .from('news_cache')
       .upsert({
         id: 1,
-        news_data: newsItems,
-        cached_at: now.toISOString(),
+        news_items: newsItems,
+        updated_at: now.toISOString(),
       });
 
     return new Response(
@@ -187,11 +187,11 @@ serve(async (req) => {
       const { data: cachedData } = await supabaseClient
         .from('news_cache')
         .select('*')
-        .single();
+        .maybeSingle();
       
-      if (cachedData?.news_data) {
+      if (cachedData?.news_items) {
         return new Response(
-          JSON.stringify({ success: true, data: cachedData.news_data, cached: true }),
+          JSON.stringify({ success: true, data: cachedData.news_items, cached: true }),
           { 
             headers: { ...corsHeaders, 'Content-Type': 'application/json' },
             status: 200,
