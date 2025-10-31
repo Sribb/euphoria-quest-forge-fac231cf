@@ -29,10 +29,10 @@ export const MarketTrends = () => {
   ];
 
   return (
-    <Card className="p-8 bg-gradient-hero border-0 shadow-lg rounded-2xl">
-      <h3 className="text-2xl font-bold mb-6">Live Market Indices</h3>
+    <Card className="p-6 bg-gradient-hero border-0">
+      <h3 className="text-xl font-bold mb-4">Live Market Indices</h3>
       
-      <div className="grid gap-4 mb-8">
+      <div className="grid gap-3 mb-6">
         {isLoading ? (
           <>
             <Skeleton className="h-16 w-full" />
@@ -49,7 +49,7 @@ export const MarketTrends = () => {
             return (
               <div
                 key={market.symbol}
-                className="flex items-center justify-between p-5 bg-card rounded-xl hover:bg-card/80 transition-colors"
+                className="flex items-center justify-between p-4 bg-card rounded-lg hover:bg-card/80 transition-colors"
               >
                 <div className="flex items-center gap-3">
                   {isPositive ? (
@@ -74,10 +74,10 @@ export const MarketTrends = () => {
         )}
       </div>
 
-      <h3 className="text-2xl font-bold mb-5 mt-8">Sector Performance</h3>
-      <div className="grid grid-cols-2 gap-4">
+      <h3 className="text-xl font-bold mb-3 mt-6">Sector Performance</h3>
+      <div className="grid grid-cols-2 gap-3">
         {sectors.map((sector) => (
-          <div key={sector.name} className="p-4 bg-card rounded-xl">
+          <div key={sector.name} className="p-3 bg-card rounded-lg">
             <div className="flex items-center justify-between mb-1">
               <p className="text-sm font-medium">{sector.name}</p>
               <Badge

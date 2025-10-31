@@ -47,22 +47,22 @@ const tiles = [
 
 export const QuickAccessTiles = ({ onNavigate }: QuickAccessTilesProps) => {
   return (
-    <div className="grid grid-cols-2 gap-5">
+    <div className="grid grid-cols-2 gap-4">
       {tiles.map((tile, index) => {
         const Icon = tile.icon;
         return (
           <Card
             key={tile.id}
-            className="p-6 cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-lg animate-fade-in rounded-2xl"
+            className="p-4 cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-lg animate-fade-in"
             style={{ animationDelay: `${200 + index * 50}ms` }}
             onClick={() => onNavigate(tile.id)}
           >
-            <div className={`w-14 h-14 rounded-xl ${tile.gradient} flex items-center justify-center mb-4 shadow-glow`}>
-              <Icon className="w-7 h-7 text-white" />
+            <div className={`w-12 h-12 rounded-xl ${tile.gradient} flex items-center justify-center mb-3 shadow-glow`}>
+              <Icon className="w-6 h-6 text-white" />
             </div>
-            <h4 className="font-bold mb-2 text-lg">{tile.title}</h4>
-            <p className="text-sm text-muted-foreground mb-4">{tile.description}</p>
-            <Progress value={tile.progress} className="h-2.5" />
+            <h4 className="font-bold mb-1">{tile.title}</h4>
+            <p className="text-sm text-muted-foreground mb-3">{tile.description}</p>
+            <Progress value={tile.progress} className="h-2" />
           </Card>
         );
       })}
