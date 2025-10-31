@@ -35,6 +35,19 @@ export const EconomicNews = () => {
       if (data?.success && data?.data) {
         setNewsItems(data.data);
         setLastUpdate(new Date());
+        
+        // Notify user if using cached or fallback data
+        if (data.cached) {
+          toast({
+            title: "Showing cached headlines",
+            description: "Displaying previously fetched news due to API limits.",
+          });
+        } else if (data.fallback) {
+          toast({
+            title: "Showing sample headlines",
+            description: "Live news temporarily unavailable. Showing curated headlines.",
+          });
+        }
       } else {
         throw new Error(data?.error || 'Failed to fetch news');
       }
