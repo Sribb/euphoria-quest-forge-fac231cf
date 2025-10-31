@@ -84,7 +84,7 @@ serve(async (req) => {
     const { data: cachedData } = await supabase
       .from('news_cache')
       .select('*')
-      .single();
+      .maybeSingle();
 
     const now = new Date();
     const cacheExpiry = cachedData?.updated_at 
