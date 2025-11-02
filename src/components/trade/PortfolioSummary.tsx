@@ -1,28 +1,10 @@
 import { TrendingUp, TrendingDown, DollarSign } from "lucide-react";
 import { Card } from "@/components/ui/card";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/hooks/useAuth";
+import { usePortfolioValue } from "@/hooks/usePortfolioValue";
 
 export const PortfolioSummary = () => {
-  const { user } = useAuth();
-
-  const { data: portfolio } = useQuery({
-    queryKey: ["portfolio", user?.id],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("portfolios")
-        .select("*")
-        .eq("user_id", user?.id)
-        .single();
-      
-      if (error) throw error;
-      return data;
-    },
-    enabled: !!user?.id,
-  });
-
-  const totalValue = portfolio ? portfolio.total_value : 10000;
+  const { totalValue, unrealizedPnL } = usePortfolioValue();
+  
   const startingValue = 10000;
   const changeAmount = totalValue - startingValue;
   const change = ((changeAmount / startingValue) * 100);
@@ -55,6 +37,15 @@ export const PortfolioSummary = () => {
         </div>
 
         <p className="text-sm text-muted-foreground">Since inception</p>
+        
+        {unrealizedPnL !== 0 && (
+          <div className="mt-4 pt-4 border-t border-border">
+            <p className="text-xs text-muted-foreground mb-1">Unrealized P&L</p>
+            <p className={`text-lg font-bold ${unrealizedPnL >= 0 ? "text-success" : "text-destructive"}`}>
+              {unrealizedPnL >= 0 ? "+" : ""}${unrealizedPnL.toFixed(2)}
+            </p>
+          </div>
+        )}
       </div>
     </Card>
   );

@@ -1,60 +1,22 @@
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/hooks/useAuth";
+import { usePortfolioValue } from "@/hooks/usePortfolioValue";
 
 export const AssetAllocation = () => {
-  const { user } = useAuth();
-
-  const { data: portfolio } = useQuery({
-    queryKey: ["portfolio", user?.id],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("portfolios")
-        .select("*")
-        .eq("user_id", user?.id)
-        .single();
-      
-      if (error) throw error;
-      return data;
-    },
-    enabled: !!user?.id,
-  });
-
-  const { data: portfolioAssets = [] } = useQuery({
-    queryKey: ["portfolio-assets", portfolio?.id],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("portfolio_assets")
-        .select("*")
-        .eq("portfolio_id", portfolio?.id);
-      
-      if (error) throw error;
-      return data;
-    },
-    enabled: !!portfolio?.id,
-  });
-
-  const totalValue = portfolio ? portfolio.total_value : 10000;
-  const cashBalance = portfolio ? portfolio.cash_balance : 10000;
-
-  const stocksValue = portfolioAssets.reduce((sum, asset) => {
-    return sum + (asset.current_price * asset.quantity);
-  }, 0);
+  const { totalValue, positionsValue, cash } = usePortfolioValue();
 
   const assets = [
     { 
       name: "Stocks", 
-      value: totalValue > 0 ? (stocksValue / totalValue) * 100 : 0, 
+      value: totalValue > 0 ? (positionsValue / totalValue) * 100 : 0, 
       color: "bg-primary", 
-      amount: stocksValue 
+      amount: positionsValue 
     },
     { 
       name: "Cash", 
-      value: totalValue > 0 ? (cashBalance / totalValue) * 100 : 100, 
+      value: totalValue > 0 ? (cash / totalValue) * 100 : 100, 
       color: "bg-success", 
-      amount: cashBalance 
+      amount: cash 
     },
   ].filter(asset => asset.value > 0);
 

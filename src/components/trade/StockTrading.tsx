@@ -3,12 +3,14 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Search, TrendingUp, TrendingDown, DollarSign, ShoppingCart, Wallet, RefreshCw } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Search, TrendingUp, TrendingDown, DollarSign, ShoppingCart, Wallet, RefreshCw, ArrowDownCircle } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { alphaVantageService } from "@/lib/alphaVantageService";
+import { usePortfolioValue } from "@/hooks/usePortfolioValue";
 
 const popularStocks = [
   { symbol: "AAPL", name: "Apple Inc.", price: 185.92, change: 2.34, changePercent: 1.27, sector: "Technology" },
@@ -28,21 +30,7 @@ export const StockTrading = () => {
   const [quantity, setQuantity] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
   const [liveSymbol, setLiveSymbol] = useState("AAPL");
-
-  const { data: portfolio } = useQuery({
-    queryKey: ["portfolio", user?.id],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("portfolios")
-        .select("*")
-        .eq("user_id", user?.id)
-        .single();
-
-      if (error) throw error;
-      return data;
-    },
-    enabled: !!user?.id,
-  });
+  const { portfolio, portfolioAssets, livePrices } = usePortfolioValue();
 
   const { data: liveQuote, isLoading: quoteLoading } = useQuery({
     queryKey: ["stockQuote", liveSymbol],
@@ -86,12 +74,13 @@ export const StockTrading = () => {
     }
 
     try {
-      const newCashBalance = portfolio.cash_balance - totalCost;
+      const newCashBalance = Number(portfolio.cash_balance) - totalCost;
+      
+      // Only update cash balance, total_value will be calculated dynamically
       const { error: portfolioError } = await supabase
         .from("portfolios")
         .update({ 
           cash_balance: newCashBalance,
-          total_value: portfolio.total_value + totalCost,
           updated_at: new Date().toISOString()
         })
         .eq("id", portfolio.id);
@@ -137,6 +126,7 @@ export const StockTrading = () => {
 
       toast.success(`Purchased ${quantity} shares of ${selectedStock.symbol}`);
       queryClient.invalidateQueries({ queryKey: ["portfolio"] });
+      queryClient.invalidateQueries({ queryKey: ["portfolio-assets"] });
       setQuantity(1);
     } catch (error) {
       console.error("Error buying stock:", error);
@@ -144,8 +134,74 @@ export const StockTrading = () => {
     }
   };
 
+  const handleSellStock = async (asset: any, sellQuantity: number) => {
+    if (!user || !portfolio) return;
+
+    try {
+      const currentPrice = livePrices[asset.asset_name] || Number(asset.current_price);
+      const saleProceeds = currentPrice * sellQuantity;
+      const remainingQuantity = Number(asset.quantity) - sellQuantity;
+
+      // Calculate realized P&L
+      const costBasis = Number(asset.purchase_price) * sellQuantity;
+      const realizedPnL = saleProceeds - costBasis;
+
+      // Update cash balance with sale proceeds
+      const newCashBalance = Number(portfolio.cash_balance) + saleProceeds;
+      
+      const { error: portfolioError } = await supabase
+        .from("portfolios")
+        .update({ 
+          cash_balance: newCashBalance,
+          updated_at: new Date().toISOString()
+        })
+        .eq("id", portfolio.id);
+
+      if (portfolioError) throw portfolioError;
+
+      // Update or delete the asset
+      if (remainingQuantity > 0) {
+        const { error: assetError } = await supabase
+          .from("portfolio_assets")
+          .update({
+            quantity: remainingQuantity,
+            current_price: currentPrice,
+            updated_at: new Date().toISOString()
+          })
+          .eq("id", asset.id);
+
+        if (assetError) throw assetError;
+      } else {
+        const { error: deleteError } = await supabase
+          .from("portfolio_assets")
+          .delete()
+          .eq("id", asset.id);
+
+        if (deleteError) throw deleteError;
+      }
+
+      toast.success(
+        `Sold ${sellQuantity} shares of ${asset.asset_name} for $${saleProceeds.toFixed(2)}. ${
+          realizedPnL >= 0 ? "Profit" : "Loss"
+        }: $${Math.abs(realizedPnL).toFixed(2)}`
+      );
+      
+      queryClient.invalidateQueries({ queryKey: ["portfolio"] });
+      queryClient.invalidateQueries({ queryKey: ["portfolio-assets"] });
+    } catch (error) {
+      console.error("Error selling stock:", error);
+      toast.error("Failed to sell stock");
+    }
+  };
+
   return (
-    <div className="space-y-6">
+    <Tabs defaultValue="buy" className="w-full">
+      <TabsList className="grid w-full grid-cols-2 mb-6">
+        <TabsTrigger value="buy">Buy Stocks</TabsTrigger>
+        <TabsTrigger value="positions">My Positions</TabsTrigger>
+      </TabsList>
+
+      <TabsContent value="buy" className="space-y-6">
       {liveQuote && (
         <Card className="p-6 bg-gradient-hero border-0">
           <div className="flex items-center justify-between mb-4">
@@ -333,6 +389,94 @@ export const StockTrading = () => {
           </Button>
         </div>
       </Card>
-    </div>
+      </TabsContent>
+
+      <TabsContent value="positions" className="space-y-4">
+        {portfolioAssets.length === 0 ? (
+          <Card className="p-8 text-center">
+            <p className="text-muted-foreground">No positions yet. Buy your first stock to get started!</p>
+          </Card>
+        ) : (
+          portfolioAssets.map((asset) => {
+            const currentPrice = livePrices[asset.asset_name] || Number(asset.current_price);
+            const purchasePrice = Number(asset.purchase_price);
+            const quantity = Number(asset.quantity);
+            const positionValue = currentPrice * quantity;
+            const costBasis = purchasePrice * quantity;
+            const unrealizedPnL = positionValue - costBasis;
+            const pnlPercent = (unrealizedPnL / costBasis) * 100;
+            const isProfitable = unrealizedPnL >= 0;
+
+            return (
+              <Card key={asset.id} className="p-6">
+                <div className="flex items-start justify-between mb-4">
+                  <div>
+                    <h3 className="text-xl font-bold">{asset.asset_name}</h3>
+                    <p className="text-sm text-muted-foreground">{asset.asset_type}</p>
+                  </div>
+                  <Badge variant={isProfitable ? "default" : "destructive"}>
+                    {isProfitable ? "+" : ""}{pnlPercent.toFixed(2)}%
+                  </Badge>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4 mb-4">
+                  <div>
+                    <p className="text-sm text-muted-foreground">Quantity</p>
+                    <p className="text-lg font-bold">{quantity}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">Current Price</p>
+                    <p className="text-lg font-bold">${currentPrice.toFixed(2)}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">Purchase Price</p>
+                    <p className="text-lg font-bold">${purchasePrice.toFixed(2)}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">Position Value</p>
+                    <p className="text-lg font-bold">${positionValue.toFixed(2)}</p>
+                  </div>
+                </div>
+
+                <div className={`p-4 rounded-lg mb-4 ${isProfitable ? "bg-success/10" : "bg-destructive/10"}`}>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium">Unrealized P&L</span>
+                    <div className="text-right">
+                      <p className={`text-lg font-bold ${isProfitable ? "text-success" : "text-destructive"}`}>
+                        {isProfitable ? "+" : ""}${unrealizedPnL.toFixed(2)}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        Cost: ${costBasis.toFixed(2)}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex gap-2">
+                  <Button
+                    variant="destructive"
+                    className="flex-1"
+                    onClick={() => handleSellStock(asset, quantity)}
+                  >
+                    <ArrowDownCircle className="w-4 h-4 mr-2" />
+                    Sell All
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="flex-1"
+                    onClick={() => {
+                      const sellQty = Math.floor(quantity / 2);
+                      if (sellQty > 0) handleSellStock(asset, sellQty);
+                    }}
+                  >
+                    Sell Half
+                  </Button>
+                </div>
+              </Card>
+            );
+          })
+        )}
+      </TabsContent>
+    </Tabs>
   );
 };
