@@ -5,7 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Search, TrendingUp, TrendingDown, DollarSign, ShoppingCart, Wallet, RefreshCw, ArrowDownCircle, AlertCircle } from "lucide-react";
+import { Search, TrendingUp, TrendingDown, ShoppingCart, RefreshCw, Zap } from "lucide-react";
+import { OrderDialog } from "@/components/trade/OrderDialog";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -30,10 +31,10 @@ export const StockTrading = () => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [selectedStock, setSelectedStock] = useState(popularStocks[0]);
-  const [quantity, setQuantity] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
   const [liveSymbol, setLiveSymbol] = useState("AAPL");
-  const [isPlacingOrder, setIsPlacingOrder] = useState(false);
+  const [orderDialogOpen, setOrderDialogOpen] = useState(false);
+  const [dialogStock, setDialogStock] = useState<any>(null);
   const { portfolio, portfolioAssets, livePrices, buyingPower, unsettledCash } = usePortfolioValue();
 
   const { data: liveQuote, isLoading: quoteLoading } = useQuery({
@@ -68,129 +69,68 @@ export const StockTrading = () => {
       )
     : popularStocks;
 
-  const totalCost = selectedStock.price * quantity;
-  const canAfford = portfolio && totalCost <= buyingPower;
-
-  const handleBuyStock = async () => {
-    if (!user || !portfolio) {
-      toast.error("Please log in to place orders");
-      return;
-    }
-
-    setIsPlacingOrder(true);
-
-    try {
-      // Validate order input
-      const orderInput: OrderInput = {
-        symbol: selectedStock.symbol,
-        side: 'buy',
-        orderType: 'market',
-        quantity: quantity,
-      };
-
-      const validation = orderSchema.safeParse(orderInput);
-      if (!validation.success) {
-        toast.error(validation.error.errors[0].message);
-        setIsPlacingOrder(false);
-        return;
-      }
-
-      // Place order using order service
-      const result = await placeOrder(
-        user.id,
-        portfolio.id,
-        orderInput,
-        selectedStock.price
-      );
-
-      if (result.success) {
-        toast.success(`Order placed: BUY ${quantity} ${selectedStock.symbol}`);
-        queryClient.invalidateQueries({ queryKey: ["portfolio"] });
-        queryClient.invalidateQueries({ queryKey: ["portfolio-assets"] });
-        queryClient.invalidateQueries({ queryKey: ["orders"] });
-        setQuantity(1);
-      } else {
-        if (result.errors && result.errors.length > 0) {
-          result.errors.forEach(error => toast.error(error));
-        } else {
-          toast.error(result.error || "Failed to place order");
-        }
-      }
-    } catch (error) {
-      console.error("Error placing order:", error);
-      toast.error("An unexpected error occurred");
-    } finally {
-      setIsPlacingOrder(false);
-    }
+  const openOrderDialog = (stock: any) => {
+    setDialogStock(stock);
+    setOrderDialogOpen(true);
   };
 
-  const handleSellStock = async (asset: any, sellQuantity: number) => {
-    if (!user || !portfolio) return;
+  const handleQuickBuy = async (stock: any) => {
+    openOrderDialog(stock);
+  };
 
-    setIsPlacingOrder(true);
+  const handleSellStock = (asset: any) => {
+    const currentPrice = livePrices[asset.asset_name] || Number(asset.current_price);
+    openOrderDialog({
+      symbol: asset.asset_name,
+      name: asset.asset_type,
+      price: currentPrice,
+    });
+  };
 
-    try {
-      const currentPrice = livePrices[asset.asset_name] || Number(asset.current_price);
-
-      const orderInput: OrderInput = {
-        symbol: asset.asset_name,
-        side: 'sell',
-        orderType: 'market',
-        quantity: sellQuantity,
-      };
-
-      const result = await placeOrder(
-        user.id,
-        portfolio.id,
-        orderInput,
-        currentPrice
-      );
-
-      if (result.success) {
-        const saleValue = currentPrice * sellQuantity;
-        toast.success(`Order placed: SELL ${sellQuantity} ${asset.asset_name} for $${saleValue.toFixed(2)}`);
-        queryClient.invalidateQueries({ queryKey: ["portfolio"] });
-        queryClient.invalidateQueries({ queryKey: ["portfolio-assets"] });
-        queryClient.invalidateQueries({ queryKey: ["orders"] });
-      } else {
-        if (result.errors && result.errors.length > 0) {
-          result.errors.forEach(error => toast.error(error));
-        } else {
-          toast.error(result.error || "Failed to place order");
-        }
-      }
-    } catch (error) {
-      console.error("Error selling stock:", error);
-      toast.error("Failed to place sell order");
-    } finally {
-      setIsPlacingOrder(false);
-    }
+  const getCurrentHolding = (symbol: string) => {
+    const asset = portfolioAssets.find(a => a.asset_name === symbol);
+    return asset ? Number(asset.quantity) : 0;
   };
 
   return (
-    <Tabs defaultValue="buy" className="w-full">
-      <TabsList className="grid w-full grid-cols-3 mb-6">
-        <TabsTrigger value="buy">Buy Stocks</TabsTrigger>
-        <TabsTrigger value="positions">Positions</TabsTrigger>
-        <TabsTrigger value="orders">Orders</TabsTrigger>
-      </TabsList>
+    <>
+      {dialogStock && (
+        <OrderDialog
+          open={orderDialogOpen}
+          onOpenChange={setOrderDialogOpen}
+          stock={dialogStock}
+          userId={user?.id || ''}
+          portfolioId={portfolio?.id || ''}
+          buyingPower={buyingPower}
+          unsettledCash={unsettledCash}
+          currentHolding={getCurrentHolding(dialogStock.symbol)}
+        />
+      )}
 
-      <TabsContent value="buy" className="space-y-6">
-      {liveQuote && (
-        <Card className="p-6 bg-gradient-hero border-0">
+      <Tabs defaultValue="buy" className="w-full">
+        <TabsList className="grid w-full grid-cols-3 mb-6 smooth-transition">
+          <TabsTrigger value="buy" className="smooth-transition">Buy Stocks</TabsTrigger>
+          <TabsTrigger value="positions" className="smooth-transition">Positions</TabsTrigger>
+          <TabsTrigger value="orders" className="smooth-transition">Orders</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="buy" className="space-y-6 animate-fade-in">
+          {liveQuote && (
+            <Card className="p-6 bg-gradient-hero border-0 animate-scale-in smooth-transition">
           <div className="flex items-center justify-between mb-4">
             <div>
               <h3 className="text-2xl font-bold">{liveSymbol}</h3>
               <p className="text-sm text-muted-foreground">Live Market Data</p>
             </div>
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={() => queryClient.invalidateQueries({ queryKey: ["stockQuote", liveSymbol] })}
-              disabled={quoteLoading}
-            >
-              <RefreshCw className={`w-4 h-4 ${quoteLoading ? "animate-spin" : ""}`} />
-            </Button>
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={() => queryClient.invalidateQueries({ queryKey: ["stockQuote", liveSymbol] })}
+                disabled={quoteLoading}
+                className="smooth-transition hover-scale"
+              >
+                <RefreshCw className={`w-4 h-4 ${quoteLoading ? "animate-spin" : ""}`} />
+              </Button>
           </div>
           
           <div className="grid grid-cols-2 gap-4">
@@ -225,183 +165,89 @@ export const StockTrading = () => {
             </div>
           </div>
 
-          <div className="flex gap-2 mt-4">
-            <Input
-              placeholder="Search live data (e.g., AAPL)"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleSearchLive()}
-            />
-            <Button onClick={handleSearchLive}>
-              <Search className="w-4 h-4" />
-            </Button>
-          </div>
-        </Card>
-      )}
-
-      <Card className="p-6">
-        <div className="flex items-center gap-3 mb-4">
-          <ShoppingCart className="w-6 h-6 text-primary" />
-          <h3 className="text-xl font-bold">Buy Stocks</h3>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6 max-h-[400px] overflow-y-auto">
-          {filteredStocks.map((stock) => {
-            const isPositive = stock.change >= 0;
-            const isSelected = selectedStock.symbol === stock.symbol;
-            
-            return (
-              <div
-                key={stock.symbol}
-                onClick={() => setSelectedStock(stock)}
-                className={`p-4 rounded-lg border cursor-pointer transition-all ${
-                  isSelected
-                    ? "border-primary bg-primary/5"
-                    : "border-border hover:border-primary/50"
-                }`}
-              >
-                <div className="flex items-start justify-between mb-2">
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <h4 className="font-bold">{stock.symbol}</h4>
-                      <Badge variant="outline" className="text-xs">
-                        {stock.sector}
-                      </Badge>
-                    </div>
-                    <p className="text-xs text-muted-foreground">{stock.name}</p>
-                  </div>
-                  {isSelected && (
-                    <Badge variant="default" className="text-xs">
-                      Selected
-                    </Badge>
-                  )}
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <div className="text-2xl font-bold">${stock.price.toFixed(2)}</div>
-                  <div className={`flex items-center gap-1 ${isPositive ? "text-success" : "text-destructive"}`}>
-                    {isPositive ? (
-                      <TrendingUp className="w-4 h-4" />
-                    ) : (
-                      <TrendingDown className="w-4 h-4" />
-                    )}
-                    <span className="text-sm font-semibold">
-                      {isPositive ? "+" : ""}{stock.changePercent.toFixed(2)}%
-                    </span>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </Card>
-
-      <Card className="p-6 bg-gradient-hero border-0">
-        <h3 className="text-lg font-bold mb-4">Order Details</h3>
-
-        {unsettledCash > 0 && (
-          <Alert className="mb-4 bg-warning/10 border-warning">
-            <AlertCircle className="h-4 w-4" />
-            <AlertDescription>
-              You have ${unsettledCash.toFixed(2)} in unsettled funds (T+2 settlement). 
-              These funds will be available after settlement.
-            </AlertDescription>
-          </Alert>
+            <div className="flex gap-2 mt-4">
+              <Input
+                placeholder="Search live data (e.g., AAPL)"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleSearchLive()}
+                className="smooth-transition"
+              />
+              <Button onClick={handleSearchLive} className="smooth-transition hover-scale">
+                <Search className="w-4 h-4" />
+              </Button>
+            </div>
+          </Card>
         )}
 
-        <div className="space-y-4">
-          <div className="p-4 bg-card rounded-lg">
-            <p className="text-sm text-muted-foreground mb-2">Selected Stock</p>
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="font-bold text-lg">{selectedStock.symbol}</p>
-                <p className="text-sm text-muted-foreground">{selectedStock.name}</p>
-              </div>
-              <p className="text-2xl font-bold">${selectedStock.price.toFixed(2)}</p>
-            </div>
+        <Card className="p-6 animate-fade-in" style={{ animationDelay: "100ms" }}>
+          <div className="flex items-center gap-3 mb-4">
+            <ShoppingCart className="w-6 h-6 text-primary" />
+            <h3 className="text-xl font-bold">Available Stocks</h3>
           </div>
 
-          <div>
-            <label className="text-sm text-muted-foreground mb-2 block">Quantity</label>
-            <Input
-              type="number"
-              min="1"
-              value={quantity}
-              onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
-              className="text-lg font-semibold"
-            />
-          </div>
-
-          <div className="p-4 bg-card rounded-lg space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="text-muted-foreground">Price per share</span>
-              <span className="font-semibold">${selectedStock.price.toFixed(2)}</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-muted-foreground">Quantity</span>
-              <span className="font-semibold">{quantity}</span>
-            </div>
-            <div className="h-px bg-border my-2" />
-            <div className="flex items-center justify-between text-lg">
-              <span className="font-bold">Total Cost</span>
-              <span className="font-bold text-primary">${totalCost.toFixed(2)}</span>
-            </div>
-          </div>
-
-          {portfolio && (
-            <div className="p-4 bg-card rounded-lg space-y-2">
-              <div className="flex items-center gap-2 mb-3">
-                <Wallet className="w-4 h-4 text-muted-foreground" />
-                <span className="text-sm font-semibold">Account Status</span>
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <p className="text-xs text-muted-foreground">Buying Power</p>
-                  <p className="text-lg font-bold text-success">
-                    ${buyingPower.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}
-                  </p>
-                </div>
-                {unsettledCash > 0 && (
-                  <div>
-                    <p className="text-xs text-muted-foreground">Unsettled Cash</p>
-                    <p className="text-lg font-bold text-warning">
-                      ${unsettledCash.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}
-                    </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6 max-h-[400px] overflow-y-auto">
+            {filteredStocks.map((stock, index) => {
+              const isPositive = stock.change >= 0;
+              
+              return (
+                <div
+                  key={stock.symbol}
+                  className="p-4 rounded-lg border border-border hover:border-primary/50 smooth-transition hover-scale animate-fade-in cursor-pointer"
+                  style={{ animationDelay: `${index * 50}ms` }}
+                  onClick={() => setSelectedStock(stock)}
+                >
+                  <div className="flex items-start justify-between mb-3">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <h4 className="font-bold">{stock.symbol}</h4>
+                        <Badge variant="outline" className="text-xs">
+                          {stock.sector}
+                        </Badge>
+                      </div>
+                      <p className="text-xs text-muted-foreground">{stock.name}</p>
+                    </div>
                   </div>
-                )}
-              </div>
-              {!canAfford && (
-                <p className="text-sm text-destructive mt-2 flex items-center gap-1">
-                  <AlertCircle className="w-4 h-4" />
-                  Insufficient buying power
-                </p>
-              )}
-            </div>
-          )}
 
-          <Button
-            onClick={handleBuyStock}
-            disabled={!canAfford || !portfolio || isPlacingOrder}
-            className="w-full text-lg py-6 bg-gradient-primary hover:opacity-90"
-          >
-            <DollarSign className="w-5 h-5 mr-2" />
-            {isPlacingOrder ? "Placing Order..." : `Buy ${quantity} ${quantity === 1 ? "Share" : "Shares"}`}
-          </Button>
-        </div>
-      </Card>
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="text-2xl font-bold">${stock.price.toFixed(2)}</div>
+                    <div className={`flex items-center gap-1 ${isPositive ? "text-success" : "text-destructive"}`}>
+                      {isPositive ? (
+                        <TrendingUp className="w-4 h-4" />
+                      ) : (
+                        <TrendingDown className="w-4 h-4" />
+                      )}
+                      <span className="text-sm font-semibold">
+                        {isPositive ? "+" : ""}{stock.changePercent.toFixed(2)}%
+                      </span>
+                    </div>
+                  </div>
+
+                  <Button 
+                    className="w-full bg-gradient-primary smooth-transition hover-scale"
+                    onClick={() => handleQuickBuy(stock)}
+                  >
+                    <Zap className="w-4 h-4 mr-2" />
+                    Trade {stock.symbol}
+                  </Button>
+                </div>
+              );
+            })}
+          </div>
+        </Card>
       </TabsContent>
 
-      <TabsContent value="orders" className="space-y-4">
-        <OrderManagement />
-      </TabsContent>
+        <TabsContent value="orders" className="space-y-4 animate-fade-in">
+          <OrderManagement />
+        </TabsContent>
 
-      <TabsContent value="positions" className="space-y-4">
-        {portfolioAssets.length === 0 ? (
-          <Card className="p-8 text-center">
-            <p className="text-muted-foreground">No positions yet. Buy your first stock to get started!</p>
-          </Card>
-        ) : (
-          portfolioAssets.map((asset) => {
+        <TabsContent value="positions" className="space-y-4 animate-fade-in">
+          {portfolioAssets.length === 0 ? (
+            <Card className="p-8 text-center animate-fade-in">
+              <p className="text-muted-foreground">No positions yet. Start trading to build your portfolio!</p>
+            </Card>
+          ) : (
+            portfolioAssets.map((asset, index) => {
             const currentPrice = livePrices[asset.asset_name] || Number(asset.current_price);
             const purchasePrice = Number(asset.purchase_price);
             const quantity = Number(asset.quantity);
@@ -411,8 +257,8 @@ export const StockTrading = () => {
             const pnlPercent = (unrealizedPnL / costBasis) * 100;
             const isProfitable = unrealizedPnL >= 0;
 
-            return (
-              <Card key={asset.id} className="p-6">
+              return (
+                <Card key={asset.id} className="p-6 animate-fade-in smooth-transition hover:border-primary/50" style={{ animationDelay: `${index * 100}ms` }}>
                 <div className="flex items-start justify-between mb-4">
                   <div>
                     <h3 className="text-xl font-bold">{asset.asset_name}</h3>
@@ -456,33 +302,19 @@ export const StockTrading = () => {
                   </div>
                 </div>
 
-                <div className="flex gap-2">
-                  <Button
-                    variant="destructive"
-                    className="flex-1"
-                    onClick={() => handleSellStock(asset, quantity)}
-                    disabled={isPlacingOrder}
-                  >
-                    <ArrowDownCircle className="w-4 h-4 mr-2" />
-                    Sell All
-                  </Button>
-                  <Button
-                    variant="outline"
-                    className="flex-1"
-                    onClick={() => {
-                      const sellQty = Math.floor(quantity / 2);
-                      if (sellQty > 0) handleSellStock(asset, sellQty);
-                    }}
-                    disabled={isPlacingOrder}
-                  >
-                    Sell Half
-                  </Button>
-                </div>
+                <Button 
+                  className="w-full bg-gradient-primary smooth-transition hover-scale"
+                  onClick={() => handleSellStock(asset)}
+                >
+                  <Zap className="w-4 h-4 mr-2" />
+                  Trade {asset.asset_name}
+                </Button>
               </Card>
             );
           })
         )}
       </TabsContent>
     </Tabs>
+  </>
   );
 };

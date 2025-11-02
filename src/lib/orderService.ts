@@ -100,9 +100,30 @@ export const placeOrder = async (
   }
 };
 
+// Simulate realistic slippage (educational trading simulator)
+const calculateSlippage = (price: number, side: 'buy' | 'sell', quantity: number): number => {
+  // Slippage increases with quantity and volatility
+  const baseSlippage = 0.001; // 0.1% base slippage
+  const quantityFactor = Math.min(quantity / 1000, 0.005); // Up to 0.5% for large orders
+  const randomFactor = (Math.random() - 0.5) * 0.002; // Random ±0.1%
+  
+  const totalSlippage = baseSlippage + quantityFactor + randomFactor;
+  return side === 'buy' ? price * (1 + totalSlippage) : price * (1 - totalSlippage);
+};
+
+// Simulate partial fills for large orders (educational)
+const simulatePartialFill = (quantity: number): number => {
+  if (quantity <= 100) return quantity; // Small orders fill completely
+  
+  // Large orders might fill partially (80-100%)
+  const fillRate = 0.8 + Math.random() * 0.2;
+  return Math.floor(quantity * fillRate);
+};
+
 export const fillOrder = async (
   orderId: string,
-  fillPrice: number
+  fillPrice: number,
+  allowPartialFill: boolean = false
 ): Promise<OrderResult> => {
   try {
     // Fetch order
@@ -131,8 +152,14 @@ export const fillOrder = async (
       return { success: false, error: "Portfolio not found" };
     }
 
-    const quantity = Number(order.quantity);
-    const orderValue = fillPrice * quantity;
+    // Apply realistic slippage
+    const adjustedPrice = calculateSlippage(fillPrice, order.side as 'buy' | 'sell', Number(order.quantity));
+    
+    // Simulate partial fills for educational purposes
+    const requestedQuantity = Number(order.quantity);
+    const filledQuantity = allowPartialFill ? simulatePartialFill(requestedQuantity) : requestedQuantity;
+    
+    const orderValue = adjustedPrice * filledQuantity;
     const commission = Number(order.commission);
     const totalCost = orderValue + commission;
 
@@ -154,15 +181,15 @@ export const fillOrder = async (
       if (existingAsset) {
         const existingQty = Number(existingAsset.quantity);
         const existingCost = Number(existingAsset.purchase_price);
-        const newQuantity = existingQty + quantity;
-        const avgPrice = ((existingCost * existingQty) + (fillPrice * quantity)) / newQuantity;
+        const newQuantity = existingQty + filledQuantity;
+        const avgPrice = ((existingCost * existingQty) + (adjustedPrice * filledQuantity)) / newQuantity;
 
         await supabase
           .from("portfolio_assets")
           .update({
             quantity: newQuantity,
             purchase_price: avgPrice,
-            current_price: fillPrice,
+            current_price: adjustedPrice,
             updated_at: new Date().toISOString(),
           })
           .eq("id", existingAsset.id);
@@ -173,9 +200,9 @@ export const fillOrder = async (
             portfolio_id: order.portfolio_id,
             asset_name: order.symbol,
             asset_type: "Stock",
-            quantity: quantity,
-            purchase_price: fillPrice,
-            current_price: fillPrice,
+            quantity: filledQuantity,
+            purchase_price: adjustedPrice,
+            current_price: adjustedPrice,
           });
       }
     } else {
@@ -191,14 +218,14 @@ export const fillOrder = async (
         .single();
 
       if (existingAsset) {
-        const remainingQty = Number(existingAsset.quantity) - quantity;
+        const remainingQty = Number(existingAsset.quantity) - filledQuantity;
         
         if (remainingQty > 0) {
           await supabase
             .from("portfolio_assets")
             .update({
               quantity: remainingQty,
-              current_price: fillPrice,
+              current_price: adjustedPrice,
               updated_at: new Date().toISOString(),
             })
             .eq("id", existingAsset.id);
@@ -220,18 +247,22 @@ export const fillOrder = async (
       })
       .eq("id", order.portfolio_id);
 
-    // Update order status
+    // Update order status (partial or full fill)
+    const orderStatus = filledQuantity < requestedQuantity ? 'partially_filled' : 'filled';
     await supabase
       .from("orders")
       .update({
-        status: 'filled',
-        filled_quantity: quantity,
-        average_fill_price: fillPrice,
+        status: orderStatus,
+        filled_quantity: filledQuantity,
+        average_fill_price: adjustedPrice,
         filled_at: new Date().toISOString(),
       })
       .eq("id", orderId);
 
     // Create transaction log
+    const slippageAmount = Math.abs(adjustedPrice - fillPrice) * filledQuantity;
+    const descriptionSuffix = filledQuantity < requestedQuantity ? ` (Partial: ${filledQuantity}/${requestedQuantity})` : '';
+    
     await supabase
       .from("transaction_logs")
       .insert({
@@ -240,13 +271,13 @@ export const fillOrder = async (
         order_id: orderId,
         transaction_type: order.side === 'buy' ? 'BUY' : 'SELL',
         symbol: order.symbol,
-        quantity: quantity,
-        price: fillPrice,
+        quantity: filledQuantity,
+        price: adjustedPrice,
         amount: orderValue,
         fee: commission,
         balance_before: balanceBefore,
         balance_after: balanceAfter,
-        description: `${order.side.toUpperCase()} ${quantity} ${order.symbol} @ $${fillPrice.toFixed(2)}`,
+        description: `${order.side.toUpperCase()} ${filledQuantity} ${order.symbol} @ $${adjustedPrice.toFixed(2)}${descriptionSuffix}${slippageAmount > 0.01 ? ` (Slippage: $${slippageAmount.toFixed(2)})` : ''}`,
       });
 
     // Create settlement record (T+2)

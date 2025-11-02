@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { TrendingUp, ChevronLeft } from "lucide-react";
+import { TrendingUp, ArrowLeft } from "lucide-react";
 import { PortfolioSummary } from "@/components/trade/PortfolioSummary";
 import { AssetAllocation } from "@/components/trade/AssetAllocation";
 import { StockTrading } from "@/components/trade/StockTrading";
@@ -16,26 +16,34 @@ interface TradeProps {
 
 const Trade = ({ onNavigate, onStockSearch }: TradeProps) => {
   return (
-    <div className="space-y-6 pb-24">
-      <div className="flex items-center gap-3 animate-fade-in">
-        <div className="w-12 h-12 rounded-xl bg-gradient-success flex items-center justify-center shadow-glow">
+    <div className="space-y-6 pb-24 animate-fade-in">
+      <div className="flex items-center gap-3">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => onNavigate("dashboard")}
+          className="hover-scale smooth-transition"
+        >
+          <ArrowLeft className="w-5 h-5" />
+        </Button>
+        <div className="w-12 h-12 rounded-xl bg-gradient-success flex items-center justify-center shadow-glow animate-scale-in">
           <TrendingUp className="w-6 h-6 text-white" />
         </div>
         <div>
           <h1 className="text-2xl font-bold">Trade</h1>
-          <p className="text-muted-foreground">Professional-grade stock trading with real-time settlement</p>
+          <p className="text-muted-foreground">Professional trading simulator with realistic execution</p>
         </div>
       </div>
 
       <Tabs defaultValue="overview" className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="trade">Trade</TabsTrigger>
-          <TabsTrigger value="history">History</TabsTrigger>
-          <TabsTrigger value="chart">Chart</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-4 smooth-transition">
+          <TabsTrigger value="overview" className="smooth-transition">Overview</TabsTrigger>
+          <TabsTrigger value="trade" className="smooth-transition">Trade</TabsTrigger>
+          <TabsTrigger value="history" className="smooth-transition">History</TabsTrigger>
+          <TabsTrigger value="chart" className="smooth-transition">Chart</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="overview" className="space-y-6 mt-6">
+        <TabsContent value="overview" className="space-y-6 mt-6 animate-fade-in">
           <PortfolioSummary />
           <AssetAllocation />
 
@@ -53,15 +61,15 @@ const Trade = ({ onNavigate, onStockSearch }: TradeProps) => {
           </Card>
         </TabsContent>
 
-        <TabsContent value="trade" className="mt-6">
+        <TabsContent value="trade" className="mt-6 animate-fade-in">
           <StockTrading />
         </TabsContent>
 
-        <TabsContent value="history" className="mt-6">
+        <TabsContent value="history" className="mt-6 animate-fade-in">
           <TransactionHistory />
         </TabsContent>
 
-        <TabsContent value="chart" className="mt-6">
+        <TabsContent value="chart" className="mt-6 animate-fade-in">
           <TradingViewChart />
         </TabsContent>
       </Tabs>

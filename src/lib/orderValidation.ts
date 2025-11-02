@@ -7,7 +7,7 @@ export const orderSchema = z.object({
     .max(10, "Symbol must be less than 10 characters")
     .regex(/^[A-Z]+$/, "Symbol must contain only uppercase letters"),
   side: z.enum(['buy', 'sell'], { errorMap: () => ({ message: "Side must be 'buy' or 'sell'" }) }),
-  orderType: z.enum(['market', 'limit', 'stop'], { errorMap: () => ({ message: "Order type must be 'market', 'limit', or 'stop'" }) }),
+  orderType: z.enum(['market', 'limit', 'stop', 'stop-limit'], { errorMap: () => ({ message: "Order type must be 'market', 'limit', 'stop', or 'stop-limit'" }) }),
   quantity: z.number()
     .positive("Quantity must be positive")
     .int("Quantity must be a whole number")
@@ -83,6 +83,10 @@ export const validatePreTrade = (
 
   if (order.orderType === 'stop' && !order.stopPrice) {
     errors.push("Stop orders require a stop price");
+  }
+
+  if (order.orderType === 'stop-limit' && (!order.price || !order.stopPrice)) {
+    errors.push("Stop-limit orders require both stop price and limit price");
   }
 
   return {

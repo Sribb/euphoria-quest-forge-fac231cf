@@ -74,17 +74,18 @@ export const OrderManagement = () => {
   };
 
   return (
-    <Card className="p-6">
+    <Card className="p-6 animate-fade-in">
       <h3 className="text-xl font-bold mb-4">Recent Orders</h3>
 
       {orders.length === 0 ? (
         <p className="text-center text-muted-foreground py-8">No orders yet</p>
       ) : (
         <div className="space-y-3">
-          {orders.map((order) => (
+          {orders.map((order, index) => (
             <div
               key={order.id}
-              className="p-4 border border-border rounded-lg hover:border-primary/50 transition-colors"
+              className="p-4 border border-border rounded-lg hover:border-primary/50 smooth-transition hover-scale animate-fade-in"
+              style={{ animationDelay: `${index * 50}ms` }}
             >
               <div className="flex items-start justify-between mb-2">
                 <div>
@@ -149,7 +150,7 @@ export const OrderManagement = () => {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="w-full"
+                  className="w-full smooth-transition hover-scale"
                   onClick={() => handleCancelOrder(order.id)}
                 >
                   Cancel Order
