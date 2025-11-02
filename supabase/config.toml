@@ -1,5 +1,8 @@
 project_id = "xhruetneyvdpryihwolq"
 
+[functions.interactive-lesson-ai]
+verify_jwt = true
+
 [functions.execute-trade]
 verify_jwt = true
 

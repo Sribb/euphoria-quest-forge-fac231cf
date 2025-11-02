@@ -7,6 +7,7 @@ import { X, ChevronRight, CheckCircle2, Trophy, Star, Award, Lightbulb } from "l
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
+import { InteractiveLessonRouter } from "./InteractiveLessonRouter";
 
 interface InteractiveLessonViewerProps {
   lessonId: string;
@@ -255,6 +256,11 @@ export const InteractiveLessonViewer = ({ lessonId, onClose }: InteractiveLesson
         </div>
 
         <Progress value={progress} className="mb-6 h-3 animate-fade-in" style={{ animationDelay: "100ms" }} />
+
+        {/* New AI-Interactive Lesson Components */}
+        <div className="mb-6">
+          <InteractiveLessonRouter lessonId={lesson.id} />
+        </div>
 
         <Card className="p-8 animate-fade-in" style={{ animationDelay: "200ms" }}>
           <div className="flex items-center gap-2 mb-6">
