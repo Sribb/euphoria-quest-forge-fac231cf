@@ -1,16 +1,8 @@
-import { Trophy, Target, Brain, Zap, TrendingUp, BarChart3 } from "lucide-react";
+import { Trophy } from "lucide-react";
 import { GameCard } from "@/components/games/GameCard";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useState } from "react";
-import { StockPredictionGame } from "@/components/games/StockPredictionGame";
-import { TradingQuizGame } from "@/components/games/TradingQuizGame";
-import { PortfolioRaceGame } from "@/components/games/PortfolioRaceGame";
-import { MarketBattleGame } from "@/components/games/MarketBattleGame";
-import { FinancialRPG } from "@/components/games/FinancialRPG";
-import { InvestmentQuizAdventure } from "@/components/games/InvestmentQuizAdventure";
-import { MarketTimingChallenge } from "@/components/games/MarketTimingChallenge";
-import { DiversificationMaster } from "@/components/games/DiversificationMaster";
 import { MarketLogicGame } from "@/components/games/MarketLogicGame";
 import { ChartDecoderGame } from "@/components/games/ChartDecoderGame";
 import { RiskRewardMatrix } from "@/components/games/RiskRewardMatrix";
@@ -22,15 +14,8 @@ interface GamesProps {
   onNavigate: (tab: string) => void;
 }
 
-const iconMap: Record<string, any> = {
-  target: Target,
-  brain: Brain,
-  trophy: Trophy,
-  zap: Zap,
-};
-
 const Games = ({ onNavigate }: GamesProps) => {
-  const [activeGame, setActiveGame] = useState<"stock-prediction" | "trading-quiz" | "portfolio-race" | "market-battle" | "financial-rpg" | "quiz-adventure" | "market-timing" | "diversification" | "market-logic" | "chart-decoder" | "risk-reward" | "trade-tactician" | "portfolio-logic" | "market-mindset" | null>(null);
+  const [activeGame, setActiveGame] = useState<"market-logic" | "chart-decoder" | "risk-reward" | "trade-tactician" | "portfolio-logic" | "market-mindset" | null>(null);
 
   const { data: games = [], isLoading } = useQuery({
     queryKey: ["games"],
@@ -49,11 +34,8 @@ const Games = ({ onNavigate }: GamesProps) => {
 
   const handlePlayGame = (gameId: string) => {
     if (
-      gameId === "stock-prediction" || gameId === "trading-quiz" || gameId === "portfolio-race" || 
-      gameId === "market-battle" || gameId === "financial-rpg" || gameId === "quiz-adventure" || 
-      gameId === "market-timing" || gameId === "diversification" || gameId === "market-logic" || 
-      gameId === "chart-decoder" || gameId === "risk-reward" || gameId === "trade-tactician" || 
-      gameId === "portfolio-logic" || gameId === "market-mindset"
+      gameId === "market-logic" || gameId === "chart-decoder" || gameId === "risk-reward" || 
+      gameId === "trade-tactician" || gameId === "portfolio-logic" || gameId === "market-mindset"
     ) {
       setActiveGame(gameId);
     }
@@ -62,38 +44,6 @@ const Games = ({ onNavigate }: GamesProps) => {
   const handleCloseGame = () => {
     setActiveGame(null);
   };
-
-  if (activeGame === "stock-prediction") {
-    return <StockPredictionGame onClose={handleCloseGame} />;
-  }
-
-  if (activeGame === "trading-quiz") {
-    return <TradingQuizGame onClose={handleCloseGame} />;
-  }
-
-  if (activeGame === "portfolio-race") {
-    return <PortfolioRaceGame onClose={handleCloseGame} />;
-  }
-
-  if (activeGame === "market-battle") {
-    return <MarketBattleGame onClose={handleCloseGame} />;
-  }
-
-  if (activeGame === "financial-rpg") {
-    return <FinancialRPG onClose={handleCloseGame} />;
-  }
-
-  if (activeGame === "quiz-adventure") {
-    return <InvestmentQuizAdventure onClose={handleCloseGame} />;
-  }
-
-  if (activeGame === "market-timing") {
-    return <MarketTimingChallenge onClose={handleCloseGame} />;
-  }
-
-  if (activeGame === "diversification") {
-    return <DiversificationMaster onClose={handleCloseGame} />;
-  }
 
   if (activeGame === "market-logic") {
     return <MarketLogicGame onClose={handleCloseGame} />;
@@ -143,15 +93,7 @@ const Games = ({ onNavigate }: GamesProps) => {
           const Icon = Trophy;
           let gameId = "";
           
-          if (game.title.includes("Stock Prediction")) gameId = "stock-prediction";
-          else if (game.title.includes("Trading Quiz")) gameId = "trading-quiz";
-          else if (game.title.includes("Portfolio Race")) gameId = "portfolio-race";
-          else if (game.title.includes("Market Battle")) gameId = "market-battle";
-          else if (game.title.includes("Financial") || game.title.includes("Life")) gameId = "financial-rpg";
-          else if (game.title.includes("Quiz") || game.title.includes("Adventure")) gameId = "quiz-adventure";
-          else if (game.title.includes("Timing")) gameId = "market-timing";
-          else if (game.title.includes("Diversification")) gameId = "diversification";
-          else if (game.title.includes("Market Logic")) gameId = "market-logic";
+          if (game.title.includes("Market Logic")) gameId = "market-logic";
           else if (game.title.includes("Chart Decoder")) gameId = "chart-decoder";
           else if (game.title.includes("Risk/Reward")) gameId = "risk-reward";
           else if (game.title.includes("Trade Tactician")) gameId = "trade-tactician";
