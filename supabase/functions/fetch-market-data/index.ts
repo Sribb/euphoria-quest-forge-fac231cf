@@ -116,6 +116,10 @@ serve(async (req) => {
     }
 
     // Regular single symbol request
+    if (!params || !params.symbol) {
+      throw new Error('Symbol parameter is required for single quote requests');
+    }
+
     const cacheKey = getCacheKey(endpoint, params);
     
     // Check cache first
@@ -126,15 +130,16 @@ serve(async (req) => {
       });
     }
 
-    // Build query string from params
+    // Build query string from params - ensure symbol is included
     const queryParams = new URLSearchParams({
-      ...params,
+      symbol: params.symbol,
+      interval: params.interval || '1min',
       apikey: TWELVE_DATA_API_KEY!,
     });
 
     const url = `${TWELVE_DATA_BASE_URL}${endpoint}?${queryParams.toString()}`;
     
-    console.log(`Fetching from Twelve Data: ${endpoint}`, params);
+    console.log(`Fetching from Twelve Data: ${endpoint} for symbol ${params.symbol}`);
 
     const response = await fetch(url);
     const data = await response.json();
