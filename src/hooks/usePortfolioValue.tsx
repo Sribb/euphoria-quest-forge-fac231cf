@@ -52,11 +52,35 @@ export const usePortfolioValue = () => {
     refetchInterval: 60000, // Refresh every minute
   });
 
+  // Fetch pending settlements
+  const { data: pendingSettlements = [] } = useQuery({
+    queryKey: ["pending-settlements", portfolio?.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("settlements")
+        .select("*")
+        .eq("portfolio_id", portfolio?.id)
+        .eq("status", "pending");
+      
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!portfolio?.id,
+  });
+
   // Calculate total portfolio value with live prices
   const calculatePortfolioValue = () => {
-    if (!portfolio) return { totalValue: 10000, positionsValue: 0, cash: 10000, unrealizedPnL: 0 };
+    if (!portfolio) return { 
+      totalValue: 10000, 
+      positionsValue: 0, 
+      cash: 10000, 
+      unsettledCash: 0,
+      buyingPower: 10000,
+      unrealizedPnL: 0 
+    };
 
     const cash = Number(portfolio.cash_balance);
+    const unsettledCash = Number(portfolio.unsettled_cash || 0);
     let positionsValue = 0;
     let unrealizedPnL = 0;
 
@@ -72,12 +96,15 @@ export const usePortfolioValue = () => {
       unrealizedPnL += (positionValue - positionCost);
     });
 
-    const totalValue = cash + positionsValue;
+    const totalValue = cash + positionsValue + unsettledCash;
+    const buyingPower = cash; // Cash available for trading (excludes unsettled)
 
     return {
       totalValue,
       positionsValue,
       cash,
+      unsettledCash,
+      buyingPower,
       unrealizedPnL,
     };
   };
@@ -86,6 +113,7 @@ export const usePortfolioValue = () => {
     portfolio,
     portfolioAssets,
     livePrices,
+    pendingSettlements,
     ...calculatePortfolioValue(),
   };
 };

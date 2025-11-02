@@ -4,13 +4,16 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Search, TrendingUp, TrendingDown, DollarSign, ShoppingCart, Wallet, RefreshCw, ArrowDownCircle } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Search, TrendingUp, TrendingDown, DollarSign, ShoppingCart, Wallet, RefreshCw, ArrowDownCircle, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { alphaVantageService } from "@/lib/alphaVantageService";
 import { usePortfolioValue } from "@/hooks/usePortfolioValue";
+import { placeOrder } from "@/lib/orderService";
+import { orderSchema, type OrderInput } from "@/lib/orderValidation";
+import { OrderManagement } from "@/components/trade/OrderManagement";
 
 const popularStocks = [
   { symbol: "AAPL", name: "Apple Inc.", price: 185.92, change: 2.34, changePercent: 1.27, sector: "Technology" },
@@ -30,7 +33,8 @@ export const StockTrading = () => {
   const [quantity, setQuantity] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
   const [liveSymbol, setLiveSymbol] = useState("AAPL");
-  const { portfolio, portfolioAssets, livePrices } = usePortfolioValue();
+  const [isPlacingOrder, setIsPlacingOrder] = useState(false);
+  const { portfolio, portfolioAssets, livePrices, buyingPower, unsettledCash } = usePortfolioValue();
 
   const { data: liveQuote, isLoading: quoteLoading } = useQuery({
     queryKey: ["stockQuote", liveSymbol],
@@ -65,140 +69,110 @@ export const StockTrading = () => {
     : popularStocks;
 
   const totalCost = selectedStock.price * quantity;
-  const canAfford = portfolio && totalCost <= portfolio.cash_balance;
+  const canAfford = portfolio && totalCost <= buyingPower;
 
   const handleBuyStock = async () => {
-    if (!user || !portfolio || !canAfford) {
-      toast.error("Insufficient funds");
+    if (!user || !portfolio) {
+      toast.error("Please log in to place orders");
       return;
     }
 
+    setIsPlacingOrder(true);
+
     try {
-      const newCashBalance = Number(portfolio.cash_balance) - totalCost;
-      
-      // Only update cash balance, total_value will be calculated dynamically
-      const { error: portfolioError } = await supabase
-        .from("portfolios")
-        .update({ 
-          cash_balance: newCashBalance,
-          updated_at: new Date().toISOString()
-        })
-        .eq("id", portfolio.id);
+      // Validate order input
+      const orderInput: OrderInput = {
+        symbol: selectedStock.symbol,
+        side: 'buy',
+        orderType: 'market',
+        quantity: quantity,
+      };
 
-      if (portfolioError) throw portfolioError;
-
-      const { data: existingAsset } = await supabase
-        .from("portfolio_assets")
-        .select("*")
-        .eq("portfolio_id", portfolio.id)
-        .eq("asset_name", selectedStock.symbol)
-        .single();
-
-      if (existingAsset) {
-        const newQuantity = existingAsset.quantity + quantity;
-        const avgPrice = ((existingAsset.purchase_price * existingAsset.quantity) + (selectedStock.price * quantity)) / newQuantity;
-        
-        const { error: assetError } = await supabase
-          .from("portfolio_assets")
-          .update({
-            quantity: newQuantity,
-            purchase_price: avgPrice,
-            current_price: selectedStock.price,
-            updated_at: new Date().toISOString()
-          })
-          .eq("id", existingAsset.id);
-
-        if (assetError) throw assetError;
-      } else {
-        const { error: assetError } = await supabase
-          .from("portfolio_assets")
-          .insert({
-            portfolio_id: portfolio.id,
-            asset_name: selectedStock.symbol,
-            asset_type: "Stock",
-            quantity: quantity,
-            purchase_price: selectedStock.price,
-            current_price: selectedStock.price,
-          });
-
-        if (assetError) throw assetError;
+      const validation = orderSchema.safeParse(orderInput);
+      if (!validation.success) {
+        toast.error(validation.error.errors[0].message);
+        setIsPlacingOrder(false);
+        return;
       }
 
-      toast.success(`Purchased ${quantity} shares of ${selectedStock.symbol}`);
-      queryClient.invalidateQueries({ queryKey: ["portfolio"] });
-      queryClient.invalidateQueries({ queryKey: ["portfolio-assets"] });
-      setQuantity(1);
+      // Place order using order service
+      const result = await placeOrder(
+        user.id,
+        portfolio.id,
+        orderInput,
+        selectedStock.price
+      );
+
+      if (result.success) {
+        toast.success(`Order placed: BUY ${quantity} ${selectedStock.symbol}`);
+        queryClient.invalidateQueries({ queryKey: ["portfolio"] });
+        queryClient.invalidateQueries({ queryKey: ["portfolio-assets"] });
+        queryClient.invalidateQueries({ queryKey: ["orders"] });
+        setQuantity(1);
+      } else {
+        if (result.errors && result.errors.length > 0) {
+          result.errors.forEach(error => toast.error(error));
+        } else {
+          toast.error(result.error || "Failed to place order");
+        }
+      }
     } catch (error) {
-      console.error("Error buying stock:", error);
-      toast.error("Failed to purchase stock");
+      console.error("Error placing order:", error);
+      toast.error("An unexpected error occurred");
+    } finally {
+      setIsPlacingOrder(false);
     }
   };
 
   const handleSellStock = async (asset: any, sellQuantity: number) => {
     if (!user || !portfolio) return;
 
+    setIsPlacingOrder(true);
+
     try {
       const currentPrice = livePrices[asset.asset_name] || Number(asset.current_price);
-      const saleProceeds = currentPrice * sellQuantity;
-      const remainingQuantity = Number(asset.quantity) - sellQuantity;
 
-      // Calculate realized P&L
-      const costBasis = Number(asset.purchase_price) * sellQuantity;
-      const realizedPnL = saleProceeds - costBasis;
+      const orderInput: OrderInput = {
+        symbol: asset.asset_name,
+        side: 'sell',
+        orderType: 'market',
+        quantity: sellQuantity,
+      };
 
-      // Update cash balance with sale proceeds
-      const newCashBalance = Number(portfolio.cash_balance) + saleProceeds;
-      
-      const { error: portfolioError } = await supabase
-        .from("portfolios")
-        .update({ 
-          cash_balance: newCashBalance,
-          updated_at: new Date().toISOString()
-        })
-        .eq("id", portfolio.id);
-
-      if (portfolioError) throw portfolioError;
-
-      // Update or delete the asset
-      if (remainingQuantity > 0) {
-        const { error: assetError } = await supabase
-          .from("portfolio_assets")
-          .update({
-            quantity: remainingQuantity,
-            current_price: currentPrice,
-            updated_at: new Date().toISOString()
-          })
-          .eq("id", asset.id);
-
-        if (assetError) throw assetError;
-      } else {
-        const { error: deleteError } = await supabase
-          .from("portfolio_assets")
-          .delete()
-          .eq("id", asset.id);
-
-        if (deleteError) throw deleteError;
-      }
-
-      toast.success(
-        `Sold ${sellQuantity} shares of ${asset.asset_name} for $${saleProceeds.toFixed(2)}. ${
-          realizedPnL >= 0 ? "Profit" : "Loss"
-        }: $${Math.abs(realizedPnL).toFixed(2)}`
+      const result = await placeOrder(
+        user.id,
+        portfolio.id,
+        orderInput,
+        currentPrice
       );
-      
-      queryClient.invalidateQueries({ queryKey: ["portfolio"] });
-      queryClient.invalidateQueries({ queryKey: ["portfolio-assets"] });
+
+      if (result.success) {
+        const saleValue = currentPrice * sellQuantity;
+        toast.success(`Order placed: SELL ${sellQuantity} ${asset.asset_name} for $${saleValue.toFixed(2)}`);
+        queryClient.invalidateQueries({ queryKey: ["portfolio"] });
+        queryClient.invalidateQueries({ queryKey: ["portfolio-assets"] });
+        queryClient.invalidateQueries({ queryKey: ["orders"] });
+      } else {
+        if (result.errors && result.errors.length > 0) {
+          result.errors.forEach(error => toast.error(error));
+        } else {
+          toast.error(result.error || "Failed to place order");
+        }
+      }
     } catch (error) {
       console.error("Error selling stock:", error);
-      toast.error("Failed to sell stock");
+      toast.error("Failed to place sell order");
+    } finally {
+      setIsPlacingOrder(false);
     }
   };
 
   return (
     <Tabs defaultValue="buy" className="w-full">
-      <TabsList className="grid w-full grid-cols-2 mb-6">
+      <TabsList className="grid w-full grid-cols-3 mb-6">
         <TabsTrigger value="buy">Buy Stocks</TabsTrigger>
-        <TabsTrigger value="positions">My Positions</TabsTrigger>
+        <TabsTrigger value="positions">Positions</TabsTrigger>
+        <TabsTrigger value="orders">Orders</TabsTrigger>
       </TabsList>
 
       <TabsContent value="buy" className="space-y-6">
@@ -325,6 +299,16 @@ export const StockTrading = () => {
       <Card className="p-6 bg-gradient-hero border-0">
         <h3 className="text-lg font-bold mb-4">Order Details</h3>
 
+        {unsettledCash > 0 && (
+          <Alert className="mb-4 bg-warning/10 border-warning">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>
+              You have ${unsettledCash.toFixed(2)} in unsettled funds (T+2 settlement). 
+              These funds will be available after settlement.
+            </AlertDescription>
+          </Alert>
+        )}
+
         <div className="space-y-4">
           <div className="p-4 bg-card rounded-lg">
             <p className="text-sm text-muted-foreground mb-2">Selected Stock</p>
@@ -365,30 +349,50 @@ export const StockTrading = () => {
           </div>
 
           {portfolio && (
-            <div className="p-4 bg-card rounded-lg">
-              <div className="flex items-center gap-2 mb-2">
+            <div className="p-4 bg-card rounded-lg space-y-2">
+              <div className="flex items-center gap-2 mb-3">
                 <Wallet className="w-4 h-4 text-muted-foreground" />
-                <span className="text-sm text-muted-foreground">Available Cash</span>
+                <span className="text-sm font-semibold">Account Status</span>
               </div>
-              <p className="text-2xl font-bold">
-                ${portfolio.cash_balance.toLocaleString()}
-              </p>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <p className="text-xs text-muted-foreground">Buying Power</p>
+                  <p className="text-lg font-bold text-success">
+                    ${buyingPower.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+                  </p>
+                </div>
+                {unsettledCash > 0 && (
+                  <div>
+                    <p className="text-xs text-muted-foreground">Unsettled Cash</p>
+                    <p className="text-lg font-bold text-warning">
+                      ${unsettledCash.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+                    </p>
+                  </div>
+                )}
+              </div>
               {!canAfford && (
-                <p className="text-sm text-destructive mt-2">Insufficient funds</p>
+                <p className="text-sm text-destructive mt-2 flex items-center gap-1">
+                  <AlertCircle className="w-4 h-4" />
+                  Insufficient buying power
+                </p>
               )}
             </div>
           )}
 
           <Button
             onClick={handleBuyStock}
-            disabled={!canAfford || !portfolio}
+            disabled={!canAfford || !portfolio || isPlacingOrder}
             className="w-full text-lg py-6 bg-gradient-primary hover:opacity-90"
           >
             <DollarSign className="w-5 h-5 mr-2" />
-            Buy {quantity} {quantity === 1 ? "Share" : "Shares"}
+            {isPlacingOrder ? "Placing Order..." : `Buy ${quantity} ${quantity === 1 ? "Share" : "Shares"}`}
           </Button>
         </div>
       </Card>
+      </TabsContent>
+
+      <TabsContent value="orders" className="space-y-4">
+        <OrderManagement />
       </TabsContent>
 
       <TabsContent value="positions" className="space-y-4">
@@ -457,6 +461,7 @@ export const StockTrading = () => {
                     variant="destructive"
                     className="flex-1"
                     onClick={() => handleSellStock(asset, quantity)}
+                    disabled={isPlacingOrder}
                   >
                     <ArrowDownCircle className="w-4 h-4 mr-2" />
                     Sell All
@@ -468,6 +473,7 @@ export const StockTrading = () => {
                       const sellQty = Math.floor(quantity / 2);
                       if (sellQty > 0) handleSellStock(asset, sellQty);
                     }}
+                    disabled={isPlacingOrder}
                   >
                     Sell Half
                   </Button>

@@ -3,12 +3,10 @@ import { TrendingUp, ChevronLeft } from "lucide-react";
 import { PortfolioSummary } from "@/components/trade/PortfolioSummary";
 import { AssetAllocation } from "@/components/trade/AssetAllocation";
 import { StockTrading } from "@/components/trade/StockTrading";
+import { TransactionHistory } from "@/components/trade/TransactionHistory";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/hooks/useAuth";
 import { TradingViewChart } from "@/components/learn/TradingViewChart";
 
 interface TradeProps {
@@ -17,23 +15,6 @@ interface TradeProps {
 }
 
 const Trade = ({ onNavigate, onStockSearch }: TradeProps) => {
-  const { user } = useAuth();
-
-  const { data: portfolio } = useQuery({
-    queryKey: ["portfolio", user?.id],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("portfolios")
-        .select("*")
-        .eq("user_id", user?.id)
-        .single();
-      
-      if (error) throw error;
-      return data;
-    },
-    enabled: !!user?.id,
-  });
-
   return (
     <div className="space-y-6 pb-24">
       <div className="flex items-center gap-3 animate-fade-in">
@@ -42,15 +23,16 @@ const Trade = ({ onNavigate, onStockSearch }: TradeProps) => {
         </div>
         <div>
           <h1 className="text-2xl font-bold">Trade</h1>
-          <p className="text-muted-foreground">Buy and sell stocks with real-time market data</p>
+          <p className="text-muted-foreground">Professional-grade stock trading with real-time settlement</p>
         </div>
       </div>
 
       <Tabs defaultValue="overview" className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="trade">Trade Stocks</TabsTrigger>
-          <TabsTrigger value="chart">Live Chart</TabsTrigger>
+          <TabsTrigger value="trade">Trade</TabsTrigger>
+          <TabsTrigger value="history">History</TabsTrigger>
+          <TabsTrigger value="chart">Chart</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6 mt-6">
@@ -69,11 +51,14 @@ const Trade = ({ onNavigate, onStockSearch }: TradeProps) => {
               Search Stocks
             </Button>
           </Card>
-
         </TabsContent>
 
         <TabsContent value="trade" className="mt-6">
           <StockTrading />
+        </TabsContent>
+
+        <TabsContent value="history" className="mt-6">
+          <TransactionHistory />
         </TabsContent>
 
         <TabsContent value="chart" className="mt-6">

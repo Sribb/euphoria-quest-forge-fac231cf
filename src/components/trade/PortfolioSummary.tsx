@@ -1,9 +1,10 @@
-import { TrendingUp, TrendingDown, DollarSign } from "lucide-react";
+import { TrendingUp, TrendingDown, DollarSign, Clock } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { usePortfolioValue } from "@/hooks/usePortfolioValue";
 
 export const PortfolioSummary = () => {
-  const { totalValue, unrealizedPnL } = usePortfolioValue();
+  const { totalValue, unrealizedPnL, unsettledCash, buyingPower } = usePortfolioValue();
   
   const startingValue = 10000;
   const changeAmount = totalValue - startingValue;
@@ -46,6 +47,22 @@ export const PortfolioSummary = () => {
             </p>
           </div>
         )}
+
+        <div className="mt-4 pt-4 border-t border-border grid grid-cols-2 gap-4">
+          <div>
+            <p className="text-xs text-muted-foreground mb-1">Buying Power</p>
+            <p className="text-lg font-bold text-success">${buyingPower.toFixed(2)}</p>
+          </div>
+          {unsettledCash > 0 && (
+            <div>
+              <p className="text-xs text-muted-foreground mb-1 flex items-center gap-1">
+                <Clock className="w-3 h-3" />
+                Unsettled (T+2)
+              </p>
+              <p className="text-lg font-bold text-warning">${unsettledCash.toFixed(2)}</p>
+            </div>
+          )}
+        </div>
       </div>
     </Card>
   );

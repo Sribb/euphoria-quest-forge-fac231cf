@@ -244,6 +244,72 @@ export type Database = {
         }
         Relationships: []
       }
+      orders: {
+        Row: {
+          average_fill_price: number | null
+          canceled_at: string | null
+          commission: number | null
+          created_at: string
+          filled_at: string | null
+          filled_quantity: number | null
+          id: string
+          order_type: string
+          placed_at: string
+          portfolio_id: string
+          price: number | null
+          quantity: number
+          rejection_reason: string | null
+          side: string
+          status: string
+          stop_price: number | null
+          symbol: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          average_fill_price?: number | null
+          canceled_at?: string | null
+          commission?: number | null
+          created_at?: string
+          filled_at?: string | null
+          filled_quantity?: number | null
+          id?: string
+          order_type: string
+          placed_at?: string
+          portfolio_id: string
+          price?: number | null
+          quantity: number
+          rejection_reason?: string | null
+          side: string
+          status?: string
+          stop_price?: number | null
+          symbol: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          average_fill_price?: number | null
+          canceled_at?: string | null
+          commission?: number | null
+          created_at?: string
+          filled_at?: string | null
+          filled_quantity?: number | null
+          id?: string
+          order_type?: string
+          placed_at?: string
+          portfolio_id?: string
+          price?: number | null
+          quantity?: number
+          rejection_reason?: string | null
+          side?: string
+          status?: string
+          stop_price?: number | null
+          symbol?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       portfolio_assets: {
         Row: {
           asset_name: string
@@ -290,26 +356,32 @@ export type Database = {
       }
       portfolios: {
         Row: {
+          buying_power: number | null
           cash_balance: number
           created_at: string
           id: string
           total_value: number
+          unsettled_cash: number | null
           updated_at: string
           user_id: string
         }
         Insert: {
+          buying_power?: number | null
           cash_balance?: number
           created_at?: string
           id?: string
           total_value?: number
+          unsettled_cash?: number | null
           updated_at?: string
           user_id: string
         }
         Update: {
+          buying_power?: number | null
           cash_balance?: number
           created_at?: string
           id?: string
           total_value?: number
+          unsettled_cash?: number | null
           updated_at?: string
           user_id?: string
         }
@@ -395,6 +467,42 @@ export type Database = {
         }
         Relationships: []
       }
+      settlements: {
+        Row: {
+          amount: number
+          created_at: string
+          id: string
+          order_id: string
+          portfolio_id: string
+          settled_at: string | null
+          settlement_date: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          id?: string
+          order_id: string
+          portfolio_id: string
+          settled_at?: string | null
+          settlement_date: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          id?: string
+          order_id?: string
+          portfolio_id?: string
+          settled_at?: string | null
+          settlement_date?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       stocks: {
         Row: {
           created_at: string
@@ -457,6 +565,57 @@ export type Database = {
           last_login_date?: string | null
           longest_streak?: number
           updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      transaction_logs: {
+        Row: {
+          amount: number | null
+          balance_after: number | null
+          balance_before: number | null
+          created_at: string
+          description: string
+          fee: number | null
+          id: string
+          order_id: string | null
+          portfolio_id: string
+          price: number | null
+          quantity: number | null
+          symbol: string | null
+          transaction_type: string
+          user_id: string
+        }
+        Insert: {
+          amount?: number | null
+          balance_after?: number | null
+          balance_before?: number | null
+          created_at?: string
+          description: string
+          fee?: number | null
+          id?: string
+          order_id?: string | null
+          portfolio_id: string
+          price?: number | null
+          quantity?: number | null
+          symbol?: string | null
+          transaction_type: string
+          user_id: string
+        }
+        Update: {
+          amount?: number | null
+          balance_after?: number | null
+          balance_before?: number | null
+          created_at?: string
+          description?: string
+          fee?: number | null
+          id?: string
+          order_id?: string | null
+          portfolio_id?: string
+          price?: number | null
+          quantity?: number | null
+          symbol?: string | null
+          transaction_type?: string
           user_id?: string
         }
         Relationships: []
