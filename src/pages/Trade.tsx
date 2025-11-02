@@ -6,10 +6,10 @@ import { StockTrading } from "@/components/trade/StockTrading";
 import { TransactionHistory } from "@/components/trade/TransactionHistory";
 import { AIMarketPanel } from "@/components/trade/AIMarketPanel";
 import { AIScenarioViewer } from "@/components/trade/AIScenarioViewer";
+import { AIIntegratedChart } from "@/components/trade/AIIntegratedChart";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { TradingViewChart } from "@/components/learn/TradingViewChart";
 import { useAuth } from "@/hooks/useAuth";
 import { useAIMarket } from "@/hooks/useAIMarket";
 
@@ -20,6 +20,7 @@ interface TradeProps {
 
 const Trade = ({ onNavigate, onStockSearch }: TradeProps) => {
   const { user } = useAuth();
+  const [chartSymbol, setChartSymbol] = useState("AAPL");
   const {
     session,
     sessionId,
@@ -131,7 +132,7 @@ const Trade = ({ onNavigate, onStockSearch }: TradeProps) => {
         </TabsContent>
 
         <TabsContent value="chart" className="mt-6 animate-fade-in">
-          <TradingViewChart />
+          <AIIntegratedChart symbol={chartSymbol} />
         </TabsContent>
       </Tabs>
     </div>

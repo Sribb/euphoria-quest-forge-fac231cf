@@ -1,4 +1,4 @@
-import { BarChart3, TrendingUp, Target, Award, BookOpen, Clock, Trophy, Zap } from "lucide-react";
+import { BarChart3, TrendingUp, Target, Award, BookOpen, Clock, Trophy, Zap, ArrowLeft } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { useQuery } from "@tanstack/react-query";
@@ -7,6 +7,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell } from "recharts";
 import { alphaVantageService } from "@/lib/alphaVantageService";
 import { useEffect } from "react";
+import { Button } from "@/components/ui/button";
 
 interface AnalyticsProps {
   onNavigate: (tab: string) => void;
@@ -231,6 +232,14 @@ const Analytics = ({ onNavigate }: AnalyticsProps) => {
   return (
     <div className="space-y-6 pb-24">
       <div className="flex items-center gap-3 animate-fade-in">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => onNavigate('dashboard')}
+          className="hover-scale"
+        >
+          <ArrowLeft className="w-5 h-5" />
+        </Button>
         <div className="w-12 h-12 rounded-xl bg-gradient-accent flex items-center justify-center shadow-glow">
           <BarChart3 className="w-6 h-6 text-white" />
         </div>

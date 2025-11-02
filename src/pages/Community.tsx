@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
-import { Users, TrendingUp, Clock, Filter } from "lucide-react";
+import { Users, TrendingUp, Clock, Filter, ArrowLeft } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -194,6 +195,14 @@ const Community = ({ onNavigate }: CommunityProps) => {
       {/* Header */}
       <div className="flex items-center justify-between animate-fade-in">
         <div className="flex items-center gap-3">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => onNavigate('dashboard')}
+            className="hover-scale"
+          >
+            <ArrowLeft className="w-5 h-5" />
+          </Button>
           <div className="w-12 h-12 rounded-xl bg-gradient-accent flex items-center justify-center shadow-glow">
             <Users className="w-6 h-6 text-white" />
           </div>

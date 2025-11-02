@@ -1,4 +1,4 @@
-import { User, Award, TrendingUp, Target, Edit } from "lucide-react";
+import { User, Award, TrendingUp, Target, Edit, ArrowLeft } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -108,6 +108,14 @@ const Profile = ({ onNavigate }: ProfileProps) => {
   return (
     <div className="space-y-6 pb-24">
       <div className="flex items-center gap-3 animate-fade-in">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => onNavigate('dashboard')}
+          className="hover-scale"
+        >
+          <ArrowLeft className="w-5 h-5" />
+        </Button>
         <div className="w-12 h-12 rounded-xl bg-gradient-primary flex items-center justify-center shadow-glow">
           <User className="w-6 h-6 text-white" />
         </div>

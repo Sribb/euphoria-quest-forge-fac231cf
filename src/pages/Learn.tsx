@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { LessonCard } from "@/components/learn/LessonCard";
 import { LessonViewer } from "@/components/learn/LessonViewer";
-import { BookOpen, Trophy } from "lucide-react";
+import { BookOpen, Trophy, ArrowLeft } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -105,6 +106,14 @@ const Learn = ({ onNavigate, selectedLesson, onLessonSelect }: LearnProps) => {
     <div className="space-y-6 pb-24">
       <div className="animate-fade-in">
         <div className="flex items-center gap-3 mb-4">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => onNavigate('dashboard')}
+            className="hover-scale"
+          >
+            <ArrowLeft className="w-5 h-5" />
+          </Button>
           <div className="w-12 h-12 rounded-xl bg-gradient-primary flex items-center justify-center shadow-glow">
             <BookOpen className="w-6 h-6 text-white" />
           </div>

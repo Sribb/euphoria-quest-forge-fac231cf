@@ -2,9 +2,12 @@ import { UserSummary } from "@/components/dashboard/UserSummary";
 import { StreakPanel } from "@/components/dashboard/StreakPanel";
 import { QuickAccessTiles } from "@/components/dashboard/QuickAccessTiles";
 import { AISuggestions } from "@/components/dashboard/AISuggestions";
+import { AIWelcomeCard } from "@/components/dashboard/AIWelcomeCard";
 import { MarketTrends } from "@/components/dashboard/MarketTrends";
 import { EconomicNews } from "@/components/dashboard/EconomicNews";
 import { EconomicCalendar } from "@/components/dashboard/EconomicCalendar";
+import { useAuth } from "@/hooks/useAuth";
+import { useAIMarket } from "@/hooks/useAIMarket";
 
 interface DashboardProps {
   onNavigate: (tab: string) => void;
@@ -12,6 +15,9 @@ interface DashboardProps {
 }
 
 const Dashboard = ({ onNavigate, onStockSearch }: DashboardProps) => {
+  const { user } = useAuth();
+  const { session } = useAIMarket(user?.id);
+
   return (
     <div className="min-h-screen bg-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6 pb-24 pt-20">
@@ -21,6 +27,14 @@ const Dashboard = ({ onNavigate, onStockSearch }: DashboardProps) => {
         <div className="animate-fade-in" style={{ animationDelay: "100ms" }}>
           <StreakPanel />
         </div>
+        
+        {/* AI Welcome Card - Show if no active AI session */}
+        {!session && (
+          <div className="animate-fade-in" style={{ animationDelay: "150ms" }}>
+            <AIWelcomeCard onNavigate={onNavigate} />
+          </div>
+        )}
+        
         <div className="animate-fade-in" style={{ animationDelay: "200ms" }}>
           <MarketTrends />
         </div>
@@ -36,7 +50,7 @@ const Dashboard = ({ onNavigate, onStockSearch }: DashboardProps) => {
           <QuickAccessTiles onNavigate={onNavigate} />
         </div>
         <div className="animate-fade-in" style={{ animationDelay: "500ms" }}>
-          <AISuggestions />
+          <AISuggestions onNavigate={onNavigate} />
         </div>
       </div>
     </div>

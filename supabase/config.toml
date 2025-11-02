@@ -11,3 +11,12 @@ verify_jwt = true
 
 [functions.fetch-market-data]
 verify_jwt = false
+
+[functions.ai-market-engine]
+verify_jwt = true
+
+[functions.ai-trade-analysis]
+verify_jwt = true
+
+[functions.ai-scenario-generation]
+verify_jwt = true
