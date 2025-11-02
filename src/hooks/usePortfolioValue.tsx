@@ -35,9 +35,9 @@ export const usePortfolioValue = () => {
     enabled: !!portfolio?.id,
   });
 
-  // Fetch live prices for all holdings with longer intervals to avoid rate limits
+  // Fetch live prices for all holdings with aggressive caching
   const { data: livePrices = {} } = useQuery({
-    queryKey: ["live-prices", portfolioAssets.map(a => a.asset_name).join(",")],
+    queryKey: ["live-prices", portfolioAssets.map(a => a.asset_name).sort().join(",")],
     queryFn: async () => {
       if (portfolioAssets.length === 0) return {};
       
@@ -49,8 +49,9 @@ export const usePortfolioValue = () => {
       );
     },
     enabled: portfolioAssets.length > 0,
-    refetchInterval: 120000, // Refresh every 2 minutes to avoid rate limits
-    staleTime: 60000, // Consider data fresh for 1 minute
+    refetchInterval: 300000, // Refresh every 5 minutes to avoid rate limits
+    staleTime: 240000, // Consider data fresh for 4 minutes
+    retry: false, // Don't retry on failure, use mock data
   });
 
   // Fetch pending settlements

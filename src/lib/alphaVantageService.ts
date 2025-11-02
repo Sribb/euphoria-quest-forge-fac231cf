@@ -196,18 +196,66 @@ export const alphaVantageService = {
   async getMultipleQuotes(symbols: string[]): Promise<Map<string, StockQuote>> {
     const results = new Map<string, StockQuote>();
     
-    // To avoid rate limits, fetch quotes sequentially with a small delay
-    // This is slower but prevents API errors
-    for (const symbol of symbols) {
-      try {
-        const quote = await this.getGlobalQuote(symbol);
-        results.set(symbol, quote);
-        // Small delay between requests (only 100ms since we have caching on server)
-        await new Promise(resolve => setTimeout(resolve, 100));
-      } catch (error) {
-        console.error(`Failed to fetch ${symbol}:`, error);
-        results.set(symbol, this.getMockQuote(symbol));
+    if (symbols.length === 0) return results;
+
+    try {
+      // Use batch endpoint to fetch all symbols at once (single API call)
+      const { data, error } = await supabase.functions.invoke('fetch-market-data', {
+        body: {
+          endpoint: '/quote',
+          symbols: symbols,
+          params: {
+            interval: '1min',
+          }
+        }
+      });
+
+      if (error || data?.status === 'error') {
+        console.warn('Batch quote failed, using mock data for all symbols');
+        // Return mock data for all symbols
+        symbols.forEach(symbol => {
+          results.set(symbol, this.getMockQuote(symbol));
+        });
+        return results;
       }
+
+      // Handle both single and multiple symbol responses
+      const quotes = Array.isArray(data) ? data : [data];
+      
+      quotes.forEach((quoteData: TwelveDataQuote) => {
+        if (!quoteData || !quoteData.symbol) return;
+        
+        const price = parseFloat(quoteData.close);
+        const previousClose = parseFloat(quoteData.previous_close);
+        const change = parseFloat(quoteData.change);
+        const changePercent = parseFloat(quoteData.percent_change);
+
+        results.set(quoteData.symbol, {
+          symbol: quoteData.symbol,
+          price: price || 0,
+          change: change || 0,
+          changePercent: changePercent || 0,
+          high: parseFloat(quoteData.high) || 0,
+          low: parseFloat(quoteData.low) || 0,
+          open: parseFloat(quoteData.open) || 0,
+          previousClose: previousClose || 0,
+          volume: parseInt(quoteData.volume) || 0,
+        });
+      });
+
+      // Fill in mock data for any missing symbols
+      symbols.forEach(symbol => {
+        if (!results.has(symbol)) {
+          results.set(symbol, this.getMockQuote(symbol));
+        }
+      });
+
+    } catch (error) {
+      console.error('Error fetching batch quotes:', error);
+      // Return mock data for all symbols on error
+      symbols.forEach(symbol => {
+        results.set(symbol, this.getMockQuote(symbol));
+      });
     }
     
     return results;

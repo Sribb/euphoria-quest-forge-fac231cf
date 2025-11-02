@@ -6,7 +6,7 @@ const TWELVE_DATA_BASE_URL = 'https://api.twelvedata.com';
 
 // Simple in-memory cache with TTL
 const cache = new Map<string, { data: any; timestamp: number }>();
-const CACHE_TTL = 60000; // 1 minute cache
+const CACHE_TTL = 300000; // 5 minute cache to minimize API calls
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -58,12 +58,64 @@ serve(async (req) => {
   }
 
   try {
-    const { endpoint, params } = await req.json();
+    const { endpoint, params, symbols } = await req.json();
     
     if (!endpoint) {
       throw new Error('Endpoint is required');
     }
 
+    // Special handling for batch quotes
+    if (endpoint === '/quote' && symbols && Array.isArray(symbols)) {
+      const batchCacheKey = `batch-quote-${symbols.sort().join(',')}`;
+      
+      // Check cache first
+      const cachedData = getCachedData(batchCacheKey);
+      if (cachedData) {
+        console.log('Returning cached batch quotes');
+        return new Response(JSON.stringify(cachedData), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+
+      // Fetch all symbols in one request using batch endpoint
+      const symbolsParam = symbols.join(',');
+      const queryParams = new URLSearchParams({
+        symbol: symbolsParam,
+        interval: params?.interval || '1min',
+        apikey: TWELVE_DATA_API_KEY!,
+      });
+
+      const url = `${TWELVE_DATA_BASE_URL}/quote?${queryParams.toString()}`;
+      console.log(`Fetching batch quotes for: ${symbolsParam}`);
+
+      const response = await fetch(url);
+      const data = await response.json();
+
+      // Check for API errors
+      if (data.status === 'error' || data.code === 429) {
+        console.error('Twelve Data API error (batch):', data);
+        
+        // Return expired cache if available
+        const expiredCache = cache.get(batchCacheKey);
+        if (expiredCache) {
+          console.log('Using expired cache for batch quotes due to rate limit');
+          return new Response(JSON.stringify(expiredCache.data), {
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          });
+        }
+        
+        throw new Error(data.message || 'API request failed');
+      }
+
+      // Cache successful response
+      setCachedData(batchCacheKey, data);
+
+      return new Response(JSON.stringify(data), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    // Regular single symbol request
     const cacheKey = getCacheKey(endpoint, params);
     
     // Check cache first
