@@ -44,6 +44,353 @@ export type Database = {
         }
         Relationships: []
       }
+      ai_competitors: {
+        Row: {
+          capital: number
+          created_at: string
+          id: string
+          last_action_at: string | null
+          learning_data: Json
+          name: string
+          performance_score: number
+          personality_traits: Json
+          portfolio: Json
+          session_id: string
+          strategy_type: string
+          total_trades: number
+          updated_at: string
+          win_rate: number
+        }
+        Insert: {
+          capital?: number
+          created_at?: string
+          id?: string
+          last_action_at?: string | null
+          learning_data?: Json
+          name: string
+          performance_score?: number
+          personality_traits?: Json
+          portfolio?: Json
+          session_id: string
+          strategy_type: string
+          total_trades?: number
+          updated_at?: string
+          win_rate?: number
+        }
+        Update: {
+          capital?: number
+          created_at?: string
+          id?: string
+          last_action_at?: string | null
+          learning_data?: Json
+          name?: string
+          performance_score?: number
+          personality_traits?: Json
+          portfolio?: Json
+          session_id?: string
+          strategy_type?: string
+          total_trades?: number
+          updated_at?: string
+          win_rate?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_competitors_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "ai_market_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ai_market_events: {
+        Row: {
+          affected_sectors: string[]
+          affected_symbols: string[]
+          cause_chain: Json
+          created_at: string
+          description: string
+          duration_minutes: number
+          event_type: string
+          expires_at: string
+          id: string
+          impact_multiplier: number
+          is_active: boolean
+          session_id: string
+          severity: string
+          title: string
+          triggered_at: string
+        }
+        Insert: {
+          affected_sectors?: string[]
+          affected_symbols?: string[]
+          cause_chain?: Json
+          created_at?: string
+          description: string
+          duration_minutes?: number
+          event_type: string
+          expires_at: string
+          id?: string
+          impact_multiplier?: number
+          is_active?: boolean
+          session_id: string
+          severity: string
+          title: string
+          triggered_at?: string
+        }
+        Update: {
+          affected_sectors?: string[]
+          affected_symbols?: string[]
+          cause_chain?: Json
+          created_at?: string
+          description?: string
+          duration_minutes?: number
+          event_type?: string
+          expires_at?: string
+          id?: string
+          impact_multiplier?: number
+          is_active?: boolean
+          session_id?: string
+          severity?: string
+          title?: string
+          triggered_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_market_events_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "ai_market_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ai_market_sessions: {
+        Row: {
+          created_at: string
+          id: string
+          last_active_at: string
+          market_trend: string
+          market_volatility: number
+          session_name: string
+          session_seed: string
+          session_status: string
+          started_at: string
+          total_trades: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          last_active_at?: string
+          market_trend?: string
+          market_volatility?: number
+          session_name?: string
+          session_seed: string
+          session_status?: string
+          started_at?: string
+          total_trades?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          last_active_at?: string
+          market_trend?: string
+          market_volatility?: number
+          session_name?: string
+          session_seed?: string
+          session_status?: string
+          started_at?: string
+          total_trades?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      ai_scenario_predictions: {
+        Row: {
+          confidence_score: number
+          created_at: string
+          description: string
+          id: string
+          predicted_outcomes: Json
+          probability_distribution: Json
+          proposed_action: Json
+          scenario_type: string
+          session_id: string
+          time_horizon_minutes: number
+          title: string
+          user_id: string
+        }
+        Insert: {
+          confidence_score?: number
+          created_at?: string
+          description: string
+          id?: string
+          predicted_outcomes?: Json
+          probability_distribution?: Json
+          proposed_action: Json
+          scenario_type: string
+          session_id: string
+          time_horizon_minutes?: number
+          title: string
+          user_id: string
+        }
+        Update: {
+          confidence_score?: number
+          created_at?: string
+          description?: string
+          id?: string
+          predicted_outcomes?: Json
+          probability_distribution?: Json
+          proposed_action?: Json
+          scenario_type?: string
+          session_id?: string
+          time_horizon_minutes?: number
+          title?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_scenario_predictions_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "ai_market_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ai_stock_prices: {
+        Row: {
+          ai_sentiment: number
+          current_price: number
+          day_high: number
+          day_low: number
+          day_open: number
+          id: string
+          previous_price: number
+          price_momentum: number
+          session_id: string
+          symbol: string
+          updated_at: string
+          volatility_index: number
+          volume: number
+        }
+        Insert: {
+          ai_sentiment?: number
+          current_price: number
+          day_high: number
+          day_low: number
+          day_open: number
+          id?: string
+          previous_price: number
+          price_momentum?: number
+          session_id: string
+          symbol: string
+          updated_at?: string
+          volatility_index?: number
+          volume?: number
+        }
+        Update: {
+          ai_sentiment?: number
+          current_price?: number
+          day_high?: number
+          day_low?: number
+          day_open?: number
+          id?: string
+          previous_price?: number
+          price_momentum?: number
+          session_id?: string
+          symbol?: string
+          updated_at?: string
+          volatility_index?: number
+          volume?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_stock_prices_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "ai_market_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ai_trade_analysis: {
+        Row: {
+          ai_recommendation: string
+          alternative_strategies: Json
+          analysis_type: string
+          created_at: string
+          id: string
+          impact_prediction: Json
+          opportunity_score: number
+          order_id: string | null
+          proposed_price: number
+          quantity: number
+          reasoning: string
+          risk_assessment: Json
+          session_id: string
+          symbol: string
+          trade_type: string
+          user_id: string
+        }
+        Insert: {
+          ai_recommendation: string
+          alternative_strategies?: Json
+          analysis_type: string
+          created_at?: string
+          id?: string
+          impact_prediction: Json
+          opportunity_score?: number
+          order_id?: string | null
+          proposed_price: number
+          quantity: number
+          reasoning: string
+          risk_assessment: Json
+          session_id: string
+          symbol: string
+          trade_type: string
+          user_id: string
+        }
+        Update: {
+          ai_recommendation?: string
+          alternative_strategies?: Json
+          analysis_type?: string
+          created_at?: string
+          id?: string
+          impact_prediction?: Json
+          opportunity_score?: number
+          order_id?: string | null
+          proposed_price?: number
+          quantity?: number
+          reasoning?: string
+          risk_assessment?: Json
+          session_id?: string
+          symbol?: string
+          trade_type?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_trade_analysis_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ai_trade_analysis_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "ai_market_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       comments: {
         Row: {
           content: string
