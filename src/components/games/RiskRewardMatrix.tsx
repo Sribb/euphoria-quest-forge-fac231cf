@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { X, AlertTriangle } from "lucide-react";
+import { X, AlertTriangle, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 
 const portfolios = [
@@ -72,16 +72,16 @@ export const RiskRewardMatrix = ({ onClose }: RiskRewardMatrixProps) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-background/95 z-50 overflow-y-auto">
+    <div className="fixed inset-0 bg-background/95 z-50 overflow-y-auto animate-fade-in">
       <div className="container max-w-4xl mx-auto p-6">
-        <div className="flex items-center justify-between mb-6">
-          <div>
+        <div className="flex items-center justify-between mb-6 animate-scale-in">
+          <Button variant="ghost" size="icon" onClick={onClose} className="hover-scale">
+            <ArrowLeft className="w-5 h-5" />
+          </Button>
+          <div className="flex-1 text-center">
             <h2 className="text-2xl font-bold">Risk/Reward Matrix</h2>
             <p className="text-muted-foreground">Arrange portfolios from safest to riskiest</p>
           </div>
-          <Button variant="outline" size="icon" onClick={onClose}>
-            <X className="w-5 h-5" />
-          </Button>
         </div>
 
         <div className="grid grid-cols-2 gap-6">

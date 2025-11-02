@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { X } from "lucide-react";
+import { X, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 
 const chartScenarios = [
@@ -58,20 +58,20 @@ export const ChartDecoderGame = ({ onClose }: ChartDecoderGameProps) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-background/95 z-50 overflow-y-auto">
+    <div className="fixed inset-0 bg-background/95 z-50 overflow-y-auto animate-fade-in">
       <div className="container max-w-4xl mx-auto p-6">
-        <div className="flex items-center justify-between mb-6">
-          <div>
+        <div className="flex items-center justify-between mb-6 animate-scale-in">
+          <Button variant="ghost" size="icon" onClick={onClose} className="hover-scale">
+            <ArrowLeft className="w-5 h-5" />
+          </Button>
+          <div className="flex-1 text-center">
             <h2 className="text-2xl font-bold">Chart Decoder</h2>
             <p className="text-muted-foreground">Identify logical chart continuations</p>
           </div>
-          <div className="flex items-center gap-4">
-            <Badge variant="secondary" className="text-lg px-4 py-2">Score: {score}</Badge>
-            <Button variant="outline" size="icon" onClick={onClose}><X className="w-5 h-5" /></Button>
-          </div>
+          <Badge variant="secondary" className="text-lg px-4 py-2">Score: {score}</Badge>
         </div>
 
-        <Card className="p-8">
+        <Card className="p-8 animate-slide-in-right">
           <Badge className="mb-4">Pattern {currentScenario + 1}</Badge>
           <h3 className="text-lg font-bold mb-2">{scenario.pattern}</h3>
           <p className="text-muted-foreground mb-6">{scenario.description}</p>

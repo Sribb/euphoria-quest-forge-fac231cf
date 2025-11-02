@@ -15,19 +15,29 @@ const Dashboard = ({ onNavigate, onStockSearch }: DashboardProps) => {
   return (
     <div className="min-h-screen bg-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6 pb-24 pt-20">
-        <UserSummary onNavigate={onNavigate} />
-        <StreakPanel />
-        <MarketTrends />
+        <div className="animate-fade-in">
+          <UserSummary onNavigate={onNavigate} />
+        </div>
+        <div className="animate-fade-in" style={{ animationDelay: "100ms" }}>
+          <StreakPanel />
+        </div>
+        <div className="animate-fade-in" style={{ animationDelay: "200ms" }}>
+          <MarketTrends />
+        </div>
         
         {/* Economic Dashboard Section */}
-        <div className="space-y-6">
+        <div className="space-y-6 animate-fade-in" style={{ animationDelay: "300ms" }}>
           <h2 className="text-2xl font-bold text-center mb-6">Economic Dashboard</h2>
           <EconomicNews />
           <EconomicCalendar />
         </div>
         
-        <QuickAccessTiles onNavigate={onNavigate} />
-        <AISuggestions />
+        <div className="animate-fade-in" style={{ animationDelay: "400ms" }}>
+          <QuickAccessTiles onNavigate={onNavigate} />
+        </div>
+        <div className="animate-fade-in" style={{ animationDelay: "500ms" }}>
+          <AISuggestions />
+        </div>
       </div>
     </div>
   );

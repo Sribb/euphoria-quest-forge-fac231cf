@@ -20,7 +20,7 @@ export const GameCard = ({ title, description, icon, reward, difficulty, onClick
   };
 
   return (
-    <Card className="p-5 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg cursor-pointer" onClick={onClick}>
+    <Card className="p-5 hover-lift cursor-pointer smooth-transition" onClick={onClick}>
       <div className="flex items-start gap-4">
         <div className="w-14 h-14 rounded-xl bg-gradient-primary flex items-center justify-center shadow-glow">
           {icon}
@@ -44,7 +44,7 @@ export const GameCard = ({ title, description, icon, reward, difficulty, onClick
                 <span className="font-bold">+10 XP</span>
               </div>
             </div>
-            <Button size="sm" className="bg-gradient-primary hover:opacity-90">
+            <Button size="sm" className="bg-gradient-primary hover:opacity-90 smooth-transition">
               Play Now
             </Button>
           </div>

@@ -52,7 +52,7 @@ const Index = () => {
   // Show stock detail page
   if (selectedStock) {
     return (
-      <div className="min-h-screen bg-background pt-20 pb-20">
+      <div className="min-h-screen bg-background pt-20 pb-20 animate-fade-in">
         <div className="max-w-2xl mx-auto px-4">
           <StockDetail symbol={selectedStock} onBack={handleBackToStockSearch} />
         </div>
@@ -64,7 +64,7 @@ const Index = () => {
   // Show stock search page
   if (showStockSearch) {
     return (
-      <div className="min-h-screen bg-background pt-20 pb-20">
+      <div className="min-h-screen bg-background pt-20 pb-20 animate-fade-in">
         <div className="max-w-2xl mx-auto px-4">
           <StockSearch 
             onNavigate={handleNavigate}
@@ -104,7 +104,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background pt-20 pb-20">
-      <div className="max-w-2xl mx-auto px-4">
+      <div className="max-w-2xl mx-auto px-4 animate-fade-in" key={activeTab}>
         {renderContent()}
       </div>
       <Navigation activeTab={activeTab} onTabChange={handleNavigate} onSelectStock={handleStockSelect} />

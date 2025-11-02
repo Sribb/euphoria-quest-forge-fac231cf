@@ -103,6 +103,14 @@ export default {
           from: { transform: "scale(0.95)", opacity: "0" },
           to: { transform: "scale(1)", opacity: "1" },
         },
+        "slide-in-right": {
+          from: { opacity: "0", transform: "translateX(20px)" },
+          to: { opacity: "1", transform: "translateX(0)" },
+        },
+        "slide-in-left": {
+          from: { opacity: "0", transform: "translateX(-20px)" },
+          to: { opacity: "1", transform: "translateX(0)" },
+        },
         "bounce-subtle": {
           "0%, 100%": { transform: "translateY(0)" },
           "50%": { transform: "translateY(-5px)" },
@@ -120,13 +128,30 @@ export default {
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
-        "fade-in": "fade-in 0.5s ease-out",
-        "scale-in": "scale-in 0.3s ease-out",
+        "fade-in": "fade-in 0.5s ease-in-out",
+        "scale-in": "scale-in 0.3s ease-in-out",
+        "slide-in-right": "slide-in-right 0.4s ease-in-out",
+        "slide-in-left": "slide-in-left 0.4s ease-in-out",
         "bounce-subtle": "bounce-subtle 2s ease-in-out infinite",
         "shimmer": "shimmer 3s linear infinite",
         "coin-collect": "coin-collect 0.6s ease-out",
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [
+    require("tailwindcss-animate"),
+    function({ addUtilities }: any) {
+      addUtilities({
+        '.hover-scale': {
+          '@apply transition-transform duration-200 ease-in-out hover:scale-105': {},
+        },
+        '.hover-lift': {
+          '@apply transition-all duration-300 ease-in-out hover:-translate-y-1 hover:shadow-lg': {},
+        },
+        '.smooth-transition': {
+          '@apply transition-all duration-300 ease-in-out': {},
+        },
+      })
+    },
+  ],
 } satisfies Config;
