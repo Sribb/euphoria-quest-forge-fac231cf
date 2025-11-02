@@ -103,6 +103,44 @@ export type Database = {
           },
         ]
       }
+      ai_lesson_interactions: {
+        Row: {
+          ai_response: string
+          created_at: string
+          id: string
+          interaction_type: string
+          lesson_id: string
+          user_id: string
+          user_input: string | null
+        }
+        Insert: {
+          ai_response: string
+          created_at?: string
+          id?: string
+          interaction_type: string
+          lesson_id: string
+          user_id: string
+          user_input?: string | null
+        }
+        Update: {
+          ai_response?: string
+          created_at?: string
+          id?: string
+          interaction_type?: string
+          lesson_id?: string
+          user_id?: string
+          user_input?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_lesson_interactions_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
+            referencedRelation: "lessons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ai_market_events: {
         Row: {
           affected_sectors: string[]
