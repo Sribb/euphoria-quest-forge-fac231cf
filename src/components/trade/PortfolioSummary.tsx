@@ -18,21 +18,21 @@ export const PortfolioSummary = () => {
         <DollarSign className="w-5 h-5 text-success" />
       </div>
 
-      <div className="space-y-2">
-        <div className="text-4xl font-bold">
+      <div className="space-y-2 smooth-transition">
+        <div className="text-4xl font-bold smooth-transition">
           ${totalValue.toLocaleString()}
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 animate-fade-in">
           {isPositive ? (
-            <TrendingUp className="w-5 h-5 text-success" />
+            <TrendingUp className="w-5 h-5 text-success smooth-transition" />
           ) : (
-            <TrendingDown className="w-5 h-5 text-destructive" />
+            <TrendingDown className="w-5 h-5 text-destructive smooth-transition" />
           )}
-          <span className={`text-lg font-semibold ${isPositive ? "text-success" : "text-destructive"}`}>
+          <span className={`text-lg font-semibold smooth-transition ${isPositive ? "text-success" : "text-destructive"}`}>
             {isPositive ? "+" : ""}{change.toFixed(2)}%
           </span>
-          <span className="text-muted-foreground">
+          <span className="text-muted-foreground smooth-transition">
             (${Math.abs(changeAmount).toFixed(2)})
           </span>
         </div>
@@ -40,26 +40,26 @@ export const PortfolioSummary = () => {
         <p className="text-sm text-muted-foreground">Since inception</p>
         
         {unrealizedPnL !== 0 && (
-          <div className="mt-4 pt-4 border-t border-border">
+          <div className="mt-4 pt-4 border-t border-border animate-fade-in">
             <p className="text-xs text-muted-foreground mb-1">Unrealized P&L</p>
-            <p className={`text-lg font-bold ${unrealizedPnL >= 0 ? "text-success" : "text-destructive"}`}>
+            <p className={`text-lg font-bold smooth-transition ${unrealizedPnL >= 0 ? "text-success" : "text-destructive"}`}>
               {unrealizedPnL >= 0 ? "+" : ""}${unrealizedPnL.toFixed(2)}
             </p>
           </div>
         )}
 
         <div className="mt-4 pt-4 border-t border-border grid grid-cols-2 gap-4">
-          <div>
+          <div className="animate-fade-in">
             <p className="text-xs text-muted-foreground mb-1">Buying Power</p>
-            <p className="text-lg font-bold text-success">${buyingPower.toFixed(2)}</p>
+            <p className="text-lg font-bold text-success smooth-transition">${buyingPower.toFixed(2)}</p>
           </div>
           {unsettledCash > 0 && (
-            <div>
+            <div className="animate-fade-in">
               <p className="text-xs text-muted-foreground mb-1 flex items-center gap-1">
                 <Clock className="w-3 h-3" />
                 Unsettled (T+2)
               </p>
-              <p className="text-lg font-bold text-warning">${unsettledCash.toFixed(2)}</p>
+              <p className="text-lg font-bold text-warning smooth-transition">${unsettledCash.toFixed(2)}</p>
             </div>
           )}
         </div>

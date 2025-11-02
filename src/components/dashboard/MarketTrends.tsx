@@ -49,22 +49,22 @@ export const MarketTrends = () => {
             return (
               <div
                 key={market.symbol}
-                className="flex items-center justify-between p-4 bg-card rounded-lg hover:bg-card/80 transition-colors"
+                className="flex items-center justify-between p-4 bg-card rounded-lg hover:bg-card/80 smooth-transition hover-scale animate-fade-in"
               >
                 <div className="flex items-center gap-3">
                   {isPositive ? (
-                    <TrendingUp className="w-5 h-5 text-success" />
+                    <TrendingUp className="w-5 h-5 text-success smooth-transition" />
                   ) : (
-                    <TrendingDown className="w-5 h-5 text-destructive" />
+                    <TrendingDown className="w-5 h-5 text-destructive smooth-transition" />
                   )}
                   <div>
                     <p className="font-bold">{market.name}</p>
                     <p className="text-xs text-muted-foreground">{market.symbol}</p>
                   </div>
                 </div>
-                <div className="text-right">
+                <div className="text-right smooth-transition">
                   <p className="font-bold text-lg">${quote.price.toFixed(2)}</p>
-                  <p className={`text-sm font-semibold ${isPositive ? "text-success" : "text-destructive"}`}>
+                  <p className={`text-sm font-semibold smooth-transition ${isPositive ? "text-success" : "text-destructive"}`}>
                     {isPositive ? "+" : ""}{quote.change.toFixed(2)} ({isPositive ? "+" : ""}{quote.changePercent.toFixed(2)}%)
                   </p>
                 </div>
@@ -77,7 +77,7 @@ export const MarketTrends = () => {
       <h3 className="text-xl font-bold mb-3 mt-6">Sector Performance</h3>
       <div className="grid grid-cols-2 gap-3">
         {sectors.map((sector) => (
-          <div key={sector.name} className="p-3 bg-card rounded-lg">
+          <div key={sector.name} className="p-3 bg-card rounded-lg smooth-transition hover-lift animate-fade-in">
             <div className="flex items-center justify-between mb-1">
               <p className="text-sm font-medium">{sector.name}</p>
               <Badge
@@ -93,7 +93,7 @@ export const MarketTrends = () => {
                 {sector.status}
               </Badge>
             </div>
-            <p className={`text-lg font-bold ${
+            <p className={`text-lg font-bold smooth-transition ${
               sector.performance.startsWith("+") ? "text-success" : "text-destructive"
             }`}>
               {sector.performance}

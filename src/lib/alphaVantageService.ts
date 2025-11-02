@@ -1,5 +1,4 @@
-const ALPHA_VANTAGE_API_KEY = import.meta.env.VITE_ALPHA_VANTAGE_API_KEY || "demo";
-const BASE_URL = "https://www.alphavantage.co/query";
+import { supabase } from "@/integrations/supabase/client";
 
 export interface StockQuote {
   symbol: string;
@@ -22,36 +21,64 @@ export interface IntradayData {
   volume: number;
 }
 
+interface TwelveDataQuote {
+  symbol: string;
+  name: string;
+  exchange: string;
+  datetime: string;
+  open: string;
+  high: string;
+  low: string;
+  close: string;
+  volume: string;
+  previous_close: string;
+  change: string;
+  percent_change: string;
+}
+
 export const alphaVantageService = {
   async getGlobalQuote(symbol: string): Promise<StockQuote> {
     try {
-      const response = await fetch(
-        `${BASE_URL}?function=GLOBAL_QUOTE&symbol=${symbol}&apikey=${ALPHA_VANTAGE_API_KEY}`
-      );
-      const data = await response.json();
-      
-      // If demo key or API error, return mock data
-      if (data.Information || data.Note || !data["Global Quote"]) {
+      const { data, error } = await supabase.functions.invoke('fetch-market-data', {
+        body: {
+          endpoint: '/quote',
+          params: {
+            symbol: symbol,
+            interval: '1min',
+          }
+        }
+      });
+
+      if (error) {
+        console.error(`Error fetching quote for ${symbol}:`, error);
         return this.getMockQuote(symbol);
       }
-      
-      if (data["Global Quote"]) {
-        const quote = data["Global Quote"];
-        return {
-          symbol: quote["01. symbol"],
-          price: parseFloat(quote["05. price"]),
-          change: parseFloat(quote["09. change"]),
-          changePercent: parseFloat(quote["10. change percent"].replace("%", "")),
-          high: parseFloat(quote["03. high"]),
-          low: parseFloat(quote["04. low"]),
-          open: parseFloat(quote["02. open"]),
-          previousClose: parseFloat(quote["08. previous close"]),
-          volume: parseInt(quote["06. volume"]),
-        };
+
+      // Check for API errors in response
+      if (data?.status === 'error' || !data) {
+        console.warn(`No data available for ${symbol}, using mock data`);
+        return this.getMockQuote(symbol);
       }
-      throw new Error("Invalid response from Alpha Vantage");
+
+      const quote = data as TwelveDataQuote;
+      const price = parseFloat(quote.close);
+      const previousClose = parseFloat(quote.previous_close);
+      const change = parseFloat(quote.change);
+      const changePercent = parseFloat(quote.percent_change);
+
+      return {
+        symbol: quote.symbol,
+        price: price || 0,
+        change: change || 0,
+        changePercent: changePercent || 0,
+        high: parseFloat(quote.high) || 0,
+        low: parseFloat(quote.low) || 0,
+        open: parseFloat(quote.open) || 0,
+        previousClose: previousClose || 0,
+        volume: parseInt(quote.volume) || 0,
+      };
     } catch (error) {
-      console.error("Error fetching quote:", error);
+      console.error(`Error fetching quote for ${symbol}:`, error);
       return this.getMockQuote(symbol);
     }
   },
@@ -66,6 +93,10 @@ export const alphaVantageService = {
       "GOOGL": 140.30,
       "AMZN": 145.75,
       "TSLA": 242.80,
+      "META": 352.78,
+      "NVDA": 495.50,
+      "JPM": 145.20,
+      "V": 245.80,
     };
     
     const basePrice = mockPrices[symbol] || 100;
@@ -87,24 +118,35 @@ export const alphaVantageService = {
 
   async getIntradayData(symbol: string, interval: "1min" | "5min" | "15min" | "30min" | "60min" = "5min"): Promise<IntradayData[]> {
     try {
-      const response = await fetch(
-        `${BASE_URL}?function=TIME_SERIES_INTRADAY&symbol=${symbol}&interval=${interval}&apikey=${ALPHA_VANTAGE_API_KEY}`
-      );
-      const data = await response.json();
-      
-      const timeSeriesKey = `Time Series (${interval})`;
-      if (data[timeSeriesKey]) {
-        const timeSeries = data[timeSeriesKey];
-        return Object.entries(timeSeries).map(([timestamp, values]: [string, any]) => ({
-          timestamp,
-          open: parseFloat(values["1. open"]),
-          high: parseFloat(values["2. high"]),
-          low: parseFloat(values["3. low"]),
-          close: parseFloat(values["4. close"]),
-          volume: parseInt(values["5. volume"]),
+      const { data, error } = await supabase.functions.invoke('fetch-market-data', {
+        body: {
+          endpoint: '/time_series',
+          params: {
+            symbol: symbol,
+            interval: interval,
+            outputsize: 'compact',
+          }
+        }
+      });
+
+      if (error || data?.status === 'error') {
+        console.error(`Error fetching intraday data for ${symbol}:`, error || data);
+        throw new Error('Failed to fetch intraday data');
+      }
+
+      // Twelve Data returns time series in 'values' array
+      if (data?.values && Array.isArray(data.values)) {
+        return data.values.map((value: any) => ({
+          timestamp: value.datetime,
+          open: parseFloat(value.open),
+          high: parseFloat(value.high),
+          low: parseFloat(value.low),
+          close: parseFloat(value.close),
+          volume: parseInt(value.volume) || 0,
         }));
       }
-      throw new Error("Invalid response from Alpha Vantage");
+
+      throw new Error("Invalid response format");
     } catch (error) {
       console.error("Error fetching intraday data:", error);
       throw error;
@@ -113,17 +155,28 @@ export const alphaVantageService = {
 
   async searchSymbol(keywords: string): Promise<Array<{ symbol: string; name: string }>> {
     try {
-      const response = await fetch(
-        `${BASE_URL}?function=SYMBOL_SEARCH&keywords=${keywords}&apikey=${ALPHA_VANTAGE_API_KEY}`
-      );
-      const data = await response.json();
-      
-      if (data.bestMatches) {
-        return data.bestMatches.map((match: any) => ({
-          symbol: match["1. symbol"],
-          name: match["2. name"],
+      const { data, error } = await supabase.functions.invoke('fetch-market-data', {
+        body: {
+          endpoint: '/symbol_search',
+          params: {
+            symbol: keywords,
+          }
+        }
+      });
+
+      if (error || data?.status === 'error') {
+        console.error('Error searching symbol:', error || data);
+        return [];
+      }
+
+      // Twelve Data returns search results in 'data' array
+      if (data?.data && Array.isArray(data.data)) {
+        return data.data.map((match: any) => ({
+          symbol: match.symbol,
+          name: match.instrument_name || match.symbol,
         }));
       }
+
       return [];
     } catch (error) {
       console.error("Error searching symbol:", error);
@@ -143,17 +196,48 @@ export const alphaVantageService = {
   async getMultipleQuotes(symbols: string[]): Promise<Map<string, StockQuote>> {
     const results = new Map<string, StockQuote>();
     
-    for (const symbol of symbols) {
-      try {
-        const quote = await this.getGlobalQuote(symbol);
-        results.set(symbol, quote);
-        // Reduced delay to avoid rate limits but keep reasonable speed
-        await new Promise(resolve => setTimeout(resolve, 1000));
-      } catch (error) {
-        console.error(`Failed to fetch ${symbol}:`, error);
-      }
-    }
+    // Fetch all quotes in parallel for better performance
+    const quotePromises = symbols.map(symbol => 
+      this.getGlobalQuote(symbol)
+        .then(quote => ({ symbol, quote }))
+        .catch(error => {
+          console.error(`Failed to fetch ${symbol}:`, error);
+          return { symbol, quote: this.getMockQuote(symbol) };
+        })
+    );
+    
+    const quotes = await Promise.all(quotePromises);
+    
+    quotes.forEach(({ symbol, quote }) => {
+      results.set(symbol, quote);
+    });
     
     return results;
+  },
+
+  // New method to get current price only (faster for quick updates)
+  async getCurrentPrice(symbol: string): Promise<number> {
+    try {
+      const { data, error } = await supabase.functions.invoke('fetch-market-data', {
+        body: {
+          endpoint: '/price',
+          params: {
+            symbol: symbol,
+          }
+        }
+      });
+
+      if (error || data?.status === 'error' || !data?.price) {
+        console.error(`Error fetching price for ${symbol}:`, error || data);
+        const mockQuote = this.getMockQuote(symbol);
+        return mockQuote.price;
+      }
+
+      return parseFloat(data.price);
+    } catch (error) {
+      console.error(`Error fetching price for ${symbol}:`, error);
+      const mockQuote = this.getMockQuote(symbol);
+      return mockQuote.price;
+    }
   },
 };
