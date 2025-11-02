@@ -2,11 +2,15 @@ import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { X, ChevronRight, CheckCircle2 } from "lucide-react";
+import { X, ChevronRight, CheckCircle2, Lightbulb } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { getLessonContent } from "./InteractiveLessonContent";
+import { AILessonChatbot } from "./AILessonChatbot";
+import { AIContextualHelp } from "./AIContextualHelp";
+import { InteractiveLessonSimulation } from "./InteractiveLessonSimulation";
+import { TradingViewChart } from "./TradingViewChart";
 
 interface LessonViewerProps {
   lessonId: string;
@@ -35,6 +39,8 @@ export const LessonViewer = ({ lessonId, onClose }: LessonViewerProps) => {
   const [progress, setProgress] = useState(0);
   const [quizAnswer, setQuizAnswer] = useState<number | null>(null);
   const [showQuizFeedback, setShowQuizFeedback] = useState(false);
+  const [showAdaptiveHelp, setShowAdaptiveHelp] = useState(false);
+  const [adaptiveGuidance, setAdaptiveGuidance] = useState<string | null>(null);
 
   useEffect(() => {
     loadLesson();
@@ -138,6 +144,52 @@ export const LessonViewer = ({ lessonId, onClose }: LessonViewerProps) => {
     setShowQuizFeedback(true);
   };
 
+  const fetchAdaptiveGuidance = async () => {
+    try {
+      const { data, error } = await supabase.functions.invoke("ai-lesson-assistant", {
+        body: {
+          action: "adaptive_guidance",
+          lessonId,
+        },
+      });
+
+      if (error) throw error;
+      setAdaptiveGuidance(data.response);
+      setShowAdaptiveHelp(true);
+    } catch (error) {
+      console.error("Adaptive guidance error:", error);
+      toast.error("Failed to load AI guidance");
+    }
+  };
+
+  const enhanceContentWithHelp = (content: string) => {
+    const terms = [
+      "diversification",
+      "compound interest",
+      "risk tolerance",
+      "asset allocation",
+      "volatility",
+      "market capitalization",
+      "dividend",
+      "portfolio",
+      "index fund",
+      "ETF",
+    ];
+
+    let enhancedContent = content;
+    terms.forEach((term) => {
+      const regex = new RegExp(`\\b${term}\\b`, "gi");
+      if (regex.test(enhancedContent)) {
+        enhancedContent = enhancedContent.replace(
+          regex,
+          `<span data-term="${term}">$&</span>`
+        );
+      }
+    });
+
+    return enhancedContent;
+  };
+
   const currentContent = sections[currentSection];
 
   if (!lesson) return null;
@@ -157,10 +209,97 @@ export const LessonViewer = ({ lessonId, onClose }: LessonViewerProps) => {
 
         <Progress value={progress} className="mb-6 h-3" />
 
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-4xl mx-auto space-y-6">
+          {/* Adaptive AI Guidance */}
+          {showAdaptiveHelp && adaptiveGuidance && (
+            <Card className="p-4 bg-primary/5 border-primary/20 animate-fade-in">
+              <div className="flex items-start gap-3">
+                <Lightbulb className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                <div>
+                  <h4 className="font-semibold mb-2">AI Adaptive Guidance</h4>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    {adaptiveGuidance}
+                  </p>
+                </div>
+              </div>
+            </Card>
+          )}
+
           <Card className="p-6">
-            <h2 className="text-2xl font-bold mb-4">{currentContent.title}</h2>
-            <p className="text-lg leading-relaxed mb-6">{currentContent.content}</p>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-2xl font-bold">{currentContent.title}</h2>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={fetchAdaptiveGuidance}
+                className="gap-2"
+              >
+                <Lightbulb className="w-4 h-4" />
+                Get AI Tips
+              </Button>
+            </div>
+            
+            <div className="text-lg leading-relaxed mb-6">
+              {currentContent.content.split(". ").map((sentence, idx) => {
+                const terms = ["diversification", "compound interest", "risk tolerance", "asset allocation", "volatility"];
+                let hasTerm = false;
+                let termFound = "";
+                
+                terms.forEach(term => {
+                  if (sentence.toLowerCase().includes(term.toLowerCase())) {
+                    hasTerm = true;
+                    termFound = term;
+                  }
+                });
+
+                if (hasTerm) {
+                  const parts = sentence.split(new RegExp(`(${termFound})`, 'gi'));
+                  return (
+                    <span key={idx}>
+                      {parts.map((part, partIdx) => 
+                        part.toLowerCase() === termFound.toLowerCase() ? (
+                          <AIContextualHelp
+                            key={partIdx}
+                            term={part}
+                            lessonId={lessonId}
+                            lessonTitle={lesson.title}
+                          >
+                            {part}
+                          </AIContextualHelp>
+                        ) : (
+                          part
+                        )
+                      )}
+                      {idx < currentContent.content.split(". ").length - 1 ? ". " : ""}
+                    </span>
+                  );
+                }
+                
+                return <span key={idx}>{sentence}{idx < currentContent.content.split(". ").length - 1 ? ". " : ""}</span>;
+              })}
+            </div>
+
+            {/* Interactive Simulation for specific lessons */}
+            {lesson.order_index >= 3 && lesson.order_index <= 6 && (
+              <InteractiveLessonSimulation
+                lessonId={lessonId}
+                simulationType={
+                  lesson.order_index === 3 ? "diversification" :
+                  lesson.order_index === 4 ? "compound" :
+                  lesson.order_index === 5 ? "risk" : "portfolio"
+                }
+                onComplete={(score) => {
+                  toast.success(`Great work! Simulation score: ${score}/100`);
+                }}
+              />
+            )}
+
+            {/* Live Market Chart for technical lessons */}
+            {lesson.order_index >= 7 && lesson.order_index <= 9 && (
+              <div className="my-6">
+                <TradingViewChart />
+              </div>
+            )}
 
             {currentContent.quiz && (
               <div className="mt-6 space-y-4">
@@ -221,6 +360,13 @@ export const LessonViewer = ({ lessonId, onClose }: LessonViewerProps) => {
             </div>
           </Card>
 
+          {/* AI Lesson Chatbot */}
+          <AILessonChatbot
+            lessonId={lessonId}
+            lessonTitle={lesson.title}
+            currentContent={currentContent.title}
+            userProgress={progress}
+          />
         </div>
       </div>
     </div>
