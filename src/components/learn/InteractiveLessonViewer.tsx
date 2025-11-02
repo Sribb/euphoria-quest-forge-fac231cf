@@ -3,7 +3,9 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { X, ChevronRight, CheckCircle2, Trophy, Star, Award, Lightbulb } from "lucide-react";
+import { X, ChevronRight, CheckCircle2, Trophy, Star, Award, Lightbulb, ArrowLeft } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
@@ -34,6 +36,7 @@ interface LessonSection {
 
 export const InteractiveLessonViewer = ({ lessonId, onClose }: InteractiveLessonViewerProps) => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [lesson, setLesson] = useState<any>(null);
   const [currentSection, setCurrentSection] = useState(0);
   const [progress, setProgress] = useState(0);
@@ -240,15 +243,34 @@ export const InteractiveLessonViewer = ({ lessonId, onClose }: InteractiveLesson
     <div className="fixed inset-0 bg-background/95 z-50 overflow-y-auto">
       <div className="max-w-5xl mx-auto p-6">
         <div className="flex items-center justify-between mb-6 animate-fade-in">
-          <div>
-            <div className="flex items-center gap-2 mb-2">
-              <Badge variant={lesson.difficulty === 'advanced' ? 'destructive' : lesson.difficulty === 'intermediate' ? 'secondary' : 'default'}>
-                {lesson.difficulty}
-              </Badge>
-              <Badge variant="outline">{lesson.duration_minutes} min</Badge>
+          <div className="flex items-center gap-4">
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button 
+                    variant="ghost" 
+                    size="icon"
+                    onClick={() => navigate(-1)}
+                    className="hover:bg-primary/10"
+                  >
+                    <ArrowLeft className="w-5 h-5" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Go Back</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+            <div>
+              <div className="flex items-center gap-2 mb-2">
+                <Badge variant={lesson.difficulty === 'advanced' ? 'destructive' : lesson.difficulty === 'intermediate' ? 'secondary' : 'default'}>
+                  {lesson.difficulty}
+                </Badge>
+                <Badge variant="outline">{lesson.duration_minutes} min</Badge>
+              </div>
+              <h1 className="text-3xl font-bold">{lesson.title}</h1>
+              <p className="text-muted-foreground mt-1">{lesson.description}</p>
             </div>
-            <h1 className="text-3xl font-bold">{lesson.title}</h1>
-            <p className="text-muted-foreground mt-1">{lesson.description}</p>
           </div>
           <Button variant="ghost" size="icon" onClick={onClose}>
             <X className="w-6 h-6" />
