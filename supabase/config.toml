@@ -1,5 +1,8 @@
 project_id = "xhruetneyvdpryihwolq"
 
+[functions.execute-trade]
+verify_jwt = true
+
 [functions.update-streak]
 verify_jwt = true
 
