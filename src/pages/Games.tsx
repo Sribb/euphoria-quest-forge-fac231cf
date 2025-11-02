@@ -1,4 +1,4 @@
-import { Trophy, Target, Brain, Zap } from "lucide-react";
+import { Trophy, Target, Brain, Zap, TrendingUp, BarChart3 } from "lucide-react";
 import { GameCard } from "@/components/games/GameCard";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -11,6 +11,12 @@ import { FinancialRPG } from "@/components/games/FinancialRPG";
 import { InvestmentQuizAdventure } from "@/components/games/InvestmentQuizAdventure";
 import { MarketTimingChallenge } from "@/components/games/MarketTimingChallenge";
 import { DiversificationMaster } from "@/components/games/DiversificationMaster";
+import { MarketLogicGame } from "@/components/games/MarketLogicGame";
+import { ChartDecoderGame } from "@/components/games/ChartDecoderGame";
+import { RiskRewardMatrix } from "@/components/games/RiskRewardMatrix";
+import { TradeTacticianGame } from "@/components/games/TradeTacticianGame";
+import { PortfolioLogicGame } from "@/components/games/PortfolioLogicGame";
+import { MarketMindsetGame } from "@/components/games/MarketMindsetGame";
 
 interface GamesProps {
   onNavigate: (tab: string) => void;
@@ -24,7 +30,7 @@ const iconMap: Record<string, any> = {
 };
 
 const Games = ({ onNavigate }: GamesProps) => {
-  const [activeGame, setActiveGame] = useState<"stock-prediction" | "trading-quiz" | "portfolio-race" | "market-battle" | "financial-rpg" | "quiz-adventure" | "market-timing" | "diversification" | null>(null);
+  const [activeGame, setActiveGame] = useState<"stock-prediction" | "trading-quiz" | "portfolio-race" | "market-battle" | "financial-rpg" | "quiz-adventure" | "market-timing" | "diversification" | "market-logic" | "chart-decoder" | "risk-reward" | "trade-tactician" | "portfolio-logic" | "market-mindset" | null>(null);
 
   const { data: games = [], isLoading } = useQuery({
     queryKey: ["games"],
@@ -42,7 +48,13 @@ const Games = ({ onNavigate }: GamesProps) => {
   });
 
   const handlePlayGame = (gameId: string) => {
-    if (gameId === "stock-prediction" || gameId === "trading-quiz" || gameId === "portfolio-race" || gameId === "market-battle" || gameId === "financial-rpg" || gameId === "quiz-adventure" || gameId === "market-timing" || gameId === "diversification") {
+    if (
+      gameId === "stock-prediction" || gameId === "trading-quiz" || gameId === "portfolio-race" || 
+      gameId === "market-battle" || gameId === "financial-rpg" || gameId === "quiz-adventure" || 
+      gameId === "market-timing" || gameId === "diversification" || gameId === "market-logic" || 
+      gameId === "chart-decoder" || gameId === "risk-reward" || gameId === "trade-tactician" || 
+      gameId === "portfolio-logic" || gameId === "market-mindset"
+    ) {
       setActiveGame(gameId);
     }
   };
@@ -81,6 +93,30 @@ const Games = ({ onNavigate }: GamesProps) => {
 
   if (activeGame === "diversification") {
     return <DiversificationMaster onClose={handleCloseGame} />;
+  }
+
+  if (activeGame === "market-logic") {
+    return <MarketLogicGame onClose={handleCloseGame} />;
+  }
+
+  if (activeGame === "chart-decoder") {
+    return <ChartDecoderGame onClose={handleCloseGame} />;
+  }
+
+  if (activeGame === "risk-reward") {
+    return <RiskRewardMatrix onClose={handleCloseGame} />;
+  }
+
+  if (activeGame === "trade-tactician") {
+    return <TradeTacticianGame onClose={handleCloseGame} />;
+  }
+
+  if (activeGame === "portfolio-logic") {
+    return <PortfolioLogicGame onClose={handleCloseGame} />;
+  }
+
+  if (activeGame === "market-mindset") {
+    return <MarketMindsetGame onClose={handleCloseGame} />;
   }
 
   return (
