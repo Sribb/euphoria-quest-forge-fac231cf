@@ -196,21 +196,19 @@ export const alphaVantageService = {
   async getMultipleQuotes(symbols: string[]): Promise<Map<string, StockQuote>> {
     const results = new Map<string, StockQuote>();
     
-    // Fetch all quotes in parallel for better performance
-    const quotePromises = symbols.map(symbol => 
-      this.getGlobalQuote(symbol)
-        .then(quote => ({ symbol, quote }))
-        .catch(error => {
-          console.error(`Failed to fetch ${symbol}:`, error);
-          return { symbol, quote: this.getMockQuote(symbol) };
-        })
-    );
-    
-    const quotes = await Promise.all(quotePromises);
-    
-    quotes.forEach(({ symbol, quote }) => {
-      results.set(symbol, quote);
-    });
+    // To avoid rate limits, fetch quotes sequentially with a small delay
+    // This is slower but prevents API errors
+    for (const symbol of symbols) {
+      try {
+        const quote = await this.getGlobalQuote(symbol);
+        results.set(symbol, quote);
+        // Small delay between requests (only 100ms since we have caching on server)
+        await new Promise(resolve => setTimeout(resolve, 100));
+      } catch (error) {
+        console.error(`Failed to fetch ${symbol}:`, error);
+        results.set(symbol, this.getMockQuote(symbol));
+      }
+    }
     
     return results;
   },

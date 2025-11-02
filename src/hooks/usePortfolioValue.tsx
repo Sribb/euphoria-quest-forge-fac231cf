@@ -35,7 +35,7 @@ export const usePortfolioValue = () => {
     enabled: !!portfolio?.id,
   });
 
-  // Fetch live prices for all holdings
+  // Fetch live prices for all holdings with longer intervals to avoid rate limits
   const { data: livePrices = {} } = useQuery({
     queryKey: ["live-prices", portfolioAssets.map(a => a.asset_name).join(",")],
     queryFn: async () => {
@@ -49,7 +49,8 @@ export const usePortfolioValue = () => {
       );
     },
     enabled: portfolioAssets.length > 0,
-    refetchInterval: 60000, // Refresh every minute
+    refetchInterval: 120000, // Refresh every 2 minutes to avoid rate limits
+    staleTime: 60000, // Consider data fresh for 1 minute
   });
 
   // Fetch pending settlements

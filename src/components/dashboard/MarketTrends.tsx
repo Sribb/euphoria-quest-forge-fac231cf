@@ -15,8 +15,8 @@ export const MarketTrends = () => {
   const { data: marketQuotes, isLoading } = useQuery({
     queryKey: ["marketIndices"],
     queryFn: () => alphaVantageService.getMultipleQuotes(MARKET_SYMBOLS.map(m => m.symbol)),
-    refetchInterval: 60000,
-    staleTime: 30000,
+    refetchInterval: 120000, // Refresh every 2 minutes to avoid rate limits
+    staleTime: 60000, // Consider data fresh for 1 minute
   });
 
   const sectors = [
