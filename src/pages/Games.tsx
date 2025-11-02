@@ -151,6 +151,12 @@ const Games = ({ onNavigate }: GamesProps) => {
           else if (game.title.includes("Quiz") || game.title.includes("Adventure")) gameId = "quiz-adventure";
           else if (game.title.includes("Timing")) gameId = "market-timing";
           else if (game.title.includes("Diversification")) gameId = "diversification";
+          else if (game.title.includes("Market Logic")) gameId = "market-logic";
+          else if (game.title.includes("Chart Decoder")) gameId = "chart-decoder";
+          else if (game.title.includes("Risk/Reward")) gameId = "risk-reward";
+          else if (game.title.includes("Trade Tactician")) gameId = "trade-tactician";
+          else if (game.title.includes("Portfolio Logic")) gameId = "portfolio-logic";
+          else if (game.title.includes("Market Mindset")) gameId = "market-mindset";
 
           return (
             <div
