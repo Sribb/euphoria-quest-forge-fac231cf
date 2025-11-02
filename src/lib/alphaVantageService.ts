@@ -37,7 +37,15 @@ interface TwelveDataQuote {
 }
 
 export const alphaVantageService = {
+  // Use mock data by default for free tier - set to false to enable real API calls
+  USE_MOCK_DATA: true,
+  
   async getGlobalQuote(symbol: string): Promise<StockQuote> {
+    // Always use mock data for now to avoid rate limits
+    if (this.USE_MOCK_DATA) {
+      return this.getMockQuote(symbol);
+    }
+
     try {
       const { data, error } = await supabase.functions.invoke('fetch-market-data', {
         body: {
@@ -97,26 +105,40 @@ export const alphaVantageService = {
       "NVDA": 495.50,
       "JPM": 145.20,
       "V": 245.80,
+      "NFLX": 485.20,
+      "JNJ": 152.30,
+      "WMT": 168.40,
+      "PG": 152.80,
+      "BAC": 32.45,
+      "DIS": 98.75,
     };
     
     const basePrice = mockPrices[symbol] || 100;
-    const change = (Math.random() - 0.5) * 5;
+    // Add small random variation to simulate market movement
+    const variation = (Math.random() - 0.5) * 2; // +/- $1
+    const price = basePrice + variation;
+    const change = variation;
     const changePercent = (change / basePrice) * 100;
     
     return {
       symbol,
-      price: basePrice,
-      change,
-      changePercent,
-      high: basePrice + Math.random() * 3,
-      low: basePrice - Math.random() * 3,
-      open: basePrice + (Math.random() - 0.5) * 2,
-      previousClose: basePrice - change,
+      price: Number(price.toFixed(2)),
+      change: Number(change.toFixed(2)),
+      changePercent: Number(changePercent.toFixed(2)),
+      high: Number((price + Math.random() * 2).toFixed(2)),
+      low: Number((price - Math.random() * 2).toFixed(2)),
+      open: Number((price + (Math.random() - 0.5)).toFixed(2)),
+      previousClose: Number((price - change).toFixed(2)),
       volume: Math.floor(Math.random() * 10000000) + 1000000,
     };
   },
 
   async getIntradayData(symbol: string, interval: "1min" | "5min" | "15min" | "30min" | "60min" = "5min"): Promise<IntradayData[]> {
+    // Use mock intraday data to avoid rate limits
+    if (this.USE_MOCK_DATA) {
+      return this.getMockIntradayData(symbol);
+    }
+
     try {
       const { data, error } = await supabase.functions.invoke('fetch-market-data', {
         body: {
@@ -149,8 +171,33 @@ export const alphaVantageService = {
       throw new Error("Invalid response format");
     } catch (error) {
       console.error("Error fetching intraday data:", error);
-      throw error;
+      return this.getMockIntradayData(symbol);
     }
+  },
+
+  getMockIntradayData(symbol: string): IntradayData[] {
+    const mockQuote = this.getMockQuote(symbol);
+    const data: IntradayData[] = [];
+    const now = new Date();
+    
+    // Generate 30 data points going back in time
+    for (let i = 29; i >= 0; i--) {
+      const timestamp = new Date(now.getTime() - i * 5 * 60000); // 5 minute intervals
+      const basePrice = mockQuote.price;
+      const variation = (Math.random() - 0.5) * 3;
+      const close = basePrice + variation;
+      
+      data.push({
+        timestamp: timestamp.toISOString(),
+        open: close + (Math.random() - 0.5),
+        high: close + Math.random() * 2,
+        low: close - Math.random() * 2,
+        close: close,
+        volume: Math.floor(Math.random() * 1000000) + 100000,
+      });
+    }
+    
+    return data;
   },
 
   async searchSymbol(keywords: string): Promise<Array<{ symbol: string; name: string }>> {
@@ -197,6 +244,14 @@ export const alphaVantageService = {
     const results = new Map<string, StockQuote>();
     
     if (symbols.length === 0) return results;
+
+    // Use mock data to avoid rate limits
+    if (this.USE_MOCK_DATA) {
+      symbols.forEach(symbol => {
+        results.set(symbol, this.getMockQuote(symbol));
+      });
+      return results;
+    }
 
     try {
       // Use batch endpoint to fetch all symbols at once (single API call)
