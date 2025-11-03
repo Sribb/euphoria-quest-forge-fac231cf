@@ -12,17 +12,11 @@ serve(async (req) => {
   }
 
   try {
-    const authHeader = req.headers.get("Authorization")!;
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseKey = Deno.env.get("SUPABASE_ANON_KEY")!;
-    
-    // Create client with user's auth token for RLS
-    const supabase = createClient(supabaseUrl, supabaseKey, {
-      global: {
-        headers: { Authorization: authHeader }
-      }
-    });
+    const supabase = createClient(supabaseUrl, supabaseKey);
 
+    const authHeader = req.headers.get("Authorization")!;
     const token = authHeader.replace("Bearer ", "");
     const { data: { user }, error: authError } = await supabase.auth.getUser(token);
 
@@ -175,8 +169,7 @@ serve(async (req) => {
 
   } catch (error) {
     console.error("Error in analytics-ai-insights:", error);
-    const errorMessage = error instanceof Error ? error.message : "Unknown error";
-    return new Response(JSON.stringify({ error: errorMessage }), {
+    return new Response(JSON.stringify({ error: error.message }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });

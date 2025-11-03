@@ -107,6 +107,7 @@ const Analytics = ({ onNavigate }: AnalyticsProps) => {
           completed: lessonProgress?.completed || false,
           duration: lesson.duration_minutes,
           completedAt: lessonProgress?.completed_at,
+          category: lesson.category,
         };
       });
     },
