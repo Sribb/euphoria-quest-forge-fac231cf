@@ -536,6 +536,50 @@ export type Database = {
         }
         Relationships: []
       }
+      lesson_question_performance: {
+        Row: {
+          created_at: string | null
+          difficulty_level: string
+          id: string
+          is_correct: boolean
+          lesson_id: string
+          question_text: string
+          time_taken_seconds: number | null
+          topic_category: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          difficulty_level: string
+          id?: string
+          is_correct: boolean
+          lesson_id: string
+          question_text: string
+          time_taken_seconds?: number | null
+          topic_category: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          difficulty_level?: string
+          id?: string
+          is_correct?: boolean
+          lesson_id?: string
+          question_text?: string
+          time_taken_seconds?: number | null
+          topic_category?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lesson_question_performance_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
+            referencedRelation: "lessons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       lessons: {
         Row: {
           content: string
@@ -1063,34 +1107,52 @@ export type Database = {
       }
       user_lesson_progress: {
         Row: {
+          challenge_history: Json | null
           completed: boolean
           completed_at: string | null
           created_at: string
           id: string
+          last_challenge_at: string | null
           lesson_id: string
+          mastery_level: string | null
           progress: number
+          quiz_attempts: number | null
+          quiz_score: number | null
           updated_at: string
           user_id: string
+          weak_areas: Json | null
         }
         Insert: {
+          challenge_history?: Json | null
           completed?: boolean
           completed_at?: string | null
           created_at?: string
           id?: string
+          last_challenge_at?: string | null
           lesson_id: string
+          mastery_level?: string | null
           progress?: number
+          quiz_attempts?: number | null
+          quiz_score?: number | null
           updated_at?: string
           user_id: string
+          weak_areas?: Json | null
         }
         Update: {
+          challenge_history?: Json | null
           completed?: boolean
           completed_at?: string | null
           created_at?: string
           id?: string
+          last_challenge_at?: string | null
           lesson_id?: string
+          mastery_level?: string | null
           progress?: number
+          quiz_attempts?: number | null
+          quiz_score?: number | null
           updated_at?: string
           user_id?: string
+          weak_areas?: Json | null
         }
         Relationships: [
           {

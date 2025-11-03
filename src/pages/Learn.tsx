@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { LessonCard } from "@/components/learn/LessonCard";
-import { LessonViewer } from "@/components/learn/LessonViewer";
+import { ThreePhaseLessonViewer } from "@/components/learn/ThreePhaseLessonViewer";
 import { BookOpen, Trophy, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
@@ -92,7 +92,7 @@ const Learn = ({ onNavigate, selectedLesson, onLessonSelect }: LearnProps) => {
 
   if (selectedLesson) {
     return (
-      <LessonViewer 
+      <ThreePhaseLessonViewer 
         lessonId={selectedLesson} 
         onClose={() => {
           onLessonSelect(null);
