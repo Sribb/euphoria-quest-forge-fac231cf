@@ -7,6 +7,7 @@ import { TransactionHistory } from "@/components/trade/TransactionHistory";
 import { AIMarketPanel } from "@/components/trade/AIMarketPanel";
 import { AIScenarioViewer } from "@/components/trade/AIScenarioViewer";
 import { AIIntegratedChart } from "@/components/trade/AIIntegratedChart";
+import { InteractiveScenarioSimulator } from "@/components/trade/InteractiveScenarioSimulator";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -103,18 +104,7 @@ const Trade = ({ onNavigate, onStockSearch }: TradeProps) => {
 
         <TabsContent value="ai-market" className="space-y-6 mt-6 animate-fade-in">
           {session ? (
-            <>
-              <AIMarketPanel
-                session={session}
-                aiPrices={aiPrices || []}
-                competitors={competitors || []}
-                activeEvents={activeEvents || []}
-                onUpdatePrices={() => updatePrices.mutate()}
-                onTriggerEvent={() => triggerEvent.mutate()}
-                isUpdating={updatePrices.isPending}
-              />
-              <AIScenarioViewer sessionId={sessionId!} />
-            </>
+            <InteractiveScenarioSimulator sessionId={sessionId!} userId={user?.id || ''} />
           ) : (
             <Card className="p-12 text-center">
               <Brain className="w-16 h-16 mx-auto mb-4 text-muted-foreground opacity-50" />
