@@ -131,13 +131,19 @@ For ${targetDifficulty} difficulty:
     const aiData = await aiResponse.json();
     const content = aiData.choices[0].message.content;
 
-    // Parse JSON response
+    // Parse JSON response (strip markdown code fences if present)
     let questions;
     try {
-      const parsed = JSON.parse(content);
+      let jsonContent = content.trim();
+      // Remove markdown code fences if present
+      if (jsonContent.startsWith('```')) {
+        jsonContent = jsonContent.replace(/^```(?:json)?\n/, '').replace(/\n```$/, '');
+      }
+      const parsed = JSON.parse(jsonContent);
       questions = parsed.questions;
     } catch (e) {
       console.error('Failed to parse AI response:', content);
+      console.error('Parse error:', e);
       throw new Error('Invalid AI response format');
     }
 
