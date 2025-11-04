@@ -1,4 +1,4 @@
-import { Trophy, ArrowLeft, Brain, Users } from "lucide-react";
+import { Trophy, ArrowLeft, Brain, Users, Coins } from "lucide-react";
 import { GameCard } from "@/components/games/GameCard";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -9,6 +9,7 @@ import { RiskRewardMatrix } from "@/components/games/RiskRewardMatrix";
 import { TradeTacticianGame } from "@/components/games/TradeTacticianGame";
 import { PortfolioLogicGame } from "@/components/games/PortfolioLogicGame";
 import { MarketMindsetGame } from "@/components/games/MarketMindsetGame";
+import { LifeSimInvestorGame } from "@/components/games/LifeSimInvestorGame";
 import { useAuth } from "@/hooks/useAuth";
 import { useAIMarket } from "@/hooks/useAIMarket";
 import { Card } from "@/components/ui/card";
@@ -22,7 +23,7 @@ interface GamesProps {
 const Games = ({ onNavigate }: GamesProps) => {
   const { user } = useAuth();
   const { session, competitors, activeEvents } = useAIMarket(user?.id);
-  const [activeGame, setActiveGame] = useState<"market-logic" | "chart-decoder" | "risk-reward" | "trade-tactician" | "portfolio-logic" | "market-mindset" | null>(null);
+  const [activeGame, setActiveGame] = useState<"market-logic" | "chart-decoder" | "risk-reward" | "trade-tactician" | "portfolio-logic" | "market-mindset" | "life-sim" | null>(null);
 
   const { data: games = [], isLoading } = useQuery({
     queryKey: ["games"],
@@ -42,7 +43,8 @@ const Games = ({ onNavigate }: GamesProps) => {
   const handlePlayGame = (gameId: string) => {
     if (
       gameId === "market-logic" || gameId === "chart-decoder" || gameId === "risk-reward" || 
-      gameId === "trade-tactician" || gameId === "portfolio-logic" || gameId === "market-mindset"
+      gameId === "trade-tactician" || gameId === "portfolio-logic" || gameId === "market-mindset" ||
+      gameId === "life-sim"
     ) {
       setActiveGame(gameId);
     }
@@ -74,6 +76,10 @@ const Games = ({ onNavigate }: GamesProps) => {
 
   if (activeGame === "market-mindset") {
     return <MarketMindsetGame onClose={handleCloseGame} />;
+  }
+
+  if (activeGame === "life-sim") {
+    return <LifeSimInvestorGame onClose={handleCloseGame} />;
   }
 
   return (
@@ -160,6 +166,33 @@ const Games = ({ onNavigate }: GamesProps) => {
         </div>
       ) : (
         <div className="grid gap-4">
+          {/* Featured Life Sim Game */}
+          <div className="animate-fade-in">
+            <Card className="p-6 bg-gradient-primary text-white hover-lift cursor-pointer smooth-transition border-0" onClick={() => handlePlayGame("life-sim")}>
+              <div className="flex items-start gap-4">
+                <div className="w-16 h-16 rounded-xl bg-white/20 flex items-center justify-center shadow-glow">
+                  <Trophy className="w-8 h-8" />
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-start justify-between mb-2">
+                    <h3 className="font-bold text-xl">Life Sim: Investor Journey</h3>
+                    <Badge className="bg-white/20">NEW</Badge>
+                  </div>
+                  <p className="text-sm text-white/90 mb-4">
+                    Live a full investing life from age 22 to retirement! Make career moves, buy homes, manage portfolios, and face real market events. Your choices shape your financial destiny.
+                  </p>
+                  <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-1 text-sm">
+                      <Coins className="w-4 h-4" />
+                      <span className="font-bold">Variable Rewards</span>
+                    </div>
+                    <Badge variant="outline" className="bg-white/10 border-white/30">Epic</Badge>
+                  </div>
+                </div>
+              </div>
+            </Card>
+          </div>
+
           {games.map((game, index) => {
           const Icon = Trophy;
           let gameId = "";
@@ -175,7 +208,7 @@ const Games = ({ onNavigate }: GamesProps) => {
             <div
               key={game.id}
               className="animate-fade-in"
-              style={{ animationDelay: `${index * 100}ms` }}
+              style={{ animationDelay: `${(index + 1) * 100}ms` }}
             >
               <GameCard
                 title={game.title}
