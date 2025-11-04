@@ -38,3 +38,9 @@ verify_jwt = true
 
 [functions.ai-lesson-assistant]
 verify_jwt = true
+
+[functions.analytics-ai-insights]
+verify_jwt = true
+
+[functions.analytics-chat]
+verify_jwt = true

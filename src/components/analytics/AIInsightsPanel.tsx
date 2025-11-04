@@ -28,14 +28,23 @@ export const AIInsightsPanel = ({ analysisType, title, description, icon }: AIIn
         body: { analysisType, filters: {} },
       });
 
-      if (error) throw error;
+      if (error) {
+        if (error.message?.includes("429")) {
+          toast.error("Rate limit exceeded. Please try again in a moment.");
+        } else if (error.message?.includes("402")) {
+          toast.error("AI credits depleted. Please add credits to continue.");
+        } else {
+          throw error;
+        }
+        return;
+      }
 
       setInsights(data.insights);
       setMetrics(data.metrics);
       toast.success("AI insights generated!");
     } catch (error) {
       console.error("Error generating insights:", error);
-      toast.error("Failed to generate insights");
+      toast.error("Failed to generate insights. Please try again.");
     } finally {
       setIsGenerating(false);
     }

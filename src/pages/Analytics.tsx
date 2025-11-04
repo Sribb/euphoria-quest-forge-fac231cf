@@ -8,7 +8,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsi
 import { alphaVantageService } from "@/lib/alphaVantageService";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { AIInsightsPanel } from "@/components/analytics/AIInsightsPanel";
+import { AIAnalyticsChat } from "@/components/analytics/AIAnalyticsChat";
 import { AnalyticsFilters } from "@/components/analytics/AnalyticsFilters";
 import { PerformanceHeatmap } from "@/components/analytics/PerformanceHeatmap";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -272,26 +272,30 @@ const Analytics = ({ onNavigate }: AnalyticsProps) => {
       <AnalyticsFilters onFilterChange={setActiveFilter} activeFilter={activeFilter} />
 
       <Tabs defaultValue="overview" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="learning">Learning</TabsTrigger>
-          <TabsTrigger value="trading">Trading</TabsTrigger>
-          <TabsTrigger value="behavioral">Behavioral</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-4 h-auto">
+          <TabsTrigger value="overview" className="text-xs sm:text-sm px-2 py-2">Overview</TabsTrigger>
+          <TabsTrigger value="learning" className="text-xs sm:text-sm px-2 py-2">Learning</TabsTrigger>
+          <TabsTrigger value="trading" className="text-xs sm:text-sm px-2 py-2">Trading</TabsTrigger>
+          <TabsTrigger value="behavioral" className="text-xs sm:text-sm px-2 py-2">Behavioral</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
-          <AIInsightsPanel
-            analysisType="overview"
-            title="Comprehensive Performance Analysis"
-            description="AI-generated insights about your overall progress"
+          <AIAnalyticsChat
+            title="AI Analytics Assistant"
+            description="Ask me anything about your performance"
             icon={<Sparkles className="w-5 h-5 text-white" />}
+            presetQuestions={[
+              "What's my overall progress?",
+              "How am I performing?",
+              "What should I focus on?",
+            ]}
           />
 
-          <div className="grid grid-cols-2 gap-4 animate-fade-in">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 animate-fade-in">
             <Card className="p-4 bg-gradient-success border-0">
               <div className="flex items-center gap-2 mb-2">
-                <BookOpen className="w-5 h-5 text-white" />
-                <span className="text-sm text-white/80">Lessons Completed</span>
+                <BookOpen className="w-5 h-5 text-white shrink-0" />
+                <span className="text-sm text-white/80 truncate">Lessons Completed</span>
               </div>
               <p className="text-2xl font-bold text-white">
                 {completedLessons}/{totalLessons}
@@ -303,8 +307,8 @@ const Analytics = ({ onNavigate }: AnalyticsProps) => {
 
             <Card className="p-4 bg-gradient-primary border-0">
               <div className="flex items-center gap-2 mb-2">
-                <Clock className="w-5 h-5 text-white" />
-                <span className="text-sm text-white/80">Time Invested</span>
+                <Clock className="w-5 h-5 text-white shrink-0" />
+                <span className="text-sm text-white/80 truncate">Time Invested</span>
               </div>
               <p className="text-2xl font-bold text-white">{Math.round(timeSpent)} min</p>
               <p className="text-sm text-white/80 mt-1">Learning time</p>
@@ -312,8 +316,8 @@ const Analytics = ({ onNavigate }: AnalyticsProps) => {
 
             <Card className="p-4 bg-gradient-accent border-0">
               <div className="flex items-center gap-2 mb-2">
-                <Trophy className="w-5 h-5 text-white" />
-                <span className="text-sm text-white/80">Total Coins</span>
+                <Trophy className="w-5 h-5 text-white shrink-0" />
+                <span className="text-sm text-white/80 truncate">Total Coins</span>
               </div>
               <p className="text-2xl font-bold text-white">{profile?.coins || 0}</p>
               <p className="text-sm text-white/80 mt-1">Current balance</p>
@@ -321,8 +325,8 @@ const Analytics = ({ onNavigate }: AnalyticsProps) => {
 
             <Card className="p-4 bg-gradient-hero border-0">
               <div className="flex items-center gap-2 mb-2">
-                <Target className="w-5 h-5 text-white" />
-                <span className="text-sm text-white/80">Games Played</span>
+                <Target className="w-5 h-5 text-white shrink-0" />
+                <span className="text-sm text-white/80 truncate">Games Played</span>
               </div>
               <p className="text-2xl font-bold text-white">{totalGames}</p>
               <p className="text-sm text-white/80 mt-1">Avg score: {avgGameScore.toFixed(0)}</p>
@@ -331,38 +335,44 @@ const Analytics = ({ onNavigate }: AnalyticsProps) => {
 
           <PerformanceHeatmap data={heatmapData} />
 
-          <Card className="p-6 animate-fade-in">
+          <Card className="p-6 animate-fade-in overflow-hidden">
             <h3 className="text-lg font-bold mb-4">Skills Radar</h3>
-            <ResponsiveContainer width="100%" height={300}>
-              <RadarChart data={skillsData}>
-                <PolarGrid stroke="hsl(var(--border))" />
-                <PolarAngleAxis dataKey="skill" tick={{ fill: 'hsl(var(--foreground))', fontSize: 12 }} />
-                <PolarRadiusAxis angle={90} domain={[0, 100]} tick={{ fill: 'hsl(var(--muted-foreground))' }} />
-                <Radar name="Performance" dataKey="value" stroke="hsl(var(--primary))" fill="hsl(var(--primary))" fillOpacity={0.6} />
-              </RadarChart>
-            </ResponsiveContainer>
+            <div className="w-full overflow-x-auto">
+              <ResponsiveContainer width="100%" height={300}>
+                <RadarChart data={skillsData}>
+                  <PolarGrid stroke="hsl(var(--border))" />
+                  <PolarAngleAxis dataKey="skill" tick={{ fill: 'hsl(var(--foreground))', fontSize: 12 }} />
+                  <PolarRadiusAxis angle={90} domain={[0, 100]} tick={{ fill: 'hsl(var(--muted-foreground))' }} />
+                  <Radar name="Performance" dataKey="value" stroke="hsl(var(--primary))" fill="hsl(var(--primary))" fillOpacity={0.6} />
+                </RadarChart>
+              </ResponsiveContainer>
+            </div>
           </Card>
         </TabsContent>
 
         <TabsContent value="learning" className="space-y-6">
-          <AIInsightsPanel
-            analysisType="learning"
-            title="Learning Analytics"
-            description="AI insights about your learning patterns and progress"
+          <AIAnalyticsChat
+            title="Learning Analytics Assistant"
+            description="Get insights about your learning journey"
             icon={<BookOpen className="w-5 h-5 text-white" />}
+            presetQuestions={[
+              "Analyze my learning progress",
+              "Which lessons should I focus on?",
+              "How's my learning consistency?",
+            ]}
           />
 
-          <Card className="p-6 animate-fade-in">
+          <Card className="p-6 animate-fade-in overflow-hidden">
             <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
-              <BookOpen className="w-5 h-5" />
-              Detailed Lesson Progress
+              <BookOpen className="w-5 h-5 shrink-0" />
+              <span className="truncate">Detailed Lesson Progress</span>
             </h3>
-            <div className="space-y-4">
+            <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2">
               {lessonProgress?.map((lesson, idx) => (
                 <div key={idx} className="space-y-2">
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm font-medium">{lesson.title}</span>
-                    <span className="text-sm text-muted-foreground">
+                  <div className="flex justify-between items-center gap-4">
+                    <span className="text-sm font-medium truncate flex-1">{lesson.title}</span>
+                    <span className="text-sm text-muted-foreground shrink-0">
                       {lesson.progress}%
                       {lesson.completed && " ✓"}
                     </span>
@@ -373,28 +383,30 @@ const Analytics = ({ onNavigate }: AnalyticsProps) => {
             </div>
           </Card>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Card className="p-6 animate-fade-in">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <Card className="p-6 animate-fade-in overflow-hidden">
               <h3 className="text-lg font-bold mb-4">Completion Rate</h3>
-              <ResponsiveContainer width="100%" height={250}>
-                <PieChart>
-                  <Pie
-                    data={completionData}
-                    cx="50%"
-                    cy="50%"
-                    labelLine={false}
-                    label={({ name, value }) => `${name}: ${value}`}
-                    outerRadius={80}
-                    fill="#8884d8"
-                    dataKey="value"
-                  >
-                    {completionData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Pie>
-                  <Tooltip />
-                </PieChart>
-              </ResponsiveContainer>
+              <div className="w-full overflow-x-auto">
+                <ResponsiveContainer width="100%" height={250}>
+                  <PieChart>
+                    <Pie
+                      data={completionData}
+                      cx="50%"
+                      cy="50%"
+                      labelLine={false}
+                      label={({ name, value }) => `${name}: ${value}`}
+                      outerRadius={80}
+                      fill="#8884d8"
+                      dataKey="value"
+                    >
+                      {completionData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} />
+                      ))}
+                    </Pie>
+                    <Tooltip />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
             </Card>
 
             <Card className="p-6 animate-fade-in">
@@ -414,20 +426,24 @@ const Analytics = ({ onNavigate }: AnalyticsProps) => {
         </TabsContent>
 
         <TabsContent value="trading" className="space-y-6">
-          <AIInsightsPanel
-            analysisType="trading"
-            title="Trading Performance"
-            description="AI analysis of your portfolio and trading decisions"
+          <AIAnalyticsChat
+            title="Trading Analytics Assistant"
+            description="Get AI-powered trading insights"
             icon={<TrendingUp className="w-5 h-5 text-white" />}
+            presetQuestions={[
+              "Analyze my portfolio performance",
+              "What are my trading patterns?",
+              "How can I improve my returns?",
+            ]}
           />
 
-          <Card className="p-6 animate-fade-in">
+          <Card className="p-6 animate-fade-in overflow-hidden">
             <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
-              <TrendingUp className="w-5 h-5" />
-              Portfolio Performance
+              <TrendingUp className="w-5 h-5 shrink-0" />
+              <span className="truncate">Portfolio Performance</span>
             </h3>
             <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="p-4 bg-gradient-success/10 border border-success/20 rounded-lg">
                   <p className="text-sm text-muted-foreground mb-1">Portfolio Value</p>
                   <p className="text-2xl font-bold">${portfolio?.total_value.toLocaleString() || "0"}</p>
@@ -442,15 +458,17 @@ const Analytics = ({ onNavigate }: AnalyticsProps) => {
                 </div>
               </div>
               {assetDistribution.length > 0 ? (
-                <ResponsiveContainer width="100%" height={200}>
-                  <BarChart data={assetDistribution}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" />
-                    <YAxis />
-                    <Tooltip />
-                    <Bar dataKey="value" fill="hsl(var(--chart-1))" />
-                  </BarChart>
-                </ResponsiveContainer>
+                <div className="w-full overflow-x-auto">
+                  <ResponsiveContainer width="100%" height={200}>
+                    <BarChart data={assetDistribution}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="name" />
+                      <YAxis />
+                      <Tooltip />
+                      <Bar dataKey="value" fill="hsl(var(--chart-1))" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
               ) : (
                 <p className="text-center text-muted-foreground py-8">
                   Start trading to build your portfolio
@@ -461,34 +479,40 @@ const Analytics = ({ onNavigate }: AnalyticsProps) => {
         </TabsContent>
 
         <TabsContent value="behavioral" className="space-y-6">
-          <AIInsightsPanel
-            analysisType="behavioral"
-            title="Behavioral Analysis"
-            description="AI insights into your learning and decision patterns"
+          <AIAnalyticsChat
+            title="Behavioral Analytics Assistant"
+            description="Understand your behavioral patterns and habits"
             icon={<Brain className="w-5 h-5 text-white" />}
+            presetQuestions={[
+              "Analyze my behavioral patterns",
+              "What's my engagement level?",
+              "How consistent am I?",
+            ]}
           />
 
-          <Card className="p-6 animate-fade-in">
+          <Card className="p-6 animate-fade-in overflow-hidden">
             <h3 className="text-lg font-bold mb-4">Game Performance Trend</h3>
-            <ResponsiveContainer width="100%" height={250}>
-              <LineChart data={performanceData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Line type="monotone" dataKey="score" stroke="hsl(var(--primary))" strokeWidth={2} name="Score" />
-                <Line type="monotone" dataKey="coins" stroke="hsl(var(--accent))" strokeWidth={2} name="Coins" />
-              </LineChart>
-            </ResponsiveContainer>
+            <div className="w-full overflow-x-auto">
+              <ResponsiveContainer width="100%" height={250}>
+                <LineChart data={performanceData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  <Line type="monotone" dataKey="score" stroke="hsl(var(--primary))" strokeWidth={2} name="Score" />
+                  <Line type="monotone" dataKey="coins" stroke="hsl(var(--accent))" strokeWidth={2} name="Coins" />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
           </Card>
 
           <Card className="p-6 animate-fade-in">
             <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
-              <Zap className="w-5 h-5" />
-              Engagement Metrics
+              <Zap className="w-5 h-5 shrink-0" />
+              <span className="truncate">Engagement Metrics</span>
             </h3>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
               <div className="p-4 bg-gradient-hero rounded-lg">
                 <p className="text-xs text-muted-foreground mb-1">Avg Progress</p>
                 <p className="text-xl font-bold">{overallProgress}%</p>
