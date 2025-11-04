@@ -69,14 +69,21 @@ interface LifeSimInvestorGameProps {
 }
 
 const INITIAL_STOCKS = [
-  { symbol: "AAPL", price: 180, volatility: 0.25 },
-  { symbol: "MSFT", price: 380, volatility: 0.22 },
-  { symbol: "GOOGL", price: 140, volatility: 0.28 },
-  { symbol: "AMZN", price: 145, volatility: 0.30 },
-  { symbol: "TSLA", price: 250, volatility: 0.45 },
-  { symbol: "NVDA", price: 495, volatility: 0.35 },
-  { symbol: "JPM", price: 145, volatility: 0.20 },
-  { symbol: "JNJ", price: 160, volatility: 0.15 },
+  { symbol: "AAPL", name: "Apple Inc.", price: 180, volatility: 0.25, sector: "Technology" },
+  { symbol: "MSFT", name: "Microsoft Corp.", price: 380, volatility: 0.22, sector: "Technology" },
+  { symbol: "GOOGL", name: "Alphabet Inc.", price: 140, volatility: 0.28, sector: "Technology" },
+  { symbol: "AMZN", name: "Amazon.com Inc.", price: 145, volatility: 0.30, sector: "Consumer" },
+  { symbol: "TSLA", name: "Tesla Inc.", price: 250, volatility: 0.45, sector: "Automotive" },
+  { symbol: "NVDA", name: "NVIDIA Corp.", price: 495, volatility: 0.35, sector: "Technology" },
+  { symbol: "JPM", name: "JPMorgan Chase", price: 145, volatility: 0.20, sector: "Financial" },
+  { symbol: "JNJ", name: "Johnson & Johnson", price: 160, volatility: 0.15, sector: "Healthcare" },
+];
+
+const INITIAL_ETFS = [
+  { symbol: "SPY", name: "S&P 500 ETF", price: 450, volatility: 0.15, sector: "Broad Market" },
+  { symbol: "QQQ", name: "NASDAQ 100 ETF", price: 380, volatility: 0.20, sector: "Technology" },
+  { symbol: "VTI", name: "Total Market ETF", price: 230, volatility: 0.16, sector: "Broad Market" },
+  { symbol: "AGG", name: "Bond Aggregate ETF", price: 105, volatility: 0.05, sector: "Fixed Income" },
 ];
 
 const COLORS = ['#8b5cf6', '#ec4899', '#f59e0b', '#10b981', '#3b82f6', '#ef4444'];
@@ -114,7 +121,7 @@ export const LifeSimInvestorGame = ({ onClose }: LifeSimInvestorGameProps) => {
   });
 
   const [stockPrices, setStockPrices] = useState(
-    INITIAL_STOCKS.reduce((acc, stock) => ({ ...acc, [stock.symbol]: stock.price }), {} as Record<string, number>)
+    [...INITIAL_STOCKS, ...INITIAL_ETFS].reduce((acc, stock) => ({ ...acc, [stock.symbol]: stock.price }), {} as Record<string, number>)
   );
 
   const [year, setYear] = useState(0);
@@ -123,9 +130,10 @@ export const LifeSimInvestorGame = ({ onClose }: LifeSimInvestorGameProps) => {
   const [speed, setSpeed] = useState(1000);
   const [netWorthHistory, setNetWorthHistory] = useState<{ year: number; value: number }[]>([{ year: 0, value: 5000 }]);
   const [currentEvent, setCurrentEvent] = useState<LifeEvent | null>(null);
-  const [selectedStock, setSelectedStock] = useState<string | null>(null);
-  const [tradeAmount, setTradeAmount] = useState<number>(100);
+  const [tradeAmount, setTradeAmount] = useState<number>(1000);
   const [gameScore, setGameScore] = useState(0);
+  const [activeTab, setActiveTab] = useState<string>("stocks");
+  const [marketNews, setMarketNews] = useState<string[]>([]);
 
   // Calculate total portfolio value
   const calculatePortfolioValue = () => {
@@ -306,7 +314,9 @@ export const LifeSimInvestorGame = ({ onClose }: LifeSimInvestorGameProps) => {
     };
 
     const newPrices: Record<string, number> = {};
-    INITIAL_STOCKS.forEach(stock => {
+    const allAssets = [...INITIAL_STOCKS, ...INITIAL_ETFS];
+    
+    allAssets.forEach(stock => {
       const baseChange = multipliers[market.phase];
       const volatilityFactor = (Math.random() - 0.5) * stock.volatility;
       const sentimentFactor = market.sentiment * 0.01;
@@ -316,6 +326,32 @@ export const LifeSimInvestorGame = ({ onClose }: LifeSimInvestorGameProps) => {
     });
 
     setStockPrices(newPrices);
+    
+    // Update portfolio current prices
+    setPortfolio(prev => ({
+      ...prev,
+      stocks: prev.stocks.map(s => ({ ...s, currentPrice: newPrices[s.symbol] })),
+      etfs: prev.etfs.map(e => ({ ...e, currentPrice: newPrices[e.symbol] }))
+    }));
+
+    // Generate market news occasionally
+    if (Math.random() < 0.2) {
+      generateMarketNews();
+    }
+  };
+
+  // Generate market news and earnings
+  const generateMarketNews = () => {
+    const newsTypes = [
+      `${INITIAL_STOCKS[Math.floor(Math.random() * INITIAL_STOCKS.length)].name} reports strong earnings, stock rallies`,
+      `Federal Reserve ${Math.random() > 0.5 ? 'raises' : 'cuts'} interest rates by 0.25%`,
+      `${market.phase === 'bull' ? 'Bull market continues' : 'Market correction underway'} as investors ${market.sentiment > 0 ? 'remain optimistic' : 'grow cautious'}`,
+      `Tech sector ${Math.random() > 0.5 ? 'outperforms' : 'underperforms'} broader market`,
+      `Economic data shows ${Math.random() > 0.5 ? 'stronger than expected' : 'weaker than expected'} growth`
+    ];
+    
+    const news = newsTypes[Math.floor(Math.random() * newsTypes.length)];
+    setMarketNews(prev => [news, ...prev.slice(0, 4)]);
   };
 
   // Age character and progress time
@@ -468,6 +504,78 @@ export const LifeSimInvestorGame = ({ onClose }: LifeSimInvestorGameProps) => {
     toast.success(`Sold ${symbol} for $${value.toFixed(2)}. Profit: $${profit.toFixed(2)}`);
   };
 
+  const buyETF = (symbol: string) => {
+    const price = stockPrices[symbol];
+    const shares = Math.floor(tradeAmount / price);
+    const cost = shares * price;
+
+    if (portfolio.cash < cost) {
+      toast.error("Insufficient cash!");
+      return;
+    }
+
+    const existing = portfolio.etfs.find(e => e.symbol === symbol);
+    if (existing) {
+      const totalShares = existing.shares + shares;
+      const avgCost = ((existing.avgCost * existing.shares) + cost) / totalShares;
+      setPortfolio(prev => ({
+        ...prev,
+        cash: prev.cash - cost,
+        etfs: prev.etfs.map(e =>
+          e.symbol === symbol
+            ? { ...e, shares: totalShares, avgCost, currentPrice: price }
+            : e
+        )
+      }));
+    } else {
+      setPortfolio(prev => ({
+        ...prev,
+        cash: prev.cash - cost,
+        etfs: [...prev.etfs, { symbol, shares, avgCost: price, currentPrice: price }]
+      }));
+    }
+
+    toast.success(`Bought ${shares} shares of ${symbol} ETF for $${cost.toFixed(2)}`);
+  };
+
+  const sellETF = (symbol: string) => {
+    const holding = portfolio.etfs.find(e => e.symbol === symbol);
+    if (!holding) return;
+
+    const value = holding.shares * stockPrices[symbol];
+    const profit = value - (holding.shares * holding.avgCost);
+
+    setPortfolio(prev => ({
+      ...prev,
+      cash: prev.cash + value,
+      etfs: prev.etfs.filter(e => e.symbol !== symbol)
+    }));
+
+    toast.success(`Sold ${symbol} ETF for $${value.toFixed(2)}. Profit: $${profit.toFixed(2)}`);
+  };
+
+  const buyOption = (symbol: string, type: "call" | "put") => {
+    const underlyingPrice = stockPrices[symbol];
+    const strike = type === "call" ? underlyingPrice * 1.05 : underlyingPrice * 0.95;
+    const premium = underlyingPrice * 0.05; // 5% of stock price
+    
+    if (portfolio.cash < premium * 100) { // Options are for 100 shares
+      toast.error("Insufficient cash!");
+      return;
+    }
+
+    const cost = premium * 100;
+    const expiry = `${year + 1}-${month + 1}`;
+
+    setPortfolio(prev => ({
+      ...prev,
+      cash: prev.cash - cost,
+      options: [...prev.options, { type, symbol, strike, expiry, premium }]
+    }));
+
+    toast.success(`Bought ${type.toUpperCase()} option on ${symbol} for $${cost.toFixed(2)}`);
+  };
+
   const buyBond = () => {
     const amount = 1000;
     if (portfolio.cash < amount) {
@@ -482,6 +590,22 @@ export const LifeSimInvestorGame = ({ onClose }: LifeSimInvestorGameProps) => {
     }));
 
     toast.success("Purchased $1,000 Corporate Bond");
+  };
+
+  const buyRealEstate = () => {
+    const cost = 150000;
+    if (portfolio.cash < cost) {
+      toast.error("Insufficient cash for investment property!");
+      return;
+    }
+
+    setPortfolio(prev => ({
+      ...prev,
+      cash: prev.cash - cost,
+      realEstate: [...prev.realEstate, { type: "Rental Property", value: cost, income: 1200 }]
+    }));
+
+    toast.success("Purchased investment property generating $1,200/month rent!");
   };
 
   // Game control
@@ -667,9 +791,12 @@ export const LifeSimInvestorGame = ({ onClose }: LifeSimInvestorGameProps) => {
                     return (
                       <div key={stock.symbol} className="flex items-center justify-between p-3 bg-muted rounded-lg">
                         <div>
-                          <div className="font-semibold">{stock.symbol}</div>
+                          <div className="font-semibold flex items-center gap-2">
+                            {stock.symbol}
+                            <Badge variant="outline" className="text-xs">Stock</Badge>
+                          </div>
                           <div className="text-xs text-muted-foreground">
-                            {stock.shares} shares @ ${stock.avgCost.toFixed(2)}
+                            {stock.shares.toFixed(2)} shares @ ${stock.avgCost.toFixed(2)}
                           </div>
                         </div>
                         <div className="text-right">
@@ -681,15 +808,71 @@ export const LifeSimInvestorGame = ({ onClose }: LifeSimInvestorGameProps) => {
                       </div>
                     );
                   })}
+                  {portfolio.etfs.map((etf) => {
+                    const currentValue = etf.shares * stockPrices[etf.symbol];
+                    const profit = currentValue - (etf.shares * etf.avgCost);
+                    const profitPercent = (profit / (etf.shares * etf.avgCost)) * 100;
+
+                    return (
+                      <div key={etf.symbol} className="flex items-center justify-between p-3 bg-muted rounded-lg">
+                        <div>
+                          <div className="font-semibold flex items-center gap-2">
+                            {etf.symbol}
+                            <Badge variant="secondary" className="text-xs">ETF</Badge>
+                          </div>
+                          <div className="text-xs text-muted-foreground">
+                            {etf.shares.toFixed(2)} shares @ ${etf.avgCost.toFixed(2)}
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <div className="font-bold">${currentValue.toFixed(0)}</div>
+                          <div className={`text-xs ${profit >= 0 ? 'text-success' : 'text-destructive'}`}>
+                            {profit >= 0 ? '+' : ''}{profitPercent.toFixed(1)}%
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                  {portfolio.options.map((option, idx) => (
+                    <div key={idx} className="flex items-center justify-between p-3 bg-muted rounded-lg">
+                      <div>
+                        <div className="font-semibold flex items-center gap-2">
+                          {option.symbol} {option.type.toUpperCase()}
+                          <Badge variant="destructive" className="text-xs">Option</Badge>
+                        </div>
+                        <div className="text-xs text-muted-foreground">
+                          Strike ${option.strike.toFixed(2)} • Exp: {option.expiry}
+                        </div>
+                      </div>
+                      <div className="font-bold">${(option.premium * 100).toFixed(0)}</div>
+                    </div>
+                  ))}
                   {portfolio.bonds.map((bond, idx) => (
                     <div key={idx} className="flex items-center justify-between p-3 bg-muted rounded-lg">
                       <div>
-                        <div className="font-semibold">{bond.type}</div>
+                        <div className="font-semibold flex items-center gap-2">
+                          {bond.type}
+                          <Badge variant="default" className="text-xs">Bond</Badge>
+                        </div>
                         <div className="text-xs text-muted-foreground">
-                          {bond.rate}% APY, {bond.maturity}yr
+                          {bond.rate.toFixed(2)}% APY, {bond.maturity}yr
                         </div>
                       </div>
                       <div className="font-bold">${bond.amount.toLocaleString()}</div>
+                    </div>
+                  ))}
+                  {portfolio.realEstate.map((prop, idx) => (
+                    <div key={idx} className="flex items-center justify-between p-3 bg-muted rounded-lg">
+                      <div>
+                        <div className="font-semibold flex items-center gap-2">
+                          {prop.type}
+                          <Badge className="text-xs">Real Estate</Badge>
+                        </div>
+                        <div className="text-xs text-muted-foreground">
+                          ${prop.income}/month income
+                        </div>
+                      </div>
+                      <div className="font-bold">${prop.value.toLocaleString()}</div>
                     </div>
                   ))}
                 </div>
@@ -698,58 +881,292 @@ export const LifeSimInvestorGame = ({ onClose }: LifeSimInvestorGameProps) => {
           </TabsContent>
 
           <TabsContent value="trade" className="space-y-4">
-            <Card className="p-6">
-              <h3 className="font-bold mb-4">Stock Market</h3>
-              <div className="space-y-3">
-                {INITIAL_STOCKS.map((stock) => {
-                  const price = stockPrices[stock.symbol];
-                  const change = ((price - stock.price) / stock.price) * 100;
-
-                  return (
-                    <div key={stock.symbol} className="flex items-center justify-between p-4 bg-muted rounded-lg hover:bg-muted/80 transition-colors">
-                      <div className="flex-1">
-                        <div className="font-bold">{stock.symbol}</div>
-                        <div className="text-sm text-muted-foreground">
-                          Volatility: {(stock.volatility * 100).toFixed(0)}%
-                        </div>
-                      </div>
-                      <div className="text-right mr-4">
-                        <div className="font-bold">${price.toFixed(2)}</div>
-                        <div className={`text-sm flex items-center gap-1 ${change >= 0 ? 'text-success' : 'text-destructive'}`}>
-                          {change >= 0 ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
-                          {change >= 0 ? '+' : ''}{change.toFixed(2)}%
-                        </div>
-                      </div>
-                      <div className="flex gap-2">
-                        <Button size="sm" variant="default" onClick={() => buyStock(stock.symbol)}>
-                          Buy
-                        </Button>
-                        <Button 
-                          size="sm" 
-                          variant="outline" 
-                          onClick={() => sellStock(stock.symbol)}
-                          disabled={!portfolio.stocks.find(s => s.symbol === stock.symbol)}
-                        >
-                          Sell
-                        </Button>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-
-              <div className="mt-6 p-4 bg-card border rounded-lg">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h4 className="font-semibold">Bonds & Fixed Income</h4>
-                    <p className="text-sm text-muted-foreground">Safe, steady returns</p>
-                  </div>
-                  <Button onClick={buyBond} disabled={portfolio.cash < 1000}>
-                    Buy Bond ($1,000)
-                  </Button>
+            {/* Trade Amount Input */}
+            <Card className="p-4 bg-gradient-accent">
+              <div className="flex items-center justify-between gap-4">
+                <div className="flex-1">
+                  <label className="text-sm font-semibold mb-2 block">Trade Amount</label>
+                  <input
+                    type="number"
+                    value={tradeAmount}
+                    onChange={(e) => setTradeAmount(Math.max(0, parseInt(e.target.value) || 0))}
+                    className="w-full px-3 py-2 bg-background border rounded-lg"
+                    min="0"
+                    step="100"
+                  />
+                </div>
+                <div className="text-right">
+                  <div className="text-sm text-muted-foreground">Available Cash</div>
+                  <div className="text-xl font-bold text-success">${portfolio.cash.toLocaleString()}</div>
                 </div>
               </div>
             </Card>
+
+            {/* Market News */}
+            {marketNews.length > 0 && (
+              <Card className="p-4">
+                <h3 className="font-bold mb-3 flex items-center gap-2">
+                  <Zap className="w-4 h-4 text-warning" />
+                  Market News
+                </h3>
+                <div className="space-y-2">
+                  {marketNews.map((news, idx) => (
+                    <div key={idx} className="text-sm text-muted-foreground p-2 bg-muted rounded">
+                      {news}
+                    </div>
+                  ))}
+                </div>
+              </Card>
+            )}
+
+            <Tabs value={activeTab} onValueChange={setActiveTab}>
+              <TabsList className="grid w-full grid-cols-5">
+                <TabsTrigger value="stocks">Stocks</TabsTrigger>
+                <TabsTrigger value="etfs">ETFs</TabsTrigger>
+                <TabsTrigger value="options">Options</TabsTrigger>
+                <TabsTrigger value="bonds">Bonds</TabsTrigger>
+                <TabsTrigger value="realestate">Real Estate</TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="stocks" className="space-y-3 mt-4">
+                {INITIAL_STOCKS.map((stock) => {
+                  const price = stockPrices[stock.symbol];
+                  const change = ((price - stock.price) / stock.price) * 100;
+                  const holding = portfolio.stocks.find(s => s.symbol === stock.symbol);
+
+                  return (
+                    <Card key={stock.symbol} className="p-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex-1">
+                          <div className="font-bold text-lg">{stock.symbol}</div>
+                          <div className="text-sm text-muted-foreground">{stock.name}</div>
+                          <div className="text-xs text-muted-foreground mt-1">
+                            {stock.sector} • Vol: {(stock.volatility * 100).toFixed(0)}%
+                          </div>
+                          {holding && (
+                            <div className="text-xs text-primary mt-1">
+                              Holding: {holding.shares} shares @ ${holding.avgCost.toFixed(2)}
+                            </div>
+                          )}
+                        </div>
+                        <div className="text-right mr-4">
+                          <div className="text-xl font-bold">${price.toFixed(2)}</div>
+                          <div className={`text-sm flex items-center gap-1 justify-end ${change >= 0 ? 'text-success' : 'text-destructive'}`}>
+                            {change >= 0 ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
+                            {change >= 0 ? '+' : ''}{change.toFixed(2)}%
+                          </div>
+                        </div>
+                        <div className="flex flex-col gap-2">
+                          <Button size="sm" variant="default" onClick={() => buyStock(stock.symbol)}>
+                            Buy
+                          </Button>
+                          <Button 
+                            size="sm" 
+                            variant="outline" 
+                            onClick={() => sellStock(stock.symbol)}
+                            disabled={!holding}
+                          >
+                            Sell
+                          </Button>
+                        </div>
+                      </div>
+                    </Card>
+                  );
+                })}
+              </TabsContent>
+
+              <TabsContent value="etfs" className="space-y-3 mt-4">
+                {INITIAL_ETFS.map((etf) => {
+                  const price = stockPrices[etf.symbol];
+                  const change = ((price - etf.price) / etf.price) * 100;
+                  const holding = portfolio.etfs.find(e => e.symbol === etf.symbol);
+
+                  return (
+                    <Card key={etf.symbol} className="p-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex-1">
+                          <div className="font-bold text-lg">{etf.symbol}</div>
+                          <div className="text-sm text-muted-foreground">{etf.name}</div>
+                          <div className="text-xs text-muted-foreground mt-1">
+                            {etf.sector} • Vol: {(etf.volatility * 100).toFixed(0)}%
+                          </div>
+                          {holding && (
+                            <div className="text-xs text-primary mt-1">
+                              Holding: {holding.shares} shares @ ${holding.avgCost.toFixed(2)}
+                            </div>
+                          )}
+                        </div>
+                        <div className="text-right mr-4">
+                          <div className="text-xl font-bold">${price.toFixed(2)}</div>
+                          <div className={`text-sm flex items-center gap-1 justify-end ${change >= 0 ? 'text-success' : 'text-destructive'}`}>
+                            {change >= 0 ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
+                            {change >= 0 ? '+' : ''}{change.toFixed(2)}%
+                          </div>
+                        </div>
+                        <div className="flex flex-col gap-2">
+                          <Button size="sm" variant="default" onClick={() => buyETF(etf.symbol)}>
+                            Buy
+                          </Button>
+                          <Button 
+                            size="sm" 
+                            variant="outline" 
+                            onClick={() => sellETF(etf.symbol)}
+                            disabled={!holding}
+                          >
+                            Sell
+                          </Button>
+                        </div>
+                      </div>
+                    </Card>
+                  );
+                })}
+              </TabsContent>
+
+              <TabsContent value="options" className="space-y-3 mt-4">
+                <div className="p-4 bg-muted/50 rounded-lg mb-4">
+                  <p className="text-sm text-muted-foreground">
+                    Options are contracts giving you the right to buy (CALL) or sell (PUT) stocks at a set price. 
+                    High risk, high reward strategy. Premium cost = 5% of stock price × 100 shares.
+                  </p>
+                </div>
+                {INITIAL_STOCKS.slice(0, 5).map((stock) => {
+                  const price = stockPrices[stock.symbol];
+                  const callStrike = price * 1.05;
+                  const putStrike = price * 0.95;
+                  const premium = price * 0.05;
+
+                  return (
+                    <Card key={stock.symbol} className="p-4">
+                      <div className="flex items-center justify-between mb-3">
+                        <div>
+                          <div className="font-bold text-lg">{stock.symbol}</div>
+                          <div className="text-sm text-muted-foreground">Current: ${price.toFixed(2)}</div>
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="p-3 bg-success/10 rounded-lg">
+                          <div className="text-xs text-muted-foreground mb-1">CALL Option</div>
+                          <div className="text-sm font-semibold">Strike: ${callStrike.toFixed(2)}</div>
+                          <div className="text-xs text-muted-foreground">Cost: ${(premium * 100).toFixed(0)}</div>
+                          <Button 
+                            size="sm" 
+                            className="w-full mt-2" 
+                            variant="outline"
+                            onClick={() => buyOption(stock.symbol, "call")}
+                          >
+                            Buy CALL
+                          </Button>
+                        </div>
+                        <div className="p-3 bg-destructive/10 rounded-lg">
+                          <div className="text-xs text-muted-foreground mb-1">PUT Option</div>
+                          <div className="text-sm font-semibold">Strike: ${putStrike.toFixed(2)}</div>
+                          <div className="text-xs text-muted-foreground">Cost: ${(premium * 100).toFixed(0)}</div>
+                          <Button 
+                            size="sm" 
+                            className="w-full mt-2" 
+                            variant="outline"
+                            onClick={() => buyOption(stock.symbol, "put")}
+                          >
+                            Buy PUT
+                          </Button>
+                        </div>
+                      </div>
+                    </Card>
+                  );
+                })}
+              </TabsContent>
+
+              <TabsContent value="bonds" className="space-y-3 mt-4">
+                <Card className="p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <div>
+                      <h3 className="font-bold text-lg">Corporate Bonds</h3>
+                      <p className="text-sm text-muted-foreground">
+                        Fixed income security with {(market.interestRate + 2).toFixed(2)}% annual return
+                      </p>
+                    </div>
+                    <Shield className="w-8 h-8 text-primary" />
+                  </div>
+                  <div className="space-y-2 mb-4">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Face Value:</span>
+                      <span className="font-semibold">$1,000</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Interest Rate:</span>
+                      <span className="font-semibold text-success">{(market.interestRate + 2).toFixed(2)}%</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Maturity:</span>
+                      <span className="font-semibold">5 years</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Risk:</span>
+                      <span className="font-semibold text-success">Low</span>
+                    </div>
+                  </div>
+                  <Button onClick={buyBond} disabled={portfolio.cash < 1000} className="w-full">
+                    Purchase Bond ($1,000)
+                  </Button>
+                </Card>
+              </TabsContent>
+
+              <TabsContent value="realestate" className="space-y-3 mt-4">
+                <Card className="p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <div>
+                      <h3 className="font-bold text-lg">Investment Property</h3>
+                      <p className="text-sm text-muted-foreground">
+                        Rental property generating monthly passive income
+                      </p>
+                    </div>
+                    <Home className="w-8 h-8 text-primary" />
+                  </div>
+                  <div className="space-y-2 mb-4">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Purchase Price:</span>
+                      <span className="font-semibold">$150,000</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Monthly Rent:</span>
+                      <span className="font-semibold text-success">$1,200</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Annual Yield:</span>
+                      <span className="font-semibold text-success">9.6%</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Appreciation:</span>
+                      <span className="font-semibold">~3% per year</span>
+                    </div>
+                  </div>
+                  <Button onClick={buyRealEstate} disabled={portfolio.cash < 150000} className="w-full">
+                    Purchase Property ($150,000)
+                  </Button>
+                </Card>
+
+                {portfolio.realEstate.length > 0 && (
+                  <Card className="p-4">
+                    <h4 className="font-semibold mb-3">Your Properties</h4>
+                    <div className="space-y-2">
+                      {portfolio.realEstate.map((prop, idx) => (
+                        <div key={idx} className="flex justify-between items-center p-3 bg-muted rounded-lg">
+                          <div>
+                            <div className="font-semibold">{prop.type}</div>
+                            <div className="text-xs text-muted-foreground">
+                              ${prop.income}/month rent
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <div className="font-bold">${prop.value.toLocaleString()}</div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </Card>
+                )}
+              </TabsContent>
+            </Tabs>
           </TabsContent>
 
           <TabsContent value="life" className="space-y-4">
