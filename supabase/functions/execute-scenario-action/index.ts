@@ -38,6 +38,10 @@ serve(async (req) => {
       .eq('id', sessionId)
       .single();
 
+    if (!session) {
+      throw new Error('Market session not found');
+    }
+
     const { data: price } = await supabase
       .from('ai_stock_prices')
       .select('*')
@@ -45,11 +49,19 @@ serve(async (req) => {
       .eq('symbol', action.symbol)
       .single();
 
+    if (!price) {
+      throw new Error(`Stock price data not found for symbol: ${action.symbol}`);
+    }
+
     const { data: portfolio } = await supabase
       .from('portfolios')
       .select('*')
       .eq('user_id', userId)
       .single();
+
+    if (!portfolio) {
+      throw new Error('User portfolio not found');
+    }
 
     // Simulate outcome using AI
     const aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
