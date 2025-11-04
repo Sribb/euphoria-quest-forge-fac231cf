@@ -115,7 +115,7 @@ const Certificates = ({ onNavigate }: CertificatesProps) => {
   };
 
   return (
-    <div className="space-y-6 pb-24">
+    <div className="space-y-6 pb-24 pt-4">
       <div className="flex items-center gap-3 animate-fade-in">
         <div className="w-12 h-12 rounded-xl bg-gradient-warning flex items-center justify-center shadow-glow">
           <Award className="w-6 h-6 text-white" />

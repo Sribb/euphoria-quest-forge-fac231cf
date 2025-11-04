@@ -103,7 +103,7 @@ const Learn = ({ onNavigate, selectedLesson, onLessonSelect }: LearnProps) => {
   }
 
   return (
-    <div className="space-y-6 pb-24">
+    <div className="space-y-6 pb-24 pt-4">
       <div className="animate-fade-in">
         <div className="flex items-center gap-3 mb-4">
           <Button

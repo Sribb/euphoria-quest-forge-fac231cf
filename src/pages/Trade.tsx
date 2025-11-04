@@ -35,7 +35,7 @@ const Trade = ({ onNavigate, onStockSearch }: TradeProps) => {
   } = useAIMarket(user?.id);
 
   return (
-    <div className="space-y-6 pb-24 animate-fade-in">
+    <div className="space-y-6 pb-24 pt-4 animate-fade-in">
       <div className="flex items-center gap-3">
         <Button
           variant="ghost"

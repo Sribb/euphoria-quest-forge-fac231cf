@@ -27,7 +27,7 @@ const StockDetail = ({ symbol, onBack }: StockDetailProps) => {
   });
 
   return (
-    <div className="space-y-6 pb-24">
+    <div className="space-y-6 pb-24 pt-4">
       <div className="flex items-center gap-3">
         <Button variant="ghost" size="icon" onClick={onBack}>
           <ArrowLeft className="w-5 h-5" />

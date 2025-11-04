@@ -106,7 +106,7 @@ const Profile = ({ onNavigate }: ProfileProps) => {
     : 0;
 
   return (
-    <div className="space-y-6 pb-24">
+    <div className="space-y-6 pb-24 pt-4">
       <div className="flex items-center gap-3 animate-fade-in">
         <Button
           variant="ghost"

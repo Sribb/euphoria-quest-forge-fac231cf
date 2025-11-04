@@ -191,7 +191,7 @@ const Community = ({ onNavigate }: CommunityProps) => {
   });
 
   return (
-    <div className="space-y-6 pb-24">
+    <div className="space-y-6 pb-24 pt-4">
       {/* Header */}
       <div className="flex items-center justify-between animate-fade-in">
         <div className="flex items-center gap-3">

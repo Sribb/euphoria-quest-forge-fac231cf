@@ -49,7 +49,7 @@ export const GlobalStockSearch = ({ onSelectStock }: GlobalStockSearchProps) => 
         className="pl-9"
       />
       {showResults && filteredStocks.length > 0 && (
-        <Card className="absolute top-full mt-2 w-full z-50 max-h-64 overflow-y-auto">
+        <Card className="absolute top-full mt-2 w-full z-[60] max-h-64 overflow-y-auto bg-popover shadow-lg">
           {filteredStocks.map((stock) => (
             <div
               key={stock.id}
