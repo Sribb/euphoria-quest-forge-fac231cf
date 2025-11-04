@@ -88,28 +88,28 @@ serve(async (req) => {
 
     switch (analysisType) {
       case "overview":
-        systemPrompt = "You are an expert investment education analyst. Provide personalized insights about user performance, learning patterns, and behavioral trends.";
-        userPrompt = `${context}\n\nProvide a comprehensive analysis with:\n1. Overall performance summary\n2. Key strengths (2-3 points)\n3. Areas for improvement (2-3 points)\n4. Personalized recommendations (3-4 actionable items)\n\nKeep it motivating, specific, and actionable.`;
+        systemPrompt = "You are an expert investment education analyst providing comprehensive performance insights. Use proper grammar, clear structure, and professional language. Format responses with paragraphs and bullet points for clarity.";
+        userPrompt = `${context}\n\nProvide a well-structured analysis with:\n\n1. **Overall Performance Summary** (2-3 sentences)\n\n2. **Key Strengths** (2-3 bullet points with specific metrics)\n\n3. **Areas for Improvement** (2-3 bullet points with actionable advice)\n\n4. **Personalized Recommendations** (3-4 numbered items with clear action steps)\n\nUse proper formatting, correct grammar, and professional tone throughout.`;
         break;
 
       case "learning":
-        systemPrompt = "You are an adaptive learning coach. Analyze learning behavior and provide personalized educational guidance.";
-        userPrompt = `${context}\n\nFocus on learning analytics:\n1. Learning velocity and consistency\n2. Topic mastery patterns\n3. Recommended next lessons\n4. Study habits to improve engagement\n\nBe encouraging and specific.`;
+        systemPrompt = "You are an adaptive learning coach specializing in investment education. Use clear, encouraging language with proper grammar and structure. Format responses professionally with paragraphs and bullet points.";
+        userPrompt = `${context}\n\nProvide a well-formatted analysis focusing on:\n\n1. **Learning Velocity & Consistency** (paragraph with specific metrics)\n\n2. **Topic Mastery Patterns** (2-3 bullet points)\n\n3. **Recommended Next Lessons** (numbered list with rationale)\n\n4. **Study Habits Improvement** (actionable bullet points)\n\nMaintain professional formatting and encouraging tone.`;
         break;
 
       case "trading":
-        systemPrompt = "You are a trading performance analyst. Evaluate portfolio decisions and provide strategic feedback.";
-        userPrompt = `${context}\n\nAnalyze trading performance:\n1. Portfolio composition insights\n2. Trading frequency and timing patterns\n3. Risk management assessment\n4. Specific improvement strategies\n\nProvide data-driven, actionable advice.`;
+        systemPrompt = "You are a trading performance analyst providing strategic investment guidance. Use professional language, proper grammar, and data-driven insights. Structure responses clearly with headings and bullet points.";
+        userPrompt = `${context}\n\nProvide a professionally formatted analysis covering:\n\n1. **Portfolio Composition Insights** (paragraph with specific percentages)\n\n2. **Trading Patterns & Timing** (2-3 bullet points with data)\n\n3. **Risk Management Assessment** (clear evaluation with metrics)\n\n4. **Improvement Strategies** (numbered actionable steps)\n\nUse proper grammar and professional financial terminology.`;
         break;
 
       case "behavioral":
-        systemPrompt = "You are a behavioral finance expert. Identify psychological patterns and biases in user actions.";
-        userPrompt = `${context}\n\nIdentify behavioral patterns:\n1. Engagement consistency\n2. Learning vs gaming vs trading balance\n3. Possible cognitive biases\n4. Recommendations for balanced growth\n\nBe insightful and non-judgmental.`;
+        systemPrompt = "You are a behavioral finance expert analyzing user patterns and decision-making. Use clear, non-judgmental language with proper grammar and structure. Format responses with clear sections and bullet points.";
+        userPrompt = `${context}\n\nProvide a well-structured behavioral analysis:\n\n1. **Engagement Consistency** (paragraph with pattern analysis)\n\n2. **Activity Balance** (learning vs gaming vs trading breakdown)\n\n3. **Identified Patterns** (2-3 bullet points on behavioral trends)\n\n4. **Recommendations for Growth** (numbered actionable suggestions)\n\nMaintain professional, insightful tone with proper formatting.`;
         break;
 
       default:
-        systemPrompt = "You are a helpful analytics assistant.";
-        userPrompt = `${context}\n\nProvide a brief analysis and recommendations.`;
+        systemPrompt = "You are a helpful analytics assistant. Use clear, professional language with proper grammar and formatting.";
+        userPrompt = `${context}\n\nProvide a brief, well-formatted analysis with clear recommendations.`;
     }
 
     // Call Lovable AI

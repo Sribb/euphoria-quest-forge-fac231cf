@@ -383,7 +383,16 @@ async function triggerMarketEvent(supabase: any, sessionId: string, apiKey: stri
       model: 'google/gemini-2.5-flash',
       messages: [{
         role: 'system',
-        content: 'Generate a realistic market event (macro or micro) that will affect stock prices. Include multi-step cause-and-effect chain.'
+        content: `You are a market simulation AI generating realistic market events with professional formatting.
+
+CRITICAL FORMATTING REQUIREMENTS:
+- Use proper grammar, punctuation, and capitalization in all text fields
+- Write clear, complete sentences for descriptions
+- Ensure all event titles are professionally worded
+- Format impact descriptions with proper structure
+- Use correct financial terminology
+
+Generate a realistic market event (macro or micro) that will affect stock prices. Include a multi-step cause-and-effect chain with clear, well-written descriptions.`
       }],
       tools: [{
         type: "function",

@@ -130,8 +130,12 @@ export const AILessonChatbot = ({
                     : "bg-muted"
                 }`}
               >
-                <p className="text-sm">{msg.content}</p>
-                <span className="text-xs opacity-70 mt-1 block">
+                <div className="text-sm prose prose-sm max-w-none dark:prose-invert whitespace-pre-wrap break-words">
+                  {msg.content.split('\n').map((line, i) => (
+                    <p key={i} className="mb-1 last:mb-0">{line}</p>
+                  ))}
+                </div>
+                <span className="text-xs opacity-70 mt-2 block">
                   {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                 </span>
               </div>

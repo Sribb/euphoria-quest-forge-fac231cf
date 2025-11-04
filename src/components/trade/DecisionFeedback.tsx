@@ -107,7 +107,11 @@ export const DecisionFeedback = ({ feedback, outcome, onReset }: DecisionFeedbac
               <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0 mt-0.5">
                 <span className="text-xs font-bold text-primary">{idx + 1}</span>
               </div>
-              <p className="text-sm">{insight}</p>
+              <div className="text-sm whitespace-pre-wrap break-words">
+                {insight.split('\n').map((line, i) => (
+                  <p key={i} className="mb-1 last:mb-0">{line}</p>
+                ))}
+              </div>
             </div>
           ))}
         </div>
@@ -123,7 +127,11 @@ export const DecisionFeedback = ({ feedback, outcome, onReset }: DecisionFeedbac
           {feedback.recommendations?.map((rec: string, idx: number) => (
             <div key={idx} className="flex items-start gap-2 text-sm">
               <div className="w-1.5 h-1.5 rounded-full bg-primary mt-2 flex-shrink-0" />
-              <span>{rec}</span>
+              <div className="whitespace-pre-wrap break-words">
+                {rec.split('\n').map((line, i) => (
+                  <p key={i} className="mb-1 last:mb-0">{line}</p>
+                ))}
+              </div>
             </div>
           ))}
         </div>

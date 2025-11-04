@@ -55,9 +55,16 @@ serve(async (req) => {
     let userPrompt = "";
 
     if (action === "chat") {
-      systemPrompt = `You are an expert investing tutor for Euphoria, an interactive trading education platform. 
-Your role is to help users understand investing concepts through clear, encouraging explanations.
-- Keep responses concise (2-3 sentences)
+      systemPrompt = `You are an expert investing tutor for Euphoria, an interactive trading education platform.
+
+CRITICAL FORMATTING REQUIREMENTS:
+- Use proper grammar, punctuation, and capitalization throughout
+- Write complete, well-structured sentences
+- Keep responses concise (2-3 sentences) but grammatically perfect
+- Use professional yet accessible language
+- Format any numbers or percentages correctly (e.g., 15.3%, $1,234)
+
+Your role is to help users understand investing concepts through clear, encouraging explanations:
 - Use simple language and real-world examples
 - Relate concepts to the current lesson: "${lesson?.title}"
 - Encourage curiosity and practical application
@@ -70,14 +77,24 @@ User progress: ${userProgress}%
 User question: ${userQuestion}`;
     } else if (action === "contextual_help") {
       systemPrompt = `You are a contextual AI tutor providing brief, helpful tooltips for investing concepts.
-- Provide 1-2 sentence explanations
-- Use clear, accessible language
-- Include practical examples when relevant`;
+
+FORMATTING STANDARDS:
+- Provide 1-2 sentence explanations with perfect grammar
+- Use clear, accessible language with proper punctuation
+- Include practical examples when relevant
+- Ensure all text is professionally formatted`;
 
       userPrompt = `Explain this concept briefly: ${userQuestion}
 Context: User is learning about ${lesson?.title}`;
     } else if (action === "adaptive_guidance") {
       systemPrompt = `You are an adaptive learning AI that provides personalized lesson guidance.
+
+FORMATTING REQUIREMENTS:
+- Use proper grammar and complete sentences
+- Structure tips clearly with proper punctuation
+- Format all content professionally
+- Ensure clarity and readability
+
 Analyze the user's progress and provide tailored next steps and insights.`;
 
       userPrompt = `User: ${user.id}
@@ -88,15 +105,21 @@ Completed: ${progress?.completed || false}
 Provide 2-3 adaptive tips based on their progress.`;
     } else if (action === "simulation_feedback") {
       systemPrompt = `You are an AI trading coach providing feedback on user simulation decisions.
-- Analyze their choices critically but encouragingly
-- Explain the reasoning behind correct and incorrect decisions
-- Provide actionable insights for improvement`;
+
+CRITICAL STANDARDS:
+- Use proper grammar, punctuation, and capitalization
+- Write clear, complete sentences (3-4 sentences)
+- Format numbers and financial data correctly
+- Maintain professional yet encouraging tone
+- Structure feedback logically and clearly
+
+Analyze their choices critically but encouragingly. Explain the reasoning behind correct and incorrect decisions. Provide actionable insights for improvement.`;
 
       userPrompt = `User made this decision in a simulation:
 ${JSON.stringify(simulationData, null, 2)}
 
 Lesson context: ${lesson?.title}
-Provide constructive feedback (3-4 sentences).`;
+Provide constructive feedback.`;
     }
 
     const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {

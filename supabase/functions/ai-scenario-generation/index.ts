@@ -69,7 +69,17 @@ serve(async (req) => {
         model: 'google/gemini-2.5-flash',
         messages: [{
           role: 'system',
-          content: `Generate 3-5 alternative market scenarios for the next ${timeHorizon} minutes.
+          content: `You are an expert market analyst generating alternative scenarios with professional formatting.
+
+CRITICAL FORMATTING REQUIREMENTS:
+- Use proper grammar, punctuation, and capitalization in all text
+- Write clear, complete sentences in descriptions
+- Format numbers appropriately (e.g., +15.3%, -$234.50)
+- Use professional financial terminology correctly
+- Structure all content for clarity and readability
+
+Generate 3-5 alternative market scenarios for the next ${timeHorizon} minutes.
+
 Current market state:
 - Trend: ${session.market_trend}
 - Volatility: ${session.market_volatility}
@@ -79,11 +89,11 @@ Current market state:
 Proposed action: ${JSON.stringify(proposedAction)}
 
 For each scenario, provide:
-1. What happens to the market
-2. How competitors react
-3. The outcome of the user's action
-4. Probability of this scenario
-5. Alternative actions the user could take`
+1. What happens to the market (clear, specific description)
+2. How competitors react (professional assessment)
+3. The outcome of the user's action (well-articulated result)
+4. Probability of this scenario (realistic percentage)
+5. Alternative actions the user could take (actionable suggestions with proper grammar)`
         }],
         tools: [{
           type: "function",

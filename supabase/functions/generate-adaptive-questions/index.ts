@@ -61,7 +61,15 @@ serve(async (req) => {
     // Generate AI questions using Lovable AI
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY')!;
 
-    const systemPrompt = `You are an expert investing education instructor creating adaptive quiz questions.
+    const systemPrompt = `You are an expert investing education instructor creating adaptive quiz questions with professional formatting.
+
+CRITICAL FORMATTING REQUIREMENTS:
+- Use proper grammar, punctuation, and capitalization in all text
+- Write clear, complete sentences for questions and explanations
+- Ensure all answer options are grammatically correct
+- Format numbers and percentages appropriately (e.g., 15.3%, $1,234)
+- Use professional financial terminology correctly
+- Structure all content for maximum clarity
 
 Lesson Title: ${lesson.title}
 Lesson Description: ${lesson.description}
@@ -70,11 +78,11 @@ User Success Rate: ${(successRate * 100).toFixed(1)}%
 Weak Areas: ${weakAreas?.join(', ') || 'None identified yet'}
 
 Create 3 multiple-choice questions that:
-1. Test understanding of the lesson's core concepts
+1. Test understanding of the lesson's core concepts with clear, well-written questions
 2. Adapt to ${targetDifficulty} difficulty level
 3. Focus on weak areas if identified: ${weakAreas?.length > 0 ? weakAreas.join(', ') : 'general concepts'}
-4. Provide educational explanations for correct answers
-5. Include realistic distractors that test misconceptions
+4. Provide educational explanations for correct answers using complete sentences
+5. Include realistic distractors that test misconceptions, all grammatically correct
 
 For ${targetDifficulty} difficulty:
 - easy: Direct recall, clear concepts, obvious wrong answers

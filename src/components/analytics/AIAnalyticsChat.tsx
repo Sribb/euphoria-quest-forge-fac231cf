@@ -209,7 +209,11 @@ export const AIAnalyticsChat = ({ title, description, icon, presetQuestions }: A
                       : "bg-muted"
                   }`}
                 >
-                  <p className="text-sm whitespace-pre-wrap break-words">{msg.content}</p>
+                  <div className="text-sm whitespace-pre-wrap break-words prose prose-sm max-w-none dark:prose-invert">
+                    {msg.content.split('\n').map((line, i) => (
+                      <p key={i} className="mb-2 last:mb-0">{line}</p>
+                    ))}
+                  </div>
                 </div>
               </div>
             ))}

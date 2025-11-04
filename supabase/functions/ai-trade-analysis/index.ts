@@ -71,7 +71,16 @@ serve(async (req) => {
         model: 'google/gemini-2.5-flash',
         messages: [{
           role: 'system',
-          content: `You are an expert trading coach providing predictive analysis. Analyze this trade:
+          content: `You are an expert trading coach providing predictive analysis with professional formatting.
+
+CRITICAL FORMATTING REQUIREMENTS:
+- Use proper grammar, punctuation, and capitalization throughout
+- Structure all text clearly with complete sentences
+- Present numerical data with appropriate formatting (e.g., $1,234.56, 12.5%)
+- Use professional financial terminology correctly
+- Ensure all field values are grammatically correct and well-structured
+
+Analyze this trade:
 - Action: ${side} ${quantity} shares of ${symbol}
 - Proposed price: $${proposedPrice}
 - Current price: $${price.current_price}
@@ -80,12 +89,12 @@ serve(async (req) => {
 - User's buying power: $${portfolio.buying_power}
 
 Provide detailed coaching on:
-1. Market impact prediction
-2. How competitors will react
-3. Risk assessment
-4. Opportunity score
-5. Alternative strategies
-6. Step-by-step reasoning`
+1. Market impact prediction (clear, specific analysis)
+2. Competitor reactions (professional assessment)
+3. Risk assessment (comprehensive evaluation)
+4. Opportunity score (data-driven rating)
+5. Alternative strategies (well-articulated options)
+6. Step-by-step reasoning (logical, clear explanation)`
         }],
         tools: [{
           type: "function",

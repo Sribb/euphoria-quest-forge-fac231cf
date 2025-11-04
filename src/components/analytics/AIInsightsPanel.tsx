@@ -84,9 +84,13 @@ export const AIInsightsPanel = ({ analysisType, title, description, icon }: AIIn
       {insights && (
         <div className="mt-4 space-y-4">
           <div className="p-4 bg-gradient-hero/10 border border-primary/20 rounded-lg">
-            <div className="prose prose-sm max-w-none">
-              {insights.split('\n').map((line, idx) => (
-                <p key={idx} className="mb-2 last:mb-0">{line}</p>
+            <div className="prose prose-sm max-w-none dark:prose-invert">
+              {insights.split('\n\n').map((paragraph, idx) => (
+                <div key={idx} className="mb-3 last:mb-0">
+                  {paragraph.split('\n').map((line, lineIdx) => (
+                    <p key={lineIdx} className="mb-1 last:mb-0">{line}</p>
+                  ))}
+                </div>
               ))}
             </div>
           </div>
