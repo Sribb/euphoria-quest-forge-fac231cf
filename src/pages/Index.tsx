@@ -44,6 +44,28 @@ const Index = () => {
     setActiveTab("trade");
   };
 
+  const handleBackFromLesson = () => {
+    setSelectedLesson(null);
+  };
+
+  const getBackButtonProps = () => {
+    if (selectedStock) {
+      return { show: true, onBack: handleBackToStockSearch, label: "Back to Search" };
+    }
+    if (showStockSearch) {
+      return { show: true, onBack: handleBackFromStockSearch, label: "Back to Trade" };
+    }
+    if (selectedLesson) {
+      return { show: true, onBack: handleBackFromLesson, label: "Back to Lessons" };
+    }
+    if (activeTab !== "dashboard") {
+      return { show: true, onBack: () => handleNavigate("dashboard"), label: "Home" };
+    }
+    return { show: false };
+  };
+
+  const backProps = getBackButtonProps();
+
   // Show onboarding if user is logged in and hasn't completed it
   if (user && !isLoading && !hasCompletedOnboarding) {
     return <Onboarding onComplete={() => window.location.reload()} />;
@@ -56,7 +78,14 @@ const Index = () => {
         <div className="max-w-2xl mx-auto px-4">
           <StockDetail symbol={selectedStock} onBack={handleBackToStockSearch} />
         </div>
-        <Navigation activeTab={activeTab} onTabChange={handleNavigate} onSelectStock={handleStockSelect} />
+        <Navigation 
+          activeTab={activeTab} 
+          onTabChange={handleNavigate} 
+          onSelectStock={handleStockSelect}
+          showBackButton={backProps.show}
+          onBack={backProps.onBack}
+          backLabel={backProps.label}
+        />
       </div>
     );
   }
@@ -72,7 +101,14 @@ const Index = () => {
             onBack={handleBackFromStockSearch}
           />
         </div>
-        <Navigation activeTab={activeTab} onTabChange={handleNavigate} onSelectStock={handleStockSelect} />
+        <Navigation 
+          activeTab={activeTab} 
+          onTabChange={handleNavigate} 
+          onSelectStock={handleStockSelect}
+          showBackButton={backProps.show}
+          onBack={backProps.onBack}
+          backLabel={backProps.label}
+        />
       </div>
     );
   }
@@ -107,7 +143,14 @@ const Index = () => {
       <div className="max-w-2xl mx-auto px-4 animate-fade-in" key={activeTab}>
         {renderContent()}
       </div>
-      <Navigation activeTab={activeTab} onTabChange={handleNavigate} onSelectStock={handleStockSelect} />
+      <Navigation 
+        activeTab={activeTab} 
+        onTabChange={handleNavigate} 
+        onSelectStock={handleStockSelect}
+        showBackButton={backProps.show}
+        onBack={backProps.onBack}
+        backLabel={backProps.label}
+      />
     </div>
   );
 };
