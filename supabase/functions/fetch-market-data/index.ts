@@ -64,6 +64,25 @@ serve(async (req) => {
       throw new Error('Endpoint is required');
     }
 
+    // Validate endpoint
+    const ALLOWED_ENDPOINTS = ['/quote', '/time_series'];
+    if (!ALLOWED_ENDPOINTS.includes(endpoint)) {
+      throw new Error('Invalid endpoint');
+    }
+
+    // Validate symbols format
+    const ALLOWED_SYMBOLS_REGEX = /^[A-Z]{1,5}$/;
+    if (params?.symbol && !ALLOWED_SYMBOLS_REGEX.test(params.symbol)) {
+      throw new Error('Invalid symbol format');
+    }
+    if (symbols && Array.isArray(symbols)) {
+      for (const symbol of symbols) {
+        if (!ALLOWED_SYMBOLS_REGEX.test(symbol)) {
+          throw new Error('Invalid symbol format');
+        }
+      }
+    }
+
     // Special handling for batch quotes
     if (endpoint === '/quote' && symbols && Array.isArray(symbols)) {
       const batchCacheKey = `batch-quote-${symbols.sort().join(',')}`;

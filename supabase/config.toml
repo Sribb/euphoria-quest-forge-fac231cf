@@ -16,7 +16,7 @@ verify_jwt = true
 verify_jwt = true
 
 [functions.fetch-market-data]
-verify_jwt = false
+verify_jwt = true
 
 [functions.ai-market-engine]
 verify_jwt = true
