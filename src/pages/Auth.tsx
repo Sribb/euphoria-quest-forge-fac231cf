@@ -50,13 +50,13 @@ const Auth = () => {
           title: "Welcome back!",
           description: "Successfully signed in.",
         });
-        navigate("/");
+        navigate("/app");
       } else {
         const { error } = await supabase.auth.signUp({
           email: validation.data.email,
           password: validation.data.password,
           options: {
-            emailRedirectTo: `${window.location.origin}/`,
+            emailRedirectTo: `${window.location.origin}/app`,
           },
         });
 
@@ -66,7 +66,7 @@ const Auth = () => {
           title: "Account created!",
           description: "Welcome to Euphoria. Start your learning journey!",
         });
-        navigate("/");
+        navigate("/app");
       }
     } catch (error: any) {
       toast({

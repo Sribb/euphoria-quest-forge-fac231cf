@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
+import Landing from "./pages/Landing";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -17,9 +18,10 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
+          <Route path="/" element={<Landing />} />
           <Route path="/auth" element={<Auth />} />
           <Route
-            path="/"
+            path="/app/*"
             element={
               <ProtectedRoute>
                 <Index />
