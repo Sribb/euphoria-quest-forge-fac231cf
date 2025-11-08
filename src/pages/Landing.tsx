@@ -3,10 +3,19 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { TrendingUp, Target, Brain, Zap, Sparkles, Users } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
 
 const Landing = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [scrollY, setScrollY] = useState(0);
+
+  // Redirect logged-in users to the app
+  useEffect(() => {
+    if (user) {
+      navigate("/app");
+    }
+  }, [user, navigate]);
 
   useEffect(() => {
     const handleScroll = () => setScrollY(window.scrollY);
