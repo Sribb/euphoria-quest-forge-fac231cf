@@ -4,37 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Trophy, TrendingUp, RefreshCw, Lightbulb, Sparkles, Target, Award, Home } from "lucide-react";
 import { toast } from "sonner";
-import TradingViewWidget from "@/components/TradingViewWidget";
+import { CandlestickChart } from "./CandlestickChart";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-
-// Map patterns to TradingView symbols that best represent them
-const getSymbolForPattern = (pattern: string): string => {
-  const symbolMap: Record<string, string> = {
-    "uptrend": "NASDAQ:TSLA",
-    "downtrend": "NASDAQ:META",
-    "sideways": "NYSE:T",
-    "breakout": "NASDAQ:NVDA",
-    "pullback": "NASDAQ:AAPL",
-    "reversal": "NASDAQ:AMD",
-    "double-top": "NYSE:BA",
-    "double-bottom": "NASDAQ:INTC",
-    "head-shoulders": "NYSE:GE",
-    "cup-handle": "NASDAQ:GOOGL",
-    "triangle": "NASDAQ:MSFT",
-    "flag": "NYSE:JPM",
-    "wedge": "NASDAQ:NFLX",
-    "support-bounce": "NYSE:DIS",
-    "resistance-bounce": "NYSE:WMT",
-    "channel": "NASDAQ:AMZN",
-    "range-bound": "NYSE:KO",
-    "fakeout": "NYSE:XOM",
-    "retest": "NASDAQ:CSCO",
-    "parabolic": "NASDAQ:COIN",
-    "correction": "NASDAQ:PYPL"
-  };
-  return symbolMap[pattern] || "NASDAQ:AAPL";
-};
 
 const chartScenarios = [
   {
@@ -203,7 +175,6 @@ export const TrendMasterGame = ({ onClose }: TrendMasterGameProps) => {
   const [showHint, setShowHint] = useState(false);
 
   const scenario = chartScenarios[currentQuestion];
-  const chartSymbol = getSymbolForPattern(scenario.pattern);
 
   const handleAnswer = (answer: string) => {
     if (showFeedback) return;
@@ -421,12 +392,12 @@ export const TrendMasterGame = ({ onClose }: TrendMasterGameProps) => {
             {/* Chart Section */}
             <Card className="p-6 bg-gradient-to-br from-card via-card to-primary/5 border-primary/10 shadow-glow-soft">
               <div className="relative">
-                <TradingViewWidget symbol={chartSymbol} height={500} />
+                <CandlestickChart pattern={scenario.pattern} height={500} />
                 
                 {mentorMode && (
-                  <div className="absolute top-4 right-4 bg-card/90 backdrop-blur-sm border border-primary/20 rounded-lg p-3 max-w-xs">
+                  <div className="absolute top-4 right-4 bg-card/90 backdrop-blur-sm border border-primary/20 rounded-lg p-3 max-w-xs z-10">
                     <p className="text-xs text-muted-foreground">
-                      <span className="text-primary font-semibold">Mentor Tip:</span> Study the trend direction, support/resistance levels, and pattern formation.
+                      <span className="text-primary font-semibold">Mentor Tip:</span> Study the trend direction, support/resistance levels, and pattern formation. Green candles = bullish (price up), Red candles = bearish (price down).
                     </p>
                   </div>
                 )}
