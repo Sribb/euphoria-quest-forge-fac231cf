@@ -1017,8 +1017,7 @@ export const CandlestickChart = ({ pattern, height = 500 }: CandlestickChartProp
           <Bar 
             dataKey="volume" 
             fill="url(#gridGradient)" 
-            opacity={0.3}
-            yAxisId="volume"
+            opacity={0.2}
           />
           
           {/* Candlestick bodies */}
