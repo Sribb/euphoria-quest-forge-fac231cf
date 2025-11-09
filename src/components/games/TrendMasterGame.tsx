@@ -2,128 +2,38 @@ import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Trophy, TrendingUp } from "lucide-react";
+import { Trophy, TrendingUp, RefreshCw, Lightbulb, Sparkles, Target, Award, Home } from "lucide-react";
 import { toast } from "sonner";
-import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, Area, AreaChart } from "recharts";
+import TradingViewWidget from "@/components/TradingViewWidget";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 
-// Generate realistic chart data for each pattern
-const generateChartData = (pattern: string) => {
-  const baseData = Array.from({ length: 50 }, (_, i) => ({ time: i }));
-  
-  switch (pattern) {
-    case "uptrend":
-      return baseData.map((d, i) => ({ ...d, price: 100 + i * 2 + Math.random() * 5 }));
-    case "downtrend":
-      return baseData.map((d, i) => ({ ...d, price: 200 - i * 2 + Math.random() * 5 }));
-    case "sideways":
-      return baseData.map((d) => ({ ...d, price: 150 + Math.random() * 10 - 5 }));
-    case "breakout":
-      return baseData.map((d, i) => ({ 
-        ...d, 
-        price: i < 30 ? 100 + Math.random() * 5 : 100 + (i - 30) * 3 + Math.random() * 5 
-      }));
-    case "pullback":
-      return baseData.map((d, i) => ({ 
-        ...d, 
-        price: i < 35 ? 100 + i * 2 : 170 - (i - 35) * 1.5 + Math.random() * 3 
-      }));
-    case "reversal":
-      return baseData.map((d, i) => ({ 
-        ...d, 
-        price: i < 25 ? 150 - i * 2 : 100 + (i - 25) * 2 + Math.random() * 4 
-      }));
-    case "double-top":
-      return baseData.map((d, i) => {
-        if (i < 15) return { ...d, price: 100 + i * 3 };
-        if (i < 25) return { ...d, price: 145 - (i - 15) * 3 };
-        if (i < 40) return { ...d, price: 115 + (i - 25) * 2 };
-        return { ...d, price: 145 - (i - 40) * 2 };
-      });
-    case "double-bottom":
-      return baseData.map((d, i) => {
-        if (i < 15) return { ...d, price: 150 - i * 3 };
-        if (i < 25) return { ...d, price: 105 + (i - 15) * 3 };
-        if (i < 40) return { ...d, price: 135 - (i - 25) * 2 };
-        return { ...d, price: 105 + (i - 40) * 2 };
-      });
-    case "head-shoulders":
-      return baseData.map((d, i) => {
-        if (i < 12) return { ...d, price: 100 + i * 2 };
-        if (i < 18) return { ...d, price: 124 - (i - 12) * 2 };
-        if (i < 30) return { ...d, price: 112 + (i - 18) * 3 };
-        if (i < 36) return { ...d, price: 148 - (i - 30) * 3 };
-        if (i < 48) return { ...d, price: 130 + (i - 36) * 1.5 };
-        return { ...d, price: 148 - (i - 48) * 4 };
-      });
-    case "cup-handle":
-      return baseData.map((d, i) => {
-        if (i < 10) return { ...d, price: 150 };
-        if (i < 25) return { ...d, price: 150 - Math.pow((i - 17.5) / 7.5, 2) * 30 };
-        if (i < 40) return { ...d, price: 120 + (i - 25) * 2 };
-        return { ...d, price: 150 - (i - 40) * 1 };
-      });
-    case "triangle":
-      return baseData.map((d, i) => ({
-        ...d,
-        price: 125 + (Math.sin(i / 3) * (25 - i * 0.5)) + Math.random() * 2
-      }));
-    case "flag":
-      return baseData.map((d, i) => {
-        if (i < 15) return { ...d, price: 100 + i * 4 };
-        if (i < 40) return { ...d, price: 160 - (i - 15) * 0.5 + Math.random() * 3 };
-        return { ...d, price: 147.5 + (i - 40) * 3 };
-      });
-    case "wedge":
-      return baseData.map((d, i) => ({
-        ...d,
-        price: 120 + Math.sin(i / 4) * (15 - i * 0.3) + i * 0.5
-      }));
-    case "support-bounce":
-      return baseData.map((d, i) => {
-        if (i < 35) return { ...d, price: 140 - i * 1.5 + Math.random() * 4 };
-        return { ...d, price: 87.5 + (i - 35) * 2.5 + Math.random() * 4 };
-      });
-    case "resistance-bounce":
-      return baseData.map((d, i) => {
-        if (i < 35) return { ...d, price: 100 + i * 1.5 + Math.random() * 4 };
-        return { ...d, price: 152.5 - (i - 35) * 2.5 + Math.random() * 4 };
-      });
-    case "channel":
-      return baseData.map((d, i) => ({
-        ...d,
-        price: 100 + i * 1.2 + Math.sin(i / 3) * 8 + Math.random() * 2
-      }));
-    case "range-bound":
-      return baseData.map((d, i) => ({
-        ...d,
-        price: 125 + Math.sin(i / 4) * 15 + Math.random() * 4
-      }));
-    case "fakeout":
-      return baseData.map((d, i) => {
-        if (i < 35) return { ...d, price: 120 + Math.random() * 10 };
-        if (i < 40) return { ...d, price: 130 + (i - 35) * 2 };
-        return { ...d, price: 140 - (i - 40) * 3 };
-      });
-    case "retest":
-      return baseData.map((d, i) => {
-        if (i < 20) return { ...d, price: 100 + Math.random() * 8 };
-        if (i < 28) return { ...d, price: 104 + (i - 20) * 3 };
-        if (i < 35) return { ...d, price: 128 - (i - 28) * 2 };
-        return { ...d, price: 114 + (i - 35) * 2.5 };
-      });
-    case "parabolic":
-      return baseData.map((d, i) => ({
-        ...d,
-        price: 100 + Math.pow(i / 10, 2.5) + Math.random() * 3
-      }));
-    case "correction":
-      return baseData.map((d, i) => {
-        if (i < 35) return { ...d, price: 100 + i * 3 + Math.random() * 4 };
-        return { ...d, price: 205 - (i - 35) * 4 + Math.random() * 5 };
-      });
-    default:
-      return baseData.map((d) => ({ ...d, price: 100 + Math.random() * 20 }));
-  }
+// Map patterns to TradingView symbols that best represent them
+const getSymbolForPattern = (pattern: string): string => {
+  const symbolMap: Record<string, string> = {
+    "uptrend": "NASDAQ:TSLA",
+    "downtrend": "NASDAQ:META",
+    "sideways": "NYSE:T",
+    "breakout": "NASDAQ:NVDA",
+    "pullback": "NASDAQ:AAPL",
+    "reversal": "NASDAQ:AMD",
+    "double-top": "NYSE:BA",
+    "double-bottom": "NASDAQ:INTC",
+    "head-shoulders": "NYSE:GE",
+    "cup-handle": "NASDAQ:GOOGL",
+    "triangle": "NASDAQ:MSFT",
+    "flag": "NYSE:JPM",
+    "wedge": "NASDAQ:NFLX",
+    "support-bounce": "NYSE:DIS",
+    "resistance-bounce": "NYSE:WMT",
+    "channel": "NASDAQ:AMZN",
+    "range-bound": "NYSE:KO",
+    "fakeout": "NYSE:XOM",
+    "retest": "NASDAQ:CSCO",
+    "parabolic": "NASDAQ:COIN",
+    "correction": "NASDAQ:PYPL"
+  };
+  return symbolMap[pattern] || "NASDAQ:AAPL";
 };
 
 const chartScenarios = [
@@ -283,13 +193,17 @@ interface TrendMasterGameProps {
 export const TrendMasterGame = ({ onClose }: TrendMasterGameProps) => {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [score, setScore] = useState(0);
+  const [totalXP, setTotalXP] = useState(0);
+  const [streak, setStreak] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [showFeedback, setShowFeedback] = useState(false);
   const [gameComplete, setGameComplete] = useState(false);
   const [showCelebration, setShowCelebration] = useState(false);
+  const [mentorMode, setMentorMode] = useState(false);
+  const [showHint, setShowHint] = useState(false);
 
   const scenario = chartScenarios[currentQuestion];
-  const chartData = generateChartData(scenario.pattern);
+  const chartSymbol = getSymbolForPattern(scenario.pattern);
 
   const handleAnswer = (answer: string) => {
     if (showFeedback) return;
@@ -298,10 +212,16 @@ export const TrendMasterGame = ({ onClose }: TrendMasterGameProps) => {
     setShowFeedback(true);
     
     if (answer === scenario.correctAnswer) {
+      const xpGain = 100 + (streak * 25);
       setScore(score + 1);
+      setTotalXP(totalXP + xpGain);
+      setStreak(streak + 1);
       setShowCelebration(true);
       setTimeout(() => setShowCelebration(false), 2000);
-      toast.success("Correct! 🎉");
+      toast.success(`Correct! +${xpGain} XP 🎉`, { duration: 3000 });
+    } else {
+      setStreak(0);
+      toast.error("Not quite right. Review the explanation!");
     }
   };
 
@@ -310,17 +230,31 @@ export const TrendMasterGame = ({ onClose }: TrendMasterGameProps) => {
       setCurrentQuestion(currentQuestion + 1);
       setSelectedAnswer(null);
       setShowFeedback(false);
+      setShowHint(false);
     } else {
       setGameComplete(true);
     }
   };
 
+  const handleRefresh = () => {
+    setSelectedAnswer(null);
+    setShowFeedback(false);
+    setShowHint(false);
+  };
+
+  const toggleHint = () => {
+    setShowHint(!showHint);
+  };
+
   const handleRestart = () => {
     setCurrentQuestion(0);
     setScore(0);
+    setTotalXP(0);
+    setStreak(0);
     setSelectedAnswer(null);
     setShowFeedback(false);
     setGameComplete(false);
+    setShowHint(false);
   };
 
   if (gameComplete) {
@@ -334,34 +268,39 @@ export const TrendMasterGame = ({ onClose }: TrendMasterGameProps) => {
     return (
       <div className="fixed inset-0 bg-background z-50 overflow-y-auto">
         <div className="container max-w-4xl mx-auto p-6 min-h-screen flex flex-col items-center justify-center">
-          <Card className="p-8 w-full animate-scale-in bg-gradient-accent border-0">
+          <Card className="p-8 w-full animate-scale-in bg-gradient-to-br from-purple-500/10 via-background to-teal-500/10 border-primary/20">
             <div className="text-center space-y-6">
-              <div className="w-20 h-20 rounded-full bg-primary/20 flex items-center justify-center mx-auto">
-                <Trophy className="w-10 h-10 text-primary animate-pulse" />
+              <div className="w-20 h-20 rounded-full bg-gradient-primary flex items-center justify-center mx-auto animate-pulse shadow-glow">
+                <Trophy className="w-10 h-10 text-white" />
               </div>
               
               <div>
-                <h2 className="text-3xl font-bold mb-2">Game Complete!</h2>
+                <h2 className="text-3xl font-bold mb-2 glow-text">Game Complete!</h2>
                 <p className="text-muted-foreground">You've mastered Trend Master</p>
               </div>
 
-              <div className="grid grid-cols-2 gap-4 py-6">
-                <div className="p-6 rounded-lg bg-card border border-border">
+              <div className="grid grid-cols-3 gap-4 py-6">
+                <div className="p-6 rounded-lg bg-card/50 backdrop-blur-sm border border-primary/20">
                   <div className="text-4xl font-bold text-primary mb-2">{score}/{chartScenarios.length}</div>
-                  <div className="text-sm text-muted-foreground">Questions Correct</div>
+                  <div className="text-sm text-muted-foreground">Correct</div>
                 </div>
-                <div className="p-6 rounded-lg bg-card border border-border">
+                <div className="p-6 rounded-lg bg-card/50 backdrop-blur-sm border border-primary/20">
                   <div className="text-4xl font-bold text-primary mb-2">{accuracy}%</div>
                   <div className="text-sm text-muted-foreground">Accuracy</div>
                 </div>
+                <div className="p-6 rounded-lg bg-card/50 backdrop-blur-sm border border-primary/20">
+                  <div className="text-4xl font-bold text-teal-400 mb-2">{totalXP}</div>
+                  <div className="text-sm text-muted-foreground">Total XP</div>
+                </div>
               </div>
 
-              <div className="p-6 rounded-lg bg-primary/10 border border-primary/20">
+              <div className="p-6 rounded-lg bg-gradient-primary/20 border border-primary/30">
                 <p className="text-lg font-medium">{motivationalMessage}</p>
               </div>
 
               <div className="flex gap-3">
-                <Button onClick={handleRestart} size="lg" className="flex-1">
+                <Button onClick={handleRestart} size="lg" className="flex-1 bg-gradient-primary hover:opacity-90">
+                  <RefreshCw className="w-5 h-5 mr-2" />
                   Play Again
                 </Button>
                 <Button onClick={onClose} size="lg" variant="outline" className="flex-1">
@@ -376,135 +315,238 @@ export const TrendMasterGame = ({ onClose }: TrendMasterGameProps) => {
   }
 
   return (
-    <div className="fixed inset-0 bg-background z-50 overflow-y-auto">
-      <div className="container max-w-6xl mx-auto p-6">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-6 animate-fade-in">
-          <Button variant="ghost" size="icon" onClick={onClose} className="hover-scale">
-            <ArrowLeft className="w-5 h-5" />
-          </Button>
-          <div className="flex-1 text-center">
-            <h2 className="text-2xl font-bold flex items-center justify-center gap-2">
-              <TrendingUp className="w-6 h-6 text-primary" />
-              Trend Master
-            </h2>
-            <p className="text-sm text-muted-foreground">Master the art of reading charts</p>
-          </div>
-          <div className="flex items-center gap-3">
-            <Badge variant="secondary" className="text-base px-4 py-2">
-              {currentQuestion + 1}/{chartScenarios.length}
-            </Badge>
-            <Badge className="text-base px-4 py-2 bg-primary">
-              Score: {score}
-            </Badge>
+    <div className="fixed inset-0 bg-background z-50 flex flex-col overflow-hidden">
+      {/* Top Navigation Bar */}
+      <div className="border-b border-border/50 bg-card/50 backdrop-blur-sm">
+        <div className="container mx-auto px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <Button variant="ghost" size="icon" onClick={onClose} className="hover-scale">
+                <Home className="w-5 h-5" />
+              </Button>
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <span>Games</span>
+                <span>/</span>
+                <span className="text-foreground font-medium">Trend Master</span>
+              </div>
+            </div>
+            
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-primary/10 border border-primary/20">
+                <Sparkles className="w-4 h-4 text-primary" />
+                <span className="text-sm font-medium">{totalXP} XP</span>
+              </div>
+              <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-card border border-border">
+                <Target className="w-4 h-4 text-teal-400" />
+                <span className="text-sm font-medium">{streak} Streak</span>
+              </div>
+              <Badge className="text-base px-4 py-2 bg-gradient-primary">
+                {score}/{chartScenarios.length}
+              </Badge>
+            </div>
           </div>
         </div>
+      </div>
 
-        {/* Celebration Overlay */}
-        {showCelebration && (
-          <div className="fixed inset-0 pointer-events-none z-50 flex items-center justify-center animate-fade-in">
-            <div className="text-6xl font-bold text-primary animate-scale-in">
-              ✓ Correct!
+      {/* Celebration Overlay with Confetti Effect */}
+      {showCelebration && (
+        <div className="fixed inset-0 pointer-events-none flex items-center justify-center z-[60]">
+          <div className="text-9xl animate-scale-in">🎉</div>
+          <div className="absolute inset-0 overflow-hidden">
+            {Array.from({ length: 50 }).map((_, i) => (
+              <div
+                key={i}
+                className="absolute w-2 h-2 bg-primary rounded-full animate-fade-in"
+                style={{
+                  left: `${Math.random() * 100}%`,
+                  top: `${Math.random() * 100}%`,
+                  animationDelay: `${Math.random() * 0.5}s`,
+                  animationDuration: `${1 + Math.random()}s`
+                }}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Main Content */}
+      <div className="flex-1 overflow-y-auto">
+        <div className="container mx-auto px-6 py-6 max-w-7xl">
+          <div className="space-y-6">
+            {/* Level Header & Controls */}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-xl bg-gradient-primary flex items-center justify-center shadow-glow">
+                  <TrendingUp className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h2 className="text-xl font-bold">Level {currentQuestion + 1} — Identify the Trend</h2>
+                  <p className="text-sm text-muted-foreground">{scenario.question}</p>
+                </div>
+              </div>
+              
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-card border border-border">
+                  <Label htmlFor="mentor-mode" className="text-sm cursor-pointer">Mentor Mode</Label>
+                  <Switch 
+                    id="mentor-mode" 
+                    checked={mentorMode} 
+                    onCheckedChange={setMentorMode}
+                  />
+                </div>
+                <Button variant="outline" size="icon" onClick={handleRefresh} className="hover-scale">
+                  <RefreshCw className="w-5 h-5" />
+                </Button>
+                <Button variant="outline" size="icon" onClick={toggleHint} className={`hover-scale ${showHint ? 'bg-primary/20' : ''}`}>
+                  <Lightbulb className="w-5 h-5" />
+                </Button>
+              </div>
+            </div>
+
+            {/* Hint Banner */}
+            {showHint && (
+              <Card className="p-4 bg-primary/10 border-primary/20 animate-fade-in">
+                <div className="flex items-start gap-3">
+                  <Lightbulb className="w-5 h-5 text-primary mt-0.5" />
+                  <div>
+                    <p className="text-sm font-medium mb-1">Hint:</p>
+                    <p className="text-sm text-muted-foreground">
+                      Look for the overall direction and key price points. Does it show higher highs, lower lows, or consolidation?
+                    </p>
+                  </div>
+                </div>
+              </Card>
+            )}
+
+            {/* Chart Section */}
+            <Card className="p-6 bg-gradient-to-br from-card via-card to-primary/5 border-primary/10 shadow-glow-soft">
+              <div className="relative">
+                <TradingViewWidget symbol={chartSymbol} height={500} />
+                
+                {mentorMode && (
+                  <div className="absolute top-4 right-4 bg-card/90 backdrop-blur-sm border border-primary/20 rounded-lg p-3 max-w-xs">
+                    <p className="text-xs text-muted-foreground">
+                      <span className="text-primary font-semibold">Mentor Tip:</span> Study the trend direction, support/resistance levels, and pattern formation.
+                    </p>
+                  </div>
+                )}
+              </div>
+            </Card>
+
+            {/* Answer Cards */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+              {scenario.options.map((option, idx) => {
+                const isSelected = selectedAnswer === option;
+                const isCorrect = option === scenario.correctAnswer;
+                const showResult = showFeedback && isSelected;
+                
+                return (
+                  <Card
+                    key={option}
+                    onClick={() => !showFeedback && handleAnswer(option)}
+                    className={`p-6 cursor-pointer smooth-transition hover-lift relative overflow-hidden ${
+                      isSelected && !showFeedback ? "ring-2 ring-primary shadow-glow" : ""
+                    } ${
+                      showResult && isCorrect ? "bg-gradient-to-br from-green-500/20 to-teal-500/20 border-green-500/50 shadow-glow" : ""
+                    } ${
+                      showResult && !isCorrect ? "bg-destructive/10 border-destructive/50" : ""
+                    } ${
+                      !showFeedback ? "hover:border-primary/50" : ""
+                    }`}
+                    style={{ animationDelay: `${idx * 50}ms` }}
+                  >
+                    <div className="relative z-10">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-sm font-medium text-muted-foreground">Option {idx + 1}</span>
+                        {showResult && (
+                          <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                            isCorrect ? "bg-green-500/20 text-green-400" : "bg-destructive/20 text-destructive"
+                          }`}>
+                            {isCorrect ? "✓" : "✗"}
+                          </div>
+                        )}
+                      </div>
+                      <p className="font-bold text-lg">{option}</p>
+                    </div>
+                    
+                    {!showFeedback && (
+                      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 hover:opacity-100 smooth-transition" />
+                    )}
+                  </Card>
+                );
+              })}
+            </div>
+
+            {/* Feedback Section */}
+            {showFeedback && (
+              <Card className={`p-6 animate-fade-in border-2 ${
+                selectedAnswer === scenario.correctAnswer 
+                  ? "bg-gradient-to-br from-green-500/10 to-teal-500/10 border-green-500/30" 
+                  : "bg-gradient-to-br from-destructive/10 to-destructive/5 border-destructive/30"
+              }`}>
+                <div className="flex items-start gap-4 mb-4">
+                  <div className={`w-12 h-12 rounded-full flex items-center justify-center ${
+                    selectedAnswer === scenario.correctAnswer 
+                      ? "bg-green-500/20 text-green-400" 
+                      : "bg-destructive/20 text-destructive"
+                  }`}>
+                    {selectedAnswer === scenario.correctAnswer ? (
+                      <Award className="w-6 h-6" />
+                    ) : (
+                      <Trophy className="w-6 h-6" />
+                    )}
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-bold text-xl mb-2">
+                      {selectedAnswer === scenario.correctAnswer ? "Correct!" : "Not Quite Right"}
+                    </h3>
+                    <p className="text-muted-foreground leading-relaxed">{scenario.explanation}</p>
+                  </div>
+                </div>
+                
+                <Button 
+                  onClick={handleNext} 
+                  size="lg"
+                  className="w-full bg-gradient-primary hover:opacity-90 shadow-glow-soft"
+                >
+                  {currentQuestion < chartScenarios.length - 1 ? (
+                    <>Next Chart <TrendingUp className="w-5 h-5 ml-2" /></>
+                  ) : (
+                    <>Complete Game <Trophy className="w-5 h-5 ml-2" /></>
+                  )}
+                </Button>
+              </Card>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Bottom Progress Bar & XP Tracker */}
+      <div className="border-t border-border/50 bg-card/50 backdrop-blur-sm">
+        <div className="container mx-auto px-6 py-4">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-sm font-medium text-muted-foreground">Progress</span>
+            <span className="text-sm font-medium">{Math.round((currentQuestion / chartScenarios.length) * 100)}%</span>
+          </div>
+          <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
+            <div 
+              className="h-full bg-gradient-primary smooth-transition"
+              style={{ width: `${(currentQuestion / chartScenarios.length) * 100}%` }}
+            />
+          </div>
+          <div className="flex items-center justify-between mt-3">
+            <div className="flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-primary" />
+              <span className="text-sm text-muted-foreground">
+                <span className="font-bold text-foreground">{currentQuestion}</span> / {chartScenarios.length} Charts Completed
+              </span>
+            </div>
+            <div className="flex items-center gap-4">
+              <span className="text-sm text-muted-foreground">
+                Accuracy: <span className="font-bold text-foreground">{currentQuestion > 0 ? Math.round((score / currentQuestion) * 100) : 0}%</span>
+              </span>
             </div>
           </div>
-        )}
-
-        {/* Main Game Area */}
-        <div className="grid gap-6">
-          {/* Chart Display */}
-          <Card className="p-6 animate-slide-in-right">
-            <div className="mb-4">
-              <Badge className="mb-3">Pattern Recognition</Badge>
-              <h3 className="text-xl font-bold mb-2">{scenario.question}</h3>
-            </div>
-
-            {/* Interactive Chart */}
-            <div className="rounded-lg bg-card/50 p-4 border border-border mb-6">
-              <ResponsiveContainer width="100%" height={300}>
-                <AreaChart data={chartData}>
-                  <defs>
-                    <linearGradient id="colorPrice" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3}/>
-                      <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0}/>
-                    </linearGradient>
-                  </defs>
-                  <XAxis 
-                    dataKey="time" 
-                    stroke="hsl(var(--muted-foreground))"
-                    tick={{ fontSize: 12 }}
-                  />
-                  <YAxis 
-                    stroke="hsl(var(--muted-foreground))"
-                    tick={{ fontSize: 12 }}
-                    domain={['auto', 'auto']}
-                  />
-                  <Tooltip 
-                    contentStyle={{ 
-                      backgroundColor: 'hsl(var(--card))',
-                      border: '1px solid hsl(var(--border))',
-                      borderRadius: '8px'
-                    }}
-                    labelStyle={{ color: 'hsl(var(--foreground))' }}
-                  />
-                  <Area 
-                    type="monotone" 
-                    dataKey="price" 
-                    stroke="hsl(var(--primary))" 
-                    strokeWidth={2}
-                    fill="url(#colorPrice)"
-                    animationDuration={1000}
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
-            </div>
-
-            {/* Answer Options */}
-            <div className="grid grid-cols-2 gap-3 mb-6">
-              {scenario.options.map((option) => (
-                <Button
-                  key={option}
-                  variant={selectedAnswer === option ? "default" : "outline"}
-                  className={`h-auto py-4 text-base transition-all duration-300 ${
-                    !showFeedback && "hover-scale hover:border-primary"
-                  } ${
-                    showFeedback && option === scenario.correctAnswer 
-                      ? "bg-success/20 border-success text-success-foreground" 
-                      : showFeedback && selectedAnswer === option 
-                      ? "bg-destructive/20 border-destructive text-destructive-foreground"
-                      : ""
-                  }`}
-                  onClick={() => handleAnswer(option)}
-                  disabled={showFeedback}
-                >
-                  {option}
-                </Button>
-              ))}
-            </div>
-
-            {/* Feedback */}
-            {showFeedback && (
-              <div className={`p-6 rounded-lg mb-6 animate-fade-in ${
-                selectedAnswer === scenario.correctAnswer 
-                  ? "bg-success/10 border border-success/20" 
-                  : "bg-muted border border-border"
-              }`}>
-                <h4 className="font-bold text-lg mb-3">
-                  {selectedAnswer === scenario.correctAnswer ? "🎉 Perfect!" : "💡 Learning Moment"}
-                </h4>
-                <p className="text-foreground leading-relaxed">
-                  {selectedAnswer === scenario.correctAnswer 
-                    ? scenario.explanation
-                    : `Almost! This was a ${scenario.correctAnswer}. ${scenario.explanation}`}
-                </p>
-              </div>
-            )}
-
-            {showFeedback && (
-              <Button onClick={handleNext} className="w-full" size="lg">
-                {currentQuestion < chartScenarios.length - 1 ? "Next Pattern →" : "View Results"}
-              </Button>
-            )}
-          </Card>
         </div>
       </div>
     </div>
