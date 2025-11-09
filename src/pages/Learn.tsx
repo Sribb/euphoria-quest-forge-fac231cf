@@ -1,8 +1,6 @@
 import { useState } from "react";
-import { LessonCard } from "@/components/learn/LessonCard";
+import { LearningPathway } from "@/components/learn/LearningPathway";
 import { ThreePhaseLessonViewer } from "@/components/learn/ThreePhaseLessonViewer";
-import { BookOpen, Trophy, ArrowLeft } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -61,12 +59,16 @@ const Learn = ({ onNavigate, selectedLesson, onLessonSelect }: LearnProps) => {
         // 2. The previous lesson is completed
         const isUnlocked = index === 0 || (index > 0 && lastCompletedIndex >= index - 1);
         
+        // Generate random star rating (1-3) for completed lessons
+        const stars = isCompleted ? Math.floor(Math.random() * 3) + 1 : 0;
+        
         return {
           ...lesson,
           progress: progress?.progress || 0,
           completed: isCompleted,
           duration: `${lesson.duration_minutes} min`,
           is_locked: !isUnlocked,
+          stars,
         };
       });
     },
@@ -77,18 +79,6 @@ const Learn = ({ onNavigate, selectedLesson, onLessonSelect }: LearnProps) => {
   // Calculate overall progress
   const completedLessons = lessons.filter(l => l.completed).length;
   const totalLessons = lessons.length;
-  const overallProgress = totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
-
-  // Calculate milestone achievements
-  const getMilestone = () => {
-    if (completedLessons >= 12) return { text: "Master Investor", icon: "🏆" };
-    if (completedLessons >= 9) return { text: "Advanced Investor", icon: "💎" };
-    if (completedLessons >= 6) return { text: "Intermediate Investor", icon: "⭐" };
-    if (completedLessons >= 3) return { text: "Beginner Investor", icon: "🌱" };
-    return { text: "New Investor", icon: "🎯" };
-  };
-
-  const milestone = getMilestone();
 
   if (selectedLesson) {
     return (
@@ -103,88 +93,32 @@ const Learn = ({ onNavigate, selectedLesson, onLessonSelect }: LearnProps) => {
   }
 
   return (
-    <div className="space-y-8">
-      {/* Header Section */}
-      <div className="animate-fade-in">
-        <div className="flex items-center gap-4 mb-6">
-          <div className="w-14 h-14 rounded-2xl bg-gradient-primary flex items-center justify-center shadow-glow-soft">
-            <BookOpen className="w-7 h-7 text-white" />
-          </div>
-          <div className="flex-1">
-            <h1 className="text-3xl font-bold">Interactive Investing Pathway</h1>
-            <p className="text-muted-foreground">Master investing through 12 expert-sourced lessons</p>
-          </div>
-        </div>
-        
-        {/* Overall Progress Card */}
-        <div className="p-6 bg-gradient-surface border border-border rounded-2xl shadow-glow-soft">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-3">
-              <span className="text-3xl">{milestone.icon}</span>
-              <div>
-                <p className="text-lg font-semibold">{milestone.text}</p>
-                <p className="text-sm text-muted-foreground">Your current level</p>
-              </div>
-            </div>
-            <div className="text-right">
-              <p className="text-2xl font-bold text-primary">{completedLessons}/{totalLessons}</p>
-              <p className="text-sm text-muted-foreground">Completed</p>
-            </div>
-          </div>
-          <div className="w-full bg-muted rounded-full h-4">
-            <div 
-              className="bg-gradient-primary h-4 rounded-full transition-all duration-500 shadow-glow-soft"
-              style={{ width: `${overallProgress}%` }}
-            />
-          </div>
-          {overallProgress === 100 && (
-            <div className="mt-4 p-4 bg-success/10 border border-success/20 rounded-xl animate-fade-in">
-              <p className="text-sm text-success font-semibold flex items-center gap-2">
-                <Trophy className="w-5 h-5" />
-                Congratulations! You've completed the entire investing pathway!
-              </p>
-            </div>
-          )}
-        </div>
-
-        {/* Learning Source Credit */}
-        <div className="mt-6 p-5 bg-primary/5 border border-primary/20 rounded-xl">
+    <div className="min-h-screen w-full bg-background">
+      <div className="px-8 py-8">
+        {/* Expert-Sourced Content Banner */}
+        <div className="mb-8 p-6 bg-primary/5 border border-primary/20 rounded-2xl animate-fade-in">
           <p className="text-sm text-muted-foreground leading-relaxed">
-            <span className="font-semibold text-foreground">Expert-Sourced Content:</span> All lessons are based on proven principles from Warren Buffett, Benjamin Graham's "The Intelligent Investor", Peter Lynch's "One Up on Wall Street", Ray Dalio's "Principles", Investopedia educational modules, and Federal Reserve resources.
+            <span className="font-semibold text-foreground">📚 Expert-Sourced Content:</span> All challenges are based on proven principles from Warren Buffett, Benjamin Graham's "The Intelligent Investor", Peter Lynch's "One Up on Wall Street", Ray Dalio's "Principles", Investopedia educational modules, and Federal Reserve resources.
           </p>
         </div>
-      </div>
 
-      {/* Lessons Grid */}
-      {isLoading ? (
-        <div className="grid lg:grid-cols-2 gap-6">
-          {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="h-40 bg-card animate-pulse rounded-xl" />
-          ))}
-        </div>
-      ) : (
-        <div className="grid lg:grid-cols-2 gap-6">
-          {lessons.map((lesson, index) => (
-            <div
-              key={lesson.id}
-              className="animate-fade-in"
-              style={{ animationDelay: `${index * 50}ms` }}
-            >
-              <LessonCard
-                title={lesson.title}
-                description={lesson.description}
-                duration={lesson.duration}
-                progress={lesson.progress}
-                locked={lesson.is_locked}
-                completed={lesson.completed}
-                difficulty={lesson.difficulty}
-                orderIndex={lesson.order_index}
-                onClick={() => !lesson.is_locked && onLessonSelect(lesson.id)}
-              />
+        {/* Learning Pathway */}
+        {isLoading ? (
+          <div className="flex items-center justify-center min-h-[600px]">
+            <div className="space-y-6 text-center">
+              <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
+              <p className="text-muted-foreground">Loading your learning pathway...</p>
             </div>
-          ))}
-        </div>
-      )}
+          </div>
+        ) : (
+          <LearningPathway
+            lessons={lessons}
+            onLessonSelect={onLessonSelect}
+            completedCount={completedLessons}
+            totalCount={totalLessons}
+          />
+        )}
+      </div>
     </div>
   );
 };
