@@ -110,35 +110,8 @@ const Games = ({ onNavigate }: GamesProps) => {
       )}
 
       <div className="grid gap-4">
-        {/* Trend Master Game */}
-        <div className="animate-fade-in">
-          <Card className="p-6 bg-gradient-accent hover-lift cursor-pointer smooth-transition border-0" onClick={() => handlePlayGame("trend-master")}>
-            <div className="flex items-start gap-4">
-              <div className="w-16 h-16 rounded-xl bg-primary/20 flex items-center justify-center shadow-glow">
-                <TrendingUp className="w-8 h-8 text-primary" />
-              </div>
-              <div className="flex-1">
-                <div className="flex items-start justify-between mb-2">
-                  <h3 className="font-bold text-xl">Trend Master</h3>
-                  <Badge variant="secondary">Featured</Badge>
-                </div>
-                <p className="text-sm text-muted-foreground mb-4">
-                  Master the art of reading stock charts! Identify 20+ real chart patterns from uptrends to head-and-shoulders. Interactive charts, instant feedback, and mentor-style explanations help you see markets like a pro.
-                </p>
-                <div className="flex items-center gap-4">
-                  <div className="flex items-center gap-1 text-sm">
-                    <Brain className="w-4 h-4 text-primary" />
-                    <span className="font-bold">20+ Patterns</span>
-                  </div>
-                  <Badge variant="outline">Interactive</Badge>
-                </div>
-              </div>
-            </div>
-          </Card>
-        </div>
-
         {/* Life Sim Game */}
-        <div className="animate-fade-in" style={{ animationDelay: "100ms" }}>
+        <div className="animate-fade-in">
           <Card className="p-6 bg-gradient-primary text-white hover-lift cursor-pointer smooth-transition border-0" onClick={() => handlePlayGame("life-sim")}>
             <div className="flex items-start gap-4">
               <div className="w-16 h-16 rounded-xl bg-white/20 flex items-center justify-center shadow-glow">
@@ -158,6 +131,33 @@ const Games = ({ onNavigate }: GamesProps) => {
                     <span className="font-bold">Variable Rewards</span>
                   </div>
                   <Badge variant="outline" className="bg-white/10 border-white/30">Immersive</Badge>
+                </div>
+              </div>
+            </div>
+          </Card>
+        </div>
+
+        {/* Trend Master Game */}
+        <div className="animate-fade-in" style={{ animationDelay: "100ms" }}>
+          <Card className="p-6 bg-gradient-accent hover-lift cursor-pointer smooth-transition border-0" onClick={() => handlePlayGame("trend-master")}>
+            <div className="flex items-start gap-4">
+              <div className="w-16 h-16 rounded-xl bg-primary/20 flex items-center justify-center shadow-glow">
+                <TrendingUp className="w-8 h-8 text-primary" />
+              </div>
+              <div className="flex-1">
+                <div className="flex items-start justify-between mb-2">
+                  <h3 className="font-bold text-xl">Trend Master</h3>
+                  <Badge variant="secondary">Featured</Badge>
+                </div>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Master the art of reading stock charts! Identify 20+ real chart patterns from uptrends to head-and-shoulders. Interactive charts, instant feedback, and mentor-style explanations help you see markets like a pro.
+                </p>
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-1 text-sm">
+                    <Brain className="w-4 h-4 text-primary" />
+                    <span className="font-bold">20+ Patterns</span>
+                  </div>
+                  <Badge variant="outline">Interactive</Badge>
                 </div>
               </div>
             </div>
