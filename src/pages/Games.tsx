@@ -1,6 +1,7 @@
-import { Trophy, ArrowLeft, Brain, Users, Coins } from "lucide-react";
+import { Trophy, ArrowLeft, Brain, Users, Coins, TrendingUp } from "lucide-react";
 import { useState } from "react";
 import { LifeSimInvestorGame } from "@/components/games/LifeSimInvestorGame";
+import { TrendMasterGame } from "@/components/games/TrendMasterGame";
 import { useAuth } from "@/hooks/useAuth";
 import { useAIMarket } from "@/hooks/useAIMarket";
 import { Card } from "@/components/ui/card";
@@ -14,18 +15,22 @@ interface GamesProps {
 const Games = ({ onNavigate }: GamesProps) => {
   const { user } = useAuth();
   const { session, competitors, activeEvents } = useAIMarket(user?.id);
-  const [activeGame, setActiveGame] = useState<boolean>(false);
+  const [activeGame, setActiveGame] = useState<string | null>(null);
 
-  const handlePlayGame = () => {
-    setActiveGame(true);
+  const handlePlayGame = (game: string) => {
+    setActiveGame(game);
   };
 
   const handleCloseGame = () => {
-    setActiveGame(false);
+    setActiveGame(null);
   };
 
-  if (activeGame) {
+  if (activeGame === "life-sim") {
     return <LifeSimInvestorGame onClose={handleCloseGame} />;
+  }
+
+  if (activeGame === "trend-master") {
+    return <TrendMasterGame onClose={handleCloseGame} />;
   }
 
   return (
@@ -105,9 +110,36 @@ const Games = ({ onNavigate }: GamesProps) => {
       )}
 
       <div className="grid gap-4">
-        {/* Featured Life Sim Game */}
+        {/* Trend Master Game */}
         <div className="animate-fade-in">
-          <Card className="p-6 bg-gradient-primary text-white hover-lift cursor-pointer smooth-transition border-0" onClick={handlePlayGame}>
+          <Card className="p-6 bg-gradient-accent hover-lift cursor-pointer smooth-transition border-0" onClick={() => handlePlayGame("trend-master")}>
+            <div className="flex items-start gap-4">
+              <div className="w-16 h-16 rounded-xl bg-primary/20 flex items-center justify-center shadow-glow">
+                <TrendingUp className="w-8 h-8 text-primary" />
+              </div>
+              <div className="flex-1">
+                <div className="flex items-start justify-between mb-2">
+                  <h3 className="font-bold text-xl">Trend Master</h3>
+                  <Badge variant="secondary">Featured</Badge>
+                </div>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Master the art of reading stock charts! Identify 20+ real chart patterns from uptrends to head-and-shoulders. Interactive charts, instant feedback, and mentor-style explanations help you see markets like a pro.
+                </p>
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-1 text-sm">
+                    <Brain className="w-4 h-4 text-primary" />
+                    <span className="font-bold">20+ Patterns</span>
+                  </div>
+                  <Badge variant="outline">Interactive</Badge>
+                </div>
+              </div>
+            </div>
+          </Card>
+        </div>
+
+        {/* Life Sim Game */}
+        <div className="animate-fade-in" style={{ animationDelay: "100ms" }}>
+          <Card className="p-6 bg-gradient-primary text-white hover-lift cursor-pointer smooth-transition border-0" onClick={() => handlePlayGame("life-sim")}>
             <div className="flex items-start gap-4">
               <div className="w-16 h-16 rounded-xl bg-white/20 flex items-center justify-center shadow-glow">
                 <Trophy className="w-8 h-8" />
@@ -115,7 +147,7 @@ const Games = ({ onNavigate }: GamesProps) => {
               <div className="flex-1">
                 <div className="flex items-start justify-between mb-2">
                   <h3 className="font-bold text-xl">Life Sim: Investor Journey</h3>
-                  <Badge className="bg-white/20">NEW</Badge>
+                  <Badge className="bg-white/20">Epic</Badge>
                 </div>
                 <p className="text-sm text-white/90 mb-4">
                   Live a full investing life from age 22 to retirement! Make career moves, buy homes, manage portfolios, and face real market events. Your choices shape your financial destiny.
@@ -125,7 +157,7 @@ const Games = ({ onNavigate }: GamesProps) => {
                     <Coins className="w-4 h-4" />
                     <span className="font-bold">Variable Rewards</span>
                   </div>
-                  <Badge variant="outline" className="bg-white/10 border-white/30">Epic</Badge>
+                  <Badge variant="outline" className="bg-white/10 border-white/30">Immersive</Badge>
                 </div>
               </div>
             </div>
