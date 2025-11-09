@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
 interface Question {
   question: string;
@@ -294,33 +295,58 @@ export const AdaptiveLessonChallenge = ({ lessonId, onComplete, onBack }: Adapti
                     ? "secondary"
                     : "outline"
                 }
-                className="w-full justify-start text-left h-auto py-4 px-4"
+                className={cn(
+                  "w-full justify-start text-left h-auto py-4 px-4 transition-all duration-300 relative overflow-hidden",
+                  showResult && isCorrect && "ring-2 ring-green-500 shadow-glow border-green-500 animate-scale-in",
+                  showResult && isSelected && !isCorrect && "animate-shake border-destructive"
+                )}
                 onClick={() => handleAnswer(index)}
                 disabled={showFeedback}
               >
                 <span className="flex-1">{option}</span>
-                {showResult && isCorrect && <CheckCircle2 className="w-5 h-5 ml-2 flex-shrink-0" />}
-                {showResult && isSelected && !isCorrect && <XCircle className="w-5 h-5 ml-2 flex-shrink-0" />}
+                {showResult && isCorrect && (
+                  <>
+                    <CheckCircle2 className="w-5 h-5 ml-2 flex-shrink-0 animate-scale-in text-green-500" />
+                    <div className="absolute inset-0 bg-green-500/10 animate-fade-in" />
+                  </>
+                )}
+                {showResult && isSelected && !isCorrect && (
+                  <XCircle className="w-5 h-5 ml-2 flex-shrink-0 animate-scale-in" />
+                )}
               </Button>
             );
           })}
         </div>
 
-        {/* Feedback */}
+        {/* Feedback with animations */}
         {showFeedback && (
-          <div className={`mt-6 p-4 rounded-lg ${
+          <div className={cn(
+            "mt-6 p-4 rounded-lg animate-fade-in transition-all duration-300",
             selectedAnswer === currentQuestion.correctIndex
-              ? 'bg-success/10 border border-success/20'
-              : 'bg-destructive/10 border border-destructive/20'
-          }`}>
-            <p className="font-semibold mb-2">
-              {selectedAnswer === currentQuestion.correctIndex
-                ? '✓ Correct! Excellent work!'
-                : '✗ Not quite right.'}
+              ? 'bg-green-500/10 border-2 border-green-500/30 shadow-glow'
+              : 'bg-destructive/10 border-2 border-destructive/30'
+          )}>
+            <p className="font-semibold mb-2 flex items-center gap-2">
+              {selectedAnswer === currentQuestion.correctIndex ? (
+                <>
+                  <span className="text-green-500 text-xl animate-scale-in">✓</span>
+                  <span className="text-green-500">Correct! Excellent work!</span>
+                </>
+              ) : (
+                <>
+                  <span className="text-destructive text-xl">✗</span>
+                  <span>Not quite right.</span>
+                </>
+              )}
             </p>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-muted-foreground leading-relaxed">
               {currentQuestion.explanation}
             </p>
+            {selectedAnswer !== currentQuestion.correctIndex && (
+              <p className="text-xs text-primary mt-2 font-semibold animate-fade-in">
+                💡 Hint: Review the correct answer above and try to understand why it's right.
+              </p>
+            )}
           </div>
         )}
 
