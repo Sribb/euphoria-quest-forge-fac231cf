@@ -103,51 +103,44 @@ const Learn = ({ onNavigate, selectedLesson, onLessonSelect }: LearnProps) => {
   }
 
   return (
-    <div className="space-y-6 pb-24 pt-4">
+    <div className="space-y-8">
+      {/* Header Section */}
       <div className="animate-fade-in">
-        <div className="flex items-center gap-3 mb-4">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => onNavigate('dashboard')}
-            className="hover-scale"
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </Button>
-          <div className="w-12 h-12 rounded-xl bg-gradient-primary flex items-center justify-center shadow-glow">
-            <BookOpen className="w-6 h-6 text-white" />
+        <div className="flex items-center gap-4 mb-6">
+          <div className="w-14 h-14 rounded-2xl bg-gradient-primary flex items-center justify-center shadow-glow-soft">
+            <BookOpen className="w-7 h-7 text-white" />
           </div>
           <div className="flex-1">
-            <h1 className="text-2xl font-bold">Interactive Investing Pathway</h1>
+            <h1 className="text-3xl font-bold">Interactive Investing Pathway</h1>
             <p className="text-muted-foreground">Master investing through 12 expert-sourced lessons</p>
           </div>
         </div>
         
         {/* Overall Progress Card */}
-        <div className="mt-4 p-5 bg-card border border-border rounded-lg shadow-md">
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-2">
-              <span className="text-2xl">{milestone.icon}</span>
+        <div className="p-6 bg-gradient-surface border border-border rounded-2xl shadow-glow-soft">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <span className="text-3xl">{milestone.icon}</span>
               <div>
-                <p className="text-sm font-semibold">{milestone.text}</p>
-                <p className="text-xs text-muted-foreground">Your current level</p>
+                <p className="text-lg font-semibold">{milestone.text}</p>
+                <p className="text-sm text-muted-foreground">Your current level</p>
               </div>
             </div>
             <div className="text-right">
-              <p className="text-lg font-bold text-primary">{completedLessons}/{totalLessons}</p>
-              <p className="text-xs text-muted-foreground">Completed</p>
+              <p className="text-2xl font-bold text-primary">{completedLessons}/{totalLessons}</p>
+              <p className="text-sm text-muted-foreground">Completed</p>
             </div>
           </div>
-          <div className="w-full bg-muted rounded-full h-3">
+          <div className="w-full bg-muted rounded-full h-4">
             <div 
-              className="bg-gradient-primary h-3 rounded-full transition-all duration-500"
+              className="bg-gradient-primary h-4 rounded-full transition-all duration-500 shadow-glow-soft"
               style={{ width: `${overallProgress}%` }}
             />
           </div>
           {overallProgress === 100 && (
-            <div className="mt-3 p-3 bg-success/10 border border-success/20 rounded-lg animate-fade-in">
+            <div className="mt-4 p-4 bg-success/10 border border-success/20 rounded-xl animate-fade-in">
               <p className="text-sm text-success font-semibold flex items-center gap-2">
-                <Trophy className="w-4 h-4" />
+                <Trophy className="w-5 h-5" />
                 Congratulations! You've completed the entire investing pathway!
               </p>
             </div>
@@ -155,21 +148,22 @@ const Learn = ({ onNavigate, selectedLesson, onLessonSelect }: LearnProps) => {
         </div>
 
         {/* Learning Source Credit */}
-        <div className="mt-4 p-4 bg-primary/5 border border-primary/20 rounded-lg">
-          <p className="text-xs text-muted-foreground leading-relaxed">
+        <div className="mt-6 p-5 bg-primary/5 border border-primary/20 rounded-xl">
+          <p className="text-sm text-muted-foreground leading-relaxed">
             <span className="font-semibold text-foreground">Expert-Sourced Content:</span> All lessons are based on proven principles from Warren Buffett, Benjamin Graham's "The Intelligent Investor", Peter Lynch's "One Up on Wall Street", Ray Dalio's "Principles", Investopedia educational modules, and Federal Reserve resources.
           </p>
         </div>
       </div>
 
+      {/* Lessons Grid */}
       {isLoading ? (
-        <div className="space-y-4">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="h-32 bg-card animate-pulse rounded-lg" />
+        <div className="grid lg:grid-cols-2 gap-6">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="h-40 bg-card animate-pulse rounded-xl" />
           ))}
         </div>
       ) : (
-        <div className="space-y-4">
+        <div className="grid lg:grid-cols-2 gap-6">
           {lessons.map((lesson, index) => (
             <div
               key={lesson.id}

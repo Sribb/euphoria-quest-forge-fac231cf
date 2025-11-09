@@ -19,39 +19,44 @@ const Dashboard = ({ onNavigate, onStockSearch }: DashboardProps) => {
   const { session } = useAIMarket(user?.id);
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6 pb-24 pt-20">
-        <div className="animate-fade-in">
-          <UserSummary onNavigate={onNavigate} />
+    <div className="space-y-8">
+      {/* Header Section */}
+      <div className="animate-fade-in">
+        <UserSummary onNavigate={onNavigate} />
+      </div>
+      
+      {/* Streak Panel */}
+      <div className="animate-fade-in" style={{ animationDelay: "100ms" }}>
+        <StreakPanel />
+      </div>
+      
+      {/* AI Welcome Card - Show if no active AI session */}
+      {!session && (
+        <div className="animate-fade-in" style={{ animationDelay: "150ms" }}>
+          <AIWelcomeCard onNavigate={onNavigate} />
         </div>
-        <div className="animate-fade-in" style={{ animationDelay: "100ms" }}>
-          <StreakPanel />
-        </div>
-        
-        {/* AI Welcome Card - Show if no active AI session */}
-        {!session && (
-          <div className="animate-fade-in" style={{ animationDelay: "150ms" }}>
-            <AIWelcomeCard onNavigate={onNavigate} />
-          </div>
-        )}
-        
-        <div className="animate-fade-in" style={{ animationDelay: "200ms" }}>
-          <MarketTrends />
-        </div>
-        
-        {/* Economic Dashboard Section */}
-        <div className="space-y-6 animate-fade-in" style={{ animationDelay: "300ms" }}>
-          <h2 className="text-2xl font-bold text-center mb-6">Economic Dashboard</h2>
+      )}
+      
+      {/* Market Trends - Full Width */}
+      <div className="animate-fade-in" style={{ animationDelay: "200ms" }}>
+        <MarketTrends />
+      </div>
+      
+      {/* Economic Dashboard Section - Grid Layout */}
+      <div className="space-y-6 animate-fade-in" style={{ animationDelay: "300ms" }}>
+        <h2 className="text-3xl font-bold text-center bg-gradient-primary bg-clip-text text-transparent">
+          Economic Dashboard
+        </h2>
+        <div className="grid lg:grid-cols-2 gap-6">
           <EconomicNews />
           <EconomicCalendar />
         </div>
-        
-        <div className="animate-fade-in" style={{ animationDelay: "400ms" }}>
-          <QuickAccessTiles onNavigate={onNavigate} />
-        </div>
-        <div className="animate-fade-in" style={{ animationDelay: "500ms" }}>
-          <AISuggestions onNavigate={onNavigate} />
-        </div>
+      </div>
+      
+      {/* Quick Access & AI Suggestions - Grid Layout */}
+      <div className="grid lg:grid-cols-2 gap-6 animate-fade-in" style={{ animationDelay: "400ms" }}>
+        <QuickAccessTiles onNavigate={onNavigate} />
+        <AISuggestions onNavigate={onNavigate} />
       </div>
     </div>
   );

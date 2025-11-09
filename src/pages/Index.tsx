@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Navigation } from "@/components/Navigation";
+import { TopNavigation } from "@/components/TopNavigation";
 import Dashboard from "./Dashboard";
 import Learn from "./Learn";
 import Trade from "./Trade";
@@ -74,9 +75,12 @@ const Index = () => {
   // Show stock detail page
   if (selectedStock) {
     return (
-      <div className="min-h-screen bg-background pb-20 animate-fade-in">
-        <div className="max-w-2xl mx-auto px-4">
-          <StockDetail symbol={selectedStock} onBack={handleBackToStockSearch} />
+      <div className="min-h-screen bg-background">
+        <TopNavigation activeTab={activeTab} onTabChange={handleNavigate} />
+        <div className="pt-20 pb-24 px-6">
+          <div className="max-w-7xl mx-auto animate-fade-in">
+            <StockDetail symbol={selectedStock} onBack={handleBackToStockSearch} />
+          </div>
         </div>
         <Navigation 
           activeTab={activeTab} 
@@ -93,13 +97,16 @@ const Index = () => {
   // Show stock search page
   if (showStockSearch) {
     return (
-      <div className="min-h-screen bg-background pb-20 animate-fade-in">
-        <div className="max-w-2xl mx-auto px-4">
-          <StockSearch 
-            onNavigate={handleNavigate}
-            onSelectStock={handleStockSelect}
-            onBack={handleBackFromStockSearch}
-          />
+      <div className="min-h-screen bg-background">
+        <TopNavigation activeTab={activeTab} onTabChange={handleNavigate} />
+        <div className="pt-20 pb-24 px-6">
+          <div className="max-w-7xl mx-auto animate-fade-in">
+            <StockSearch 
+              onNavigate={handleNavigate}
+              onSelectStock={handleStockSelect}
+              onBack={handleBackFromStockSearch}
+            />
+          </div>
         </div>
         <Navigation 
           activeTab={activeTab} 
@@ -139,9 +146,12 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background pb-20">
-      <div className="max-w-2xl mx-auto px-4 animate-fade-in" key={activeTab}>
-        {renderContent()}
+    <div className="min-h-screen bg-background">
+      <TopNavigation activeTab={activeTab} onTabChange={handleNavigate} />
+      <div className="pt-20 pb-24 px-6">
+        <div className="max-w-7xl mx-auto animate-fade-in" key={activeTab}>
+          {renderContent()}
+        </div>
       </div>
       <Navigation 
         activeTab={activeTab} 

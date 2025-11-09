@@ -79,12 +79,14 @@ export default {
         "gradient-success": "var(--gradient-success)",
         "gradient-gold": "var(--gradient-gold)",
         "gradient-hero": "var(--gradient-hero)",
+        "gradient-surface": "var(--gradient-surface)",
       },
       boxShadow: {
         sm: "var(--shadow-sm)",
         md: "var(--shadow-md)",
         lg: "var(--shadow-lg)",
         glow: "var(--shadow-glow)",
+        "glow-soft": "var(--shadow-glow-soft)",
       },
       keyframes: {
         "accordion-down": {
