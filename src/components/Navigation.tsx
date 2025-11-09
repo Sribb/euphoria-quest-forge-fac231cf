@@ -45,24 +45,6 @@ export const Navigation = ({
 }: NavigationProps) => {
   return (
     <>
-      <div className="fixed top-0 left-0 right-0 bg-card border-b border-border z-[50] px-4 py-3">
-        <div className="max-w-2xl mx-auto flex items-center gap-3">
-          {showBackButton && onBack && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onBack}
-              className="shrink-0"
-            >
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              {backLabel}
-            </Button>
-          )}
-          <div className="flex-1">
-            <GlobalStockSearch onSelectStock={onSelectStock} />
-          </div>
-        </div>
-      </div>
       <nav className="fixed bottom-0 left-0 right-0 bg-card border-t border-border z-[50] safe-bottom">
         <div className="flex items-center justify-center max-w-7xl mx-auto px-2 py-2">
           <div className="flex items-center justify-around gap-1 w-full max-w-4xl">
