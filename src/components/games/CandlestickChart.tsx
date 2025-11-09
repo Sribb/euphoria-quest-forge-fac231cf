@@ -891,7 +891,8 @@ const CandlestickShape = (props: any) => {
   const { open, close, high, low } = payload;
 
   const isGreen = close > open;
-  const color = isGreen ? "hsl(var(--chart-2))" : "hsl(var(--destructive))";
+  // Use explicit green for bullish and red for bearish candles
+  const color = isGreen ? "hsl(142, 76%, 45%)" : "hsl(0, 84%, 60%)";
   
   const bodyTop = Math.min(open, close);
   const bodyBottom = Math.max(open, close);
@@ -949,18 +950,18 @@ const CustomTooltip = ({ active, payload }: any) => {
             <span className="font-medium text-foreground">${data.open.toFixed(2)}</span>
             
             <span className="text-muted-foreground">High:</span>
-            <span className="font-medium text-chart-2">${data.high.toFixed(2)}</span>
+            <span className="font-medium" style={{ color: 'hsl(142, 76%, 45%)' }}>${data.high.toFixed(2)}</span>
             
             <span className="text-muted-foreground">Low:</span>
-            <span className="font-medium text-destructive">${data.low.toFixed(2)}</span>
+            <span className="font-medium" style={{ color: 'hsl(0, 84%, 60%)' }}>${data.low.toFixed(2)}</span>
             
             <span className="text-muted-foreground">Close:</span>
-            <span className={`font-medium ${isGreen ? 'text-chart-2' : 'text-destructive'}`}>
+            <span className="font-medium" style={{ color: isGreen ? 'hsl(142, 76%, 45%)' : 'hsl(0, 84%, 60%)' }}>
               ${data.close.toFixed(2)}
             </span>
             
             <span className="text-muted-foreground">Change:</span>
-            <span className={`font-medium ${isGreen ? 'text-chart-2' : 'text-destructive'}`}>
+            <span className="font-medium" style={{ color: isGreen ? 'hsl(142, 76%, 45%)' : 'hsl(0, 84%, 60%)' }}>
               {isGreen ? '+' : ''}{((data.close - data.open) / data.open * 100).toFixed(2)}%
             </span>
           </div>
