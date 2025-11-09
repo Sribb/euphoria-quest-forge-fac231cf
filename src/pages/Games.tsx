@@ -1,14 +1,5 @@
 import { Trophy, ArrowLeft, Brain, Users, Coins } from "lucide-react";
-import { GameCard } from "@/components/games/GameCard";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 import { useState } from "react";
-import { MarketLogicGame } from "@/components/games/MarketLogicGame";
-import { ChartDecoderGame } from "@/components/games/ChartDecoderGame";
-import { RiskRewardMatrix } from "@/components/games/RiskRewardMatrix";
-import { TradeTacticianGame } from "@/components/games/TradeTacticianGame";
-import { PortfolioLogicGame } from "@/components/games/PortfolioLogicGame";
-import { MarketMindsetGame } from "@/components/games/MarketMindsetGame";
 import { LifeSimInvestorGame } from "@/components/games/LifeSimInvestorGame";
 import { useAuth } from "@/hooks/useAuth";
 import { useAIMarket } from "@/hooks/useAIMarket";
@@ -23,62 +14,17 @@ interface GamesProps {
 const Games = ({ onNavigate }: GamesProps) => {
   const { user } = useAuth();
   const { session, competitors, activeEvents } = useAIMarket(user?.id);
-  const [activeGame, setActiveGame] = useState<"market-logic" | "chart-decoder" | "risk-reward" | "trade-tactician" | "portfolio-logic" | "market-mindset" | "life-sim" | null>(null);
+  const [activeGame, setActiveGame] = useState<boolean>(false);
 
-  const { data: games = [], isLoading } = useQuery({
-    queryKey: ["games"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("games")
-        .select("*")
-        .order("created_at");
-
-      if (error) throw error;
-      return data;
-    },
-    retry: 2,
-    staleTime: 60000,
-  });
-
-  const handlePlayGame = (gameId: string) => {
-    if (
-      gameId === "market-logic" || gameId === "chart-decoder" || gameId === "risk-reward" || 
-      gameId === "trade-tactician" || gameId === "portfolio-logic" || gameId === "market-mindset" ||
-      gameId === "life-sim"
-    ) {
-      setActiveGame(gameId);
-    }
+  const handlePlayGame = () => {
+    setActiveGame(true);
   };
 
   const handleCloseGame = () => {
-    setActiveGame(null);
+    setActiveGame(false);
   };
 
-  if (activeGame === "market-logic") {
-    return <MarketLogicGame onClose={handleCloseGame} />;
-  }
-
-  if (activeGame === "chart-decoder") {
-    return <ChartDecoderGame onClose={handleCloseGame} />;
-  }
-
-  if (activeGame === "risk-reward") {
-    return <RiskRewardMatrix onClose={handleCloseGame} />;
-  }
-
-  if (activeGame === "trade-tactician") {
-    return <TradeTacticianGame onClose={handleCloseGame} />;
-  }
-
-  if (activeGame === "portfolio-logic") {
-    return <PortfolioLogicGame onClose={handleCloseGame} />;
-  }
-
-  if (activeGame === "market-mindset") {
-    return <MarketMindsetGame onClose={handleCloseGame} />;
-  }
-
-  if (activeGame === "life-sim") {
+  if (activeGame) {
     return <LifeSimInvestorGame onClose={handleCloseGame} />;
   }
 
@@ -158,71 +104,34 @@ const Games = ({ onNavigate }: GamesProps) => {
         </Card>
       )}
 
-      {isLoading ? (
-        <div className="grid gap-4">
-          {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="h-28 bg-card animate-pulse rounded-lg" />
-          ))}
-        </div>
-      ) : (
-        <div className="grid gap-4">
-          {/* Featured Life Sim Game */}
-          <div className="animate-fade-in">
-            <Card className="p-6 bg-gradient-primary text-white hover-lift cursor-pointer smooth-transition border-0" onClick={() => handlePlayGame("life-sim")}>
-              <div className="flex items-start gap-4">
-                <div className="w-16 h-16 rounded-xl bg-white/20 flex items-center justify-center shadow-glow">
-                  <Trophy className="w-8 h-8" />
+      <div className="grid gap-4">
+        {/* Featured Life Sim Game */}
+        <div className="animate-fade-in">
+          <Card className="p-6 bg-gradient-primary text-white hover-lift cursor-pointer smooth-transition border-0" onClick={handlePlayGame}>
+            <div className="flex items-start gap-4">
+              <div className="w-16 h-16 rounded-xl bg-white/20 flex items-center justify-center shadow-glow">
+                <Trophy className="w-8 h-8" />
+              </div>
+              <div className="flex-1">
+                <div className="flex items-start justify-between mb-2">
+                  <h3 className="font-bold text-xl">Life Sim: Investor Journey</h3>
+                  <Badge className="bg-white/20">NEW</Badge>
                 </div>
-                <div className="flex-1">
-                  <div className="flex items-start justify-between mb-2">
-                    <h3 className="font-bold text-xl">Life Sim: Investor Journey</h3>
-                    <Badge className="bg-white/20">NEW</Badge>
+                <p className="text-sm text-white/90 mb-4">
+                  Live a full investing life from age 22 to retirement! Make career moves, buy homes, manage portfolios, and face real market events. Your choices shape your financial destiny.
+                </p>
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-1 text-sm">
+                    <Coins className="w-4 h-4" />
+                    <span className="font-bold">Variable Rewards</span>
                   </div>
-                  <p className="text-sm text-white/90 mb-4">
-                    Live a full investing life from age 22 to retirement! Make career moves, buy homes, manage portfolios, and face real market events. Your choices shape your financial destiny.
-                  </p>
-                  <div className="flex items-center gap-4">
-                    <div className="flex items-center gap-1 text-sm">
-                      <Coins className="w-4 h-4" />
-                      <span className="font-bold">Variable Rewards</span>
-                    </div>
-                    <Badge variant="outline" className="bg-white/10 border-white/30">Epic</Badge>
-                  </div>
+                  <Badge variant="outline" className="bg-white/10 border-white/30">Epic</Badge>
                 </div>
               </div>
-            </Card>
-          </div>
-
-          {games.map((game, index) => {
-          const Icon = Trophy;
-          let gameId = "";
-          
-          if (game.title.includes("Market Logic")) gameId = "market-logic";
-          else if (game.title.includes("Chart Decoder")) gameId = "chart-decoder";
-          else if (game.title.includes("Risk/Reward")) gameId = "risk-reward";
-          else if (game.title.includes("Trade Tactician")) gameId = "trade-tactician";
-          else if (game.title.includes("Portfolio Logic")) gameId = "portfolio-logic";
-          else if (game.title.includes("Market Mindset")) gameId = "market-mindset";
-
-          return (
-            <div
-              key={game.id}
-              className="animate-fade-in"
-              style={{ animationDelay: `${(index + 1) * 100}ms` }}
-            >
-              <GameCard
-                title={game.title}
-                description={game.description}
-                difficulty={game.difficulty as "Easy" | "Medium" | "Hard"}
-                reward={game.base_reward}
-                icon={<Icon className="w-7 h-7 text-white" />}
-                onClick={() => handlePlayGame(gameId)}
-              />
             </div>
-            );
-          })}
+          </Card>
         </div>
-      )}
+      </div>
     </div>
   );
 };
