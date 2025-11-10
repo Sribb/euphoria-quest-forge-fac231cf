@@ -15,7 +15,6 @@ const navItems = [
   { id: "community", label: "Community" },
   { id: "certificates", label: "Certificates" },
   { id: "profile", label: "Profile" },
-  { id: "settings", label: "Settings" },
 ];
 
 export const TopNavigation = ({ activeTab, onTabChange }: TopNavigationProps) => {

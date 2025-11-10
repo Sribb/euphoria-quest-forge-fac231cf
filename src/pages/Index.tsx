@@ -8,7 +8,6 @@ import Analytics from "./Analytics";
 import Community from "./Community";
 import Certificates from "./Certificates";
 import Profile from "./Profile";
-import Settings from "./Settings";
 import Onboarding from "./Onboarding";
 import StockSearch from "./StockSearch";
 import StockDetail from "./StockDetail";
@@ -121,8 +120,6 @@ const Index = () => {
         return <Certificates onNavigate={handleNavigate} />;
       case "profile":
         return <Profile onNavigate={handleNavigate} />;
-      case "settings":
-        return <Settings onNavigate={handleNavigate} />;
       default:
         return <Dashboard onNavigate={handleNavigate} onStockSearch={() => setShowStockSearch(true)} />;
     }
