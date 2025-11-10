@@ -8,11 +8,14 @@ interface TopNavigationProps {
 
 const navItems = [
   { id: "dashboard", label: "Dashboard" },
+  { id: "learn", label: "Learn" },
   { id: "trade", label: "Trade" },
   { id: "games", label: "Games" },
-  { id: "analytics", label: "AI Analytics" },
+  { id: "analytics", label: "Analytics" },
+  { id: "community", label: "Community" },
   { id: "certificates", label: "Certificates" },
   { id: "profile", label: "Profile" },
+  { id: "settings", label: "Settings" },
 ];
 
 export const TopNavigation = ({ activeTab, onTabChange }: TopNavigationProps) => {

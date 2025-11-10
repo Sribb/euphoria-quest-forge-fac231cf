@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Navigation } from "@/components/Navigation";
 import { TopNavigation } from "@/components/TopNavigation";
 import Dashboard from "./Dashboard";
 import Learn from "./Learn";
@@ -77,19 +76,11 @@ const Index = () => {
     return (
       <div className="min-h-screen bg-background">
         <TopNavigation activeTab={activeTab} onTabChange={handleNavigate} />
-        <div className="pt-20 pb-24 px-6">
+        <div className="pt-20 px-6">
           <div className="max-w-7xl mx-auto animate-fade-in">
             <StockDetail symbol={selectedStock} onBack={handleBackToStockSearch} />
           </div>
         </div>
-        <Navigation 
-          activeTab={activeTab} 
-          onTabChange={handleNavigate} 
-          onSelectStock={handleStockSelect}
-          showBackButton={backProps.show}
-          onBack={backProps.onBack}
-          backLabel={backProps.label}
-        />
       </div>
     );
   }
@@ -99,7 +90,7 @@ const Index = () => {
     return (
       <div className="min-h-screen bg-background">
         <TopNavigation activeTab={activeTab} onTabChange={handleNavigate} />
-        <div className="pt-20 pb-24 px-6">
+        <div className="pt-20 px-6">
           <div className="max-w-7xl mx-auto animate-fade-in">
             <StockSearch 
               onNavigate={handleNavigate}
@@ -108,14 +99,6 @@ const Index = () => {
             />
           </div>
         </div>
-        <Navigation 
-          activeTab={activeTab} 
-          onTabChange={handleNavigate} 
-          onSelectStock={handleStockSelect}
-          showBackButton={backProps.show}
-          onBack={backProps.onBack}
-          backLabel={backProps.label}
-        />
       </div>
     );
   }
@@ -148,19 +131,11 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <TopNavigation activeTab={activeTab} onTabChange={handleNavigate} />
-      <div className="pt-20 pb-24 px-6">
+      <div className="pt-20 px-6">
         <div className="max-w-7xl mx-auto animate-fade-in" key={activeTab}>
           {renderContent()}
         </div>
       </div>
-      <Navigation 
-        activeTab={activeTab} 
-        onTabChange={handleNavigate} 
-        onSelectStock={handleStockSelect}
-        showBackButton={backProps.show}
-        onBack={backProps.onBack}
-        backLabel={backProps.label}
-      />
     </div>
   );
 };
