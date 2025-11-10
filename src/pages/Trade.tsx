@@ -5,6 +5,7 @@ import { PortfolioSimulationGraph } from "@/components/trade/PortfolioSimulation
 import { AIInsightReactor } from "@/components/trade/AIInsightReactor";
 import { PortfolioSummary } from "@/components/trade/PortfolioSummary";
 import { AssetAllocation } from "@/components/trade/AssetAllocation";
+import { PortfolioGraph } from "@/components/trade/PortfolioGraph";
 import { TransactionHistory } from "@/components/trade/TransactionHistory";
 import { StockTrading } from "@/components/trade/StockTrading";
 import { Button } from "@/components/ui/button";
@@ -75,8 +76,9 @@ const Trade = ({ onNavigate, onStockSearch }: TradeProps) => {
           <TabsContent value="overview" className="space-y-6 animate-fade-in">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <PortfolioSummary />
-              <AssetAllocation />
+              <PortfolioGraph />
             </div>
+            <AssetAllocation />
             <TransactionHistory />
           </TabsContent>
 

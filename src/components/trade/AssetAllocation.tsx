@@ -1,6 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { usePortfolioValue } from "@/hooks/usePortfolioValue";
+import { PieChart } from "lucide-react";
 
 export const AssetAllocation = () => {
   const { totalValue, positionsValue, cash } = usePortfolioValue();
@@ -21,33 +22,39 @@ export const AssetAllocation = () => {
   ].filter(asset => asset.value > 0);
 
   return (
-    <Card className="p-6 animate-fade-in" style={{ animationDelay: "100ms" }}>
-      <h3 className="text-lg font-bold mb-4">Asset Allocation</h3>
+    <Card className="p-6">
+      <div className="flex items-center gap-2 mb-6">
+        <PieChart className="w-5 h-5 text-primary" />
+        <h3 className="text-xl font-bold">Asset Allocation</h3>
+      </div>
 
-      <div className="space-y-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {assets.map((asset) => (
-          <div key={asset.name} className="space-y-2">
+          <div key={asset.name} className="space-y-3 p-4 border border-border rounded-lg hover:border-primary/50 transition-colors">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className={`w-3 h-3 rounded-full ${asset.color}`} />
-                <span className="font-medium">{asset.name}</span>
+                <div className={`w-4 h-4 rounded-full ${asset.color}`} />
+                <span className="font-semibold text-lg">{asset.name}</span>
               </div>
-              <div className="text-right">
-                <div className="font-bold">{asset.value.toFixed(1)}%</div>
-                <div className="text-xs text-muted-foreground">
-                  ${asset.amount.toFixed(2)}
-                </div>
-              </div>
+            </div>
+            <div>
+              <p className="text-3xl font-bold">{asset.value.toFixed(1)}%</p>
+              <p className="text-sm text-muted-foreground mt-1">
+                ${asset.amount.toFixed(2)}
+              </p>
             </div>
             <Progress value={asset.value} className="h-2" />
           </div>
         ))}
-      </div>
-
-      <div className="mt-6 p-4 bg-gradient-hero rounded-lg">
-        <div className="flex items-center justify-between text-sm">
-          <span className="text-muted-foreground">Risk Level</span>
-          <span className="font-bold text-warning">Moderate</span>
+        
+        <div className="p-4 bg-gradient-hero rounded-lg border border-primary/20">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-sm font-medium text-muted-foreground">Risk Level</span>
+            <span className="font-bold text-warning">Moderate</span>
+          </div>
+          <p className="text-xs text-muted-foreground mt-3">
+            Your portfolio has a balanced allocation between stocks and cash reserves.
+          </p>
         </div>
       </div>
     </Card>
