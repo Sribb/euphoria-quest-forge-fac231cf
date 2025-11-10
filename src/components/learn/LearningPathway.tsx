@@ -59,32 +59,32 @@ export const LearningPathway = ({
   return (
     <div className="relative">
       {/* Sticky Header Progress Banner */}
-      <div className="sticky top-0 z-20 bg-background/95 backdrop-blur-sm border-b border-border mb-8">
-        <div className="max-w-7xl mx-auto px-8 py-6">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-4">
-              <div className="w-14 h-14 rounded-2xl bg-gradient-primary flex items-center justify-center shadow-glow">
-                <Trophy className="w-7 h-7 text-white" />
+      <div className="sticky top-0 z-20 bg-background/95 backdrop-blur-sm border-b border-border mb-4">
+        <div className="max-w-7xl mx-auto px-8 py-3">
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-gradient-primary flex items-center justify-center shadow-glow">
+                <Trophy className="w-5 h-5 text-white" />
               </div>
               <div>
-                <h2 className="text-2xl font-bold text-foreground mb-1">
+                <h2 className="text-xl font-bold text-foreground">
                   Your Learning Journey
                 </h2>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-xs text-muted-foreground">
                   Follow the pathway to financial mastery
                 </p>
               </div>
             </div>
             <div className="text-right">
-              <div className="text-4xl font-bold text-primary mb-1 transition-all duration-500">
+              <div className="text-2xl font-bold text-primary transition-all duration-500">
                 {completedCount}/{totalCount}
               </div>
-              <p className="text-xs text-muted-foreground">Challenges Completed</p>
+              <p className="text-xs text-muted-foreground">Completed</p>
             </div>
           </div>
           
           {/* Progress Bar with smooth animation */}
-          <div className="relative w-full bg-muted/50 rounded-full h-4 overflow-hidden">
+          <div className="relative w-full bg-muted/50 rounded-full h-2.5 overflow-hidden">
             <div 
               className="absolute inset-y-0 left-0 bg-gradient-primary shadow-glow transition-all duration-1000 ease-out flex items-center justify-end pr-2"
               style={{ width: `${progressPercentage}%` }}
@@ -98,10 +98,10 @@ export const LearningPathway = ({
           </div>
 
           {progressPercentage === 100 && (
-            <div className="mt-4 p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-xl animate-fade-in flex items-center gap-3">
-              <Award className="w-5 h-5 text-yellow-500" />
+            <div className="mt-2 p-2 bg-yellow-500/10 border border-yellow-500/20 rounded-lg animate-fade-in flex items-center gap-2">
+              <Award className="w-4 h-4 text-yellow-500" />
               <p className="text-xs text-foreground font-semibold">
-                🎉 Incredible! You've completed the entire pathway! You're now a Master Investor!
+                🎉 Pathway complete! You're now a Master Investor!
               </p>
             </div>
           )}
