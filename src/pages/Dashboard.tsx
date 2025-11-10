@@ -3,7 +3,9 @@ import { QuickOverviewGrid } from "@/components/dashboard/QuickOverviewGrid";
 import { AIInsightsPanel } from "@/components/dashboard/AIInsightsPanel";
 import { EconomicCalendarNative } from "@/components/dashboard/EconomicCalendarNative";
 import { LiveEconomicHeadlines } from "@/components/dashboard/LiveEconomicHeadlines";
+import { DailyRewardsModal } from "@/components/learn/DailyRewardsModal";
 import { useAuth } from "@/hooks/useAuth";
+import { useState } from "react";
 
 interface DashboardProps {
   onNavigate: (tab: string) => void;
@@ -12,11 +14,12 @@ interface DashboardProps {
 
 const Dashboard = ({ onNavigate, onStockSearch }: DashboardProps) => {
   const { user } = useAuth();
+  const [showDailyRewards, setShowDailyRewards] = useState(false);
 
   return (
     <div className="min-h-screen w-full bg-background">
       {/* Custom Header with Username and Daily Rewards */}
-      <DashboardHeader onDailyRewards={() => onNavigate("profile")} />
+      <DashboardHeader onDailyRewards={() => setShowDailyRewards(true)} />
       
       {/* Main Content - Full Width Grid Layout */}
       <div className="px-8 py-8 space-y-8">
@@ -36,6 +39,12 @@ const Dashboard = ({ onNavigate, onStockSearch }: DashboardProps) => {
           <LiveEconomicHeadlines />
         </div>
       </div>
+
+      {/* Daily Rewards Modal */}
+      <DailyRewardsModal 
+        isOpen={showDailyRewards} 
+        onClose={() => setShowDailyRewards(false)} 
+      />
     </div>
   );
 };
