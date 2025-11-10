@@ -1,9 +1,14 @@
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { TrendingUp, TrendingDown, AlertTriangle, Zap, RefreshCw, Target, Shield, Activity } from "lucide-react";
+import { TrendingUp, TrendingDown, AlertTriangle, Zap, RefreshCw, Target, Shield, Activity, Loader2 } from "lucide-react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Area, AreaChart } from "recharts";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { useAuth } from "@/hooks/useAuth";
+import { useAIMarket } from "@/hooks/useAIMarket";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 interface Scenario {
   id: string;
@@ -100,8 +105,16 @@ const scenarios: Scenario[] = [
 ];
 
 export const ScenarioPlayground = () => {
+  const { user } = useAuth();
+  const { session } = useAIMarket(user?.id);
   const [selectedScenario, setSelectedScenario] = useState<Scenario>(scenarios[0]);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isTestingPrediction, setIsTestingPrediction] = useState(false);
+  const [isSimulating, setIsSimulating] = useState(false);
+  const [predictionResult, setPredictionResult] = useState<any>(null);
+  const [simulationResult, setSimulationResult] = useState<any>(null);
+  const [showPredictionDialog, setShowPredictionDialog] = useState(false);
+  const [showSimulationDialog, setShowSimulationDialog] = useState(false);
 
   const handleRefresh = () => {
     setIsRefreshing(true);
@@ -145,6 +158,74 @@ export const ScenarioPlayground = () => {
       high: "bg-destructive/20 text-destructive border-destructive/30",
     };
     return colors[risk];
+  };
+
+  const handleTestPrediction = async () => {
+    if (!session || !user) {
+      toast.error("Please activate AI Market first from the Trade section");
+      return;
+    }
+
+    setIsTestingPrediction(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('execute-scenario-action', {
+        body: {
+          sessionId: session.id,
+          userId: user.id,
+          scenarioId: selectedScenario.id,
+          action: {
+            type: selectedScenario.type === 'bullish' ? 'BUY' : 'SELL',
+            symbol: 'AAPL', // Default symbol for testing
+            quantity: 10,
+            stopLoss: selectedScenario.risk === 'high' ? 5 : selectedScenario.risk === 'medium' ? 3 : 2
+          }
+        }
+      });
+
+      if (error) throw error;
+      
+      setPredictionResult(data);
+      setShowPredictionDialog(true);
+      toast.success("Prediction simulated successfully!");
+    } catch (error) {
+      console.error('Test prediction error:', error);
+      toast.error("Failed to test prediction. Make sure AI Market is active.");
+    } finally {
+      setIsTestingPrediction(false);
+    }
+  };
+
+  const handleSimulateAdjustment = async () => {
+    if (!session || !user) {
+      toast.error("Please activate AI Market first from the Trade section");
+      return;
+    }
+
+    setIsSimulating(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('ai-scenario-generation', {
+        body: {
+          sessionId: session.id,
+          proposedAction: {
+            type: 'adjust_portfolio',
+            scenario: selectedScenario.title,
+            risk: selectedScenario.risk
+          },
+          timeHorizon: 60
+        }
+      });
+
+      if (error) throw error;
+      
+      setSimulationResult(data);
+      setShowSimulationDialog(true);
+      toast.success("Alternative scenarios generated!");
+    } catch (error) {
+      console.error('Simulate adjustment error:', error);
+      toast.error("Failed to generate scenarios. Make sure AI Market is active.");
+    } finally {
+      setIsSimulating(false);
+    }
   };
 
   return (
@@ -291,14 +372,180 @@ export const ScenarioPlayground = () => {
         </div>
 
         <div className="mt-4 flex gap-3">
-          <Button className="flex-1 bg-gradient-primary hover-scale">
-            Test Prediction
+          <Button 
+            className="flex-1 bg-gradient-primary hover-scale"
+            onClick={handleTestPrediction}
+            disabled={isTestingPrediction || !session}
+          >
+            {isTestingPrediction ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                Testing...
+              </>
+            ) : (
+              <>
+                <Zap className="w-4 h-4 mr-2" />
+                Test Prediction
+              </>
+            )}
           </Button>
-          <Button variant="outline" className="flex-1 hover-scale">
-            Simulate Adjustment
+          <Button 
+            variant="outline" 
+            className="flex-1 hover-scale"
+            onClick={handleSimulateAdjustment}
+            disabled={isSimulating || !session}
+          >
+            {isSimulating ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                Simulating...
+              </>
+            ) : (
+              <>
+                <RefreshCw className="w-4 h-4 mr-2" />
+                Simulate Adjustment
+              </>
+            )}
           </Button>
         </div>
       </Card>
+
+      {/* Prediction Result Dialog */}
+      <Dialog open={showPredictionDialog} onOpenChange={setShowPredictionDialog}>
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Zap className="w-5 h-5 text-primary" />
+              Prediction Test Results
+            </DialogTitle>
+            <DialogDescription>
+              AI-powered simulation of your trading decision
+            </DialogDescription>
+          </DialogHeader>
+          
+          {predictionResult && (
+            <div className="space-y-4">
+              <Card className="p-4 bg-gradient-primary/10 border-primary/20">
+                <h4 className="font-bold mb-2">Outcome Summary</h4>
+                <p className="text-sm text-muted-foreground mb-3">
+                  {predictionResult.outcome?.result_summary}
+                </p>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <p className="text-xs text-muted-foreground">Profit/Loss</p>
+                    <p className={`text-lg font-bold ${
+                      predictionResult.outcome?.profit_loss > 0 ? 'text-success' : 'text-destructive'
+                    }`}>
+                      ${predictionResult.outcome?.profit_loss?.toFixed(2)}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground">Success Probability</p>
+                    <p className="text-lg font-bold text-primary">
+                      {(predictionResult.outcome?.success_probability * 100)?.toFixed(0)}%
+                    </p>
+                  </div>
+                </div>
+              </Card>
+
+              {predictionResult.feedback && (
+                <Card className="p-4">
+                  <h4 className="font-bold mb-2">AI Feedback</h4>
+                  <p className="text-sm text-muted-foreground mb-3">
+                    {predictionResult.feedback.feedback_summary}
+                  </p>
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-muted-foreground">Quality Score:</span>
+                      <span className="font-bold">{predictionResult.feedback.quality_score}/100</span>
+                    </div>
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-muted-foreground">Strategy:</span>
+                      <Badge variant="outline">{predictionResult.feedback.strategy_alignment}</Badge>
+                    </div>
+                  </div>
+                  
+                  {predictionResult.feedback.recommendations?.length > 0 && (
+                    <div className="mt-4">
+                      <h5 className="font-semibold text-sm mb-2">Recommendations:</h5>
+                      <ul className="space-y-1">
+                        {predictionResult.feedback.recommendations.map((rec: string, i: number) => (
+                          <li key={i} className="text-xs text-muted-foreground flex items-start gap-2">
+                            <span className="text-primary">•</span>
+                            <span>{rec}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </Card>
+              )}
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Simulation Result Dialog */}
+      <Dialog open={showSimulationDialog} onOpenChange={setShowSimulationDialog}>
+        <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <RefreshCw className="w-5 h-5 text-primary" />
+              Alternative Scenarios
+            </DialogTitle>
+            <DialogDescription>
+              AI-generated alternative market outcomes
+            </DialogDescription>
+          </DialogHeader>
+          
+          {simulationResult?.scenarios && (
+            <div className="space-y-4">
+              {simulationResult.scenarios.map((scenario: any, index: number) => (
+                <Card key={index} className="p-4">
+                  <div className="flex items-start justify-between mb-2">
+                    <h4 className="font-bold">{scenario.title}</h4>
+                    <Badge variant="outline" className="text-xs">
+                      {scenario.probability?.toFixed(0)}% likely
+                    </Badge>
+                  </div>
+                  <p className="text-sm text-muted-foreground mb-3">
+                    {scenario.description}
+                  </p>
+                  
+                  <div className="grid grid-cols-2 gap-3 mb-3">
+                    <div className="p-3 bg-muted/50 rounded-lg">
+                      <p className="text-xs text-muted-foreground mb-1">Expected Outcome</p>
+                      <p className={`font-bold ${
+                        scenario.user_outcome?.profit_loss > 0 ? 'text-success' : 'text-destructive'
+                      }`}>
+                        ${scenario.user_outcome?.profit_loss?.toFixed(2)}
+                      </p>
+                    </div>
+                    <div className="p-3 bg-muted/50 rounded-lg">
+                      <p className="text-xs text-muted-foreground mb-1">Market Impact</p>
+                      <p className="text-sm">{scenario.market_changes?.length || 0} stocks affected</p>
+                    </div>
+                  </div>
+
+                  {scenario.alternative_actions?.length > 0 && (
+                    <div>
+                      <h5 className="font-semibold text-xs mb-2">Alternative Actions:</h5>
+                      <div className="space-y-1">
+                        {scenario.alternative_actions.slice(0, 2).map((alt: any, i: number) => (
+                          <div key={i} className="text-xs p-2 bg-gradient-primary/5 rounded">
+                            <span className="font-medium">{alt.action}</span>
+                            <span className="text-muted-foreground"> → {alt.expected_result}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </Card>
+              ))}
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
