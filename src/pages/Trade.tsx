@@ -1,11 +1,16 @@
 import { useState } from "react";
-import { TrendingUp, ArrowLeft, Brain } from "lucide-react";
+import { TrendingUp, ArrowLeft, Brain, BarChart3, Zap } from "lucide-react";
 import { MarketHealthPanel } from "@/components/trade/MarketHealthPanel";
 import { PortfolioSimulationGraph } from "@/components/trade/PortfolioSimulationGraph";
 import { AIInsightReactor } from "@/components/trade/AIInsightReactor";
+import { PortfolioSummary } from "@/components/trade/PortfolioSummary";
+import { AssetAllocation } from "@/components/trade/AssetAllocation";
+import { TransactionHistory } from "@/components/trade/TransactionHistory";
+import { StockTrading } from "@/components/trade/StockTrading";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/hooks/useAuth";
 import { useAIMarket } from "@/hooks/useAIMarket";
 
@@ -48,22 +53,53 @@ const Trade = ({ onNavigate, onStockSearch }: TradeProps) => {
         )}
       </div>
 
-      {/* Three-Column Grid Layout */}
-      <div className="grid grid-cols-12 gap-6 px-6 h-[calc(100vh-180px)]">
-        {/* Left Panel - Market Health & Portfolio Overview */}
-        <div className="col-span-3 h-full">
-          <MarketHealthPanel />
-        </div>
+      {/* Tabbed Interface */}
+      <div className="px-6">
+        <Tabs defaultValue="overview" className="w-full">
+          <TabsList className="grid w-full grid-cols-3 mb-6">
+            <TabsTrigger value="overview" className="flex items-center gap-2">
+              <BarChart3 className="w-4 h-4" />
+              Overview
+            </TabsTrigger>
+            <TabsTrigger value="ai-market" className="flex items-center gap-2">
+              <Brain className="w-4 h-4" />
+              AI Market
+            </TabsTrigger>
+            <TabsTrigger value="trade" className="flex items-center gap-2">
+              <Zap className="w-4 h-4" />
+              Trade
+            </TabsTrigger>
+          </TabsList>
 
-        {/* Center Panel - Interactive Portfolio Simulation Graph */}
-        <div className="col-span-5 h-full">
-          <PortfolioSimulationGraph />
-        </div>
+          {/* Overview Tab */}
+          <TabsContent value="overview" className="space-y-6 animate-fade-in">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <PortfolioSummary />
+              <AssetAllocation />
+            </div>
+            <TransactionHistory />
+          </TabsContent>
 
-        {/* Right Panel - AI Insight Reactor */}
-        <div className="col-span-4 h-full">
-          <AIInsightReactor />
-        </div>
+          {/* AI Market Tab */}
+          <TabsContent value="ai-market" className="animate-fade-in">
+            <div className="grid grid-cols-12 gap-6 h-[calc(100vh-280px)]">
+              <div className="col-span-3 h-full">
+                <MarketHealthPanel />
+              </div>
+              <div className="col-span-5 h-full">
+                <PortfolioSimulationGraph />
+              </div>
+              <div className="col-span-4 h-full">
+                <AIInsightReactor />
+              </div>
+            </div>
+          </TabsContent>
+
+          {/* Trade Tab */}
+          <TabsContent value="trade" className="animate-fade-in">
+            <StockTrading />
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
