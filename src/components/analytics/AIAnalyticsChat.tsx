@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Brain, Send, Loader2, Sparkles } from "lucide-react";
+import { Brain, Send, Loader2, Sparkles, ChevronRight, ChevronLeft } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -14,17 +14,25 @@ interface Message {
 }
 
 interface AIAnalyticsChatProps {
-  title: string;
-  description: string;
-  icon: React.ReactNode;
+  title?: string;
+  description?: string;
+  icon?: React.ReactNode;
   presetQuestions?: string[];
+  isCollapsible?: boolean;
 }
 
-export const AIAnalyticsChat = ({ title, description, icon, presetQuestions }: AIAnalyticsChatProps) => {
+export const AIAnalyticsChat = ({ 
+  title = "Euphoria AI Assistant", 
+  description = "Your personal analytics guide", 
+  icon = <Brain className="w-5 h-5 text-white" />,
+  presetQuestions,
+  isCollapsible = false,
+}: AIAnalyticsChatProps) => {
   const { user } = useAuth();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -159,88 +167,101 @@ export const AIAnalyticsChat = ({ title, description, icon, presetQuestions }: A
   };
 
   return (
-    <Card className="p-6 animate-fade-in">
-      <div className="flex items-center gap-3 mb-4">
-        <div className="w-10 h-10 rounded-lg bg-gradient-primary flex items-center justify-center shrink-0">
-          {icon}
-        </div>
-        <div className="flex-1 min-w-0">
-          <h3 className="text-lg font-bold truncate">{title}</h3>
-          <p className="text-sm text-muted-foreground truncate">{description}</p>
-        </div>
-      </div>
-
-      {messages.length === 0 ? (
-        <div className="space-y-4">
-          <div className="p-8 text-center border-2 border-dashed rounded-lg">
-            <Brain className="w-12 h-12 mx-auto mb-3 opacity-50" />
-            <p className="text-muted-foreground mb-4">Ask me anything about your analytics</p>
-            {presetQuestions && (
-              <div className="flex flex-wrap gap-2 justify-center">
-                {presetQuestions.map((question, idx) => (
-                  <Button
-                    key={idx}
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handlePresetQuestion(question)}
-                    disabled={isLoading}
-                    className="text-xs"
-                  >
-                    <Sparkles className="w-3 h-3 mr-1" />
-                    {question}
-                  </Button>
-                ))}
-              </div>
-            )}
+    <Card className={`animate-fade-in transition-all border-primary/20 shadow-glow ${isCollapsible ? 'relative' : 'p-6'}`}>
+      {isCollapsible && (
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => setIsCollapsed(!isCollapsed)}
+          className="absolute -left-3 top-4 z-10 w-6 h-6 rounded-full bg-gradient-primary shadow-lg hover-scale"
+        >
+          {isCollapsed ? <ChevronLeft className="w-4 h-4 text-white" /> : <ChevronRight className="w-4 h-4 text-white" />}
+        </Button>
+      )}
+      
+      <div className={isCollapsible && isCollapsed ? 'hidden' : 'p-6'}>
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-10 h-10 rounded-lg bg-gradient-primary flex items-center justify-center shrink-0 animate-pulse">
+            {icon}
+          </div>
+          <div className="flex-1 min-w-0">
+            <h3 className="text-lg font-bold truncate">{title}</h3>
+            <p className="text-sm text-muted-foreground truncate">{description}</p>
           </div>
         </div>
-      ) : (
-        <ScrollArea className="h-[400px] pr-4 mb-4" ref={scrollRef}>
+
+        {messages.length === 0 ? (
           <div className="space-y-4">
-            {messages.map((msg, idx) => (
-              <div
-                key={idx}
-                className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
-              >
+            <div className="p-8 text-center border-2 border-dashed border-primary/20 rounded-lg bg-gradient-primary/5">
+              <Brain className="w-12 h-12 mx-auto mb-3 text-primary animate-pulse" />
+              <p className="text-muted-foreground mb-4">Ask me anything about your scenarios and analytics</p>
+              {presetQuestions && (
+                <div className="flex flex-wrap gap-2 justify-center">
+                  {presetQuestions.map((question, idx) => (
+                    <Button
+                      key={idx}
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handlePresetQuestion(question)}
+                      disabled={isLoading}
+                      className="text-xs hover-scale bg-gradient-primary/10 border-primary/30"
+                    >
+                      <Sparkles className="w-3 h-3 mr-1 text-primary" />
+                      {question}
+                    </Button>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        ) : (
+          <ScrollArea className={`pr-4 mb-4 ${isCollapsible ? 'h-[500px]' : 'h-[400px]'}`} ref={scrollRef}>
+            <div className="space-y-4">
+              {messages.map((msg, idx) => (
                 <div
-                  className={`max-w-[85%] p-3 rounded-lg ${
-                    msg.role === "user"
-                      ? "bg-gradient-primary text-white"
-                      : "bg-muted"
-                  }`}
+                  key={idx}
+                  className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
                 >
-                  <div className="text-sm whitespace-pre-wrap break-words prose prose-sm max-w-none dark:prose-invert">
-                    {msg.content.split('\n').map((line, i) => (
-                      <p key={i} className="mb-2 last:mb-0">{line}</p>
-                    ))}
+                  <div
+                    className={`max-w-[85%] p-3 rounded-lg animate-fade-in ${
+                      msg.role === "user"
+                        ? "bg-gradient-primary text-white shadow-glow"
+                        : "bg-muted/80 border border-border"
+                    }`}
+                  >
+                    <div className="text-sm whitespace-pre-wrap break-words prose prose-sm max-w-none dark:prose-invert">
+                      {msg.content.split('\n').map((line, i) => (
+                        <p key={i} className="mb-2 last:mb-0">{line}</p>
+                      ))}
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        </ScrollArea>
-      )}
+              ))}
+            </div>
+          </ScrollArea>
+        )}
 
-      <div className="flex gap-2 mt-4">
-        <Input
-          placeholder="Ask about your performance..."
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyPress={(e) => e.key === "Enter" && handleSend()}
-          disabled={isLoading}
-          className="flex-1"
-        />
-        <Button
-          onClick={handleSend}
-          disabled={isLoading || !input.trim()}
-          className="bg-gradient-primary shrink-0"
-        >
-          {isLoading ? (
-            <Loader2 className="w-4 h-4 animate-spin" />
-          ) : (
-            <Send className="w-4 h-4" />
-          )}
-        </Button>
+        <div className="flex gap-2 mt-4">
+          <Input
+            placeholder="Ask about scenarios, trends, or predictions..."
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyPress={(e) => e.key === "Enter" && handleSend()}
+            disabled={isLoading}
+            className="flex-1 bg-background/50 border-primary/20"
+          />
+          <Button
+            onClick={handleSend}
+            disabled={isLoading || !input.trim()}
+            className="bg-gradient-primary shrink-0 hover-scale shadow-glow"
+          >
+            {isLoading ? (
+              <Loader2 className="w-4 h-4 animate-spin text-white" />
+            ) : (
+              <Send className="w-4 h-4 text-white" />
+            )}
+          </Button>
+        </div>
       </div>
     </Card>
   );

@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { AIAnalyticsChat } from "@/components/analytics/AIAnalyticsChat";
 import { AnalyticsFilters } from "@/components/analytics/AnalyticsFilters";
 import { PerformanceHeatmap } from "@/components/analytics/PerformanceHeatmap";
+import { ScenarioPlayground } from "@/components/analytics/ScenarioPlayground";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface AnalyticsProps {
@@ -256,14 +257,14 @@ const Analytics = ({ onNavigate }: AnalyticsProps) => {
         >
           <ArrowLeft className="w-5 h-5" />
         </Button>
-        <div className="w-12 h-12 rounded-xl bg-gradient-accent flex items-center justify-center shadow-glow">
+        <div className="w-12 h-12 rounded-xl bg-gradient-accent flex items-center justify-center shadow-glow animate-pulse">
           <BarChart3 className="w-6 h-6 text-white" />
         </div>
         <div className="flex-1">
           <h1 className="text-2xl font-bold">AI-Powered Analytics</h1>
           <p className="text-muted-foreground">Intelligent insights and performance tracking</p>
         </div>
-        <div className="flex items-center gap-2 px-3 py-1 bg-gradient-primary/10 border border-primary/20 rounded-full">
+        <div className="flex items-center gap-2 px-3 py-1 bg-gradient-primary/10 border border-primary/20 rounded-full animate-pulse">
           <Brain className="w-4 h-4 text-primary" />
           <span className="text-sm font-medium">AI Enhanced</span>
         </div>
@@ -271,25 +272,37 @@ const Analytics = ({ onNavigate }: AnalyticsProps) => {
 
       <AnalyticsFilters onFilterChange={setActiveFilter} activeFilter={activeFilter} />
 
-      <Tabs defaultValue="overview" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4 h-auto">
+      <Tabs defaultValue="playground" className="space-y-6">
+        <TabsList className="grid w-full grid-cols-5 h-auto">
+          <TabsTrigger value="playground" className="text-xs sm:text-sm px-2 py-2">Scenario Playground</TabsTrigger>
           <TabsTrigger value="overview" className="text-xs sm:text-sm px-2 py-2">Overview</TabsTrigger>
           <TabsTrigger value="learning" className="text-xs sm:text-sm px-2 py-2">Learning</TabsTrigger>
           <TabsTrigger value="trading" className="text-xs sm:text-sm px-2 py-2">Trading</TabsTrigger>
           <TabsTrigger value="behavioral" className="text-xs sm:text-sm px-2 py-2">Behavioral</TabsTrigger>
         </TabsList>
 
+        <TabsContent value="playground" className="space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-2">
+              <ScenarioPlayground />
+            </div>
+            <div className="lg:col-span-1">
+              <AIAnalyticsChat
+                title="Euphoria AI Assistant"
+                description="Your personal analytics guide"
+                icon={<Sparkles className="w-5 h-5 text-white" />}
+                presetQuestions={[
+                  "Explain this scenario",
+                  "What's the best strategy?",
+                  "How does volatility affect me?",
+                ]}
+                isCollapsible={true}
+              />
+            </div>
+          </div>
+        </TabsContent>
+
         <TabsContent value="overview" className="space-y-6">
-          <AIAnalyticsChat
-            title="AI Analytics Assistant"
-            description="Ask me anything about your performance"
-            icon={<Sparkles className="w-5 h-5 text-white" />}
-            presetQuestions={[
-              "What's my overall progress?",
-              "How am I performing?",
-              "What should I focus on?",
-            ]}
-          />
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 animate-fade-in">
             <Card className="p-4 bg-gradient-success border-0">
