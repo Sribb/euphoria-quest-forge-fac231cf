@@ -1,6 +1,5 @@
 import { Brain, Sparkles, TrendingUp, Award } from "lucide-react";
 import { Card } from "@/components/ui/card";
-import { useNavigate } from "react-router-dom";
 
 interface AIInsight {
   id: number;
@@ -11,6 +10,10 @@ interface AIInsight {
   navigateTo: string;
 }
 
+interface AIInsightsPanelProps {
+  onNavigate: (tab: string) => void;
+}
+
 const INSIGHTS: AIInsight[] = [
   {
     id: 1,
@@ -18,7 +21,7 @@ const INSIGHTS: AIInsight[] = [
     title: "Learning Mastery",
     description: "You've mastered 80% of your financial literacy path — keep it up! Only 3 lessons remaining.",
     type: "achievement",
-    navigateTo: "/learn"
+    navigateTo: "learn"
   },
   {
     id: 2,
@@ -26,7 +29,7 @@ const INSIGHTS: AIInsight[] = [
     title: "Portfolio Performance",
     description: "Your portfolio outperformed the S&P 500 by 3.2% this week. Excellent diversification strategy!",
     type: "performance",
-    navigateTo: "/trade"
+    navigateTo: "trade"
   },
   {
     id: 3,
@@ -34,12 +37,11 @@ const INSIGHTS: AIInsight[] = [
     title: "Game Progress",
     description: "Try revisiting Trend Master — your accuracy is improving fast. You're now in the top 15% of players.",
     type: "suggestion",
-    navigateTo: "/games"
+    navigateTo: "games"
   }
 ];
 
-export const AIInsightsPanel = () => {
-  const navigate = useNavigate();
+export const AIInsightsPanel = ({ onNavigate }: AIInsightsPanelProps) => {
 
   return (
     <Card className="p-6 bg-gradient-surface border-border shadow-glow-soft">
@@ -57,7 +59,7 @@ export const AIInsightsPanel = () => {
         {INSIGHTS.map((insight, index) => (
           <div
             key={insight.id}
-            onClick={() => navigate(insight.navigateTo)}
+            onClick={() => onNavigate(insight.navigateTo)}
             className="group p-5 bg-gradient-to-br from-card/80 to-card/40 rounded-xl border border-border hover:border-primary/50 transition-all duration-300 hover:shadow-glow animate-fade-in cursor-pointer"
             style={{ animationDelay: `${index * 100}ms` }}
           >

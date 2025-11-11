@@ -1,4 +1,4 @@
-import { User, Award, TrendingUp, Target, Edit, Palette, Bell, Lock, Settings as SettingsIcon } from "lucide-react";
+import { User, Award, TrendingUp, Target, Edit, Palette, Bell, Lock, Settings as SettingsIcon, RotateCcw } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -18,6 +18,16 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { formatDollar } from "@/lib/formatters";
@@ -47,6 +57,7 @@ const Profile = ({ onNavigate }: ProfileProps) => {
   const [darkMode, setDarkMode] = useState(true);
   const [selectedAvatar, setSelectedAvatar] = useState<string>("");
   const [showAvatarDialog, setShowAvatarDialog] = useState(false);
+  const [showResetDialog, setShowResetDialog] = useState(false);
 
   useEffect(() => {
     // Load theme preference from localStorage
@@ -207,6 +218,45 @@ const Profile = ({ onNavigate }: ProfileProps) => {
     }
     
     toast.success(`${newMode ? "Dark" : "Light"} mode enabled`);
+  };
+
+  const handleResetPersonalization = async () => {
+    try {
+      // Reset to default values
+      const defaultColor = "#9b87f5";
+      const defaultAvatar = "#9b87f5";
+      const defaultTheme = "dark";
+
+      // Reset theme
+      setDarkMode(true);
+      localStorage.setItem("theme", defaultTheme);
+      document.documentElement.classList.add("dark");
+
+      // Reset color
+      setPrimaryColor(defaultColor);
+      localStorage.setItem("primaryColor", defaultColor);
+      document.documentElement.style.setProperty("--primary", "262 83% 58%");
+
+      // Reset avatar and display name in database
+      const { error } = await supabase
+        .from("profiles")
+        .update({ 
+          avatar_url: defaultAvatar,
+          display_name: "Euphoria User"
+        })
+        .eq("id", user?.id);
+
+      if (error) throw error;
+
+      setDisplayName("Euphoria User");
+      setSelectedAvatar(defaultAvatar);
+      
+      queryClient.invalidateQueries({ queryKey: ["profile"] });
+      setShowResetDialog(false);
+      toast.success("Personalization settings reset to defaults");
+    } catch (error) {
+      toast.error("Failed to reset personalization settings");
+    }
   };
 
   return (
@@ -497,6 +547,29 @@ const Profile = ({ onNavigate }: ProfileProps) => {
 
           <Card className="p-6">
             <div className="flex items-center gap-3 mb-4">
+              <SettingsIcon className="w-5 h-5 text-primary" />
+              <h2 className="text-xl font-bold">Account Management</h2>
+            </div>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between p-4 border border-border rounded-lg">
+                <div>
+                  <p className="font-semibold">Reset Personalization</p>
+                  <p className="text-sm text-muted-foreground">Restore color theme, avatar, and display name to defaults</p>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowResetDialog(true)}
+                >
+                  <RotateCcw className="w-4 h-4 mr-2" />
+                  Reset
+                </Button>
+              </div>
+            </div>
+          </Card>
+
+          <Card className="p-6">
+            <div className="flex items-center gap-3 mb-4">
               <Lock className="w-5 h-5 text-primary" />
               <h2 className="text-xl font-bold">Security</h2>
             </div>
@@ -518,6 +591,23 @@ const Profile = ({ onNavigate }: ProfileProps) => {
               </Button>
             </div>
           </Card>
+
+          <AlertDialog open={showResetDialog} onOpenChange={setShowResetDialog}>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Reset Personalization Settings?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This will restore your color theme, profile picture, and display name to their original default values. This action cannot be undone.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={handleResetPersonalization}>
+                  Reset to Defaults
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </TabsContent>
 
         {/* Achievements Tab */}

@@ -30,7 +30,7 @@ const Dashboard = ({ onNavigate, onStockSearch }: DashboardProps) => {
         
         {/* AI Insights Panel - Replaces Old Widgets */}
         <div className="animate-fade-in" style={{ animationDelay: "100ms" }}>
-          <AIInsightsPanel />
+          <AIInsightsPanel onNavigate={onNavigate} />
         </div>
         
         {/* Economic Data Section - Full Width Grid */}

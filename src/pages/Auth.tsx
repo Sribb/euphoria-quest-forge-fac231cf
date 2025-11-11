@@ -80,8 +80,33 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-hero p-4">
-      <Card className="w-full max-w-md p-8 shadow-lg">
+    <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-background">
+      {/* Animated Background matching Landing */}
+      <div className="absolute inset-0 bg-gradient-hero opacity-30 blur-3xl" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,hsl(262_83%_58%/0.15),transparent_50%)]" />
+      
+      {/* Back to Landing Link */}
+      <button
+        onClick={() => navigate("/")}
+        className="absolute top-6 left-6 z-10 text-foreground/80 hover:text-foreground transition-colors flex items-center gap-2"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="m15 18-6-6 6-6" />
+        </svg>
+        Back to Home
+      </button>
+
+      <Card className="w-full max-w-md p-8 shadow-glow border-border backdrop-blur-sm bg-card/90 relative z-10 m-4">
         <div className="flex items-center justify-center gap-2 mb-8">
           <div className="w-12 h-12 rounded-xl bg-gradient-primary flex items-center justify-center shadow-glow">
             <Sparkles className="w-6 h-6 text-white" />
@@ -111,6 +136,7 @@ const Auth = () => {
               onChange={(e) => setEmail(e.target.value)}
               required
               disabled={loading}
+              className="bg-background/50"
             />
           </div>
 
@@ -125,12 +151,13 @@ const Auth = () => {
               required
               disabled={loading}
               minLength={6}
+              className="bg-background/50"
             />
           </div>
 
           <Button
             type="submit"
-            className="w-full bg-gradient-primary hover:opacity-90"
+            className="w-full bg-gradient-primary hover:opacity-90 shadow-glow"
             disabled={loading}
           >
             {loading ? (
