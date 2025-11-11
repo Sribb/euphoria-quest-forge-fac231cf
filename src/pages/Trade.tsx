@@ -1,15 +1,12 @@
 import { useState } from "react";
 import { TrendingUp, ArrowLeft, Brain, BarChart3, Zap } from "lucide-react";
-import { MarketHealthPanel } from "@/components/trade/MarketHealthPanel";
-import { PortfolioSimulationGraph } from "@/components/trade/PortfolioSimulationGraph";
-import { AIInsightReactor } from "@/components/trade/AIInsightReactor";
+import { InteractiveAIMarket } from "@/components/trade/InteractiveAIMarket";
 import { PortfolioSummary } from "@/components/trade/PortfolioSummary";
 import { AssetAllocation } from "@/components/trade/AssetAllocation";
 import { PortfolioGraph } from "@/components/trade/PortfolioGraph";
 import { TransactionHistory } from "@/components/trade/TransactionHistory";
 import { StockTrading } from "@/components/trade/StockTrading";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/hooks/useAuth";
@@ -84,17 +81,7 @@ const Trade = ({ onNavigate, onStockSearch }: TradeProps) => {
 
           {/* AI Market Tab */}
           <TabsContent value="ai-market" className="animate-fade-in">
-            <div className="grid grid-cols-12 gap-6 h-[calc(100vh-280px)]">
-              <div className="col-span-3 h-full">
-                <MarketHealthPanel />
-              </div>
-              <div className="col-span-5 h-full">
-                <PortfolioSimulationGraph />
-              </div>
-              <div className="col-span-4 h-full">
-                <AIInsightReactor />
-              </div>
-            </div>
+            <InteractiveAIMarket />
           </TabsContent>
 
           {/* Trade Tab */}
