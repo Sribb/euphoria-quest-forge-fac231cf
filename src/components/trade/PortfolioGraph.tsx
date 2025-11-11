@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
 import { TrendingUp, TrendingDown } from "lucide-react";
+import { formatDollar } from "@/lib/formatters";
 
 type TimeFrame = "1D" | "1W" | "1M" | "3M" | "1Y" | "All";
 
@@ -91,9 +92,9 @@ export const PortfolioGraph = () => {
       </div>
 
       <div className="mb-4">
-        <p className="text-3xl font-bold">${currentValue.toFixed(2)}</p>
+        <p className="text-3xl font-bold">{formatDollar(currentValue, 2)}</p>
         <p className={`text-sm ${isPositive ? "text-success" : "text-destructive"}`}>
-          {isPositive ? "+" : ""}${changeAmount.toFixed(2)} ({timeFrame})
+          {isPositive ? "+" : ""}{formatDollar(changeAmount, 2)} ({timeFrame})
         </p>
       </div>
 

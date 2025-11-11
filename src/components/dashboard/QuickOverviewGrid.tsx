@@ -2,6 +2,7 @@ import { TrendingUp, Target, BookOpen, Lightbulb } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { usePortfolioValue } from "@/hooks/usePortfolioValue";
+import { formatDollar } from "@/lib/formatters";
 
 export const QuickOverviewGrid = () => {
   const { totalValue } = usePortfolioValue();
@@ -37,7 +38,7 @@ export const QuickOverviewGrid = () => {
           </div>
           <div className="pt-2 border-t border-border">
             <div className="text-xs text-muted-foreground mb-1">Portfolio Value</div>
-            <div className="text-2xl font-bold text-foreground">${totalValue.toLocaleString()}</div>
+            <div className="text-2xl font-bold text-foreground">{formatDollar(totalValue, 2)}</div>
           </div>
         </div>
       </Card>

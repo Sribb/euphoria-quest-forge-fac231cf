@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { usePortfolioValue } from "@/hooks/usePortfolioValue";
 import { useState } from "react";
+import { formatDollar } from "@/lib/formatters";
 import {
   Dialog,
   DialogContent,
@@ -73,12 +74,12 @@ export const MarketHealthPanel = () => {
         <Card className="p-4 bg-card/50 border-border/50">
           <div className="text-xs text-muted-foreground mb-1">Unrealized P&L</div>
           <div className={`text-xl font-bold ${unrealizedPnL >= 0 ? "text-success" : "text-destructive"}`}>
-            {unrealizedPnL >= 0 ? "+" : ""}${unrealizedPnL.toFixed(2)}
+            {unrealizedPnL >= 0 ? "+" : ""}{formatDollar(unrealizedPnL, 2)}
           </div>
         </Card>
         <Card className="p-4 bg-card/50 border-border/50">
           <div className="text-xs text-muted-foreground mb-1">Buying Power</div>
-          <div className="text-xl font-bold text-success">${buyingPower.toFixed(2)}</div>
+          <div className="text-xl font-bold text-success">{formatDollar(buyingPower, 2)}</div>
         </Card>
       </div>
 

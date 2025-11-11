@@ -1,10 +1,26 @@
 import { useState, useEffect } from "react";
-import { MessageCircle, Heart, Send, Loader2, MoreVertical, Bookmark } from "lucide-react";
+import { MessageCircle, Heart, Send, Loader2, MoreVertical, Bookmark, Trash2 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -40,6 +56,25 @@ export const PostCard = ({ post, onToggleLike, isLiked }: PostCardProps) => {
   const queryClient = useQueryClient();
   const [showComments, setShowComments] = useState(false);
   const [newComment, setNewComment] = useState("");
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+
+  const isOwnPost = user?.id === post.user_id;
+
+  // Fetch current user's profile for avatar
+  const { data: profile } = useQuery({
+    queryKey: ["profile", user?.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("avatar_url")
+        .eq("id", user?.id)
+        .single();
+      
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!user?.id,
+  });
 
   const { data: comments, refetch: refetchComments } = useQuery({
     queryKey: ["comments", post.id],
@@ -84,6 +119,25 @@ export const PostCard = ({ post, onToggleLike, isLiked }: PostCardProps) => {
       supabase.removeChannel(channel);
     };
   }, [showComments, post.id, refetchComments]);
+
+  const deletePostMutation = useMutation({
+    mutationFn: async (postId: string) => {
+      const { error } = await supabase
+        .from("posts")
+        .delete()
+        .eq("id", postId)
+        .eq("user_id", user?.id); // Extra safety check
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success("Post deleted successfully");
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Failed to delete post");
+    },
+  });
 
   const createCommentMutation = useMutation({
     mutationFn: async ({ postId, content }: { postId: string; content: string }) => {
@@ -131,7 +185,7 @@ export const PostCard = ({ post, onToggleLike, isLiked }: PostCardProps) => {
   });
 
   const displayName = (post.profiles as any)?.display_name || "Investor";
-  const avatarUrl = (post.profiles as any)?.avatar_url;
+  const avatarUrl = (post.profiles as any)?.avatar_url || "#9b87f5";
 
   return (
     <Card className="overflow-hidden hover:shadow-lg transition-shadow animate-fade-in">
@@ -139,8 +193,10 @@ export const PostCard = ({ post, onToggleLike, isLiked }: PostCardProps) => {
       <div className="flex items-center justify-between p-4">
         <div className="flex items-center gap-3">
           <Avatar className="w-10 h-10 border-2 border-primary/20">
-            <AvatarImage src={avatarUrl} />
-            <AvatarFallback className="bg-gradient-primary text-white">
+            <AvatarFallback 
+              className="text-white font-bold"
+              style={{ backgroundColor: avatarUrl }}
+            >
               {displayName[0]}
             </AvatarFallback>
           </Avatar>
@@ -163,9 +219,24 @@ export const PostCard = ({ post, onToggleLike, isLiked }: PostCardProps) => {
             </p>
           </div>
         </div>
-        <Button variant="ghost" size="icon" className="h-8 w-8">
-          <MoreVertical className="w-4 h-4" />
-        </Button>
+        {isOwnPost && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="h-8 w-8">
+                <MoreVertical className="w-4 h-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem
+                onClick={() => setShowDeleteDialog(true)}
+                className="text-destructive focus:text-destructive"
+              >
+                <Trash2 className="w-4 h-4 mr-2" />
+                Delete Post
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
       </div>
 
       {/* Image */}
@@ -248,7 +319,12 @@ export const PostCard = ({ post, onToggleLike, isLiked }: PostCardProps) => {
         <div className="px-4 pb-4 space-y-3 border-t pt-4 animate-fade-in">
           <div className="flex gap-2">
             <Avatar className="w-8 h-8">
-              <AvatarFallback className="text-xs">You</AvatarFallback>
+              <AvatarFallback 
+                className="text-xs text-white font-bold"
+                style={{ backgroundColor: profile?.avatar_url || "#9b87f5" }}
+              >
+                You
+              </AvatarFallback>
             </Avatar>
             <div className="flex-1 flex gap-2">
               <Input
@@ -287,14 +363,19 @@ export const PostCard = ({ post, onToggleLike, isLiked }: PostCardProps) => {
 
           {comments && comments.length > 0 ? (
             <div className="space-y-3 max-h-[400px] overflow-y-auto">
-              {comments.map((comment) => (
-                <div key={comment.id} className="flex gap-2 animate-fade-in">
-                  <Avatar className="w-8 h-8">
-                    <AvatarFallback className="text-xs">
-                      {((comment.profiles as any)?.display_name || "I")[0]}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1 bg-muted rounded-lg p-3">
+              {comments.map((comment) => {
+                const commentAvatarUrl = (comment.profiles as any)?.avatar_url || "#9b87f5";
+                return (
+                  <div key={comment.id} className="flex gap-2 animate-fade-in">
+                    <Avatar className="w-8 h-8">
+                      <AvatarFallback 
+                        className="text-xs text-white font-bold"
+                        style={{ backgroundColor: commentAvatarUrl }}
+                      >
+                        {((comment.profiles as any)?.display_name || "I")[0]}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1 bg-muted rounded-lg p-3">
                     <div className="flex items-center gap-2 mb-1">
                       <p className="text-sm font-semibold">
                         {(comment.profiles as any)?.display_name || "Investor"}
@@ -311,7 +392,8 @@ export const PostCard = ({ post, onToggleLike, isLiked }: PostCardProps) => {
                     <p className="text-sm whitespace-pre-wrap">{comment.content}</p>
                   </div>
                 </div>
-              ))}
+              );
+            })}
             </div>
           ) : (
             <p className="text-center text-sm text-muted-foreground py-4">
@@ -320,6 +402,34 @@ export const PostCard = ({ post, onToggleLike, isLiked }: PostCardProps) => {
           )}
         </div>
       )}
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Post</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete this post? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                deletePostMutation.mutate(post.id);
+                setShowDeleteDialog(false);
+              }}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {deletePostMutation.isPending ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                "Delete"
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Card>
   );
 };

@@ -2,6 +2,7 @@ import { TrendingUp, TrendingDown, DollarSign, Clock } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { usePortfolioValue } from "@/hooks/usePortfolioValue";
+import { formatDollar, formatCurrency } from "@/lib/formatters";
 
 export const PortfolioSummary = () => {
   const { totalValue, unrealizedPnL, unsettledCash, buyingPower } = usePortfolioValue();
@@ -20,7 +21,7 @@ export const PortfolioSummary = () => {
 
       <div className="space-y-2 smooth-transition">
         <div className="text-4xl font-bold smooth-transition">
-          ${totalValue.toLocaleString()}
+          {formatDollar(totalValue, 2)}
         </div>
 
         <div className="flex items-center gap-2 animate-fade-in">
@@ -33,7 +34,7 @@ export const PortfolioSummary = () => {
             {isPositive ? "+" : ""}{change.toFixed(2)}%
           </span>
           <span className="text-muted-foreground smooth-transition">
-            (${Math.abs(changeAmount).toFixed(2)})
+            ({formatDollar(Math.abs(changeAmount), 2)})
           </span>
         </div>
 
@@ -43,7 +44,7 @@ export const PortfolioSummary = () => {
           <div className="mt-4 pt-4 border-t border-border animate-fade-in">
             <p className="text-xs text-muted-foreground mb-1">Unrealized P&L</p>
             <p className={`text-lg font-bold smooth-transition ${unrealizedPnL >= 0 ? "text-success" : "text-destructive"}`}>
-              {unrealizedPnL >= 0 ? "+" : ""}${unrealizedPnL.toFixed(2)}
+              {unrealizedPnL >= 0 ? "+" : ""}{formatDollar(unrealizedPnL, 2)}
             </p>
           </div>
         )}
@@ -51,7 +52,7 @@ export const PortfolioSummary = () => {
         <div className="mt-4 pt-4 border-t border-border grid grid-cols-2 gap-4">
           <div className="animate-fade-in">
             <p className="text-xs text-muted-foreground mb-1">Buying Power</p>
-            <p className="text-lg font-bold text-success smooth-transition">${buyingPower.toFixed(2)}</p>
+            <p className="text-lg font-bold text-success smooth-transition">{formatDollar(buyingPower, 2)}</p>
           </div>
           {unsettledCash > 0 && (
             <div className="animate-fade-in">
@@ -59,7 +60,7 @@ export const PortfolioSummary = () => {
                 <Clock className="w-3 h-3" />
                 Unsettled (T+2)
               </p>
-              <p className="text-lg font-bold text-warning smooth-transition">${unsettledCash.toFixed(2)}</p>
+              <p className="text-lg font-bold text-warning smooth-transition">{formatDollar(unsettledCash, 2)}</p>
             </div>
           )}
         </div>

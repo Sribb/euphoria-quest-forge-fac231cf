@@ -1,5 +1,6 @@
 import { Brain, Sparkles, TrendingUp, Award } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { useNavigate } from "react-router-dom";
 
 interface AIInsight {
   id: number;
@@ -7,6 +8,7 @@ interface AIInsight {
   title: string;
   description: string;
   type: "achievement" | "performance" | "suggestion" | "milestone";
+  navigateTo: string;
 }
 
 const INSIGHTS: AIInsight[] = [
@@ -15,25 +17,30 @@ const INSIGHTS: AIInsight[] = [
     icon: <Award className="w-6 h-6" />,
     title: "Learning Mastery",
     description: "You've mastered 80% of your financial literacy path — keep it up! Only 3 lessons remaining.",
-    type: "achievement"
+    type: "achievement",
+    navigateTo: "/learn"
   },
   {
     id: 2,
     icon: <TrendingUp className="w-6 h-6" />,
     title: "Portfolio Performance",
     description: "Your portfolio outperformed the S&P 500 by 3.2% this week. Excellent diversification strategy!",
-    type: "performance"
+    type: "performance",
+    navigateTo: "/trade"
   },
   {
     id: 3,
     icon: <Sparkles className="w-6 h-6" />,
     title: "Game Progress",
     description: "Try revisiting Trend Master — your accuracy is improving fast. You're now in the top 15% of players.",
-    type: "suggestion"
+    type: "suggestion",
+    navigateTo: "/games"
   }
 ];
 
 export const AIInsightsPanel = () => {
+  const navigate = useNavigate();
+
   return (
     <Card className="p-6 bg-gradient-surface border-border shadow-glow-soft">
       <div className="flex items-center gap-3 mb-6">
@@ -50,7 +57,8 @@ export const AIInsightsPanel = () => {
         {INSIGHTS.map((insight, index) => (
           <div
             key={insight.id}
-            className="group p-5 bg-gradient-to-br from-card/80 to-card/40 rounded-xl border border-border hover:border-primary/50 transition-all duration-300 hover:shadow-glow animate-fade-in"
+            onClick={() => navigate(insight.navigateTo)}
+            className="group p-5 bg-gradient-to-br from-card/80 to-card/40 rounded-xl border border-border hover:border-primary/50 transition-all duration-300 hover:shadow-glow animate-fade-in cursor-pointer"
             style={{ animationDelay: `${index * 100}ms` }}
           >
             <div className="flex items-start gap-4">

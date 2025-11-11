@@ -7,6 +7,7 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Play, TrendingUp, BarChart3, Activity } from "lucide-react";
 import { usePortfolioValue } from "@/hooks/usePortfolioValue";
+import { formatDollar } from "@/lib/formatters";
 import {
   LineChart,
   Line,
@@ -73,7 +74,7 @@ export const PortfolioSimulationGraph = () => {
             <p className="text-sm text-muted-foreground">Interactive market scenario modeling</p>
           </div>
           <div className="text-right">
-            <div className="text-2xl font-bold glow-text">${totalValue.toLocaleString()}</div>
+            <div className="text-2xl font-bold glow-text">{formatDollar(totalValue, 2)}</div>
             <div className="text-xs text-muted-foreground">Current Value</div>
           </div>
         </div>

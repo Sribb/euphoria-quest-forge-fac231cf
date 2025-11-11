@@ -2,6 +2,7 @@ import { User, Award, TrendingUp, Target, Edit, Palette, Bell, Lock, Settings as
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -9,8 +10,28 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
+import { formatDollar } from "@/lib/formatters";
+
+const PRESET_AVATARS = [
+  { id: 1, color: "#9b87f5", alt: "Purple avatar" },
+  { id: 2, color: "#0EA5E9", alt: "Blue avatar" },
+  { id: 3, color: "#10B981", alt: "Green avatar" },
+  { id: 4, color: "#F59E0B", alt: "Orange avatar" },
+  { id: 5, color: "#EF4444", alt: "Red avatar" },
+  { id: 6, color: "#EC4899", alt: "Pink avatar" },
+  { id: 7, color: "#8B5CF6", alt: "Violet avatar" },
+  { id: 8, color: "#14B8A6", alt: "Teal avatar" },
+];
 
 interface ProfileProps {
   onNavigate: (tab: string) => void;
@@ -24,6 +45,8 @@ const Profile = ({ onNavigate }: ProfileProps) => {
   const [primaryColor, setPrimaryColor] = useState("#9b87f5");
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [darkMode, setDarkMode] = useState(true);
+  const [selectedAvatar, setSelectedAvatar] = useState<string>("");
+  const [showAvatarDialog, setShowAvatarDialog] = useState(false);
 
   useEffect(() => {
     // Load theme preference from localStorage
@@ -45,6 +68,7 @@ const Profile = ({ onNavigate }: ProfileProps) => {
       
       if (error) throw error;
       setDisplayName(data.display_name || "");
+      setSelectedAvatar(data.avatar_url || "");
       return data;
     },
     enabled: !!user?.id,
@@ -113,6 +137,25 @@ const Profile = ({ onNavigate }: ProfileProps) => {
     },
     onError: () => {
       toast.error("Failed to update profile");
+    },
+  });
+
+  const updateAvatarMutation = useMutation({
+    mutationFn: async (avatarUrl: string) => {
+      const { error } = await supabase
+        .from("profiles")
+        .update({ avatar_url: avatarUrl })
+        .eq("id", user?.id);
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["profile"] });
+      setShowAvatarDialog(false);
+      toast.success("Avatar updated!");
+    },
+    onError: () => {
+      toast.error("Failed to update avatar");
     },
   });
 
@@ -190,9 +233,75 @@ const Profile = ({ onNavigate }: ProfileProps) => {
           <Card className="p-6 bg-gradient-hero border-0">
             <div className="flex items-start justify-between mb-4">
               <div className="flex items-center gap-4">
-                <div className="w-20 h-20 rounded-full bg-gradient-primary flex items-center justify-center text-3xl font-bold text-white">
-                  {displayName ? displayName[0].toUpperCase() : "E"}
-                </div>
+                <Dialog open={showAvatarDialog} onOpenChange={setShowAvatarDialog}>
+                  <DialogTrigger asChild>
+                    <button className="relative group">
+                      <Avatar className="w-20 h-20 cursor-pointer ring-2 ring-primary/20 group-hover:ring-primary transition-all">
+                        <AvatarFallback 
+                          className="text-3xl font-bold text-white"
+                          style={{ backgroundColor: profile?.avatar_url || "#9b87f5" }}
+                        >
+                          {displayName ? displayName[0].toUpperCase() : "E"}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+                        <Edit className="w-5 h-5 text-white" />
+                      </div>
+                    </button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Choose Your Avatar</DialogTitle>
+                      <DialogDescription>
+                        Select a color for your profile avatar
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="space-y-6 py-4">
+                      {/* Preview */}
+                      <div className="flex justify-center">
+                        <Avatar className="w-24 h-24 ring-2 ring-primary/20">
+                          <AvatarFallback 
+                            className="text-4xl font-bold text-white"
+                            style={{ backgroundColor: selectedAvatar || "#9b87f5" }}
+                          >
+                            {displayName ? displayName[0].toUpperCase() : "E"}
+                          </AvatarFallback>
+                        </Avatar>
+                      </div>
+                      {/* Avatar Selection */}
+                      <div>
+                        <Label className="mb-3 block">Select Color</Label>
+                        <div className="grid grid-cols-4 gap-3">
+                          {PRESET_AVATARS.map((avatar) => (
+                            <button
+                              key={avatar.id}
+                              onClick={() => setSelectedAvatar(avatar.color)}
+                              className={`relative w-full aspect-square rounded-lg transition-all hover:scale-105 ${
+                                selectedAvatar === avatar.color 
+                                  ? "ring-2 ring-primary ring-offset-2" 
+                                  : "ring-1 ring-border"
+                              }`}
+                              style={{ backgroundColor: avatar.color }}
+                              title={avatar.alt}
+                              aria-label={avatar.alt}
+                            >
+                              <span className="text-2xl text-white font-bold">
+                                {displayName ? displayName[0].toUpperCase() : "E"}
+                              </span>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                      <Button 
+                        onClick={() => updateAvatarMutation.mutate(selectedAvatar)}
+                        disabled={updateAvatarMutation.isPending}
+                        className="w-full"
+                      >
+                        Save Avatar
+                      </Button>
+                    </div>
+                  </DialogContent>
+                </Dialog>
                 <div>
                   {isEditing ? (
                     <div className="flex gap-2">
@@ -238,7 +347,7 @@ const Profile = ({ onNavigate }: ProfileProps) => {
                 <span className="text-sm text-muted-foreground">Portfolio Value</span>
               </div>
               <p className="text-2xl font-bold">
-                ${portfolio?.total_value.toLocaleString() || "0"}
+                {formatDollar(Number(portfolio?.total_value) || 0, 2)}
               </p>
               <p className="text-sm text-muted-foreground mt-1">
                 {portfolioReturn >= 0 ? "+" : ""}{portfolioReturn.toFixed(2)}% return
