@@ -130,11 +130,43 @@ export const LiveMarketSimulation = ({ scenario, action, isActive, onReset }: Li
     const severityImpact = scenario?.severity === 'high' ? 1.5 : scenario?.severity === 'low' ? 0.5 : 1;
     volatilityMultiplier *= severityImpact;
 
+    // Strategy-specific price impact
+    let actionImpact = 0;
+    let volatilityAdjust = 1;
+    
+    switch(action.type) {
+      case 'buy':
+        actionImpact = 0.0005; // Slight upward pressure
+        break;
+      case 'sell':
+        actionImpact = -0.0005; // Slight downward pressure
+        break;
+      case 'hold':
+        actionImpact = 0; // No direct impact, but show opportunity
+        volatilityAdjust = 0.95; // Slightly lower perceived volatility
+        break;
+      case 'hedge':
+        actionImpact = -0.0002; // Defensive dampening
+        volatilityAdjust = 0.7; // Reduced volatility perception
+        break;
+      case 'leverage':
+        const leverageAmount = action.leverage || 1;
+        actionImpact = (action.type === "buy" ? 0.0008 : -0.0008) * leverageAmount;
+        volatilityAdjust = 1 + (leverageAmount - 1) * 0.3; // Amplified volatility
+        break;
+      case 'auto':
+        // AI adapts to market conditions
+        const marketSentiment = sentiment > 55 ? 0.0007 : sentiment < 45 ? -0.0007 : 0;
+        actionImpact = marketSentiment;
+        break;
+    }
+
+    volatilityMultiplier *= volatilityAdjust;
+
     // Calculate realistic price movement
     const randomWalk = (Math.random() - 0.5) * volatility * volatilityMultiplier;
     const trend = (trendMultiplier - 1);
     const momentum = Math.sin(tick * 0.15) * volatility * 0.3; // Wave pattern
-    const actionImpact = action.type === "buy" ? 0.0005 : action.type === "sell" ? -0.0005 : 0;
 
     setCurrentPrice(prev => {
       const priceChange = prev * (randomWalk + trend + momentum + actionImpact);
@@ -199,16 +231,45 @@ export const LiveMarketSimulation = ({ scenario, action, isActive, onReset }: Li
     }
   }, [isActive, action, scenario, volatility, tick, currentPrice, entryPrice, sentiment, profitLoss, getBasePrice]);
 
-  // Calculate P&L
+  // Calculate P&L with strategy-specific logic
   useEffect(() => {
     if (action) {
       const priceDiff = currentPrice - entryPrice;
-      const multiplier = action.type === "sell" ? -1 : 1;
-      const leverage = action.leverage || 1;
-      const pl = priceDiff * action.quantity * multiplier * leverage;
+      let pl = 0;
+
+      switch(action.type) {
+        case 'buy':
+          // Long position - profit when price goes up
+          pl = priceDiff * action.quantity;
+          break;
+        case 'sell':
+          // Short position - profit when price goes down
+          pl = -priceDiff * action.quantity;
+          break;
+        case 'hold':
+          // No P&L, but track opportunity cost
+          pl = 0;
+          break;
+        case 'hedge':
+          // Partial gains/losses based on hedge effectiveness
+          const hedgeEffectiveness = 0.6; // 60% protection
+          pl = priceDiff * action.quantity * (1 - hedgeEffectiveness) * (priceDiff < 0 ? -1 : 0.3);
+          break;
+        case 'leverage':
+          // Amplified by leverage multiplier
+          const leverageAmount = action.leverage || 1;
+          pl = priceDiff * action.quantity * leverageAmount;
+          break;
+        case 'auto':
+          // AI optimal - adapts based on market conditions
+          const autoMultiplier = sentiment > 55 ? 1.2 : sentiment < 45 ? -1.2 : 1;
+          pl = priceDiff * action.quantity * autoMultiplier;
+          break;
+      }
+
       setProfitLoss(pl);
     }
-  }, [currentPrice, entryPrice, action]);
+  }, [currentPrice, entryPrice, action, sentiment]);
 
   // Simulation loop - 800ms for smooth updates
   useEffect(() => {

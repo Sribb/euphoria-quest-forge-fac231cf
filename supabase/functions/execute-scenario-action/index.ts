@@ -72,6 +72,29 @@ serve(async (req) => {
       throw new Error('User portfolio not found');
     }
 
+    // Strategy-specific parameters based on action type
+    let strategyContext = '';
+    switch(action.type) {
+      case 'buy':
+        strategyContext = 'Long position - profit from price increase. Calculate realistic upside potential based on market conditions.';
+        break;
+      case 'sell':
+        strategyContext = 'Short position - profit from price decline. Simulate borrowing costs and margin requirements. Position size multiplied by directional price movement.';
+        break;
+      case 'hold':
+        strategyContext = 'Neutral position - maintain capital. Show opportunity cost vs active positions. No trades executed but track market fluctuations.';
+        break;
+      case 'hedge':
+        strategyContext = 'Defensive strategy - use inverse ETFs or options simulation. Calculate hedge effectiveness proportional to volatility. Reduce portfolio risk while adjusting for partial gains/losses.';
+        break;
+      case 'leverage':
+        strategyContext = `Leveraged position at ${action.leverage || 1}x - amplify exposure by multiplying position size. Apply magnified market swings while enforcing realistic risk caps to prevent negative balance.`;
+        break;
+      case 'auto':
+        strategyContext = 'AI autonomous mode - interpret market trends, sentiment, and volatility to execute optimal Buy/Sell/Hedge/Leverage as if human trader acted. Fully synchronized portfolio updates.';
+        break;
+    }
+
     // Simulate outcome using AI
     const aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
@@ -83,25 +106,37 @@ serve(async (req) => {
         model: 'google/gemini-2.5-flash',
         messages: [{
           role: 'system',
-          content: `Simulate the outcome of this trading decision:
+          content: `Simulate a realistic 60-minute trading session with 5-minute intervals for this action:
+
 Action: ${action.type}
 Symbol: ${action.symbol}
 Quantity: ${action.quantity}
 Stop Loss: ${action.stopLoss}%
+Leverage: ${action.leverage || 1}x
 Current Price: $${price.current_price}
 Market Trend: ${session.market_trend}
 Volatility: ${session.market_volatility}
 User Buying Power: $${portfolio.buying_power}
 
-Simulate:
-1. Price movement during trade
-2. Entry and exit prices
-3. Profit/loss calculation
-4. Market impact
-5. Competitor reactions
-6. Success probability
+Strategy Context: ${strategyContext}
 
-Be realistic and educational.`
+Simulate realistic outcomes:
+1. Entry price with small spread from current
+2. Time-based price movements (randomized but realistic ranges)
+3. Exit price based on strategy and market conditions
+4. Precise P/L calculation accounting for leverage, direction, fees
+5. Market impact and sentiment shifts
+6. Competitor reactions to the trade
+7. Success probability and risk assessment
+8. Price history showing 12 data points (5-min intervals)
+
+For HOLD actions: entry_price = exit_price, profit_loss = 0, but show opportunity_cost
+For SHORT (sell): profit when price decreases, loss when increases
+For HEDGE: reduce risk, partial gains/losses based on volatility
+For LEVERAGE: multiply position size and P/L by leverage multiplier
+For AUTO: choose optimal strategy and execute as if human trader
+
+Be realistic, educational, and ensure numbers are internally consistent.`
         }],
         tools: [{
           type: "function",
@@ -140,9 +175,12 @@ Be realistic and educational.`
                       reasoning: { type: "string" }
                     }
                   }
-                }
+                },
+                opportunity_cost: { type: "number" },
+                hedge_effectiveness: { type: "number" },
+                auto_strategy_chosen: { type: "string" }
               },
-              required: ["result_summary", "profit_loss", "entry_price", "exit_price", "success_probability"]
+              required: ["result_summary", "profit_loss", "entry_price", "exit_price", "success_probability", "price_history"]
             }
           }
         }],

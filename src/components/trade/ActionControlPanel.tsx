@@ -294,7 +294,7 @@ export const ActionControlPanel = ({ scenario, onExecute, isExecuting, disabled 
         onClick={handleExecute}
         disabled={!isValid || isExecuting || disabled}
         className={`w-full mt-6 bg-primary hover:bg-primary/90 shadow-lg shadow-primary/30 h-14 text-lg font-bold transition-all duration-300 ${
-          !disabled && isValid && !isExecuting ? 'animate-pulse hover:scale-105' : ''
+          !disabled && isValid && !isExecuting ? 'hover:scale-105' : ''
         }`}
       >
         {isExecuting ? (
