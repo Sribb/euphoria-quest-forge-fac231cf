@@ -357,6 +357,27 @@ export type Database = {
           },
         ]
       }
+      ai_tips: {
+        Row: {
+          category: string
+          created_at: string
+          id: string
+          tip_text: string
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          id?: string
+          tip_text: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          id?: string
+          tip_text?: string
+        }
+        Relationships: []
+      }
       ai_trade_analysis: {
         Row: {
           ai_recommendation: string
