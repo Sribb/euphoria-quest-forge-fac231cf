@@ -64,10 +64,18 @@ serve(async (req) => {
 });
 
 async function initializeSession(supabase: any, userId: string) {
+  // Create service role client for system-level operations
+  const supabaseAdmin = createClient(
+    Deno.env.get('SUPABASE_URL') ?? '',
+    Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+  );
+
+  console.log('Initializing AI Market session for user:', userId);
+  
   // Create new AI market session
   const sessionSeed = Math.random().toString(36).substring(7);
   
-  const { data: session, error: sessionError } = await supabase
+  const { data: session, error: sessionError } = await supabaseAdmin
     .from('ai_market_sessions')
     .insert({
       user_id: userId,
@@ -78,7 +86,12 @@ async function initializeSession(supabase: any, userId: string) {
     .select()
     .single();
 
-  if (sessionError) throw sessionError;
+  if (sessionError) {
+    console.error('Failed to create session:', sessionError);
+    throw sessionError;
+  }
+
+  console.log('Session created:', session.id);
 
   // Initialize stock prices for this session
   const symbols = ['AAPL', 'GOOGL', 'MSFT', 'AMZN', 'TSLA', 'NVDA', 'JPM', 'V'];
@@ -99,25 +112,44 @@ async function initializeSession(supabase: any, userId: string) {
     ai_sentiment: (Math.random() - 0.5) * 2
   }));
 
-  await supabase.from('ai_stock_prices').insert(priceInserts);
+  const { error: pricesError } = await supabaseAdmin
+    .from('ai_stock_prices')
+    .insert(priceInserts);
+
+  if (pricesError) {
+    console.error('Failed to insert stock prices:', pricesError);
+    throw pricesError;
+  }
+
+  console.log('Stock prices initialized for', symbols.length, 'symbols');
 
   // Create AI competitors
   const competitors = [
-    { name: 'Momentum Mike', strategy_type: 'momentum', personality_traits: { risk_tolerance: 0.8, adaptability: 0.6 } },
-    { name: 'Value Victor', strategy_type: 'value', personality_traits: { risk_tolerance: 0.3, adaptability: 0.4 } },
-    { name: 'Aggressive Amy', strategy_type: 'aggressive', personality_traits: { risk_tolerance: 0.9, adaptability: 0.7 } },
-    { name: 'Conservative Chris', strategy_type: 'conservative', personality_traits: { risk_tolerance: 0.2, adaptability: 0.3 } }
+    { name: 'Momentum Mike', strategy_type: 'momentum', personality_traits: { risk_tolerance: 0.8, adaptability: 0.6 }, capital: 10000, portfolio: {} },
+    { name: 'Value Victor', strategy_type: 'value', personality_traits: { risk_tolerance: 0.3, adaptability: 0.4 }, capital: 10000, portfolio: {} },
+    { name: 'Aggressive Amy', strategy_type: 'aggressive', personality_traits: { risk_tolerance: 0.9, adaptability: 0.7 }, capital: 10000, portfolio: {} },
+    { name: 'Conservative Chris', strategy_type: 'conservative', personality_traits: { risk_tolerance: 0.2, adaptability: 0.3 }, capital: 10000, portfolio: {} }
   ];
 
   const competitorInserts = competitors.map(comp => ({
     session_id: session.id,
+    total_trades: 0,
     ...comp
   }));
 
-  await supabase.from('ai_competitors').insert(competitorInserts);
+  const { error: competitorsError } = await supabaseAdmin
+    .from('ai_competitors')
+    .insert(competitorInserts);
+
+  if (competitorsError) {
+    console.error('Failed to insert competitors:', competitorsError);
+    throw competitorsError;
+  }
+
+  console.log('AI competitors initialized');
 
   return new Response(
-    JSON.stringify({ session, message: 'AI Market Session initialized' }),
+    JSON.stringify({ session, message: 'AI Market Session initialized successfully' }),
     { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
   );
 }
