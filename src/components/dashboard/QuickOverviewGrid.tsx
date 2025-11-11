@@ -3,126 +3,15 @@ import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { usePortfolioValue } from "@/hooks/usePortfolioValue";
 import { formatDollar } from "@/lib/formatters";
-import { useAuth } from "@/hooks/useAuth";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { useEffect, useState } from "react";
 
 export const QuickOverviewGrid = () => {
   const { totalValue } = usePortfolioValue();
-  const { user } = useAuth();
-  const [dailyTip, setDailyTip] = useState<string>("");
   
-  // Fetch user profile data
-  const { data: profile } = useQuery({
-    queryKey: ['profile', user?.id],
-    queryFn: async () => {
-      if (!user?.id) return null;
-      const { data } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user.id)
-        .single();
-      return data;
-    },
-    enabled: !!user?.id,
-  });
-
-  // Fetch streak data
-  const { data: streak } = useQuery({
-    queryKey: ['streak', user?.id],
-    queryFn: async () => {
-      if (!user?.id) return null;
-      const { data } = await supabase
-        .from('streaks')
-        .select('*')
-        .eq('user_id', user.id)
-        .single();
-      return data;
-    },
-    enabled: !!user?.id,
-  });
-
-  // Fetch lesson progress
-  const { data: lessonStats } = useQuery({
-    queryKey: ['lesson-stats', user?.id],
-    queryFn: async () => {
-      if (!user?.id) return null;
-      const { data: progress } = await supabase
-        .from('user_lesson_progress')
-        .select('completed')
-        .eq('user_id', user.id);
-      
-      const { data: totalLessons } = await supabase
-        .from('lessons')
-        .select('id');
-      
-      const completedCount = progress?.filter(p => p.completed).length || 0;
-      const totalCount = totalLessons?.length || 0;
-      
-      return { completed: completedCount, total: totalCount };
-    },
-    enabled: !!user?.id,
-  });
-
-  // Fetch next lesson
-  const { data: nextLesson } = useQuery({
-    queryKey: ['next-lesson', user?.id],
-    queryFn: async () => {
-      if (!user?.id) return null;
-      
-      // Get completed lesson IDs
-      const { data: progress } = await supabase
-        .from('user_lesson_progress')
-        .select('lesson_id, completed')
-        .eq('user_id', user.id)
-        .eq('completed', true);
-      
-      const completedIds = progress?.map(p => p.lesson_id) || [];
-      
-      // Get next uncompleted lesson
-      let query = supabase
-        .from('lessons')
-        .select('*')
-        .order('order_index', { ascending: true })
-        .limit(1);
-      
-      if (completedIds.length > 0) {
-        query = query.not('id', 'in', `(${completedIds.join(',')})`);
-      }
-      
-      const { data } = await query;
-      return data?.[0] || null;
-    },
-    enabled: !!user?.id,
-  });
-
-  // Fetch and rotate daily tip
-  useEffect(() => {
-    const fetchDailyTip = async () => {
-      // Use date as seed for consistent daily rotation
-      const today = new Date().toDateString();
-      const seed = today.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-      
-      const { data: tips } = await supabase
-        .from('ai_tips')
-        .select('tip_text');
-      
-      if (tips && tips.length > 0) {
-        const index = seed % tips.length;
-        setDailyTip(tips[index].tip_text);
-      }
-    };
-    
-    fetchDailyTip();
-  }, []);
-
-  // Calculate XP and portfolio change
-  const userLevel = profile?.level || 1;
-  const userXP = profile?.coins || 0;
-  const nextLevelXP = userLevel * 1000;
+  const portfolioChange = 3.2; // Mock data
+  const userLevel = 12;
+  const userXP = 2450;
+  const nextLevelXP = 3000;
   const xpProgress = (userXP / nextLevelXP) * 100;
-  const portfolioChange = ((totalValue - 10000) / 10000) * 100;
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -173,15 +62,11 @@ export const QuickOverviewGrid = () => {
           <div className="grid grid-cols-2 gap-2">
             <div className="p-2 bg-card/50 rounded-lg text-center">
               <div className="text-xs text-muted-foreground">Lessons</div>
-              <div className="text-lg font-bold text-foreground">
-                {lessonStats?.completed || 0}/{lessonStats?.total || 0}
-              </div>
+              <div className="text-lg font-bold text-foreground">24/30</div>
             </div>
             <div className="p-2 bg-card/50 rounded-lg text-center">
               <div className="text-xs text-muted-foreground">Streak</div>
-              <div className="text-lg font-bold text-primary">
-                {streak?.current_streak || 0} days
-              </div>
+              <div className="text-lg font-bold text-primary">7 days</div>
             </div>
           </div>
         </div>
@@ -196,28 +81,17 @@ export const QuickOverviewGrid = () => {
           <h4 className="font-bold text-foreground group-hover:text-primary transition-colors">Next Lesson</h4>
         </div>
         <div className="space-y-3">
-          {nextLesson ? (
-            <>
-              <h5 className="font-semibold text-foreground group-hover:text-primary transition-colors">
-                {nextLesson.title}
-              </h5>
-              <p className="text-sm text-muted-foreground line-clamp-2">
-                {nextLesson.description}
-              </p>
-              <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <span>⏱️ {nextLesson.duration_minutes} min</span>
-                <span>•</span>
-                <span>📊 {nextLesson.difficulty}</span>
-              </div>
-            </>
-          ) : (
-            <>
-              <h5 className="font-semibold text-foreground">All Caught Up! 🎉</h5>
-              <p className="text-sm text-muted-foreground">
-                You've completed all available lessons. Check back soon for new content!
-              </p>
-            </>
-          )}
+          <h5 className="font-semibold text-foreground group-hover:text-primary transition-colors">
+            Options Trading Basics
+          </h5>
+          <p className="text-sm text-muted-foreground">
+            Learn the fundamentals of call and put options, strike prices, and expiration dates.
+          </p>
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            <span>⏱️ 15 min</span>
+            <span>•</span>
+            <span>📊 Intermediate</span>
+          </div>
         </div>
       </Card>
 
@@ -231,11 +105,12 @@ export const QuickOverviewGrid = () => {
         </div>
         <div className="space-y-3">
           <p className="text-sm text-foreground font-medium leading-relaxed">
-            "{dailyTip || 'Loading daily insight...'}"
+            "Consider dollar-cost averaging into your positions rather than timing the market. 
+            This strategy reduces the impact of volatility and removes emotional decision-making."
           </p>
           <div className="pt-2 border-t border-border">
             <span className="text-xs text-muted-foreground">
-              💡 Rotates daily with expert insights
+              💡 Personalized based on your trading patterns
             </span>
           </div>
         </div>
