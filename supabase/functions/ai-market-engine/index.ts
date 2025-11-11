@@ -72,81 +72,130 @@ async function initializeSession(supabase: any, userId: string) {
 
   console.log('Initializing AI Market session for user:', userId);
   
-  // Create new AI market session
-  const sessionSeed = Math.random().toString(36).substring(7);
-  
-  const { data: session, error: sessionError } = await supabaseAdmin
+  // Check if user has an active session
+  const { data: existingSession } = await supabaseAdmin
     .from('ai_market_sessions')
-    .insert({
-      user_id: userId,
-      session_seed: sessionSeed,
-      market_volatility: Math.random() * 0.5 + 0.25,
-      market_trend: ['bullish', 'bearish', 'neutral'][Math.floor(Math.random() * 3)]
-    })
-    .select()
+    .select('*')
+    .eq('user_id', userId)
+    .eq('session_status', 'active')
+    .order('created_at', { ascending: false })
+    .limit(1)
     .single();
 
-  if (sessionError) {
-    console.error('Failed to create session:', sessionError);
-    throw sessionError;
+  let session = existingSession;
+
+  // Create new session if none exists
+  if (!existingSession) {
+    const sessionSeed = Math.random().toString(36).substring(7);
+    
+    const { data: newSession, error: sessionError } = await supabaseAdmin
+      .from('ai_market_sessions')
+      .insert({
+        user_id: userId,
+        session_seed: sessionSeed,
+        market_volatility: Math.random() * 0.5 + 0.25,
+        market_trend: ['bullish', 'bearish', 'neutral'][Math.floor(Math.random() * 3)]
+      })
+      .select()
+      .single();
+
+    if (sessionError) {
+      console.error('Failed to create session:', sessionError);
+      throw sessionError;
+    }
+
+    session = newSession;
+    console.log('New session created:', session.id);
+  } else {
+    console.log('Using existing session:', session.id);
   }
 
-  console.log('Session created:', session.id);
-
-  // Initialize stock prices for this session
-  const symbols = ['AAPL', 'GOOGL', 'MSFT', 'AMZN', 'TSLA', 'NVDA', 'JPM', 'V'];
-  const basePrices: Record<string, number> = {
-    'AAPL': 180, 'GOOGL': 140, 'MSFT': 380, 'AMZN': 145,
-    'TSLA': 250, 'NVDA': 495, 'JPM': 145, 'V': 245
-  };
-
-  const priceInserts = symbols.map(symbol => ({
-    session_id: session.id,
-    symbol,
-    current_price: basePrices[symbol] * (1 + (Math.random() - 0.5) * 0.1),
-    previous_price: basePrices[symbol],
-    day_open: basePrices[symbol] * (1 + (Math.random() - 0.5) * 0.05),
-    day_high: basePrices[symbol] * 1.03,
-    day_low: basePrices[symbol] * 0.97,
-    volume: Math.floor(Math.random() * 10000000),
-    ai_sentiment: (Math.random() - 0.5) * 2
-  }));
-
-  const { error: pricesError } = await supabaseAdmin
+  // Check if session has stock prices
+  const { data: existingPrices, error: pricesCheckError } = await supabaseAdmin
     .from('ai_stock_prices')
-    .insert(priceInserts);
+    .select('id')
+    .eq('session_id', session.id)
+    .limit(1);
 
-  if (pricesError) {
-    console.error('Failed to insert stock prices:', pricesError);
-    throw pricesError;
+  if (pricesCheckError) {
+    console.error('Failed to check existing prices:', pricesCheckError);
+    throw pricesCheckError;
   }
 
-  console.log('Stock prices initialized for', symbols.length, 'symbols');
+  // Only seed prices if none exist
+  if (!existingPrices || existingPrices.length === 0) {
+    console.log('Seeding stock prices for session:', session.id);
 
-  // Create AI competitors
-  const competitors = [
-    { name: 'Momentum Mike', strategy_type: 'momentum', personality_traits: { risk_tolerance: 0.8, adaptability: 0.6 }, capital: 10000, portfolio: {} },
-    { name: 'Value Victor', strategy_type: 'value', personality_traits: { risk_tolerance: 0.3, adaptability: 0.4 }, capital: 10000, portfolio: {} },
-    { name: 'Aggressive Amy', strategy_type: 'aggressive', personality_traits: { risk_tolerance: 0.9, adaptability: 0.7 }, capital: 10000, portfolio: {} },
-    { name: 'Conservative Chris', strategy_type: 'conservative', personality_traits: { risk_tolerance: 0.2, adaptability: 0.3 }, capital: 10000, portfolio: {} }
-  ];
+    // Initialize stock prices for this session
+    const symbols = ['AAPL', 'GOOGL', 'MSFT', 'AMZN', 'TSLA', 'NVDA', 'JPM', 'V'];
+    const basePrices: Record<string, number> = {
+      'AAPL': 180, 'GOOGL': 140, 'MSFT': 380, 'AMZN': 145,
+      'TSLA': 250, 'NVDA': 495, 'JPM': 145, 'V': 245
+    };
 
-  const competitorInserts = competitors.map(comp => ({
-    session_id: session.id,
-    total_trades: 0,
-    ...comp
-  }));
+    const priceInserts = symbols.map(symbol => ({
+      session_id: session.id,
+      symbol,
+      current_price: basePrices[symbol] * (1 + (Math.random() - 0.5) * 0.1),
+      previous_price: basePrices[symbol],
+      day_open: basePrices[symbol] * (1 + (Math.random() - 0.5) * 0.05),
+      day_high: basePrices[symbol] * 1.03,
+      day_low: basePrices[symbol] * 0.97,
+      volume: Math.floor(Math.random() * 10000000),
+      ai_sentiment: (Math.random() - 0.5) * 2
+    }));
 
-  const { error: competitorsError } = await supabaseAdmin
+    const { error: pricesError } = await supabaseAdmin
+      .from('ai_stock_prices')
+      .insert(priceInserts);
+
+    if (pricesError) {
+      console.error('Failed to insert stock prices:', pricesError);
+      throw pricesError;
+    }
+
+    console.log('Stock prices initialized for', symbols.length, 'symbols');
+  } else {
+    console.log('Stock prices already exist, skipping seed');
+  }
+
+  // Check if session has competitors
+  const { data: existingCompetitors } = await supabaseAdmin
     .from('ai_competitors')
-    .insert(competitorInserts);
+    .select('id')
+    .eq('session_id', session.id)
+    .limit(1);
 
-  if (competitorsError) {
-    console.error('Failed to insert competitors:', competitorsError);
-    throw competitorsError;
+  // Only create competitors if none exist
+  if (!existingCompetitors || existingCompetitors.length === 0) {
+    console.log('Creating AI competitors for session:', session.id);
+    
+    const competitors = [
+      { name: 'Momentum Mike', strategy_type: 'momentum', personality_traits: { risk_tolerance: 0.8, adaptability: 0.6 }, capital: 10000, portfolio: {} },
+      { name: 'Value Victor', strategy_type: 'value', personality_traits: { risk_tolerance: 0.3, adaptability: 0.4 }, capital: 10000, portfolio: {} },
+      { name: 'Aggressive Amy', strategy_type: 'aggressive', personality_traits: { risk_tolerance: 0.9, adaptability: 0.7 }, capital: 10000, portfolio: {} },
+      { name: 'Conservative Chris', strategy_type: 'conservative', personality_traits: { risk_tolerance: 0.2, adaptability: 0.3 }, capital: 10000, portfolio: {} }
+    ];
+
+    const competitorInserts = competitors.map(comp => ({
+      session_id: session.id,
+      total_trades: 0,
+      ...comp
+    }));
+
+    const { error: competitorsError } = await supabaseAdmin
+      .from('ai_competitors')
+      .insert(competitorInserts);
+
+    if (competitorsError) {
+      console.error('Failed to insert competitors:', competitorsError);
+      throw competitorsError;
+    }
+
+    console.log('AI competitors initialized');
+  } else {
+    console.log('Competitors already exist, skipping creation');
   }
-
-  console.log('AI competitors initialized');
 
   return new Response(
     JSON.stringify({ session, message: 'AI Market Session initialized successfully' }),
