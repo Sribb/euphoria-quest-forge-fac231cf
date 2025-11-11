@@ -174,25 +174,21 @@ export const InteractiveAIMarket = () => {
 
       {/* Main Content */}
       {!isSimulationActive ? (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Scenario Generator - Takes 2/3 width */}
-          <div className="lg:col-span-2">
-            <ScenarioGenerator
-              sessionId={session.id}
-              onScenarioSelect={handleScenarioSelect}
-              selectedScenario={selectedScenario}
-            />
-          </div>
+        <div className="space-y-6">
+          {/* Scenario Generator - Full Width */}
+          <ScenarioGenerator
+            sessionId={session.id}
+            onScenarioSelect={handleScenarioSelect}
+            selectedScenario={selectedScenario}
+          />
 
-          {/* Action Panel - Takes 1/3 width */}
-          <div>
-            <ActionControlPanel
-              scenario={selectedScenario}
-              onExecute={handleExecuteAction}
-              isExecuting={isExecuting}
-              disabled={!selectedScenario}
-            />
-          </div>
+          {/* Action Panel - Full Width Below */}
+          <ActionControlPanel
+            scenario={selectedScenario}
+            onExecute={handleExecuteAction}
+            isExecuting={isExecuting}
+            disabled={!selectedScenario}
+          />
         </div>
       ) : (
         /* Live Simulation - Full Width */
