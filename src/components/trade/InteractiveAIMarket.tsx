@@ -11,7 +11,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 export const InteractiveAIMarket = () => {
   const { user } = useAuth();
-  const { session, initializeSession } = useAIMarket(user?.id);
+  const { session, aiPrices, initializeSession } = useAIMarket(user?.id);
   const { toast } = useToast();
 
   const [selectedScenario, setSelectedScenario] = useState<any>(null);
@@ -24,25 +24,48 @@ export const InteractiveAIMarket = () => {
     if (!user) return;
     try {
       await initializeSession.mutateAsync();
+      toast({
+        title: "AI Market Initialized",
+        description: "Stock prices and market data have been loaded successfully",
+      });
     } catch (error) {
       console.error('Failed to initialize session:', error);
+      toast({
+        title: "Initialization Failed",
+        description: error instanceof Error ? error.message : "Failed to initialize AI Market",
+        variant: "destructive",
+      });
     }
   };
 
-  if (!session) {
+  // Check if session exists but has no stock prices (broken session)
+  const isBrokenSession = session && (!aiPrices || aiPrices.length === 0);
+
+  if (!session || isBrokenSession) {
     return (
       <div className="flex items-center justify-center h-full">
         <Card className="p-8 text-center max-w-md">
           <Sparkles className="w-12 h-12 mx-auto mb-4 text-primary" />
-          <h3 className="text-xl font-bold mb-2">AI Market Not Initialized</h3>
+          <h3 className="text-xl font-bold mb-2">
+            {isBrokenSession ? "Session Needs Repair" : "AI Market Not Initialized"}
+          </h3>
           <p className="text-muted-foreground mb-6">
-            Start the AI market engine to begin interactive scenario trading
+            {isBrokenSession 
+              ? "Your session is missing market data. Click below to repair and load stock prices."
+              : "Start the AI market engine to begin interactive scenario trading"
+            }
           </p>
           <button
             onClick={handleInitSession}
-            className="px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 font-semibold"
+            disabled={initializeSession.isPending}
+            className="px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 font-semibold disabled:opacity-50"
           >
-            Initialize AI Market
+            {initializeSession.isPending 
+              ? "Initializing..." 
+              : isBrokenSession 
+                ? "Repair & Initialize Market" 
+                : "Initialize AI Market"
+            }
           </button>
         </Card>
       </div>
