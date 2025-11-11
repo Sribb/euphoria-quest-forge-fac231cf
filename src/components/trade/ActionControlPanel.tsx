@@ -155,13 +155,18 @@ export const ActionControlPanel = ({ scenario, onExecute, isExecuting, disabled 
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {scenario?.affected_symbols?.map((sym: string) => (
-                    <SelectItem key={sym} value={sym}>{sym}</SelectItem>
-                  )) || (
+                  {scenario?.affected_symbols && scenario.affected_symbols.length > 0 ? (
+                    scenario.affected_symbols.map((sym: string) => (
+                      <SelectItem key={sym} value={sym}>{sym}</SelectItem>
+                    ))
+                  ) : (
                     <>
                       <SelectItem value="AAPL">AAPL</SelectItem>
                       <SelectItem value="GOOGL">GOOGL</SelectItem>
                       <SelectItem value="MSFT">MSFT</SelectItem>
+                      <SelectItem value="AMZN">AMZN</SelectItem>
+                      <SelectItem value="TSLA">TSLA</SelectItem>
+                      <SelectItem value="NVDA">NVDA</SelectItem>
                     </>
                   )}
                 </SelectContent>

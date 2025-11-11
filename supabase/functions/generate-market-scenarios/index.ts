@@ -38,10 +38,18 @@ serve(async (req) => {
       .eq('id', sessionId)
       .single();
 
+    if (!session) throw new Error('Session not found');
+
     const { data: prices } = await supabase
       .from('ai_stock_prices')
       .select('*')
       .eq('session_id', sessionId);
+
+    if (!prices || prices.length === 0) {
+      throw new Error('No stock prices found for session. Please initialize the market first.');
+    }
+
+    const availableSymbols = prices.map((p: any) => p.symbol);
 
     // Generate realistic scenarios using AI
     const aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
@@ -56,7 +64,9 @@ serve(async (req) => {
           role: 'system',
           content: `Generate ${count} realistic, diverse market scenarios for a trading simulator.
 Current market: ${session.market_trend} trend, ${session.market_volatility} volatility
-Available stocks: ${prices?.map((p: any) => p.symbol).join(', ')}
+AVAILABLE STOCKS (ONLY USE THESE): ${availableSymbols.join(', ')}
+
+CRITICAL: Only use symbols from the available stocks list above. Do not use any other symbols.
 
 Create scenarios like:
 - Market rallies (sudden price increases)
