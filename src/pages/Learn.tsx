@@ -1,9 +1,6 @@
 import { useState } from "react";
 import { LearningPathway } from "@/components/learn/LearningPathway";
 import { ThreePhaseLessonViewer } from "@/components/learn/ThreePhaseLessonViewer";
-import { DailyRewardsModal } from "@/components/learn/DailyRewardsModal";
-import { Button } from "@/components/ui/button";
-import { Gift } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -16,7 +13,6 @@ interface LearnProps {
 
 const Learn = ({ onNavigate, selectedLesson, onLessonSelect }: LearnProps) => {
   const { user } = useAuth();
-  const [showDailyRewards, setShowDailyRewards] = useState(false);
 
   const { data: lessons = [], isLoading, refetch } = useQuery({
     queryKey: ["lessons", user?.id],
@@ -99,24 +95,13 @@ const Learn = ({ onNavigate, selectedLesson, onLessonSelect }: LearnProps) => {
   return (
     <div className="min-h-screen w-full bg-background">
       <div className="px-8 py-8">
-        {/* Header with Daily Rewards Button */}
-        <div className="flex items-center justify-between mb-6 animate-fade-in">
-          <div className="flex-1">
-            {/* Expert-Sourced Content Banner */}
-            <div className="p-6 bg-primary/5 border border-primary/20 rounded-2xl">
-              <p className="text-sm text-muted-foreground leading-relaxed">
-                <span className="font-semibold text-foreground">📚 Expert-Sourced Content:</span> All challenges are based on proven principles from Warren Buffett, Benjamin Graham's "The Intelligent Investor", Peter Lynch's "One Up on Wall Street", Ray Dalio's "Principles", Investopedia educational modules, and Federal Reserve resources.
-              </p>
-            </div>
+        {/* Expert-Sourced Content Banner */}
+        <div className="mb-6 animate-fade-in">
+          <div className="p-6 bg-primary/5 border border-primary/20 rounded-2xl">
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              <span className="font-semibold text-foreground">📚 Expert-Sourced Content:</span> All challenges are based on proven principles from Warren Buffett, Benjamin Graham's "The Intelligent Investor", Peter Lynch's "One Up on Wall Street", Ray Dalio's "Principles", Investopedia educational modules, and Federal Reserve resources.
+            </p>
           </div>
-          <Button
-            onClick={() => setShowDailyRewards(true)}
-            className="ml-6 group relative overflow-hidden bg-gradient-to-r from-primary via-primary/90 to-primary text-primary-foreground px-6 py-6 rounded-xl shadow-glow transition-all duration-300 hover:shadow-glow-soft hover:scale-105"
-          >
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
-            <Gift className="w-6 h-6 mr-2 animate-bounce" />
-            <span className="font-semibold text-base">Daily Rewards</span>
-          </Button>
         </div>
 
         {/* Learning Pathway */}
@@ -136,12 +121,6 @@ const Learn = ({ onNavigate, selectedLesson, onLessonSelect }: LearnProps) => {
           />
         )}
       </div>
-
-      {/* Daily Rewards Modal */}
-      <DailyRewardsModal
-        isOpen={showDailyRewards}
-        onClose={() => setShowDailyRewards(false)}
-      />
     </div>
   );
 };
