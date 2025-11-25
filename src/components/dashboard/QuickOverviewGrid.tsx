@@ -145,7 +145,9 @@ export const QuickOverviewGrid = () => {
           </div>
           <div className="flex justify-between items-center">
             <span className="text-sm text-muted-foreground">Your Portfolio</span>
-            <span className="text-sm font-semibold text-primary">+{portfolioChange}%</span>
+            <span className="text-sm font-semibold text-primary">
+              {portfolioChange >= 0 ? '+' : ''}{portfolioChange.toFixed(2)}%
+            </span>
           </div>
           <div className="pt-2 border-t border-border">
             <div className="text-xs text-muted-foreground mb-1">Portfolio Value</div>
