@@ -57,12 +57,14 @@ export const useAIMarket = (userId: string | undefined) => {
       const { data, error } = await supabase
         .from('ai_competitors')
         .select('*')
-        .eq('session_id', sessionId);
+        .eq('session_id', sessionId)
+        .order('capital', { ascending: false });
 
       if (error) throw error;
       return data;
     },
     enabled: !!sessionId,
+    refetchInterval: 5000, // Refresh every 5 seconds for real-time updates
   });
 
   // Fetch active market events
