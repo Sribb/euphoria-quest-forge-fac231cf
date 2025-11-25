@@ -8,7 +8,11 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useState } from "react";
 
-export const QuickOverviewGrid = () => {
+interface QuickOverviewGridProps {
+  onNavigate?: (tab: string) => void;
+}
+
+export const QuickOverviewGrid = ({ onNavigate }: QuickOverviewGridProps) => {
   const { totalValue } = usePortfolioValue();
   const { user } = useAuth();
   const [dailyTip, setDailyTip] = useState<string>("");
@@ -127,7 +131,10 @@ export const QuickOverviewGrid = () => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
       {/* Market Overview */}
-      <Card className="p-6 bg-gradient-surface border-border shadow-glow-soft hover:shadow-glow transition-all duration-300 hover-lift">
+      <Card 
+        className="p-6 bg-gradient-surface border-border shadow-glow-soft hover:shadow-glow transition-all duration-300 hover-lift cursor-pointer"
+        onClick={() => onNavigate?.('trade')}
+      >
         <div className="flex items-center gap-3 mb-4">
           <div className="p-2 bg-primary/10 rounded-lg">
             <TrendingUp className="w-5 h-5 text-primary" />
@@ -157,7 +164,10 @@ export const QuickOverviewGrid = () => {
       </Card>
 
       {/* User Progress */}
-      <Card className="p-6 bg-gradient-surface border-border shadow-glow-soft hover:shadow-glow transition-all duration-300 hover-lift">
+      <Card 
+        className="p-6 bg-gradient-surface border-border shadow-glow-soft hover:shadow-glow transition-all duration-300 hover-lift cursor-pointer"
+        onClick={() => onNavigate?.('analytics')}
+      >
         <div className="flex items-center gap-3 mb-4">
           <div className="p-2 bg-primary/10 rounded-lg">
             <Target className="w-5 h-5 text-primary" />
@@ -190,7 +200,10 @@ export const QuickOverviewGrid = () => {
       </Card>
 
       {/* Upcoming Lesson */}
-      <Card className="p-6 bg-gradient-surface border-border shadow-glow-soft hover:shadow-glow transition-all duration-300 hover-lift cursor-pointer group">
+      <Card 
+        className="p-6 bg-gradient-surface border-border shadow-glow-soft hover:shadow-glow transition-all duration-300 hover-lift cursor-pointer group"
+        onClick={() => onNavigate?.('learn')}
+      >
         <div className="flex items-center gap-3 mb-4">
           <div className="p-2 bg-primary/10 rounded-lg group-hover:bg-primary group-hover:text-primary-foreground transition-all">
             <BookOpen className="w-5 h-5 text-primary group-hover:text-primary-foreground" />

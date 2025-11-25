@@ -5,7 +5,9 @@ import { EconomicCalendarNative } from "@/components/dashboard/EconomicCalendarN
 import { LiveEconomicHeadlines } from "@/components/dashboard/LiveEconomicHeadlines";
 import { DailyRewardsModal } from "@/components/learn/DailyRewardsModal";
 import { useAuth } from "@/hooks/useAuth";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 interface DashboardProps {
   onNavigate: (tab: string) => void;
@@ -16,16 +18,44 @@ const Dashboard = ({ onNavigate, onStockSearch }: DashboardProps) => {
   const { user } = useAuth();
   const [showDailyRewards, setShowDailyRewards] = useState(false);
 
+  // Check if user has claimed today's reward
+  const { data: streakData } = useQuery({
+    queryKey: ["streak", user?.id],
+    queryFn: async () => {
+      if (!user?.id) return null;
+      const { data } = await supabase
+        .from("streaks")
+        .select("*")
+        .eq("user_id", user.id)
+        .single();
+      return data;
+    },
+    enabled: !!user?.id,
+  });
+
+  // Auto-show daily rewards modal once per day
+  useEffect(() => {
+    if (!streakData || !user?.id) return;
+    
+    const lastLogin = streakData.last_login_date;
+    const today = new Date().toDateString();
+    
+    // Show modal if user hasn't logged in today yet
+    if (!lastLogin || new Date(lastLogin).toDateString() !== today) {
+      setShowDailyRewards(true);
+    }
+  }, [streakData, user?.id]);
+
   return (
     <div className="min-h-screen w-full bg-background">
-      {/* Custom Header with Username and Daily Rewards */}
-      <DashboardHeader onDailyRewards={() => setShowDailyRewards(true)} />
+      {/* Custom Header with Username */}
+      <DashboardHeader />
       
       {/* Main Content - Full Width Grid Layout */}
       <div className="px-8 py-8 space-y-8">
         {/* Quick Overview Grid - 4 Compact Modules */}
         <div className="animate-fade-in">
-          <QuickOverviewGrid />
+          <QuickOverviewGrid onNavigate={onNavigate} />
         </div>
         
         {/* AI Insights Panel - Replaces Old Widgets */}
@@ -40,7 +70,7 @@ const Dashboard = ({ onNavigate, onStockSearch }: DashboardProps) => {
         </div>
       </div>
 
-      {/* Daily Rewards Modal */}
+      {/* Daily Rewards Modal - Auto-popup */}
       <DailyRewardsModal 
         isOpen={showDailyRewards} 
         onClose={() => setShowDailyRewards(false)} 
