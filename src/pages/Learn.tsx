@@ -94,33 +94,33 @@ const Learn = ({ onNavigate, selectedLesson, onLessonSelect }: LearnProps) => {
 
   return (
     <div className="min-h-screen w-full bg-background">
-      <div className="px-8 py-8">
-        {/* Expert-Sourced Content Banner */}
-        <div className="mb-6 animate-fade-in">
-          <div className="p-6 bg-primary/5 border border-primary/20 rounded-2xl">
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              <span className="font-semibold text-foreground">📚 Expert-Sourced Content:</span> All challenges are based on proven principles from Warren Buffett, Benjamin Graham's "The Intelligent Investor", Peter Lynch's "One Up on Wall Street", Ray Dalio's "Principles", Investopedia educational modules, and Federal Reserve resources.
-            </p>
+      {/* Expert-Sourced Content Banner */}
+      <div className="px-8 pt-8 pb-4 animate-fade-in">
+        <div className="max-w-7xl mx-auto p-6 bg-primary/5 border border-primary/20 rounded-2xl">
+          <p className="text-sm text-muted-foreground leading-relaxed">
+            <span className="font-semibold text-foreground">📚 Expert-Sourced Content:</span> All challenges are based on proven principles from Warren Buffett, Benjamin Graham's "The Intelligent Investor", Peter Lynch's "One Up on Wall Street", Ray Dalio's "Principles", Investopedia educational modules, and Federal Reserve resources.
+          </p>
+        </div>
+      </div>
+
+      {/* Learning Pathway - Full Vertical Scroll */}
+      {isLoading ? (
+        <div className="flex items-center justify-center min-h-[600px]">
+          <div className="space-y-6 text-center">
+            <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
+            <p className="text-muted-foreground">Loading your learning pathway...</p>
           </div>
         </div>
-
-        {/* Learning Pathway */}
-        {isLoading ? (
-          <div className="flex items-center justify-center min-h-[600px]">
-            <div className="space-y-6 text-center">
-              <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
-              <p className="text-muted-foreground">Loading your learning pathway...</p>
-            </div>
-          </div>
-        ) : (
+      ) : (
+        <div className="max-w-7xl mx-auto">
           <LearningPathway
             lessons={lessons}
             onLessonSelect={onLessonSelect}
             completedCount={completedLessons}
             totalCount={totalLessons}
           />
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 };
