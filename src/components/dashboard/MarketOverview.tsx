@@ -39,54 +39,6 @@ export const MarketOverview = () => {
       change: -1.12,
       changePercent: -0.5,
       chartData: [226, 225, 224, 223, 222, 224, 225, 223.45]
-    },
-    {
-      symbol: "AAPL",
-      name: "Apple Inc.",
-      price: 189.54,
-      change: 2.13,
-      changePercent: 1.14,
-      chartData: [185, 186, 184, 187, 188, 189, 191, 189.54]
-    },
-    {
-      symbol: "TSLA",
-      name: "Tesla Inc.",
-      price: 242.84,
-      change: -3.21,
-      changePercent: -1.30,
-      chartData: [248, 246, 244, 242, 243, 245, 244, 242.84]
-    },
-    {
-      symbol: "NVDA",
-      name: "NVIDIA Corp.",
-      price: 878.37,
-      change: 12.45,
-      changePercent: 1.44,
-      chartData: [860, 865, 858, 870, 872, 876, 880, 878.37]
-    },
-    {
-      symbol: "META",
-      name: "Meta Platforms",
-      price: 512.23,
-      change: 6.78,
-      changePercent: 1.34,
-      chartData: [500, 502, 498, 505, 508, 510, 514, 512.23]
-    },
-    {
-      symbol: "GOOGL",
-      name: "Alphabet Inc.",
-      price: 141.67,
-      change: 0.89,
-      changePercent: 0.63,
-      chartData: [139, 140, 138, 141, 140, 142, 143, 141.67]
-    },
-    {
-      symbol: "AMZN",
-      name: "Amazon.com",
-      price: 178.45,
-      change: 1.56,
-      changePercent: 0.88,
-      chartData: [175, 176, 174, 177, 176, 178, 179, 178.45]
     }
   ];
 
@@ -131,15 +83,16 @@ export const MarketOverview = () => {
         <h4 className="font-bold text-foreground">Market Overview</h4>
       </div>
       
-      <div className="space-y-3">
+      <div className="space-y-4">
         {marketData.map((market) => (
           <div key={market.symbol} className="group">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between mb-1">
               <div className="flex-1">
                 <div className="flex items-center gap-2">
-                  <span className="text-sm font-bold text-foreground">{market.symbol}</span>
+                  <span className="text-sm font-semibold text-foreground">{market.symbol}</span>
+                  <span className="text-xs text-muted-foreground">{market.name}</span>
                 </div>
-                <div className="text-base font-bold text-foreground">
+                <div className="text-lg font-bold text-foreground">
                   ${market.price.toFixed(2)}
                 </div>
               </div>
@@ -157,7 +110,7 @@ export const MarketOverview = () => {
               </div>
             </div>
             {market.symbol !== marketData[marketData.length - 1].symbol && (
-              <div className="h-px bg-border/50 mt-2" />
+              <div className="h-px bg-border/50 mt-3" />
             )}
           </div>
         ))}

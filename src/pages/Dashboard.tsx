@@ -1,6 +1,6 @@
 import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import { QuickOverviewGrid } from "@/components/dashboard/QuickOverviewGrid";
-import { QuickStats } from "@/components/dashboard/QuickStats";
+import { AIInsightsPanel } from "@/components/dashboard/AIInsightsPanel";
 import { EconomicCalendarNative } from "@/components/dashboard/EconomicCalendarNative";
 import { LiveEconomicHeadlines } from "@/components/dashboard/LiveEconomicHeadlines";
 import { DailyRewardsModal } from "@/components/learn/DailyRewardsModal";
@@ -58,15 +58,15 @@ const Dashboard = ({ onNavigate, onStockSearch }: DashboardProps) => {
           <QuickOverviewGrid onNavigate={onNavigate} />
         </div>
         
-        {/* Economic Data and Stats Section - Grid with Right Sidebar */}
-        <div className="grid lg:grid-cols-3 gap-8 animate-fade-in" style={{ animationDelay: "100ms" }}>
-          <div className="lg:col-span-2 space-y-8">
-            <EconomicCalendarNative />
-            <LiveEconomicHeadlines />
-          </div>
-          <div>
-            <QuickStats />
-          </div>
+        {/* AI Insights Panel - Replaces Old Widgets */}
+        <div className="animate-fade-in" style={{ animationDelay: "100ms" }}>
+          <AIInsightsPanel onNavigate={onNavigate} />
+        </div>
+        
+        {/* Economic Data Section - Full Width Grid */}
+        <div className="grid lg:grid-cols-2 gap-8 animate-fade-in" style={{ animationDelay: "200ms" }}>
+          <EconomicCalendarNative />
+          <LiveEconomicHeadlines />
         </div>
       </div>
 
