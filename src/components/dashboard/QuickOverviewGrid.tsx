@@ -1,4 +1,4 @@
-import { TrendingUp, Target, BookOpen, Lightbulb } from "lucide-react";
+import { Target, BookOpen, Lightbulb } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { usePortfolioValue } from "@/hooks/usePortfolioValue";
@@ -7,6 +7,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useState } from "react";
+import { MarketOverview } from "./MarketOverview";
 
 interface QuickOverviewGridProps {
   onNavigate?: (tab: string) => void;
@@ -131,37 +132,7 @@ export const QuickOverviewGrid = ({ onNavigate }: QuickOverviewGridProps) => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
       {/* Market Overview */}
-      <Card 
-        className="p-6 bg-gradient-surface border-border shadow-glow-soft hover:shadow-glow transition-all duration-300 hover-lift cursor-pointer"
-        onClick={() => onNavigate?.('trade')}
-      >
-        <div className="flex items-center gap-3 mb-4">
-          <div className="p-2 bg-primary/10 rounded-lg">
-            <TrendingUp className="w-5 h-5 text-primary" />
-          </div>
-          <h4 className="font-bold text-foreground">Market Overview</h4>
-        </div>
-        <div className="space-y-3">
-          <div className="flex justify-between items-center">
-            <span className="text-sm text-muted-foreground">S&P 500</span>
-            <span className="text-sm font-semibold text-green-500">+0.8%</span>
-          </div>
-          <div className="flex justify-between items-center">
-            <span className="text-sm text-muted-foreground">NASDAQ</span>
-            <span className="text-sm font-semibold text-green-500">+1.2%</span>
-          </div>
-          <div className="flex justify-between items-center">
-            <span className="text-sm text-muted-foreground">Your Portfolio</span>
-            <span className="text-sm font-semibold text-primary">
-              {portfolioChange >= 0 ? '+' : ''}{portfolioChange.toFixed(2)}%
-            </span>
-          </div>
-          <div className="pt-2 border-t border-border">
-            <div className="text-xs text-muted-foreground mb-1">Portfolio Value</div>
-            <div className="text-2xl font-bold text-foreground">{formatDollar(totalValue, 2)}</div>
-          </div>
-        </div>
-      </Card>
+      <MarketOverview />
 
       {/* User Progress */}
       <Card 

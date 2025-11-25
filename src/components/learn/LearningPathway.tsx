@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { PathwayNode } from "./PathwayNode";
 import { ChallengeModal } from "./ChallengeModal";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Trophy, Award } from "lucide-react";
 
 interface Lesson {
@@ -108,9 +107,9 @@ export const LearningPathway = ({
         </div>
       </div>
 
-      {/* Scrollable Pathway Container */}
-      <ScrollArea className="h-[800px] w-full">
-        <div className="relative min-h-full pb-32">
+      {/* Full Vertical Scrolling Pathway */}
+      <div className="w-full">
+        <div className="relative pb-32">
           {/* Pathway Background Line with animated particles */}
           <div className="absolute left-1/2 top-0 bottom-0 w-1 -translate-x-1/2 bg-gradient-to-b from-border via-border/50 to-transparent" />
           <div className="absolute left-1/2 top-0 w-2 h-2 -translate-x-1/2 bg-primary rounded-full animate-pulse shadow-glow" />
@@ -168,7 +167,7 @@ export const LearningPathway = ({
             )}
           </div>
         </div>
-      </ScrollArea>
+      </div>
 
       {/* Challenge Modal */}
       {selectedLesson && (
