@@ -271,10 +271,10 @@ const Profile = ({ onNavigate }: ProfileProps) => {
         </div>
       </div>
 
-      <Tabs defaultValue="profile" className="w-full">
+      <Tabs defaultValue="settings" className="w-full">
         <TabsList className="grid w-full grid-cols-3 mb-6">
-          <TabsTrigger value="profile">Profile</TabsTrigger>
           <TabsTrigger value="settings">Settings</TabsTrigger>
+          <TabsTrigger value="profile">Profile</TabsTrigger>
           <TabsTrigger value="achievements">Achievements</TabsTrigger>
         </TabsList>
 

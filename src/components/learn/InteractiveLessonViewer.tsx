@@ -244,23 +244,6 @@ export const InteractiveLessonViewer = ({ lessonId, onClose }: InteractiveLesson
       <div className="max-w-5xl mx-auto p-6">
         <div className="flex items-center justify-between mb-6 animate-fade-in">
           <div className="flex items-center gap-4">
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button 
-                    variant="ghost" 
-                    size="icon"
-                    onClick={() => navigate(-1)}
-                    className="hover:bg-primary/10"
-                  >
-                    <ArrowLeft className="w-5 h-5" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Go Back</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
             <div>
               <div className="flex items-center gap-2 mb-2">
                 <Badge variant={lesson.difficulty === 'advanced' ? 'destructive' : lesson.difficulty === 'intermediate' ? 'secondary' : 'default'}>
@@ -272,9 +255,18 @@ export const InteractiveLessonViewer = ({ lessonId, onClose }: InteractiveLesson
               <p className="text-muted-foreground mt-1">{lesson.description}</p>
             </div>
           </div>
-          <Button variant="ghost" size="icon" onClick={onClose}>
-            <X className="w-6 h-6" />
-          </Button>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="ghost" size="icon" onClick={onClose}>
+                  <X className="w-6 h-6" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Close Lesson</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
 
         <Progress value={progress} className="mb-6 h-3 animate-fade-in" style={{ animationDelay: "100ms" }} />
