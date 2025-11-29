@@ -39,10 +39,15 @@ const Dashboard = ({ onNavigate, onStockSearch }: DashboardProps) => {
     
     const lastLogin = streakData.last_login_date;
     const today = new Date().toDateString();
+    const storageKey = `daily_rewards_shown_${user.id}_${today}`;
     
-    // Show modal if user hasn't logged in today yet
+    // Check if user hasn't logged in today AND hasn't seen the modal today
     if (!lastLogin || new Date(lastLogin).toDateString() !== today) {
-      setShowDailyRewards(true);
+      const alreadyShown = localStorage.getItem(storageKey);
+      if (!alreadyShown) {
+        setShowDailyRewards(true);
+        localStorage.setItem(storageKey, 'true');
+      }
     }
   }, [streakData, user?.id]);
 
