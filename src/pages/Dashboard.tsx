@@ -4,6 +4,9 @@ import { AIInsightsPanel } from "@/components/dashboard/AIInsightsPanel";
 import { EconomicCalendarNative } from "@/components/dashboard/EconomicCalendarNative";
 import { LiveEconomicHeadlines } from "@/components/dashboard/LiveEconomicHeadlines";
 import { DailyRewardsModal } from "@/components/learn/DailyRewardsModal";
+import { SeasonalBanner } from "@/components/dashboard/SeasonalBanner";
+import { XPOrb } from "@/components/dashboard/XPOrb";
+import { RealtimeIndicator } from "@/components/dashboard/RealtimeIndicator";
 import { useAuth } from "@/hooks/useAuth";
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -58,6 +61,15 @@ const Dashboard = ({ onNavigate, onStockSearch }: DashboardProps) => {
       
       {/* Main Content - Full Width Grid Layout */}
       <div className="px-8 py-8 space-y-8">
+        {/* Top Bar with XP Orb and Realtime Indicator */}
+        <div className="flex items-center justify-between animate-fade-in">
+          <XPOrb />
+          <RealtimeIndicator />
+        </div>
+
+        {/* Seasonal Event Banner */}
+        <SeasonalBanner />
+
         {/* Quick Overview Grid - 4 Compact Modules */}
         <div className="animate-fade-in">
           <QuickOverviewGrid onNavigate={onNavigate} />
