@@ -44,15 +44,6 @@ export const LearningPathway = ({
     }
   };
 
-  // Determine node position for visual variety
-  const getNodePosition = (index: number): "left" | "right" | "center" => {
-    const pattern = index % 4;
-    if (pattern === 0) return "center";
-    if (pattern === 1) return "right";
-    if (pattern === 2) return "center";
-    return "left";
-  };
-
   const progressPercentage = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
 
   return (
@@ -82,7 +73,7 @@ export const LearningPathway = ({
             </div>
           </div>
           
-          {/* Progress Bar with smooth animation */}
+          {/* Progress Bar */}
           <div className="relative w-full bg-muted/50 rounded-full h-2.5 overflow-hidden">
             <div 
               className="absolute inset-y-0 left-0 bg-gradient-primary shadow-glow transition-all duration-1000 ease-out flex items-center justify-end pr-2"
@@ -107,60 +98,66 @@ export const LearningPathway = ({
         </div>
       </div>
 
-      {/* Full Vertical Scrolling Pathway */}
-      <div className="w-full">
-        <div className="relative pb-32">
-          {/* Pathway Background Line with animated particles */}
-          <div className="absolute left-1/2 top-0 bottom-0 w-1 -translate-x-1/2 bg-gradient-to-b from-border via-border/50 to-transparent" />
-          <div className="absolute left-1/2 top-0 w-2 h-2 -translate-x-1/2 bg-primary rounded-full animate-pulse shadow-glow" />
+      {/* Vertical Scrolling Pathway */}
+      <div className="w-full max-w-md mx-auto px-8 pb-32">
+        <div className="relative">
+          {/* Central Pathway Line */}
+          <div className="absolute left-1/2 top-0 bottom-0 w-1 -translate-x-1/2 bg-gradient-to-b from-primary/30 via-border to-transparent" />
 
-          {/* Pathway Nodes with Milestones */}
-          <div className="relative space-y-20 px-8">
-            {lessons.map((lesson, index) => (
-              <div key={lesson.id}>
-                {/* Milestone Separator every 3-4 nodes */}
-                {index > 0 && index % 4 === 0 && (
-                  <div className="flex items-center justify-center mb-20 animate-fade-in">
-                    <div className="flex-1 h-px bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
-                    <div className="px-6 py-2 bg-primary/10 border border-primary/20 rounded-full">
-                      <span className="text-xs font-semibold text-primary">
-                        Section {Math.floor(index / 4)}
-                      </span>
+          {/* Pathway Nodes - all centered on the line */}
+          <div className="relative flex flex-col items-center">
+            {lessons.map((lesson, index) => {
+              const isNextLesson = !lesson.is_locked && !lesson.completed && 
+                index === lessons.findIndex(l => !l.is_locked && !l.completed);
+
+              return (
+                <div key={lesson.id} className="relative">
+                  {/* Connector segment - above each node except the first */}
+                  {index > 0 && (
+                    <div className="w-1 h-12 mx-auto bg-gradient-to-b from-transparent via-border to-transparent" />
+                  )}
+
+                  {/* Section Milestone */}
+                  {index > 0 && index % 4 === 0 && (
+                    <div className="flex items-center justify-center py-4 w-64">
+                      <div className="flex-1 h-px bg-gradient-to-r from-transparent to-primary/30" />
+                      <div className="px-4 py-1.5 bg-primary/10 border border-primary/20 rounded-full">
+                        <span className="text-xs font-semibold text-primary">
+                          Section {Math.floor(index / 4)}
+                        </span>
+                      </div>
+                      <div className="flex-1 h-px bg-gradient-to-r from-primary/30 to-transparent" />
                     </div>
-                    <div className="flex-1 h-px bg-gradient-to-r from-primary/50 via-transparent to-transparent" />
+                  )}
+
+                  {/* The Node */}
+                  <div className="py-4">
+                    <PathwayNode
+                      title={lesson.title}
+                      orderIndex={lesson.order_index}
+                      isLocked={lesson.is_locked}
+                      isCompleted={lesson.completed}
+                      stars={lesson.completed ? (lesson.stars || 3) : 0}
+                      onClick={() => handleNodeClick(lesson)}
+                      isNext={isNextLesson}
+                      duration={lesson.duration}
+                      difficulty={lesson.difficulty}
+                    />
                   </div>
-                )}
-                
-                <div
-                  className="animate-fade-in"
-                  style={{ animationDelay: `${index * 50}ms` }}
-                >
-                  <PathwayNode
-                    title={lesson.title}
-                    orderIndex={lesson.order_index}
-                    isLocked={lesson.is_locked}
-                    isCompleted={lesson.completed}
-                    stars={lesson.completed ? (lesson.stars || 3) : 0}
-                    onClick={() => handleNodeClick(lesson)}
-                    position={getNodePosition(index)}
-                    isNext={!lesson.is_locked && !lesson.completed && index === lessons.findIndex(l => !l.is_locked && !l.completed)}
-                    duration={lesson.duration}
-                    difficulty={lesson.difficulty}
-                  />
                 </div>
-              </div>
-            ))}
+              );
+            })}
 
             {/* End of Pathway Marker */}
             {progressPercentage === 100 && (
-              <div className="flex justify-center pt-12 animate-fade-in">
-                <div className="text-center p-8 bg-gradient-to-br from-yellow-500/20 to-yellow-500/5 rounded-3xl border-2 border-yellow-500/30 shadow-glow">
-                  <Trophy className="w-16 h-16 text-yellow-500 mx-auto mb-4 animate-bounce" />
-                  <h3 className="text-2xl font-bold text-foreground mb-2">
+              <div className="pt-8">
+                <div className="text-center p-6 bg-gradient-to-br from-yellow-500/20 to-yellow-500/5 rounded-2xl border-2 border-yellow-500/30 shadow-glow">
+                  <Trophy className="w-12 h-12 text-yellow-500 mx-auto mb-3" />
+                  <h3 className="text-xl font-bold text-foreground mb-1">
                     Journey Complete!
                   </h3>
-                  <p className="text-sm text-muted-foreground max-w-sm">
-                    You've mastered all challenges. Keep practicing to maintain your skills!
+                  <p className="text-sm text-muted-foreground max-w-xs">
+                    You've mastered all challenges. Keep practicing!
                   </p>
                 </div>
               </div>
