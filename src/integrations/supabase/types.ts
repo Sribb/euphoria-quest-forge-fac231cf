@@ -760,6 +760,36 @@ export type Database = {
         }
         Relationships: []
       }
+      pattern_insights: {
+        Row: {
+          category: string
+          created_at: string
+          difficulty: string
+          id: string
+          insight_text: string
+          pattern_id: string
+          pattern_name: string
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          difficulty?: string
+          id?: string
+          insight_text: string
+          pattern_id: string
+          pattern_name: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          difficulty?: string
+          id?: string
+          insight_text?: string
+          pattern_id?: string
+          pattern_name?: string
+        }
+        Relationships: []
+      }
       portfolio_assets: {
         Row: {
           asset_name: string
@@ -890,8 +920,10 @@ export type Database = {
           coins: number
           created_at: string
           display_name: string | null
+          experience_points: number
           id: string
           level: number
+          mentor_mode_enabled: boolean
           updated_at: string
           username: string | null
         }
@@ -900,8 +932,10 @@ export type Database = {
           coins?: number
           created_at?: string
           display_name?: string | null
+          experience_points?: number
           id: string
           level?: number
+          mentor_mode_enabled?: boolean
           updated_at?: string
           username?: string | null
         }
@@ -910,10 +944,57 @@ export type Database = {
           coins?: number
           created_at?: string
           display_name?: string | null
+          experience_points?: number
           id?: string
           level?: number
+          mentor_mode_enabled?: boolean
           updated_at?: string
           username?: string | null
+        }
+        Relationships: []
+      }
+      seasonal_themes: {
+        Row: {
+          bonus_rewards: Json | null
+          color_scheme: Json
+          created_at: string
+          description: string | null
+          end_date: string
+          id: string
+          is_active: boolean
+          name: string
+          particle_effects: Json | null
+          start_date: string
+          theme_id: string
+          updated_at: string
+        }
+        Insert: {
+          bonus_rewards?: Json | null
+          color_scheme?: Json
+          created_at?: string
+          description?: string | null
+          end_date: string
+          id?: string
+          is_active?: boolean
+          name: string
+          particle_effects?: Json | null
+          start_date: string
+          theme_id: string
+          updated_at?: string
+        }
+        Update: {
+          bonus_rewards?: Json | null
+          color_scheme?: Json
+          created_at?: string
+          description?: string | null
+          end_date?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          particle_effects?: Json | null
+          start_date?: string
+          theme_id?: string
+          updated_at?: string
         }
         Relationships: []
       }
@@ -1233,11 +1314,69 @@ export type Database = {
         }
         Relationships: []
       }
+      user_seen_insights: {
+        Row: {
+          id: string
+          insight_id: string
+          seen_at: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          insight_id: string
+          seen_at?: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          insight_id?: string
+          seen_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_seen_insights_insight_id_fkey"
+            columns: ["insight_id"]
+            isOneToOne: false
+            referencedRelation: "pattern_insights"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      xp_level_thresholds: {
+        Row: {
+          created_at: string
+          level: number
+          rewards: Json | null
+          title: string
+          xp_required: number
+        }
+        Insert: {
+          created_at?: string
+          level: number
+          rewards?: Json | null
+          title: string
+          xp_required: number
+        }
+        Update: {
+          created_at?: string
+          level?: number
+          rewards?: Json | null
+          title?: string
+          xp_required?: number
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      add_experience_points: {
+        Args: { user_id_param: string; xp_amount: number }
+        Returns: Json
+      }
+      calculate_level_from_xp: { Args: { xp: number }; Returns: number }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
