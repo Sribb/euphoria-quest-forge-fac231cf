@@ -24,7 +24,7 @@ export const PathwayNode = ({
   duration,
   difficulty,
 }: PathwayNodeProps) => {
-  const sizeClasses = isNext ? "w-20 h-20" : "w-16 h-16";
+  const sizeClasses = isNext ? "w-28 h-28" : "w-24 h-24";
 
   return (
     <div className="relative flex flex-col items-center group">

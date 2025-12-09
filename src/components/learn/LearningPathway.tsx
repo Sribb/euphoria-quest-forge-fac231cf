@@ -46,7 +46,7 @@ export const LearningPathway = ({
 
   const progressPercentage = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
 
-  // Determine if node is on left or right side (zigzag pattern)
+  // Snake pattern: left, right, left, right...
   const getNodeSide = (index: number): "left" | "right" => {
     return index % 2 === 0 ? "left" : "right";
   };
@@ -103,113 +103,101 @@ export const LearningPathway = ({
         </div>
       </div>
 
-      {/* Zigzag Scrolling Pathway */}
-      <div className="w-full max-w-lg mx-auto px-8 pb-32">
+      {/* Snake Pattern Pathway */}
+      <div className="w-full max-w-2xl mx-auto px-12 pb-32">
         <div className="relative">
-          {/* Pathway Nodes with curved connectors */}
-          <div className="relative flex flex-col">
-            {lessons.map((lesson, index) => {
-              const isNextLesson = !lesson.is_locked && !lesson.completed && 
-                index === lessons.findIndex(l => !l.is_locked && !l.completed);
-              const side = getNodeSide(index);
-              const isLastNode = index === lessons.length - 1;
-              const nextSide = !isLastNode ? getNodeSide(index + 1) : side;
+          {lessons.map((lesson, index) => {
+            const isNextLesson = !lesson.is_locked && !lesson.completed && 
+              index === lessons.findIndex(l => !l.is_locked && !l.completed);
+            const side = getNodeSide(index);
+            const isLastNode = index === lessons.length - 1;
 
-              return (
-                <div key={lesson.id} className="relative">
-                  {/* Section Milestone */}
-                  {index > 0 && index % 4 === 0 && (
-                    <div className="flex items-center justify-center py-6">
-                      <div className="flex-1 h-px bg-gradient-to-r from-transparent to-primary/30" />
-                      <div className="px-4 py-1.5 bg-primary/10 border border-primary/20 rounded-full">
-                        <span className="text-xs font-semibold text-primary">
-                          Section {Math.floor(index / 4)}
-                        </span>
-                      </div>
-                      <div className="flex-1 h-px bg-gradient-to-r from-primary/30 to-transparent" />
+            return (
+              <div key={lesson.id} className="relative">
+                {/* Section Milestone */}
+                {index > 0 && index % 4 === 0 && (
+                  <div className="flex items-center justify-center py-4 mb-4">
+                    <div className="flex-1 h-px bg-gradient-to-r from-transparent to-primary/30" />
+                    <div className="px-4 py-1.5 bg-primary/10 border border-primary/20 rounded-full">
+                      <span className="text-xs font-semibold text-primary">
+                        Section {Math.floor(index / 4)}
+                      </span>
                     </div>
-                  )}
-
-                  {/* Node Row */}
-                  <div className={`flex items-center ${side === "left" ? "justify-start" : "justify-end"}`}>
-                    <div className="py-6">
-                      <PathwayNode
-                        title={lesson.title}
-                        orderIndex={lesson.order_index}
-                        isLocked={lesson.is_locked}
-                        isCompleted={lesson.completed}
-                        stars={lesson.completed ? (lesson.stars || 3) : 0}
-                        onClick={() => handleNodeClick(lesson)}
-                        isNext={isNextLesson}
-                        duration={lesson.duration}
-                        difficulty={lesson.difficulty}
-                      />
-                    </div>
+                    <div className="flex-1 h-px bg-gradient-to-r from-primary/30 to-transparent" />
                   </div>
+                )}
 
-                  {/* Curved Connector to Next Node */}
-                  {!isLastNode && (
-                    <svg
-                      className="absolute w-full h-24 pointer-events-none"
-                      style={{ top: "calc(100% - 12px)", left: 0 }}
-                      viewBox="0 0 400 80"
-                      preserveAspectRatio="none"
-                    >
+                {/* Node positioned left or right */}
+                <div 
+                  className={`flex ${side === "left" ? "justify-start pl-4" : "justify-end pr-4"}`}
+                  style={{ marginBottom: isLastNode ? 0 : "20px" }}
+                >
+                  <PathwayNode
+                    title={lesson.title}
+                    orderIndex={lesson.order_index}
+                    isLocked={lesson.is_locked}
+                    isCompleted={lesson.completed}
+                    stars={lesson.completed ? (lesson.stars || 3) : 0}
+                    onClick={() => handleNodeClick(lesson)}
+                    isNext={isNextLesson}
+                    duration={lesson.duration}
+                    difficulty={lesson.difficulty}
+                  />
+                </div>
+
+                {/* Snake connector line to next node */}
+                {!isLastNode && (
+                  <svg
+                    className="absolute w-full pointer-events-none"
+                    style={{ 
+                      top: side === "left" ? "85px" : "85px",
+                      left: 0,
+                      height: "100px"
+                    }}
+                    viewBox="0 0 500 100"
+                    preserveAspectRatio="none"
+                  >
+                    {side === "left" ? (
+                      // Curve from left to right
                       <path
-                        d={
-                          side === "left" && nextSide === "right"
-                            ? "M 60 0 Q 200 40, 340 80"
-                            : side === "right" && nextSide === "left"
-                            ? "M 340 0 Q 200 40, 60 80"
-                            : side === "left"
-                            ? "M 60 0 Q 60 40, 60 80"
-                            : "M 340 0 Q 340 40, 340 80"
-                        }
+                        d="M 70 0 C 70 50, 430 50, 430 100"
                         fill="none"
-                        stroke="hsl(var(--border))"
-                        strokeWidth="3"
+                        stroke={lesson.completed ? "hsl(var(--primary))" : "hsl(var(--border))"}
+                        strokeWidth="4"
                         strokeLinecap="round"
+                        opacity={lesson.completed ? 0.8 : 0.5}
                       />
-                      {/* Gradient overlay for completed paths */}
-                      {lesson.completed && (
-                        <path
-                          d={
-                            side === "left" && nextSide === "right"
-                              ? "M 60 0 Q 200 40, 340 80"
-                              : side === "right" && nextSide === "left"
-                              ? "M 340 0 Q 200 40, 60 80"
-                              : side === "left"
-                              ? "M 60 0 Q 60 40, 60 80"
-                              : "M 340 0 Q 340 40, 340 80"
-                          }
-                          fill="none"
-                          stroke="hsl(var(--primary))"
-                          strokeWidth="3"
-                          strokeLinecap="round"
-                          strokeOpacity="0.6"
-                        />
-                      )}
-                    </svg>
-                  )}
-                </div>
-              );
-            })}
-
-            {/* End of Pathway Marker */}
-            {progressPercentage === 100 && (
-              <div className="pt-8 flex justify-center">
-                <div className="text-center p-6 bg-gradient-to-br from-yellow-500/20 to-yellow-500/5 rounded-2xl border-2 border-yellow-500/30 shadow-glow">
-                  <Trophy className="w-12 h-12 text-yellow-500 mx-auto mb-3" />
-                  <h3 className="text-xl font-bold text-foreground mb-1">
-                    Journey Complete!
-                  </h3>
-                  <p className="text-sm text-muted-foreground max-w-xs">
-                    You've mastered all challenges. Keep practicing!
-                  </p>
-                </div>
+                    ) : (
+                      // Curve from right to left
+                      <path
+                        d="M 430 0 C 430 50, 70 50, 70 100"
+                        fill="none"
+                        stroke={lesson.completed ? "hsl(var(--primary))" : "hsl(var(--border))"}
+                        strokeWidth="4"
+                        strokeLinecap="round"
+                        opacity={lesson.completed ? 0.8 : 0.5}
+                      />
+                    )}
+                  </svg>
+                )}
               </div>
-            )}
-          </div>
+            );
+          })}
+
+          {/* End of Pathway Marker */}
+          {progressPercentage === 100 && (
+            <div className="pt-12 flex justify-center">
+              <div className="text-center p-6 bg-gradient-to-br from-yellow-500/20 to-yellow-500/5 rounded-2xl border-2 border-yellow-500/30 shadow-glow">
+                <Trophy className="w-12 h-12 text-yellow-500 mx-auto mb-3" />
+                <h3 className="text-xl font-bold text-foreground mb-1">
+                  Journey Complete!
+                </h3>
+                <p className="text-sm text-muted-foreground max-w-xs">
+                  You've mastered all challenges. Keep practicing!
+                </p>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
