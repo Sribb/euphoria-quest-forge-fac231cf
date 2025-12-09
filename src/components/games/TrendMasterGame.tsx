@@ -192,11 +192,22 @@ const chartScenarios = [
   }
 ];
 
+// Shuffle array utility
+const shuffleArray = <T,>(array: T[]): T[] => {
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+};
+
 interface TrendMasterGameProps {
   onClose: () => void;
 }
 
 export const TrendMasterGame = ({ onClose }: TrendMasterGameProps) => {
+  const [scenarios, setScenarios] = useState(() => shuffleArray(chartScenarios));
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [score, setScore] = useState(0);
   const [totalXP, setTotalXP] = useState(0);
@@ -208,7 +219,7 @@ export const TrendMasterGame = ({ onClose }: TrendMasterGameProps) => {
   const [mentorMode, setMentorMode] = useState(false);
   const [showHint, setShowHint] = useState(false);
 
-  const scenario = chartScenarios[currentQuestion];
+  const scenario = scenarios[currentQuestion];
 
   const handleAnswer = (answer: string) => {
     if (showFeedback) return;
@@ -231,7 +242,7 @@ export const TrendMasterGame = ({ onClose }: TrendMasterGameProps) => {
   };
 
   const handleNext = () => {
-    if (currentQuestion < chartScenarios.length - 1) {
+    if (currentQuestion < scenarios.length - 1) {
       setCurrentQuestion(currentQuestion + 1);
       setSelectedAnswer(null);
       setShowFeedback(false);
@@ -252,6 +263,7 @@ export const TrendMasterGame = ({ onClose }: TrendMasterGameProps) => {
   };
 
   const handleRestart = () => {
+    setScenarios(shuffleArray(chartScenarios));
     setCurrentQuestion(0);
     setScore(0);
     setTotalXP(0);
@@ -263,7 +275,7 @@ export const TrendMasterGame = ({ onClose }: TrendMasterGameProps) => {
   };
 
   if (gameComplete) {
-    const accuracy = Math.round((score / chartScenarios.length) * 100);
+    const accuracy = Math.round((score / scenarios.length) * 100);
     const motivationalMessage = 
       accuracy >= 90 ? "Outstanding! You're seeing the market like a pro! 🏆" :
       accuracy >= 75 ? "Excellent work! You've got a solid grasp of chart patterns! 📈" :
@@ -286,7 +298,7 @@ export const TrendMasterGame = ({ onClose }: TrendMasterGameProps) => {
 
               <div className="grid grid-cols-3 gap-4 py-6">
                 <div className="p-6 rounded-lg bg-card/50 backdrop-blur-sm border border-primary/20">
-                  <div className="text-4xl font-bold text-primary mb-2">{score}/{chartScenarios.length}</div>
+                  <div className="text-4xl font-bold text-primary mb-2">{score}/{scenarios.length}</div>
                   <div className="text-sm text-muted-foreground">Correct</div>
                 </div>
                 <div className="p-6 rounded-lg bg-card/50 backdrop-blur-sm border border-primary/20">
@@ -346,7 +358,7 @@ export const TrendMasterGame = ({ onClose }: TrendMasterGameProps) => {
                 <span className="text-sm font-medium">{streak} Streak</span>
               </div>
               <Badge className="text-base px-4 py-2 bg-gradient-primary">
-                {score}/{chartScenarios.length}
+                {score}/{scenarios.length}
               </Badge>
             </div>
           </div>
@@ -514,7 +526,7 @@ export const TrendMasterGame = ({ onClose }: TrendMasterGameProps) => {
                   size="lg"
                   className="w-full bg-gradient-primary hover:opacity-90 shadow-glow-soft"
                 >
-                  {currentQuestion < chartScenarios.length - 1 ? (
+                  {currentQuestion < scenarios.length - 1 ? (
                     <>Next Chart <TrendingUp className="w-5 h-5 ml-2" /></>
                   ) : (
                     <>Complete Game <Trophy className="w-5 h-5 ml-2" /></>
@@ -531,19 +543,19 @@ export const TrendMasterGame = ({ onClose }: TrendMasterGameProps) => {
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm font-medium text-muted-foreground">Progress</span>
-            <span className="text-sm font-medium">{Math.round((currentQuestion / chartScenarios.length) * 100)}%</span>
+            <span className="text-sm font-medium">{Math.round((currentQuestion / scenarios.length) * 100)}%</span>
           </div>
           <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
             <div 
               className="h-full bg-gradient-primary smooth-transition"
-              style={{ width: `${(currentQuestion / chartScenarios.length) * 100}%` }}
+              style={{ width: `${(currentQuestion / scenarios.length) * 100}%` }}
             />
           </div>
           <div className="flex items-center justify-between mt-3">
             <div className="flex items-center gap-2">
               <Sparkles className="w-4 h-4 text-primary" />
               <span className="text-sm text-muted-foreground">
-                <span className="font-bold text-foreground">{currentQuestion}</span> / {chartScenarios.length} Charts Completed
+                <span className="font-bold text-foreground">{currentQuestion}</span> / {scenarios.length} Charts Completed
               </span>
             </div>
             <div className="flex items-center gap-4">
