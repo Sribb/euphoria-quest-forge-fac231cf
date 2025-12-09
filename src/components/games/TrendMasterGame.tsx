@@ -8,6 +8,40 @@ import { CandlestickChart } from "./CandlestickChart";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 
+// Pattern-specific insights shown when hint is activated
+const patternInsights: Record<string, string> = {
+  "uptrend": "Notice how each peak is higher than the last? That's your key signal for an uptrend. Keep an eye on rising support levels.",
+  "downtrend": "See the lower highs and lower lows? That's a classic downtrend. Spotting this early helps you understand falling momentum.",
+  "head-shoulders": "The middle peak towers above the others like a head. This pattern often signals a reversal, so watch for the neckline break.",
+  "inverse-head-shoulders": "The middle trough dips lower than the shoulders, forming a reversed 'head.' It's a signal that the trend could turn upward.",
+  "cup-handle": "Look at the rounding bottom forming the cup, followed by a small pullback for the handle. This shows consolidation before a potential move.",
+  "double-top": "Two peaks at almost the same level tell you the market is testing resistance. Watch carefully for a drop after the second top.",
+  "double-bottom": "Two similar troughs? That's a double bottom. It often suggests the price may rebound from support.",
+  "ascending-triangle": "Notice the flat top resistance and rising lows? This triangle often precedes an upward breakout.",
+  "descending-triangle": "Flat bottom support and falling highs form this pattern. It signals potential downward movement.",
+  "triangle": "Both highs and lows are converging. It's neutral but indicates a breakout is coming, so watch the direction.",
+  "flag": "Price surges, then pulls back slightly in a channel — like a flag on a pole. It often continues the upward move.",
+  "bear-flag": "After a sharp drop, a small upward channel forms. This can continue the downward trend.",
+  "pennant": "Similar to a flag but small and compact. Sharp prior movement plus a tiny triangle usually means continuation in that direction.",
+  "falling-wedge": "The trend is down, but the wedge narrows. This can signal a reversal upward once the price breaks out.",
+  "rising-wedge": "The price is rising but the highs and lows squeeze together. This pattern often signals a reversal downward.",
+  "wedge": "The price is rising but the highs and lows squeeze together. This pattern often signals a reversal downward.",
+  "sideways": "Price moves sideways in a tight range. Take a moment to observe support and resistance before the next move.",
+  "consolidation": "Price moves sideways in a tight range. Take a moment to observe support and resistance before the next move.",
+  "breakout": "Price moves decisively past support or resistance. This shows momentum and can lead to strong continuation.",
+  "breakdown": "Price drops below support. This indicates strong downward pressure, so note the velocity of the drop.",
+  "support-bounce": "Price touches a support level and rebounds. This shows the level is holding and can signal a temporary rise.",
+  "resistance-bounce": "Price hits resistance and drops back. Recognizing this helps you understand where the market is struggling to move higher.",
+  "channel": "The price moves within two parallel trendlines—it trends in one direction while bouncing between these boundaries.",
+  "range-bound": "The price oscillates between clear support and resistance levels without trending—perfect for swing traders.",
+  "pullback": "The price temporarily dips to 'recharge' before continuing higher—a healthy pause that doesn't break the overall trend.",
+  "reversal": "The momentum completely flips direction—watch for major news or market shifts triggering this change.",
+  "fakeout": "The price breaks above resistance briefly, then quickly reverses back down—it faked out eager buyers.",
+  "retest": "After breaking out, the price comes back to test the old resistance (now support), confirming the breakout is real.",
+  "parabolic": "The price accelerates upward in a curved pattern—exciting but unsustainable. These often end in sharp reversals.",
+  "correction": "After a strong uptrend, the price drops 10-20% to 'correct' excessive valuations—healthy and normal in bull markets."
+};
+
 const chartScenarios = [
   {
     pattern: "uptrend",
@@ -374,15 +408,15 @@ export const TrendMasterGame = ({ onClose }: TrendMasterGameProps) => {
               </div>
             </div>
 
-            {/* Hint Banner */}
+            {/* Hint Banner - Pattern-Specific Insight */}
             {showHint && (
               <Card className="p-4 bg-primary/10 border-primary/20 animate-fade-in">
                 <div className="flex items-start gap-3">
-                  <Lightbulb className="w-5 h-5 text-primary mt-0.5" />
+                  <Lightbulb className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
                   <div>
-                    <p className="text-sm font-medium mb-1">Hint:</p>
+                    <p className="text-sm font-medium mb-1">Pattern Insight:</p>
                     <p className="text-sm text-muted-foreground">
-                      Look for the overall direction and key price points. Does it show higher highs, lower lows, or consolidation?
+                      {patternInsights[scenario.pattern] || "Look for the overall direction and key price points. Does it show higher highs, lower lows, or consolidation?"}
                     </p>
                   </div>
                 </div>
