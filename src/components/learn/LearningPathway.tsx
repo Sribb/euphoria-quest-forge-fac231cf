@@ -46,6 +46,11 @@ export const LearningPathway = ({
 
   const progressPercentage = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
 
+  // Determine if node is on left or right side (zigzag pattern)
+  const getNodeSide = (index: number): "left" | "right" => {
+    return index % 2 === 0 ? "left" : "right";
+  };
+
   return (
     <div className="relative">
       {/* Sticky Header Progress Banner */}
@@ -98,28 +103,23 @@ export const LearningPathway = ({
         </div>
       </div>
 
-      {/* Vertical Scrolling Pathway */}
-      <div className="w-full max-w-md mx-auto px-8 pb-32">
+      {/* Zigzag Scrolling Pathway */}
+      <div className="w-full max-w-lg mx-auto px-8 pb-32">
         <div className="relative">
-          {/* Central Pathway Line */}
-          <div className="absolute left-1/2 top-0 bottom-0 w-1 -translate-x-1/2 bg-gradient-to-b from-primary/30 via-border to-transparent" />
-
-          {/* Pathway Nodes - all centered on the line */}
-          <div className="relative flex flex-col items-center">
+          {/* Pathway Nodes with curved connectors */}
+          <div className="relative flex flex-col">
             {lessons.map((lesson, index) => {
               const isNextLesson = !lesson.is_locked && !lesson.completed && 
                 index === lessons.findIndex(l => !l.is_locked && !l.completed);
+              const side = getNodeSide(index);
+              const isLastNode = index === lessons.length - 1;
+              const nextSide = !isLastNode ? getNodeSide(index + 1) : side;
 
               return (
                 <div key={lesson.id} className="relative">
-                  {/* Connector segment - above each node except the first */}
-                  {index > 0 && (
-                    <div className="w-1 h-12 mx-auto bg-gradient-to-b from-transparent via-border to-transparent" />
-                  )}
-
                   {/* Section Milestone */}
                   {index > 0 && index % 4 === 0 && (
-                    <div className="flex items-center justify-center py-4 w-64">
+                    <div className="flex items-center justify-center py-6">
                       <div className="flex-1 h-px bg-gradient-to-r from-transparent to-primary/30" />
                       <div className="px-4 py-1.5 bg-primary/10 border border-primary/20 rounded-full">
                         <span className="text-xs font-semibold text-primary">
@@ -130,27 +130,74 @@ export const LearningPathway = ({
                     </div>
                   )}
 
-                  {/* The Node */}
-                  <div className="py-4">
-                    <PathwayNode
-                      title={lesson.title}
-                      orderIndex={lesson.order_index}
-                      isLocked={lesson.is_locked}
-                      isCompleted={lesson.completed}
-                      stars={lesson.completed ? (lesson.stars || 3) : 0}
-                      onClick={() => handleNodeClick(lesson)}
-                      isNext={isNextLesson}
-                      duration={lesson.duration}
-                      difficulty={lesson.difficulty}
-                    />
+                  {/* Node Row */}
+                  <div className={`flex items-center ${side === "left" ? "justify-start" : "justify-end"}`}>
+                    <div className="py-6">
+                      <PathwayNode
+                        title={lesson.title}
+                        orderIndex={lesson.order_index}
+                        isLocked={lesson.is_locked}
+                        isCompleted={lesson.completed}
+                        stars={lesson.completed ? (lesson.stars || 3) : 0}
+                        onClick={() => handleNodeClick(lesson)}
+                        isNext={isNextLesson}
+                        duration={lesson.duration}
+                        difficulty={lesson.difficulty}
+                      />
+                    </div>
                   </div>
+
+                  {/* Curved Connector to Next Node */}
+                  {!isLastNode && (
+                    <svg
+                      className="absolute w-full h-24 pointer-events-none"
+                      style={{ top: "calc(100% - 12px)", left: 0 }}
+                      viewBox="0 0 400 80"
+                      preserveAspectRatio="none"
+                    >
+                      <path
+                        d={
+                          side === "left" && nextSide === "right"
+                            ? "M 60 0 Q 200 40, 340 80"
+                            : side === "right" && nextSide === "left"
+                            ? "M 340 0 Q 200 40, 60 80"
+                            : side === "left"
+                            ? "M 60 0 Q 60 40, 60 80"
+                            : "M 340 0 Q 340 40, 340 80"
+                        }
+                        fill="none"
+                        stroke="hsl(var(--border))"
+                        strokeWidth="3"
+                        strokeLinecap="round"
+                      />
+                      {/* Gradient overlay for completed paths */}
+                      {lesson.completed && (
+                        <path
+                          d={
+                            side === "left" && nextSide === "right"
+                              ? "M 60 0 Q 200 40, 340 80"
+                              : side === "right" && nextSide === "left"
+                              ? "M 340 0 Q 200 40, 60 80"
+                              : side === "left"
+                              ? "M 60 0 Q 60 40, 60 80"
+                              : "M 340 0 Q 340 40, 340 80"
+                          }
+                          fill="none"
+                          stroke="hsl(var(--primary))"
+                          strokeWidth="3"
+                          strokeLinecap="round"
+                          strokeOpacity="0.6"
+                        />
+                      )}
+                    </svg>
+                  )}
                 </div>
               );
             })}
 
             {/* End of Pathway Marker */}
             {progressPercentage === 100 && (
-              <div className="pt-8">
+              <div className="pt-8 flex justify-center">
                 <div className="text-center p-6 bg-gradient-to-br from-yellow-500/20 to-yellow-500/5 rounded-2xl border-2 border-yellow-500/30 shadow-glow">
                   <Trophy className="w-12 h-12 text-yellow-500 mx-auto mb-3" />
                   <h3 className="text-xl font-bold text-foreground mb-1">
