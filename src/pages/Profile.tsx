@@ -1,4 +1,4 @@
-import { User, Award, TrendingUp, Target, Edit, Palette, Bell, Lock, Settings as SettingsIcon, RotateCcw } from "lucide-react";
+import { User, Award, TrendingUp, Target, Edit, Palette, Bell, Lock, Settings as SettingsIcon, RotateCcw, GraduationCap } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -31,6 +31,7 @@ import {
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { formatDollar } from "@/lib/formatters";
+import { useNavigate } from "react-router-dom";
 
 const PRESET_AVATARS = [
   { id: 1, color: "#9b87f5", alt: "Purple avatar" },
@@ -49,6 +50,7 @@ interface ProfileProps {
 
 const Profile = ({ onNavigate }: ProfileProps) => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [isEditing, setIsEditing] = useState(false);
   const [displayName, setDisplayName] = useState("");
@@ -58,6 +60,7 @@ const Profile = ({ onNavigate }: ProfileProps) => {
   const [selectedAvatar, setSelectedAvatar] = useState<string>("");
   const [showAvatarDialog, setShowAvatarDialog] = useState(false);
   const [showResetDialog, setShowResetDialog] = useState(false);
+  const [showRetakeDialog, setShowRetakeDialog] = useState(false);
 
   useEffect(() => {
     // Load theme preference from localStorage
@@ -570,6 +573,29 @@ const Profile = ({ onNavigate }: ProfileProps) => {
 
           <Card className="p-6">
             <div className="flex items-center gap-3 mb-4">
+              <GraduationCap className="w-5 h-5 text-primary" />
+              <h2 className="text-xl font-bold">Learning Placement</h2>
+            </div>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between p-4 border border-border rounded-lg">
+                <div>
+                  <p className="font-semibold">Retake Placement Assessment</p>
+                  <p className="text-sm text-muted-foreground">Update your starting lesson based on a new knowledge assessment</p>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowRetakeDialog(true)}
+                >
+                  <GraduationCap className="w-4 h-4 mr-2" />
+                  Retake
+                </Button>
+              </div>
+            </div>
+          </Card>
+
+          <Card className="p-6">
+            <div className="flex items-center gap-3 mb-4">
               <Lock className="w-5 h-5 text-primary" />
               <h2 className="text-xl font-bold">Security</h2>
             </div>
@@ -604,6 +630,43 @@ const Profile = ({ onNavigate }: ProfileProps) => {
                 <AlertDialogCancel>Cancel</AlertDialogCancel>
                 <AlertDialogAction onClick={handleResetPersonalization}>
                   Reset to Defaults
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+
+          <AlertDialog open={showRetakeDialog} onOpenChange={setShowRetakeDialog}>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Retake Placement Assessment?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This will delete your current placement data and take you through the investment knowledge quiz again. Your new starting lesson will be based on your quiz results.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={async () => {
+                  try {
+                    // Delete existing onboarding data
+                    const { error } = await supabase
+                      .from("user_onboarding")
+                      .delete()
+                      .eq("user_id", user?.id);
+                    
+                    if (error) throw error;
+                    
+                    // Invalidate queries and navigate to onboarding
+                    queryClient.invalidateQueries({ queryKey: ["user-onboarding"] });
+                    setShowRetakeDialog(false);
+                    toast.success("Redirecting to placement assessment...");
+                    
+                    // Force reload to trigger onboarding flow
+                    window.location.reload();
+                  } catch (error) {
+                    toast.error("Failed to reset placement. Please try again.");
+                  }
+                }}>
+                  Retake Assessment
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>

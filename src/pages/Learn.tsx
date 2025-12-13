@@ -151,6 +151,7 @@ const Learn = ({ onNavigate, selectedLesson, onLessonSelect }: LearnProps) => {
             onLessonSelect={onLessonSelect}
             completedCount={completedLessons}
             totalCount={totalLessons}
+            startingLesson={startingLesson}
           />
         </div>
       )}
