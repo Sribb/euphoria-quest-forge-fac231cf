@@ -1,5 +1,5 @@
 import { OnboardingMentor } from "./lessons/OnboardingMentor";
-import { RiskSimulator } from "./lessons/RiskSimulator";
+import { RiskRewardImmersive } from "./lessons/RiskRewardImmersive";
 import { CompoundVisualizer } from "./lessons/CompoundVisualizer";
 import { AllocationBuilder } from "./lessons/AllocationBuilder";
 import { DiversificationBuilder } from "./lessons/DiversificationBuilder";
@@ -40,7 +40,7 @@ interface InteractiveLessonRouterProps {
 export const InteractiveLessonRouter = ({ lessonId }: InteractiveLessonRouterProps) => {
   const lessonComponents: Record<string, React.ReactNode> = {
     "1": <OnboardingMentor />,
-    "2": <RiskSimulator />,
+    "2": <RiskRewardImmersive />,
     "3": <CompoundVisualizer />,
     "4": <AllocationBuilder />,
     "5": <DiversificationBuilder />,
@@ -81,7 +81,7 @@ export const InteractiveLessonRouter = ({ lessonId }: InteractiveLessonRouterPro
     "40": <ForexSimulator />,
     "41": <CommoditiesTracker />,
     "42": <ForexSimulator />,
-    "43": <RiskSimulator />,
+    "43": <RiskRewardImmersive />,
     "44": <TaxOptimizer />,
     "45": <RetirementCalculator />,
     "46": <RetirementCalculator />,
