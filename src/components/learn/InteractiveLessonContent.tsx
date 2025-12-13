@@ -768,6 +768,146 @@ export const getLessonContent = (lessonOrderIndex: number): LessonSection[] => {
         }
       },
     ],
+
+    // Lesson 13: Technical Analysis Fundamentals
+    13: [
+      {
+        title: "Introduction to Technical Analysis",
+        content: "Technical analysis studies past price movements to predict future market behavior. Unlike fundamental analysis which examines company financials, technical analysis focuses purely on price patterns and trading volume. Key premise: Market prices reflect all available information, and price movements follow identifiable patterns. According to Investopedia, technical analysis is used by traders worldwide to identify entry and exit points.",
+      },
+      {
+        title: "Reading Price Charts",
+        content: "Three main chart types: Line charts show closing prices over time—simple but limited. Bar charts display open, high, low, and close (OHLC) for each period. Candlestick charts visually represent the same OHLC data with color-coded bodies. Green/white candles indicate price rose (close > open). Red/black candles indicate price fell (close < open). Candlesticks are most popular because patterns are easier to identify visually.",
+      },
+      {
+        title: "Support and Resistance",
+        content: "Support levels are price floors where buying pressure historically prevents further decline. Resistance levels are ceilings where selling pressure stops advances. These levels form due to psychological price points and historical trading activity. When support breaks, it often becomes resistance (and vice versa). Traders use these levels to identify potential entry and exit points.",
+      },
+      {
+        title: "Trend Lines and Moving Averages",
+        content: "Trends are directional price movements: uptrend (higher highs and lows), downtrend (lower highs and lows), or sideways. Moving averages smooth price data to identify trends. Common types: 50-day and 200-day moving averages. Golden cross (short MA crosses above long MA) signals bullish momentum. Death cross (short MA crosses below long MA) signals bearish momentum.",
+      },
+    ],
+
+    // Lesson 14: Investment Psychology
+    14: [
+      {
+        title: "The Psychology of Investing",
+        content: "Behavioral finance studies how emotions and biases affect investment decisions. Daniel Kahneman's research shows humans are not rational actors—we're prone to systematic errors. Understanding your psychological biases is crucial for investment success. The market is driven by collective human behavior, making psychology as important as fundamentals.",
+      },
+      {
+        title: "Common Cognitive Biases",
+        content: "Confirmation bias: Seeking information that confirms existing beliefs. Loss aversion: Feeling losses twice as strongly as equivalent gains. Recency bias: Overweighting recent events in predictions. Anchoring: Fixating on initial price points regardless of current fundamentals. Herd mentality: Following the crowd without independent analysis. Overconfidence: Overestimating your ability to predict outcomes.",
+      },
+      {
+        title: "Emotional Decision Making",
+        content: "Fear causes panic selling at market bottoms. Greed drives buying at market tops. FOMO (Fear of Missing Out) leads to chasing hot stocks. Regret causes holding losers too long hoping to break even. The key is developing systematic rules that remove emotion from decisions. Warren Buffett: 'Be fearful when others are greedy, and greedy when others are fearful.'",
+      },
+      {
+        title: "Building Mental Discipline",
+        content: "Create an investment policy statement before emotions run high. Set predetermined buy and sell criteria. Use automatic investing to remove timing decisions. Keep an investment journal to learn from mistakes. Take breaks during high volatility to avoid reactive decisions. Remember: The biggest enemy of good investing is usually yourself.",
+      },
+    ],
+
+    // Lesson 15: Options Trading Fundamentals
+    15: [
+      {
+        title: "What Are Options?",
+        content: "Options are contracts giving the right (not obligation) to buy or sell an asset at a specific price before a certain date. Call options: Right to BUY at the strike price. Put options: Right to SELL at the strike price. Options cost a premium and expire on specific dates. They can be used for speculation, income, or hedging existing positions.",
+      },
+      {
+        title: "Call Options Explained",
+        content: "A call option profits when the underlying stock rises above the strike price plus premium paid. Example: Stock at $100, you buy a $105 call for $3. Breakeven: $108 ($105 strike + $3 premium). If stock reaches $115, profit = ($115 - $105 - $3) × 100 = $700. Maximum loss is limited to premium paid ($300). Calls provide leveraged upside exposure with defined risk.",
+      },
+      {
+        title: "Put Options Explained",
+        content: "Put options profit when the underlying stock falls below the strike price minus premium. Example: Stock at $100, you buy a $95 put for $2. Breakeven: $93 ($95 strike - $2 premium). If stock drops to $85, profit = ($95 - $85 - $2) × 100 = $800. Puts provide downside protection or speculative profit from declines. Often called 'insurance' for your portfolio.",
+      },
+      {
+        title: "Basic Options Strategies",
+        content: "Covered call: Own stock, sell call options for income. Protective put: Own stock, buy puts as insurance. Bull call spread: Buy lower strike call, sell higher strike call. These strategies modify risk/reward profiles. Options are complex—start with paper trading before real money. Never risk more than you can afford to lose on options.",
+      },
+    ],
+
+    // Lesson 16: ETFs and Index Funds  
+    16: [
+      {
+        title: "Understanding Index Funds and ETFs",
+        content: "Index funds and ETFs track market indices like the S&P 500, providing instant diversification. ETFs trade like stocks throughout the day. Index mutual funds trade once daily at market close. Jack Bogle pioneered index investing, proving most active managers underperform indices over time. Both offer low-cost, diversified exposure to broad markets or specific sectors.",
+      },
+      {
+        title: "The Power of Low Costs",
+        content: "Expense ratios compound significantly over time. Example: $100,000 invested for 30 years at 7% return. With 0.03% fees (index fund): $742,000 final value. With 1.00% fees (active fund): $574,000 final value. The 0.97% difference costs $168,000! Warren Buffett bet $1 million that an S&P 500 index fund would beat hedge funds over 10 years—and won.",
+      },
+      {
+        title: "Types of ETFs",
+        content: "Broad market ETFs: SPY, VTI, QQQ track major indices. Sector ETFs: Technology (XLK), Healthcare (XLV), Energy (XLE). International ETFs: Developed markets (VEA), emerging markets (VWO). Bond ETFs: Government (TLT), corporate (LQD), municipal (MUB). Specialty: Real estate (VNQ), commodities (GLD), dividends (VYM). Build a diversified portfolio using just 3-5 ETFs.",
+      },
+      {
+        title: "Building an ETF Portfolio",
+        content: "Classic three-fund portfolio: Total US stock market, total international, total bond market. Adjust allocations based on age and risk tolerance. Rebalance annually to maintain target weights. Consider tax efficiency—bonds in tax-advantaged accounts, stocks in taxable. Start simple, add complexity only when warranted. Most investors need nothing more than 3-5 low-cost ETFs.",
+      },
+    ],
+
+    // Lesson 17: Bonds and Fixed Income
+    17: [
+      {
+        title: "Bond Fundamentals",
+        content: "Bonds are loans to governments or corporations. You lend money (principal), receive regular interest (coupon), and get principal back at maturity. Face value: Typically $1,000 per bond. Coupon rate: Annual interest percentage. Maturity date: When principal is repaid. Yield: Total return if held to maturity. Bonds provide stable income and capital preservation.",
+      },
+      {
+        title: "Bond Pricing and Yields",
+        content: "Bond prices and yields move inversely. When interest rates rise, existing bond prices fall. When rates fall, bond prices rise. Duration measures price sensitivity to rate changes. Longer duration = more sensitive. A bond with 10-year duration loses approximately 10% if rates rise 1%. Understanding this relationship is crucial for fixed-income investing.",
+      },
+      {
+        title: "Types of Bonds",
+        content: "Treasury bonds: US government-backed, lowest risk, lowest yield. Municipal bonds: State/local governments, often tax-free. Corporate bonds: Company debt, higher yields with credit risk. High-yield (junk) bonds: Lower-rated companies, highest yields and risk. TIPS: Treasury Inflation-Protected Securities, protect against inflation. I-Bonds: Savings bonds with inflation protection.",
+      },
+      {
+        title: "Bonds in Your Portfolio",
+        content: "Bonds reduce portfolio volatility and provide income. Traditional rule: Bond allocation = your age (60 years old = 60% bonds). Modern approach adjusts for low rates and longer lifespans. Bonds shine during stock market crashes—often rising when stocks fall. Use bond ladders (staggered maturities) to manage interest rate risk. Consider bond funds for diversification and simplicity.",
+      },
+    ],
+
+    // Lesson 19: Cryptocurrency Basics
+    19: [
+      {
+        title: "What is Cryptocurrency?",
+        content: "Cryptocurrency is digital money secured by cryptography and recorded on a blockchain. Bitcoin (2009): First cryptocurrency, created by Satoshi Nakamoto. Blockchain: Decentralized ledger recording all transactions. No central authority—transactions verified by network participants. Limited supply (21 million Bitcoin maximum) creates scarcity. Cryptocurrencies enable peer-to-peer transactions without intermediaries.",
+      },
+      {
+        title: "Major Cryptocurrencies",
+        content: "Bitcoin (BTC): Digital gold, store of value, largest market cap. Ethereum (ETH): Smart contract platform for decentralized applications. Stablecoins (USDC, USDT): Pegged to US dollar for stability. Other altcoins vary widely in purpose, technology, and risk. Market cap and trading volume indicate relative importance. Stick to established cryptocurrencies as a beginner.",
+      },
+      {
+        title: "Crypto Risks and Volatility",
+        content: "Extreme volatility: 50-80% drawdowns occur regularly. Regulatory uncertainty: Government actions can crash prices. Security risks: Lost keys mean lost funds—forever. Scams and fraud: Rug pulls, fake tokens, phishing attacks. No investor protection: Unlike stocks, no SIPC insurance. Only invest what you can afford to lose completely.",
+      },
+      {
+        title: "Crypto Security Best Practices",
+        content: "Never share private keys or seed phrases—EVER. Use hardware wallets for significant holdings. Enable 2FA on all exchange accounts. Verify addresses carefully before sending. Start with small amounts while learning. Use reputable exchanges only. Diversify across multiple assets. Consider dollar-cost averaging to reduce timing risk.",
+      },
+    ],
+
+    // Lesson 20: Dividend Investing
+    20: [
+      {
+        title: "The Power of Dividends",
+        content: "Dividends are cash payments from company profits to shareholders. Dividend yield = Annual dividend ÷ Stock price. High-quality dividend stocks provide growing income streams. Reinvested dividends account for ~40% of historical market returns. Dividend investing suits investors seeking income and lower volatility.",
+      },
+      {
+        title: "Dividend Aristocrats",
+        content: "Dividend Aristocrats: S&P 500 companies with 25+ consecutive years of dividend increases. Examples: Johnson & Johnson, Coca-Cola, Procter & Gamble. These companies demonstrate financial strength and management commitment. Dividend Kings have 50+ years of increases. Aristocrats historically outperform with lower volatility.",
+      },
+      {
+        title: "Evaluating Dividend Stocks",
+        content: "Dividend yield: Higher isn't always better—may signal trouble. Payout ratio: Dividends as percentage of earnings (under 60% is sustainable). Dividend growth rate: Look for consistent annual increases. Free cash flow: Must support dividend payments. Debt levels: Excessive debt threatens dividend safety.",
+      },
+      {
+        title: "Building a Dividend Portfolio",
+        content: "Diversify across sectors to avoid concentration risk. Balance high-yield with dividend growth stocks. Reinvest dividends for compounding (DRIP programs). Consider tax implications—dividends taxed as income. Use dividend ETFs (VYM, SCHD) for instant diversification. Focus on total return, not just yield.",
+      },
+    ],
   };
 
   return lessonContents[lessonOrderIndex] || [];
