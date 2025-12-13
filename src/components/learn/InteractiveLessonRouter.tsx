@@ -1,9 +1,9 @@
-import { OnboardingMentor } from "./lessons/OnboardingMentor";
+import { FoundationsImmersive } from "./lessons/FoundationsImmersive";
 import { RiskRewardImmersive } from "./lessons/RiskRewardImmersive";
-import { CompoundVisualizer } from "./lessons/CompoundVisualizer";
-import { AllocationBuilder } from "./lessons/AllocationBuilder";
-import { DiversificationBuilder } from "./lessons/DiversificationBuilder";
-import { FearGreedSimulator } from "./lessons/FearGreedSimulator";
+import { CompoundInterestImmersive } from "./lessons/CompoundInterestImmersive";
+import { StocksBondsImmersive } from "./lessons/StocksBondsImmersive";
+import { DiversificationImmersive } from "./lessons/DiversificationImmersive";
+import { MarketPsychologyImmersive } from "./lessons/MarketPsychologyImmersive";
 import { StockValuationCalculator } from "./lessons/StockValuationCalculator";
 import { FinancialStatementAnalyzer } from "./lessons/FinancialStatementAnalyzer";
 import { MoatIdentifier } from "./lessons/MoatIdentifier";
@@ -39,12 +39,12 @@ interface InteractiveLessonRouterProps {
 
 export const InteractiveLessonRouter = ({ lessonId }: InteractiveLessonRouterProps) => {
   const lessonComponents: Record<string, React.ReactNode> = {
-    "1": <OnboardingMentor />,
+    "1": <FoundationsImmersive />,
     "2": <RiskRewardImmersive />,
-    "3": <CompoundVisualizer />,
-    "4": <AllocationBuilder />,
-    "5": <DiversificationBuilder />,
-    "6": <FearGreedSimulator />,
+    "3": <CompoundInterestImmersive />,
+    "4": <StocksBondsImmersive />,
+    "5": <DiversificationImmersive />,
+    "6": <MarketPsychologyImmersive />,
     "7": <StockValuationCalculator />,
     "8": <FinancialStatementAnalyzer />,
     "9": <MoatIdentifier />,
