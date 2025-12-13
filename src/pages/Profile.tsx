@@ -655,13 +655,17 @@ const Profile = ({ onNavigate }: ProfileProps) => {
                     
                     if (error) throw error;
                     
-                    // Invalidate queries and navigate to onboarding
-                    queryClient.invalidateQueries({ queryKey: ["user-onboarding"] });
+                    // Clear ALL onboarding-related queries from cache
+                    queryClient.removeQueries({ queryKey: ["onboarding"] });
+                    queryClient.removeQueries({ queryKey: ["user-onboarding"] });
+                    
                     setShowRetakeDialog(false);
                     toast.success("Redirecting to placement assessment...");
                     
-                    // Force reload to trigger onboarding flow
-                    window.location.reload();
+                    // Small delay to ensure cache is cleared before reload
+                    setTimeout(() => {
+                      window.location.reload();
+                    }, 100);
                   } catch (error) {
                     toast.error("Failed to reset placement. Please try again.");
                   }

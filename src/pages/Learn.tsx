@@ -5,6 +5,8 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useOnboarding } from "@/hooks/useOnboarding";
+import { GraduationCap, Trophy, Target } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 interface LearnProps {
   onNavigate: (tab: string) => void;
@@ -14,26 +16,19 @@ interface LearnProps {
 
 const Learn = ({ onNavigate, selectedLesson, onLessonSelect }: LearnProps) => {
   const { user } = useAuth();
+  const { investmentLevel, quizScore, startingLesson } = useOnboarding();
 
-  // Fetch onboarding data to get starting lesson
-  const { data: onboardingData } = useQuery({
-    queryKey: ["user-onboarding", user?.id],
-    queryFn: async () => {
-      if (!user?.id) return null;
-      const { data, error } = await supabase
-        .from("user_onboarding")
-        .select("*")
-        .eq("user_id", user.id)
-        .maybeSingle();
-      
-      if (error) throw error;
-      return data;
-    },
-    enabled: !!user?.id,
-  });
+  // Format investment level for display
+  const getLevelDisplay = (level: string) => {
+    switch (level) {
+      case "advanced": return { label: "Advanced", color: "bg-purple-500/20 text-purple-400 border-purple-500/30" };
+      case "intermediate": return { label: "Intermediate", color: "bg-primary/20 text-primary border-primary/30" };
+      case "beginner-plus": return { label: "Beginner+", color: "bg-blue-500/20 text-blue-400 border-blue-500/30" };
+      default: return { label: "Beginner", color: "bg-green-500/20 text-green-400 border-green-500/30" };
+    }
+  };
 
-  // Get starting lesson from onboarding preferences
-  const startingLesson = (onboardingData?.preferences as any)?.starting_lesson || 1;
+  const levelDisplay = getLevelDisplay(investmentLevel);
 
   const { data: lessons = [], isLoading, refetch } = useQuery({
     queryKey: ["lessons", user?.id, startingLesson],
@@ -127,8 +122,48 @@ const Learn = ({ onNavigate, selectedLesson, onLessonSelect }: LearnProps) => {
 
   return (
     <div className="min-h-screen w-full bg-background">
+      {/* Placement Summary Banner */}
+      {startingLesson > 1 && (
+        <div className="px-8 pt-8 pb-2 animate-fade-in">
+          <div className="max-w-7xl mx-auto p-4 bg-gradient-to-r from-primary/10 to-purple-500/10 border border-primary/20 rounded-2xl">
+            <div className="flex items-center justify-between flex-wrap gap-4">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-xl bg-primary/20 flex items-center justify-center">
+                  <GraduationCap className="w-6 h-6 text-primary" />
+                </div>
+                <div>
+                  <p className="font-semibold text-foreground">Your Placement Results</p>
+                  <p className="text-sm text-muted-foreground">
+                    Based on your assessment, you're starting at Lesson {startingLesson}
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="text-center px-4 py-2 bg-background/50 rounded-lg">
+                  <div className="flex items-center gap-1 text-sm font-bold text-primary">
+                    <Trophy className="w-4 h-4" />
+                    {quizScore}%
+                  </div>
+                  <p className="text-xs text-muted-foreground">Quiz Score</p>
+                </div>
+                <div className="text-center px-4 py-2 bg-background/50 rounded-lg">
+                  <div className="flex items-center gap-1 text-sm font-bold text-primary">
+                    <Target className="w-4 h-4" />
+                    {startingLesson}
+                  </div>
+                  <p className="text-xs text-muted-foreground">Start Lesson</p>
+                </div>
+                <Badge className={`${levelDisplay.color} border`}>
+                  {levelDisplay.label}
+                </Badge>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Expert-Sourced Content Banner */}
-      <div className="px-8 pt-8 pb-4 animate-fade-in">
+      <div className="px-8 pt-4 pb-4 animate-fade-in">
         <div className="max-w-7xl mx-auto p-6 bg-primary/5 border border-primary/20 rounded-2xl">
           <p className="text-sm text-muted-foreground leading-relaxed">
             <span className="font-semibold text-foreground">📚 Expert-Sourced Content:</span> All challenges are based on proven principles from Warren Buffett, Benjamin Graham's "The Intelligent Investor", Peter Lynch's "One Up on Wall Street", Ray Dalio's "Principles", Investopedia educational modules, and Federal Reserve resources.
