@@ -4,6 +4,8 @@ import { CompoundInterestImmersive } from "./lessons/CompoundInterestImmersive";
 import { StocksBondsImmersive } from "./lessons/StocksBondsImmersive";
 import { DiversificationImmersive } from "./lessons/DiversificationImmersive";
 import { MarketPsychologyImmersive } from "./lessons/MarketPsychologyImmersive";
+import { CompoundVisualizer } from "./lessons/CompoundVisualizer";
+import { AllocationBuilder } from "./lessons/AllocationBuilder";
 import { StockValuationCalculator } from "./lessons/StockValuationCalculator";
 import { FinancialStatementAnalyzer } from "./lessons/FinancialStatementAnalyzer";
 import { MoatIdentifier } from "./lessons/MoatIdentifier";
