@@ -4,6 +4,7 @@ import { ThreePhaseLessonViewer } from "@/components/learn/ThreePhaseLessonViewe
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useOnboarding } from "@/hooks/useOnboarding";
 
 interface LearnProps {
   onNavigate: (tab: string) => void;
@@ -14,8 +15,28 @@ interface LearnProps {
 const Learn = ({ onNavigate, selectedLesson, onLessonSelect }: LearnProps) => {
   const { user } = useAuth();
 
+  // Fetch onboarding data to get starting lesson
+  const { data: onboardingData } = useQuery({
+    queryKey: ["user-onboarding", user?.id],
+    queryFn: async () => {
+      if (!user?.id) return null;
+      const { data, error } = await supabase
+        .from("user_onboarding")
+        .select("*")
+        .eq("user_id", user.id)
+        .maybeSingle();
+      
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!user?.id,
+  });
+
+  // Get starting lesson from onboarding preferences
+  const startingLesson = (onboardingData?.preferences as any)?.starting_lesson || 1;
+
   const { data: lessons = [], isLoading, refetch } = useQuery({
-    queryKey: ["lessons", user?.id],
+    queryKey: ["lessons", user?.id, startingLesson],
     queryFn: async () => {
       // Fetch all lessons
       const { data: lessonsData, error: lessonsError } = await supabase
@@ -43,32 +64,44 @@ const Learn = ({ onNavigate, selectedLesson, onLessonSelect }: LearnProps) => {
       
       if (progressError) throw progressError;
 
-      // Merge lesson data with progress and implement sequential unlocking
-      let lastCompletedIndex = -1;
+      // Merge lesson data with progress
+      // Lessons before starting lesson are marked as skipped/completed
       return lessonsData.map((lesson, index) => {
+        const lessonNumber = index + 1;
         const progress = progressData?.find((p) => p.lesson_id === lesson.id);
         const isCompleted = progress?.completed || false;
         
-        // Track the last completed lesson
-        if (isCompleted && index > lastCompletedIndex) {
-          lastCompletedIndex = index;
-        }
+        // If lesson is before starting lesson, mark it as skipped (unlocked but not required)
+        const isBeforeStarting = lessonNumber < startingLesson;
         
         // A lesson is unlocked if:
-        // 1. It's the first lesson, OR
-        // 2. The previous lesson is completed
-        const isUnlocked = index === 0 || (index > 0 && lastCompletedIndex >= index - 1);
+        // 1. It's before or at the starting lesson from onboarding, OR
+        // 2. The user has actually completed the previous lesson
+        const previousLessonsCompleted = lessonsData
+          .slice(Math.max(0, startingLesson - 1), index)
+          .every((_, idx) => {
+            const prevProgress = progressData?.find(
+              (p) => p.lesson_id === lessonsData[startingLesson - 1 + idx]?.id
+            );
+            return prevProgress?.completed || false;
+          });
+        
+        const isUnlocked = lessonNumber <= startingLesson || 
+          (index === startingLesson - 1) || // Starting lesson is always unlocked
+          (index > 0 && previousLessonsCompleted) ||
+          isCompleted;
         
         // Generate random star rating (1-3) for completed lessons
         const stars = isCompleted ? Math.floor(Math.random() * 3) + 1 : 0;
         
         return {
           ...lesson,
-          progress: progress?.progress || 0,
-          completed: isCompleted,
+          progress: isBeforeStarting && !isCompleted ? 100 : (progress?.progress || 0),
+          completed: isBeforeStarting || isCompleted,
+          skipped: isBeforeStarting && !isCompleted,
           duration: `${lesson.duration_minutes} min`,
           is_locked: !isUnlocked,
-          stars,
+          stars: isBeforeStarting ? 0 : stars,
         };
       });
     },
