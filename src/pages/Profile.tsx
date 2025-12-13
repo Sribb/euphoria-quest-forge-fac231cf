@@ -638,39 +638,65 @@ const Profile = ({ onNavigate }: ProfileProps) => {
           <AlertDialog open={showRetakeDialog} onOpenChange={setShowRetakeDialog}>
             <AlertDialogContent>
               <AlertDialogHeader>
-                <AlertDialogTitle>Retake Placement Assessment?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  This will delete your current placement data and take you through the investment knowledge quiz again. Your new starting lesson will be based on your quiz results.
+                <AlertDialogTitle className="flex items-center gap-2">
+                  <GraduationCap className="w-5 h-5 text-primary" />
+                  Retake Placement Assessment?
+                </AlertDialogTitle>
+                <AlertDialogDescription className="space-y-3">
+                  <p>
+                    This will completely reset your learning progress and take you through the investment knowledge quiz again.
+                  </p>
+                  <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
+                    <p className="text-destructive font-medium text-sm">
+                      ⚠️ Warning: Your new placement level may be lower or higher than your current level based on your quiz performance. All lesson progress will be erased.
+                    </p>
+                  </div>
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
                 <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={async () => {
-                  try {
-                    // Delete existing onboarding data
-                    const { error } = await supabase
-                      .from("user_onboarding")
-                      .delete()
-                      .eq("user_id", user?.id);
-                    
-                    if (error) throw error;
-                    
-                    // Clear ALL onboarding-related queries from cache
-                    queryClient.removeQueries({ queryKey: ["onboarding"] });
-                    queryClient.removeQueries({ queryKey: ["user-onboarding"] });
-                    
-                    setShowRetakeDialog(false);
-                    toast.success("Redirecting to placement assessment...");
-                    
-                    // Small delay to ensure cache is cleared before reload
-                    setTimeout(() => {
-                      window.location.reload();
-                    }, 100);
-                  } catch (error) {
-                    toast.error("Failed to reset placement. Please try again.");
-                  }
-                }}>
-                  Retake Assessment
+                <AlertDialogAction 
+                  className="bg-destructive hover:bg-destructive/90"
+                  onClick={async () => {
+                    try {
+                      // Delete all lesson progress data
+                      await supabase
+                        .from("user_lesson_progress")
+                        .delete()
+                        .eq("user_id", user?.id);
+                      
+                      // Delete lesson question performance data
+                      await supabase
+                        .from("lesson_question_performance")
+                        .delete()
+                        .eq("user_id", user?.id);
+                      
+                      // Delete existing onboarding data
+                      const { error } = await supabase
+                        .from("user_onboarding")
+                        .delete()
+                        .eq("user_id", user?.id);
+                      
+                      if (error) throw error;
+                      
+                      // Clear ALL related queries from cache
+                      queryClient.removeQueries({ queryKey: ["onboarding"] });
+                      queryClient.removeQueries({ queryKey: ["user-onboarding"] });
+                      queryClient.removeQueries({ queryKey: ["lessonProgress"] });
+                      queryClient.removeQueries({ queryKey: ["lesson-progress"] });
+                      
+                      setShowRetakeDialog(false);
+                      toast.success("Redirecting to placement assessment...");
+                      
+                      // Small delay to ensure cache is cleared before reload
+                      setTimeout(() => {
+                        window.location.reload();
+                      }, 100);
+                    } catch (error) {
+                      toast.error("Failed to reset placement. Please try again.");
+                    }
+                  }}>
+                  Reset & Retake
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
