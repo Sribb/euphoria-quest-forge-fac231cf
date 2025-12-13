@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { PathwayNode } from "./PathwayNode";
 import { ChallengeModal } from "./ChallengeModal";
-import { Trophy, Award } from "lucide-react";
+import { Trophy, Award, SkipForward, ChevronDown, ChevronUp } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface Lesson {
   id: string;
@@ -14,6 +15,7 @@ interface Lesson {
   completed: boolean;
   progress: number;
   stars?: number;
+  skipped?: boolean;
 }
 
 interface LearningPathwayProps {
@@ -21,6 +23,7 @@ interface LearningPathwayProps {
   onLessonSelect: (lessonId: string) => void;
   completedCount: number;
   totalCount: number;
+  startingLesson?: number;
 }
 
 export const LearningPathway = ({
@@ -28,8 +31,14 @@ export const LearningPathway = ({
   onLessonSelect,
   completedCount,
   totalCount,
+  startingLesson = 1,
 }: LearningPathwayProps) => {
   const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
+  const [showSkippedLessons, setShowSkippedLessons] = useState(false);
+
+  // Separate skipped and active lessons
+  const skippedLessons = lessons.filter(l => l.skipped);
+  const activeLessons = lessons.filter(l => !l.skipped);
 
   const handleNodeClick = (lesson: Lesson) => {
     if (!lesson.is_locked) {
@@ -44,7 +53,10 @@ export const LearningPathway = ({
     }
   };
 
-  const progressPercentage = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
+  // Calculate progress based on non-skipped lessons only
+  const actualCompletedLessons = lessons.filter(l => l.completed && !l.skipped).length;
+  const actualTotalLessons = lessons.filter(l => !l.skipped).length;
+  const progressPercentage = actualTotalLessons > 0 ? Math.round((actualCompletedLessons / actualTotalLessons) * 100) : 0;
 
   // Snake pattern: left, right, left, right...
   const getNodeSide = (index: number): "left" | "right" => {
@@ -72,7 +84,7 @@ export const LearningPathway = ({
             </div>
             <div className="text-right">
               <div className="text-2xl font-bold text-primary transition-all duration-500">
-                {completedCount}/{totalCount}
+                {actualCompletedLessons}/{actualTotalLessons}
               </div>
               <p className="text-xs text-muted-foreground">Completed</p>
             </div>
@@ -103,14 +115,82 @@ export const LearningPathway = ({
         </div>
       </div>
 
-      {/* Snake Pattern Pathway */}
+      {/* Skipped Lessons Banner */}
+      {skippedLessons.length > 0 && (
+        <div className="max-w-2xl mx-auto px-8 mb-6">
+          <div className="p-4 bg-primary/5 border border-primary/20 rounded-xl">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <SkipForward className="w-5 h-5 text-primary" />
+                </div>
+                <div>
+                  <p className="font-semibold text-foreground">
+                    {skippedLessons.length} lessons skipped
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    Based on your placement test, you can start from Lesson {startingLesson}
+                  </p>
+                </div>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowSkippedLessons(!showSkippedLessons)}
+                className="gap-2"
+              >
+                {showSkippedLessons ? (
+                  <>
+                    Hide <ChevronUp className="w-4 h-4" />
+                  </>
+                ) : (
+                  <>
+                    View & Complete <ChevronDown className="w-4 h-4" />
+                  </>
+                )}
+              </Button>
+            </div>
+
+            {/* Expandable Skipped Lessons List */}
+            {showSkippedLessons && (
+              <div className="mt-4 pt-4 border-t border-primary/20 space-y-2 animate-fade-in">
+                <p className="text-xs text-muted-foreground mb-3">
+                  You can go back and complete these lessons anytime to reinforce fundamentals:
+                </p>
+                <div className="grid gap-2 max-h-60 overflow-y-auto">
+                  {skippedLessons.map((lesson) => (
+                    <button
+                      key={lesson.id}
+                      onClick={() => handleNodeClick(lesson)}
+                      className="flex items-center justify-between p-3 bg-background/50 hover:bg-background rounded-lg border border-border transition-all hover:border-primary/30 text-left"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-sm font-bold text-muted-foreground">
+                          {lesson.order_index}
+                        </div>
+                        <div>
+                          <p className="font-medium text-sm">{lesson.title}</p>
+                          <p className="text-xs text-muted-foreground">{lesson.duration} · {lesson.difficulty}</p>
+                        </div>
+                      </div>
+                      <span className="text-xs text-primary font-medium">Start →</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Snake Pattern Pathway - Only show non-skipped lessons */}
       <div className="w-full max-w-2xl mx-auto px-12 pb-32">
         <div className="relative">
-          {lessons.map((lesson, index) => {
+          {activeLessons.map((lesson, index) => {
             const isNextLesson = !lesson.is_locked && !lesson.completed && 
-              index === lessons.findIndex(l => !l.is_locked && !l.completed);
+              index === activeLessons.findIndex(l => !l.is_locked && !l.completed);
             const side = getNodeSide(index);
-            const isLastNode = index === lessons.length - 1;
+            const isLastNode = index === activeLessons.length - 1;
 
             return (
               <div key={lesson.id} className="relative">
