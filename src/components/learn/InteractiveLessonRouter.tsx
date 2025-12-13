@@ -12,6 +12,10 @@ import { DCASimulator } from "./lessons/DCASimulator";
 import { TaxOptimizer } from "./lessons/TaxOptimizer";
 import { RetirementCalculator } from "./lessons/RetirementCalculator";
 import { BiasDetector } from "./lessons/BiasDetector";
+import { OptionsSimulator } from "./lessons/OptionsSimulator";
+import { ETFComparison } from "./lessons/ETFComparison";
+import { BondCalculator } from "./lessons/BondCalculator";
+import { CryptoBasicsExplorer } from "./lessons/CryptoBasicsExplorer";
 
 interface InteractiveLessonRouterProps {
   lessonId: string;
@@ -34,7 +38,10 @@ export const InteractiveLessonRouter = ({ lessonId }: InteractiveLessonRouterPro
     "12": <TaxOptimizer />,
     "13": <RetirementCalculator />,
     "14": <BiasDetector />,
-    "15": <OnboardingMentor />, // Reuse for lesson 15
+    "15": <OptionsSimulator />,
+    "16": <ETFComparison />,
+    "17": <BondCalculator />,
+    "19": <CryptoBasicsExplorer />,
   };
 
   return (
