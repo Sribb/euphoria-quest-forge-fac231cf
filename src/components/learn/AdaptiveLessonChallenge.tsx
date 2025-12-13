@@ -6,6 +6,7 @@ import { CheckCircle2, XCircle, Brain, TrendingUp, AlertCircle } from "lucide-re
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useXPSystem } from "@/hooks/useXPSystem";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
@@ -26,6 +27,7 @@ interface AdaptiveLessonChallengeProps {
 
 export const AdaptiveLessonChallenge = ({ lessonId, onComplete, onBack }: AdaptiveLessonChallengeProps) => {
   const { user } = useAuth();
+  const { addXP } = useXPSystem();
   const [questions, setQuestions] = useState<Question[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
@@ -185,6 +187,11 @@ export const AdaptiveLessonChallenge = ({ lessonId, onComplete, onBack }: Adapti
             .update({ coins: profile.coins + 100 })
             .eq('id', user?.id);
         }
+
+        // Award XP based on score
+        const xpAmount = score >= 100 ? 150 : score >= 90 ? 100 : 50;
+        addXP(xpAmount);
+        toast.success(`+${xpAmount} XP earned!`);
       }
 
       onComplete(score, passed);
