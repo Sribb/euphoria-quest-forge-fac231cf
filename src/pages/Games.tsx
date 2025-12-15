@@ -59,36 +59,36 @@ const Games = ({ onNavigate }: GamesProps) => {
 
       {/* Featured Games Grid */}
       <div className="grid lg:grid-cols-2 gap-6">
-        {/* Life Sim Game - Featured */}
+        {/* Trend Master - Featured */}
         <Card className="lg:col-span-2 p-6 bg-gradient-primary text-white border-0 shadow-glow-soft animate-fade-in overflow-hidden relative">
           <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2" />
           <div className="absolute bottom-0 left-0 w-32 h-32 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2" />
           <div className="relative flex flex-col md:flex-row gap-6 items-center">
             <div className="w-20 h-20 rounded-2xl bg-white/20 flex items-center justify-center shadow-glow flex-shrink-0">
-              <Trophy className="w-10 h-10" />
+              <TrendingUp className="w-10 h-10" />
             </div>
             <div className="flex-1 text-center md:text-left">
               <div className="flex items-center gap-2 justify-center md:justify-start mb-2">
-                <h3 className="font-bold text-2xl">Life Sim: Investor Journey</h3>
-                <Badge className="bg-white/20 text-white border-0">Epic</Badge>
+                <h3 className="font-bold text-2xl">Trend Master</h3>
+                <Badge className="bg-white/20 text-white border-0">Featured</Badge>
               </div>
               <p className="text-white/90 mb-4 max-w-xl">
-                Live a full investing life from age 22 to retirement! Make career moves, buy homes, 
-                manage portfolios, and face real market events. Your choices shape your financial destiny.
+                Master the art of reading stock charts! Identify 20+ real chart patterns from uptrends to 
+                head-and-shoulders. Interactive charts, instant feedback, and mentor-style explanations.
               </p>
               <div className="flex items-center gap-4 flex-wrap justify-center md:justify-start">
                 <div className="flex items-center gap-2 text-sm">
-                  <Coins className="w-5 h-5" />
-                  <span className="font-bold">Variable Rewards</span>
+                  <Brain className="w-5 h-5" />
+                  <span className="font-bold">20+ Patterns</span>
                 </div>
-                <Badge variant="outline" className="bg-white/10 border-white/30 text-white">Immersive</Badge>
-                <Badge variant="outline" className="bg-white/10 border-white/30 text-white">40+ Years</Badge>
+                <Badge variant="outline" className="bg-white/10 border-white/30 text-white">Educational</Badge>
+                <Badge variant="outline" className="bg-white/10 border-white/30 text-white">Interactive</Badge>
               </div>
             </div>
             <Button 
               size="lg" 
               className="bg-white text-primary hover:bg-white/90 shadow-lg gap-2 px-8"
-              onClick={() => handlePlayGame("life-sim")}
+              onClick={() => handlePlayGame("trend-master")}
             >
               <Play className="w-5 h-5" />
               Start Game
@@ -158,28 +158,28 @@ const Games = ({ onNavigate }: GamesProps) => {
           </div>
         </Card>
 
-        {/* Trend Master Game */}
-        <Card className="p-6 bg-gradient-accent border-0 shadow-md animate-fade-in hover-lift cursor-pointer smooth-transition" onClick={() => handlePlayGame("trend-master")}>
+        {/* Life Sim Game */}
+        <Card className="p-6 bg-gradient-accent border-0 shadow-md animate-fade-in hover-lift cursor-pointer smooth-transition" onClick={() => handlePlayGame("life-sim")}>
           <div className="flex flex-col h-full">
             <div className="flex items-start gap-4 mb-4">
               <div className="w-14 h-14 rounded-2xl bg-primary/20 flex items-center justify-center shadow-glow-soft">
-                <TrendingUp className="w-7 h-7 text-primary" />
+                <Trophy className="w-7 h-7 text-primary" />
               </div>
               <div className="flex-1">
                 <div className="flex items-start justify-between mb-2">
-                  <h3 className="font-bold text-xl">Trend Master</h3>
-                  <Badge variant="secondary">Featured</Badge>
+                  <h3 className="font-bold text-xl">Life Sim: Investor Journey</h3>
+                  <Badge variant="secondary">Epic</Badge>
                 </div>
               </div>
             </div>
             <p className="text-sm text-muted-foreground mb-4 flex-1">
-              Master the art of reading stock charts! Identify 20+ real chart patterns from uptrends to 
-              head-and-shoulders. Interactive charts, instant feedback, and mentor-style explanations.
+              Live a full investing life from age 22 to retirement! Make career moves, buy homes, 
+              manage portfolios, and face real market events. Your choices shape your financial destiny.
             </p>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2 text-sm">
-                <Brain className="w-5 h-5 text-primary" />
-                <span className="font-bold text-primary">20+ Patterns</span>
+                <Coins className="w-5 h-5 text-primary" />
+                <span className="font-bold text-primary">40+ Years</span>
               </div>
               <Button size="sm" className="gap-2">
                 <Play className="w-4 h-4" />
