@@ -14,7 +14,7 @@ interface Scenario {
   headline: string;
   description: string;
   category: "economic" | "geopolitical" | "corporate" | "technology" | "consumer";
-  correctAnswer: "bullish" | "bearish" | "neutral";
+  correctAnswer: "bullish" | "bearish" | "neutral" | "slightly_bullish" | "slightly_bearish";
   explanation: string;
   affectedSectors: string[];
   difficulty: "easy" | "medium" | "hard";
@@ -174,6 +174,86 @@ const SCENARIOS: Scenario[] = [
     explanation: "Government shutdowns create uncertainty and reduce economic activity. Federal contractors lose revenue, consumer confidence drops, and GDP growth slows. Markets dislike the instability.",
     affectedSectors: ["Defense Contractors", "Travel", "Government Services"],
     difficulty: "medium"
+  },
+  {
+    id: "16",
+    headline: "Retail Sales Rise 0.3%, Slightly Below Expectations",
+    description: "Monthly retail sales data shows modest growth, coming in just under the 0.5% analyst forecast.",
+    category: "economic",
+    correctAnswer: "slightly_bearish",
+    explanation: "While retail sales did grow, missing expectations slightly suggests consumer spending may be slowing. Markets react mildly negative as it hints at softer economic momentum without being alarming.",
+    affectedSectors: ["Retail", "Consumer Discretionary", "E-commerce"],
+    difficulty: "medium"
+  },
+  {
+    id: "17",
+    headline: "Tech Giant Announces Small Workforce Reduction of 2%",
+    description: "A major tech company announces plans to cut 2% of its workforce to improve operational efficiency.",
+    category: "corporate",
+    correctAnswer: "slightly_bullish",
+    explanation: "Small, strategic layoffs are often seen as cost optimization rather than distress. Investors may view this as prudent management, leading to a mildly positive reaction as margins improve.",
+    affectedSectors: ["Technology", "Software", "Cloud Services"],
+    difficulty: "medium"
+  },
+  {
+    id: "18",
+    headline: "Inflation Data Comes in at 2.1%, Just Above 2% Target",
+    description: "Consumer Price Index shows inflation at 2.1%, slightly above the Fed's 2% target but within normal range.",
+    category: "economic",
+    correctAnswer: "slightly_bearish",
+    explanation: "Marginally higher inflation isn't alarming but suggests the Fed may delay rate cuts. Markets react with mild concern as it slightly reduces the probability of near-term monetary easing.",
+    affectedSectors: ["Bonds", "Rate-Sensitive Stocks", "Real Estate"],
+    difficulty: "hard"
+  },
+  {
+    id: "19",
+    headline: "Major Airline Reports Better-Than-Expected Travel Demand",
+    description: "A leading airline reports summer bookings up 8%, beating forecasts by 3 percentage points.",
+    category: "corporate",
+    correctAnswer: "slightly_bullish",
+    explanation: "Stronger travel demand is positive for airlines and suggests healthy consumer spending. However, it's sector-specific and doesn't dramatically change the broader market outlook.",
+    affectedSectors: ["Airlines", "Travel", "Hospitality"],
+    difficulty: "easy"
+  },
+  {
+    id: "20",
+    headline: "Manufacturing PMI Drops to 49.5, Just Below Expansion Threshold",
+    description: "The Purchasing Managers Index for manufacturing comes in at 49.5, slightly below the 50 expansion threshold.",
+    category: "economic",
+    correctAnswer: "slightly_bearish",
+    explanation: "A PMI just below 50 indicates mild contraction in manufacturing. While concerning, being so close to the threshold suggests conditions aren't severely deteriorating.",
+    affectedSectors: ["Industrial", "Manufacturing", "Materials"],
+    difficulty: "medium"
+  },
+  {
+    id: "21",
+    headline: "New Home Sales Tick Up 1.5% Month-Over-Month",
+    description: "Housing market shows modest improvement with new home sales rising 1.5% from the previous month.",
+    category: "economic",
+    correctAnswer: "slightly_bullish",
+    explanation: "A small uptick in home sales suggests the housing market may be stabilizing despite high rates. It's a positive signal but not strong enough to dramatically shift market sentiment.",
+    affectedSectors: ["Homebuilders", "Real Estate", "Mortgage Lenders"],
+    difficulty: "easy"
+  },
+  {
+    id: "22",
+    headline: "Major Bank Lowers Q3 GDP Forecast to 2.3% from 2.5%",
+    description: "A prominent investment bank slightly reduces its economic growth outlook for the upcoming quarter.",
+    category: "economic",
+    correctAnswer: "slightly_bearish",
+    explanation: "A modest downward revision in GDP expectations suggests economists see somewhat softer growth ahead. It's not alarming but adds a cautionary note to market sentiment.",
+    affectedSectors: ["Broad Market", "Cyclical Stocks", "Small Caps"],
+    difficulty: "medium"
+  },
+  {
+    id: "23",
+    headline: "Semiconductor Company Raises Guidance by 5%",
+    description: "A mid-sized chip maker raises its revenue guidance for the next quarter by 5% due to AI demand.",
+    category: "technology",
+    correctAnswer: "slightly_bullish",
+    explanation: "Positive guidance revisions signal confidence and strong demand. While bullish for the sector, a 5% increase from one company has a measured rather than explosive market impact.",
+    affectedSectors: ["Semiconductors", "Technology", "AI"],
+    difficulty: "easy"
   }
 ];
 
@@ -182,7 +262,7 @@ export const MarketReactionGame = ({ onClose }: MarketReactionGameProps) => {
   const [score, setScore] = useState(0);
   const [streak, setStreak] = useState(0);
   const [showResult, setShowResult] = useState(false);
-  const [selectedAnswer, setSelectedAnswer] = useState<"bullish" | "bearish" | "neutral" | null>(null);
+  const [selectedAnswer, setSelectedAnswer] = useState<"bullish" | "bearish" | "neutral" | "slightly_bullish" | "slightly_bearish" | null>(null);
   const [gameComplete, setGameComplete] = useState(false);
   const [answeredCorrectly, setAnsweredCorrectly] = useState<boolean | null>(null);
 
@@ -209,7 +289,7 @@ export const MarketReactionGame = ({ onClose }: MarketReactionGameProps) => {
     }
   };
 
-  const handleAnswer = (answer: "bullish" | "bearish" | "neutral") => {
+  const handleAnswer = (answer: "bullish" | "bearish" | "neutral" | "slightly_bullish" | "slightly_bearish") => {
     setSelectedAnswer(answer);
     const isCorrect = answer === currentScenario.correctAnswer;
     setAnsweredCorrectly(isCorrect);
@@ -225,6 +305,17 @@ export const MarketReactionGame = ({ onClose }: MarketReactionGameProps) => {
     }
     
     setShowResult(true);
+  };
+
+  const getAnswerLabel = (answer: string) => {
+    const labels: Record<string, string> = {
+      bullish: "Bullish",
+      bearish: "Bearish",
+      neutral: "Neutral",
+      slightly_bullish: "Slightly Bullish",
+      slightly_bearish: "Slightly Bearish"
+    };
+    return labels[answer] || answer;
   };
 
   const handleNext = () => {
@@ -329,33 +420,51 @@ export const MarketReactionGame = ({ onClose }: MarketReactionGameProps) => {
         {!showResult ? (
           <div className="space-y-3">
             <p className="font-semibold text-center">How will the market react?</p>
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-5 gap-2">
               <Button
                 size="lg"
                 variant="outline"
-                className="flex-col h-24 gap-2 hover:bg-success/10 hover:border-success hover:text-success"
+                className="flex-col h-24 gap-1 hover:bg-success/10 hover:border-success hover:text-success"
                 onClick={() => handleAnswer("bullish")}
               >
-                <TrendingUp className="w-8 h-8" />
-                <span>Bullish</span>
+                <TrendingUp className="w-6 h-6" />
+                <span className="text-xs">Bullish</span>
               </Button>
               <Button
                 size="lg"
                 variant="outline"
-                className="flex-col h-24 gap-2 hover:bg-muted hover:border-muted-foreground"
+                className="flex-col h-24 gap-1 hover:bg-success/5 hover:border-success/50 hover:text-success/80"
+                onClick={() => handleAnswer("slightly_bullish")}
+              >
+                <TrendingUp className="w-5 h-5 opacity-70" />
+                <span className="text-xs text-center">Slightly Bullish</span>
+              </Button>
+              <Button
+                size="lg"
+                variant="outline"
+                className="flex-col h-24 gap-1 hover:bg-muted hover:border-muted-foreground"
                 onClick={() => handleAnswer("neutral")}
               >
-                <Minus className="w-8 h-8" />
-                <span>Neutral</span>
+                <Minus className="w-6 h-6" />
+                <span className="text-xs">Neutral</span>
               </Button>
               <Button
                 size="lg"
                 variant="outline"
-                className="flex-col h-24 gap-2 hover:bg-destructive/10 hover:border-destructive hover:text-destructive"
+                className="flex-col h-24 gap-1 hover:bg-destructive/5 hover:border-destructive/50 hover:text-destructive/80"
+                onClick={() => handleAnswer("slightly_bearish")}
+              >
+                <TrendingDown className="w-5 h-5 opacity-70" />
+                <span className="text-xs text-center">Slightly Bearish</span>
+              </Button>
+              <Button
+                size="lg"
+                variant="outline"
+                className="flex-col h-24 gap-1 hover:bg-destructive/10 hover:border-destructive hover:text-destructive"
                 onClick={() => handleAnswer("bearish")}
               >
-                <TrendingDown className="w-8 h-8" />
-                <span>Bearish</span>
+                <TrendingDown className="w-6 h-6" />
+                <span className="text-xs">Bearish</span>
               </Button>
             </div>
           </div>
@@ -374,7 +483,7 @@ export const MarketReactionGame = ({ onClose }: MarketReactionGameProps) => {
                   {answeredCorrectly ? "Correct!" : "Incorrect"}
                 </p>
                 <p className="text-sm text-muted-foreground">
-                  The market reaction is <span className="font-semibold capitalize">{currentScenario.correctAnswer}</span>
+                  The market reaction is <span className="font-semibold">{getAnswerLabel(currentScenario.correctAnswer)}</span>
                 </p>
               </div>
             </div>
