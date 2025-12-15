@@ -22,6 +22,14 @@ interface Trader {
   trades: number;
   winRate: number;
   lastAction?: string;
+  lastTradeTime?: number;
+  holdings: Record<string, { shares: number; avgPrice: number }>;
+}
+
+interface StockPrice {
+  symbol: string;
+  price: number;
+  change: number;
 }
 
 export const AICompetitorGame = ({ onClose }: AICompetitorGameProps) => {
@@ -34,6 +42,17 @@ export const AICompetitorGame = ({ onClose }: AICompetitorGameProps) => {
   const [traders, setTraders] = useState<Trader[]>([]);
   const [gameStarted, setGameStarted] = useState(false);
   const [timeRemaining, setTimeRemaining] = useState(300); // 5 minutes
+  const [lastUserTradeTime, setLastUserTradeTime] = useState(0);
+  const [userHoldings, setUserHoldings] = useState<Record<string, { shares: number; avgPrice: number }>>({});
+  const [stockPrices, setStockPrices] = useState<StockPrice[]>([
+    { symbol: 'AAPL', price: 178.50, change: 0 },
+    { symbol: 'TSLA', price: 245.20, change: 0 },
+    { symbol: 'NVDA', price: 485.30, change: 0 },
+    { symbol: 'MSFT', price: 378.90, change: 0 },
+    { symbol: 'GOOGL', price: 142.75, change: 0 },
+    { symbol: 'AMZN', price: 178.25, change: 0 }
+  ]);
+  const TRADE_COOLDOWN = 3000; // 3 seconds cooldown between trades
 
   // Initialize game
   useEffect(() => {
@@ -53,7 +72,9 @@ export const AICompetitorGame = ({ onClose }: AICompetitorGameProps) => {
         strategy: comp.strategy_type,
         trades: comp.total_trades || 0,
         winRate: comp.win_rate || 0,
-        lastAction: undefined
+        lastAction: undefined,
+        lastTradeTime: 0,
+        holdings: {}
       }));
       setTraders(traderData);
       setGameStarted(true);
@@ -82,33 +103,156 @@ export const AICompetitorGame = ({ onClose }: AICompetitorGameProps) => {
   useEffect(() => {
     if (!gameStarted || !session) return;
 
-    const interval = setInterval(() => {
+    const priceInterval = setInterval(() => {
+      updateStockPrices();
+    }, 2000); // Update prices every 2 seconds
+
+    const tradeInterval = setInterval(() => {
       updatePrices.mutate();
       simulateAITrades();
-    }, 8000); // Every 8 seconds
+    }, 4000); // AI trades every 4 seconds
 
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(priceInterval);
+      clearInterval(tradeInterval);
+    };
   }, [gameStarted, session]);
+
+  const updateStockPrices = () => {
+    setStockPrices(prev => prev.map(stock => {
+      const changePercent = (Math.random() - 0.5) * 0.02; // -1% to +1%
+      const newPrice = Math.max(1, stock.price * (1 + changePercent));
+      return {
+        ...stock,
+        price: newPrice,
+        change: changePercent * 100
+      };
+    }));
+  };
+
+  const getStrategyTradeDecision = (strategy: string, prices: StockPrice[]) => {
+    // Each strategy has different trading patterns
+    const decisions = {
+      aggressive: () => {
+        // Aggressive: trades frequently, buys volatile stocks, larger positions
+        const volatileStocks = prices.filter(p => Math.abs(p.change) > 0.3);
+        if (volatileStocks.length > 0) {
+          const stock = volatileStocks[Math.floor(Math.random() * volatileStocks.length)];
+          return { action: stock.change > 0 ? 'buy' : 'sell', symbol: stock.symbol, shares: Math.floor(Math.random() * 20) + 10 };
+        }
+        const randomStock = prices[Math.floor(Math.random() * prices.length)];
+        return { action: Math.random() > 0.4 ? 'buy' : 'sell', symbol: randomStock.symbol, shares: Math.floor(Math.random() * 15) + 5 };
+      },
+      momentum: () => {
+        // Momentum: follows trends, buys rising stocks
+        const risingStocks = prices.filter(p => p.change > 0.2);
+        if (risingStocks.length > 0) {
+          const stock = risingStocks[Math.floor(Math.random() * risingStocks.length)];
+          return { action: 'buy', symbol: stock.symbol, shares: Math.floor(Math.random() * 12) + 5 };
+        }
+        const fallingStocks = prices.filter(p => p.change < -0.2);
+        if (fallingStocks.length > 0) {
+          const stock = fallingStocks[Math.floor(Math.random() * fallingStocks.length)];
+          return { action: 'sell', symbol: stock.symbol, shares: Math.floor(Math.random() * 8) + 3 };
+        }
+        return null; // Hold if no clear trend
+      },
+      value: () => {
+        // Value: buys dips, patient, smaller trades
+        const dippedStocks = prices.filter(p => p.change < -0.3);
+        if (dippedStocks.length > 0 && Math.random() > 0.4) {
+          const stock = dippedStocks[Math.floor(Math.random() * dippedStocks.length)];
+          return { action: 'buy', symbol: stock.symbol, shares: Math.floor(Math.random() * 8) + 3 };
+        }
+        // Rarely sells, only if significant gains
+        const peakedStocks = prices.filter(p => p.change > 0.5);
+        if (peakedStocks.length > 0 && Math.random() > 0.7) {
+          const stock = peakedStocks[Math.floor(Math.random() * peakedStocks.length)];
+          return { action: 'sell', symbol: stock.symbol, shares: Math.floor(Math.random() * 5) + 2 };
+        }
+        return null;
+      },
+      conservative: () => {
+        // Conservative: trades rarely, small positions, avoids volatility
+        if (Math.random() > 0.6) return null; // Often holds
+        const stableStocks = prices.filter(p => Math.abs(p.change) < 0.3);
+        if (stableStocks.length > 0) {
+          const stock = stableStocks[Math.floor(Math.random() * stableStocks.length)];
+          return { action: Math.random() > 0.5 ? 'buy' : 'sell', symbol: stock.symbol, shares: Math.floor(Math.random() * 5) + 2 };
+        }
+        return null;
+      }
+    };
+
+    const decisionFn = decisions[strategy as keyof typeof decisions] || decisions.momentum;
+    return decisionFn();
+  };
 
   const simulateAITrades = () => {
     setTraders(prevTraders => 
       prevTraders.map(trader => {
-        const shouldTrade = Math.random() > 0.5;
-        if (!shouldTrade) return trader;
-
-        const profitMultiplier = getStrategyMultiplier(trader.strategy);
-        const changePercent = (Math.random() - 0.45) * profitMultiplier;
-        const capitalChange = trader.capital * changePercent;
-        const newCapital = Math.max(1000, trader.capital + capitalChange);
-
-        const actions = ['bought AAPL', 'sold TSLA', 'bought NVDA', 'sold MSFT', 'bought GOOGL', 'sold AMZN'];
+        const decision = getStrategyTradeDecision(trader.strategy, stockPrices);
         
+        if (!decision) {
+          // Trader holds - no action this round
+          return {
+            ...trader,
+            lastAction: 'holding position'
+          };
+        }
+
+        const stockPrice = stockPrices.find(p => p.symbol === decision.symbol);
+        if (!stockPrice) return trader;
+
+        const tradeValue = stockPrice.price * decision.shares;
+        let newCapital = trader.capital;
+        let newHoldings = { ...trader.holdings };
+
+        if (decision.action === 'buy') {
+          if (trader.capital >= tradeValue) {
+            newCapital = trader.capital - tradeValue;
+            const existingHolding = newHoldings[decision.symbol] || { shares: 0, avgPrice: 0 };
+            const totalShares = existingHolding.shares + decision.shares;
+            const totalCost = (existingHolding.shares * existingHolding.avgPrice) + tradeValue;
+            newHoldings[decision.symbol] = {
+              shares: totalShares,
+              avgPrice: totalCost / totalShares
+            };
+          } else {
+            return { ...trader, lastAction: 'insufficient funds' };
+          }
+        } else {
+          // Sell
+          const existingHolding = newHoldings[decision.symbol];
+          if (existingHolding && existingHolding.shares >= decision.shares) {
+            newCapital = trader.capital + tradeValue;
+            newHoldings[decision.symbol] = {
+              shares: existingHolding.shares - decision.shares,
+              avgPrice: existingHolding.avgPrice
+            };
+            if (newHoldings[decision.symbol].shares === 0) {
+              delete newHoldings[decision.symbol];
+            }
+          } else {
+            // Short sell (simplified - just affects capital)
+            newCapital = trader.capital + (tradeValue * 0.95); // 5% short premium
+          }
+        }
+
+        // Calculate total portfolio value including holdings
+        const holdingsValue = Object.entries(newHoldings).reduce((total, [symbol, holding]) => {
+          const price = stockPrices.find(p => p.symbol === symbol)?.price || 0;
+          return total + (holding.shares * price);
+        }, 0);
+
         return {
           ...trader,
           capital: newCapital,
+          holdings: newHoldings,
           trades: trader.trades + 1,
-          winRate: capitalChange > 0 ? Math.min(1, trader.winRate + 0.05) : Math.max(0, trader.winRate - 0.03),
-          lastAction: actions[Math.floor(Math.random() * actions.length)]
+          winRate: Math.random() > 0.4 ? Math.min(1, trader.winRate + 0.02) : Math.max(0, trader.winRate - 0.01),
+          lastAction: `${decision.action === 'buy' ? 'bought' : 'sold'} ${decision.shares} ${decision.symbol} @ $${stockPrice.price.toFixed(2)}`,
+          lastTradeTime: Date.now()
         };
       })
     );
@@ -124,6 +268,15 @@ export const AICompetitorGame = ({ onClose }: AICompetitorGameProps) => {
     return multipliers[strategy] || 0.08;
   };
 
+  const canTrade = () => {
+    return Date.now() - lastUserTradeTime >= TRADE_COOLDOWN;
+  };
+
+  const getCooldownRemaining = () => {
+    const remaining = TRADE_COOLDOWN - (Date.now() - lastUserTradeTime);
+    return Math.max(0, Math.ceil(remaining / 1000));
+  };
+
   const handleTrade = (action: 'buy' | 'sell') => {
     if (!selectedStock) {
       toast({
@@ -134,20 +287,108 @@ export const AICompetitorGame = ({ onClose }: AICompetitorGameProps) => {
       return;
     }
 
-    const changePercent = (Math.random() - 0.48) * 0.1;
-    const capitalChange = userCapital * changePercent;
-    const newCapital = Math.max(1000, userCapital + capitalChange);
-    
-    setUserCapital(newCapital);
-    setUserTrades(prev => prev + 1);
+    if (!canTrade()) {
+      toast({
+        title: "Trade Cooldown",
+        description: `Wait ${getCooldownRemaining()} seconds before your next trade`,
+        variant: "destructive"
+      });
+      return;
+    }
 
-    toast({
-      title: `${action === 'buy' ? 'Bought' : 'Sold'} ${selectedStock}`,
-      description: capitalChange > 0 
-        ? `+$${Math.abs(capitalChange).toFixed(2)}` 
-        : `-$${Math.abs(capitalChange).toFixed(2)}`,
-      variant: capitalChange > 0 ? "default" : "destructive"
-    });
+    const stockPrice = stockPrices.find(p => p.symbol === selectedStock);
+    if (!stockPrice) return;
+
+    const shares = Math.floor(Math.random() * 10) + 5; // 5-15 shares per trade
+    const tradeValue = stockPrice.price * shares;
+
+    if (action === 'buy') {
+      if (userCapital < tradeValue) {
+        toast({
+          title: "Insufficient Funds",
+          description: `You need $${tradeValue.toFixed(2)} but only have $${userCapital.toFixed(2)}`,
+          variant: "destructive"
+        });
+        return;
+      }
+
+      setUserCapital(prev => prev - tradeValue);
+      setUserHoldings(prev => {
+        const existing = prev[selectedStock] || { shares: 0, avgPrice: 0 };
+        const totalShares = existing.shares + shares;
+        const totalCost = (existing.shares * existing.avgPrice) + tradeValue;
+        return {
+          ...prev,
+          [selectedStock]: {
+            shares: totalShares,
+            avgPrice: totalCost / totalShares
+          }
+        };
+      });
+
+      toast({
+        title: `Bought ${shares} ${selectedStock}`,
+        description: `Total: $${tradeValue.toFixed(2)} @ $${stockPrice.price.toFixed(2)}/share`
+      });
+    } else {
+      // Sell
+      const holding = userHoldings[selectedStock];
+      if (!holding || holding.shares < shares) {
+        // Short sell
+        const proceeds = tradeValue * 0.95;
+        setUserCapital(prev => prev + proceeds);
+        toast({
+          title: `Short Sold ${shares} ${selectedStock}`,
+          description: `Proceeds: $${proceeds.toFixed(2)} (5% premium)`
+        });
+      } else {
+        // Regular sell
+        setUserCapital(prev => prev + tradeValue);
+        setUserHoldings(prev => {
+          const newShares = prev[selectedStock].shares - shares;
+          if (newShares === 0) {
+            const { [selectedStock]: _, ...rest } = prev;
+            return rest;
+          }
+          return {
+            ...prev,
+            [selectedStock]: {
+              ...prev[selectedStock],
+              shares: newShares
+            }
+          };
+        });
+
+        const profit = (stockPrice.price - holding.avgPrice) * shares;
+        toast({
+          title: `Sold ${shares} ${selectedStock}`,
+          description: profit >= 0 
+            ? `Profit: +$${profit.toFixed(2)}` 
+            : `Loss: -$${Math.abs(profit).toFixed(2)}`,
+          variant: profit >= 0 ? "default" : "destructive"
+        });
+      }
+    }
+    
+    setUserTrades(prev => prev + 1);
+    setLastUserTradeTime(Date.now());
+  };
+
+  // Calculate total portfolio value including holdings
+  const getUserTotalValue = () => {
+    const holdingsValue = Object.entries(userHoldings).reduce((total, [symbol, holding]) => {
+      const price = stockPrices.find(p => p.symbol === symbol)?.price || 0;
+      return total + (holding.shares * price);
+    }, 0);
+    return userCapital + holdingsValue;
+  };
+
+  const getTraderTotalValue = (trader: Trader) => {
+    const holdingsValue = Object.entries(trader.holdings).reduce((total, [symbol, holding]) => {
+      const price = stockPrices.find(p => p.symbol === symbol)?.price || 0;
+      return total + (holding.shares * price);
+    }, 0);
+    return trader.capital + holdingsValue;
   };
 
   const handleGameEnd = () => {
@@ -170,9 +411,10 @@ export const AICompetitorGame = ({ onClose }: AICompetitorGameProps) => {
     ((getProfitLoss(current, initial) / initial) * 100).toFixed(2);
 
   const getLeaderboard = () => {
+    const userTotalValue = getUserTotalValue();
     const allTraders = [
-      { name: 'You (Player)', capital: userCapital, initialCapital: 10000, trades: userTrades, strategy: 'player' },
-      ...traders
+      { name: 'You (Player)', capital: userTotalValue, initialCapital: 10000, trades: userTrades, strategy: 'player', holdings: userHoldings },
+      ...traders.map(t => ({ ...t, capital: getTraderTotalValue(t) }))
     ].sort((a, b) => b.capital - a.capital);
     return allTraders;
   };
@@ -328,19 +570,19 @@ export const AICompetitorGame = ({ onClose }: AICompetitorGameProps) => {
             </h3>
             <div className="space-y-4">
               <div>
-                <div className="text-sm opacity-80 mb-1">Current Capital</div>
+                <div className="text-sm opacity-80 mb-1">Portfolio Value</div>
                 <div className="text-3xl font-bold">
-                  ${userCapital.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  ${getUserTotalValue().toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <div className="text-sm opacity-80 mb-1">P&L</div>
                   <div className={`text-xl font-bold ${
-                    getProfitLoss(userCapital, 10000) >= 0 ? 'text-green-300' : 'text-red-300'
+                    getProfitLoss(getUserTotalValue(), 10000) >= 0 ? 'text-green-300' : 'text-red-300'
                   }`}>
-                    {getProfitLoss(userCapital, 10000) >= 0 ? '+' : ''}
-                    ${Math.abs(getProfitLoss(userCapital, 10000)).toFixed(2)}
+                    {getProfitLoss(getUserTotalValue(), 10000) >= 0 ? '+' : ''}
+                    ${Math.abs(getProfitLoss(getUserTotalValue(), 10000)).toFixed(2)}
                   </div>
                 </div>
                 <div>
@@ -348,10 +590,28 @@ export const AICompetitorGame = ({ onClose }: AICompetitorGameProps) => {
                   <div className="text-xl font-bold">#{userRank}</div>
                 </div>
               </div>
-              <div>
-                <div className="text-sm opacity-80 mb-1">Trades Made</div>
-                <div className="text-xl font-bold">{userTrades}</div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <div className="text-sm opacity-80 mb-1">Cash</div>
+                  <div className="text-lg font-bold">${userCapital.toFixed(2)}</div>
+                </div>
+                <div>
+                  <div className="text-sm opacity-80 mb-1">Trades Made</div>
+                  <div className="text-lg font-bold">{userTrades}</div>
+                </div>
               </div>
+              {Object.keys(userHoldings).length > 0 && (
+                <div>
+                  <div className="text-sm opacity-80 mb-2">Holdings</div>
+                  <div className="flex flex-wrap gap-2">
+                    {Object.entries(userHoldings).map(([symbol, holding]) => (
+                      <Badge key={symbol} variant="secondary" className="bg-white/20 text-white">
+                        {symbol}: {holding.shares} shares
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </Card>
 
@@ -363,27 +623,37 @@ export const AICompetitorGame = ({ onClose }: AICompetitorGameProps) => {
             </h3>
             <div className="space-y-4">
               <div>
-                <label className="text-sm text-muted-foreground mb-2 block">Select Stock</label>
+                <label className="text-sm text-muted-foreground mb-2 block">Select Stock (Live Prices)</label>
                 <div className="grid grid-cols-2 gap-2">
-                  {['AAPL', 'TSLA', 'NVDA', 'MSFT', 'GOOGL', 'AMZN'].map(symbol => (
+                  {stockPrices.map(stock => (
                     <Button
-                      key={symbol}
-                      variant={selectedStock === symbol ? "default" : "outline"}
-                      onClick={() => setSelectedStock(symbol)}
-                      className="w-full"
+                      key={stock.symbol}
+                      variant={selectedStock === stock.symbol ? "default" : "outline"}
+                      onClick={() => setSelectedStock(stock.symbol)}
+                      className="w-full justify-between px-3"
                     >
-                      {symbol}
+                      <span className="font-bold">{stock.symbol}</span>
+                      <span className={`text-xs ${stock.change >= 0 ? 'text-success' : 'text-destructive'}`}>
+                        ${stock.price.toFixed(2)} {stock.change >= 0 ? '↑' : '↓'}
+                      </span>
                     </Button>
                   ))}
                 </div>
               </div>
               
+              {!canTrade() && (
+                <div className="text-center p-2 bg-warning/10 rounded-lg border border-warning/20">
+                  <div className="text-sm font-medium text-warning">Cooldown: {getCooldownRemaining()}s</div>
+                  <Progress value={(1 - getCooldownRemaining() / 3) * 100} className="h-1 mt-1" />
+                </div>
+              )}
+
               <div className="grid grid-cols-2 gap-3">
                 <Button 
                   size="lg"
                   className="bg-success hover:bg-success/90 text-white"
                   onClick={() => handleTrade('buy')}
-                  disabled={!selectedStock}
+                  disabled={!selectedStock || !canTrade()}
                 >
                   <TrendingUp className="w-4 h-4 mr-2" />
                   Buy
@@ -392,7 +662,7 @@ export const AICompetitorGame = ({ onClose }: AICompetitorGameProps) => {
                   size="lg"
                   className="bg-destructive hover:bg-destructive/90 text-white"
                   onClick={() => handleTrade('sell')}
-                  disabled={!selectedStock}
+                  disabled={!selectedStock || !canTrade()}
                 >
                   <TrendingDown className="w-4 h-4 mr-2" />
                   Sell
@@ -400,7 +670,7 @@ export const AICompetitorGame = ({ onClose }: AICompetitorGameProps) => {
               </div>
 
               <div className="text-xs text-muted-foreground text-center">
-                Make strategic trades to climb the leaderboard!
+                3s cooldown between trades • Make strategic decisions!
               </div>
             </div>
           </Card>
