@@ -46,18 +46,18 @@ interface BudgetBalancerGameProps {
 }
 
 const INITIAL_BUDGET: BudgetCategory[] = [
-  { id: "housing", name: "Housing/Rent", icon: <Home className="w-5 h-5" />, amount: 950, minAmount: 800, maxAmount: 950, type: "need", isEssential: true, maxReduction: 15 },
-  { id: "utilities", name: "Utilities", icon: <Lightbulb className="w-5 h-5" />, amount: 120, minAmount: 100, maxAmount: 120, type: "need", isEssential: true, maxReduction: 20 },
-  { id: "groceries", name: "Groceries", icon: <ShoppingBag className="w-5 h-5" />, amount: 350, minAmount: 280, maxAmount: 350, type: "need", isEssential: true, maxReduction: 25 },
-  { id: "transport", name: "Transportation", icon: <Car className="w-5 h-5" />, amount: 200, minAmount: 80, maxAmount: 300, type: "need", isEssential: true, maxReduction: 40 },
-  { id: "insurance", name: "Insurance", icon: <Heart className="w-5 h-5" />, amount: 150, minAmount: 120, maxAmount: 150, type: "need", isEssential: true, maxReduction: 18 },
-  { id: "student-loan", name: "Student Loan", icon: <GraduationCap className="w-5 h-5" />, amount: 250, minAmount: 150, maxAmount: 500, type: "debt" },
-  { id: "credit-card", name: "Credit Card Debt", icon: <CreditCard className="w-5 h-5" />, amount: 100, minAmount: 30, maxAmount: 400, type: "debt" },
-  { id: "dining", name: "Dining Out", icon: <Coffee className="w-5 h-5" />, amount: 200, minAmount: 0, maxAmount: 350, type: "want" },
-  { id: "entertainment", name: "Entertainment", icon: <Smartphone className="w-5 h-5" />, amount: 120, minAmount: 0, maxAmount: 250, type: "want" },
-  { id: "shopping", name: "Shopping", icon: <ShoppingBag className="w-5 h-5" />, amount: 100, minAmount: 0, maxAmount: 250, type: "want" },
-  { id: "emergency", name: "Emergency Fund", icon: <PiggyBank className="w-5 h-5" />, amount: 300, minAmount: 0, maxAmount: 800, type: "savings" },
-  { id: "investing", name: "Investments", icon: <TrendingUp className="w-5 h-5" />, amount: 250, minAmount: 0, maxAmount: 1000, type: "savings" },
+  { id: "housing", name: "Housing/Rent", icon: <Home className="w-5 h-5" />, amount: 1100, minAmount: 950, maxAmount: 1400, type: "need", isEssential: true, maxReduction: 15 },
+  { id: "utilities", name: "Utilities", icon: <Lightbulb className="w-5 h-5" />, amount: 180, minAmount: 140, maxAmount: 250, type: "need", isEssential: true, maxReduction: 20 },
+  { id: "groceries", name: "Groceries", icon: <ShoppingBag className="w-5 h-5" />, amount: 500, minAmount: 400, maxAmount: 700, type: "need", isEssential: true, maxReduction: 25 },
+  { id: "transport", name: "Transportation", icon: <Car className="w-5 h-5" />, amount: 350, minAmount: 150, maxAmount: 500, type: "need", isEssential: true, maxReduction: 40 },
+  { id: "insurance", name: "Insurance", icon: <Heart className="w-5 h-5" />, amount: 220, minAmount: 180, maxAmount: 300, type: "need", isEssential: true, maxReduction: 18 },
+  { id: "student-loan", name: "Student Loan", icon: <GraduationCap className="w-5 h-5" />, amount: 150, minAmount: 100, maxAmount: 400, type: "debt" },
+  { id: "credit-card", name: "Credit Card Debt", icon: <CreditCard className="w-5 h-5" />, amount: 50, minAmount: 25, maxAmount: 300, type: "debt" },
+  { id: "dining", name: "Dining Out", icon: <Coffee className="w-5 h-5" />, amount: 300, minAmount: 0, maxAmount: 500, type: "want" },
+  { id: "entertainment", name: "Entertainment", icon: <Smartphone className="w-5 h-5" />, amount: 200, minAmount: 0, maxAmount: 400, type: "want" },
+  { id: "shopping", name: "Shopping", icon: <ShoppingBag className="w-5 h-5" />, amount: 180, minAmount: 0, maxAmount: 400, type: "want" },
+  { id: "emergency", name: "Emergency Fund", icon: <PiggyBank className="w-5 h-5" />, amount: 400, minAmount: 0, maxAmount: 1000, type: "savings" },
+  { id: "investing", name: "Investments", icon: <TrendingUp className="w-5 h-5" />, amount: 350, minAmount: 0, maxAmount: 1200, type: "savings" },
 ];
 
 const SCENARIOS: Scenario[] = [
