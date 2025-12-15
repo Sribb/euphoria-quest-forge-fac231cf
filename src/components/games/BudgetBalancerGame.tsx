@@ -311,7 +311,7 @@ export const BudgetBalancerGame = ({ onClose }: BudgetBalancerGameProps) => {
   const [score, setScore] = useState(0);
   const [feedback, setFeedback] = useState<{ correct: string[]; incorrect: string[]; tips: string[] }>({ correct: [], incorrect: [], tips: [] });
   const [gameComplete, setGameComplete] = useState(false);
-  const [baseIncome] = useState(4750);
+  const [baseIncome] = useState(5200);
 
   const currentScenario = SCENARIOS[currentScenarioIndex];
   const currentIncome = baseIncome + (currentScenario.incomeChange || 0);
