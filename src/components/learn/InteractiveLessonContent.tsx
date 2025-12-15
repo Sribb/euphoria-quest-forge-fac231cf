@@ -2153,14 +2153,3 @@ export const getLessonContent = (lessonOrderIndex: number): LessonSection[] => {
 
   return lessonContents[lessonOrderIndex] || [];
 };
-        content: "Dividend yield: Higher isn't always better—may signal trouble. Payout ratio: Dividends as percentage of earnings (under 60% is sustainable). Dividend growth rate: Look for consistent annual increases. Free cash flow: Must support dividend payments. Debt levels: Excessive debt threatens dividend safety.",
-      },
-      {
-        title: "Building a Dividend Portfolio",
-        content: "Diversify across sectors to avoid concentration risk. Balance high-yield with dividend growth stocks. Reinvest dividends for compounding (DRIP programs). Consider tax implications—dividends taxed as income. Use dividend ETFs (VYM, SCHD) for instant diversification. Focus on total return, not just yield.",
-      },
-    ],
-  };
-
-  return lessonContents[lessonOrderIndex] || [];
-};
