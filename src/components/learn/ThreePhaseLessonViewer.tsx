@@ -156,6 +156,26 @@ export const ThreePhaseLessonViewer = ({ lessonId, onClose }: ThreePhaseLessonVi
 
   if (!lesson) return null;
 
+  // Handle case where lesson content isn't available
+  if (!sections.length || !currentContent) {
+    return (
+      <div className="fixed inset-0 bg-background/95 z-50 overflow-y-auto">
+        <div className="max-w-7xl mx-auto p-6">
+          <div className="flex items-center justify-between mb-6">
+            <h1 className="text-3xl font-bold">{lesson.title}</h1>
+            <Button variant="ghost" size="icon" onClick={onClose}>
+              <X className="w-6 h-6" />
+            </Button>
+          </div>
+          <Card className="p-6 text-center">
+            <p className="text-muted-foreground">Lesson content is being prepared. Please check back soon!</p>
+            <Button className="mt-4" onClick={onClose}>Go Back</Button>
+          </Card>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="fixed inset-0 bg-background/95 z-50 overflow-y-auto">
       <div className="max-w-7xl mx-auto p-6">
