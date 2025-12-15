@@ -1,8 +1,10 @@
-import { Trophy, ArrowLeft, Brain, Users, Coins, TrendingUp } from "lucide-react";
+import { Trophy, Brain, Users, Coins, TrendingUp, Globe, Wallet, Gamepad2, Zap, Play } from "lucide-react";
 import { useState } from "react";
 import { LifeSimInvestorGame } from "@/components/games/LifeSimInvestorGame";
 import { TrendMasterGame } from "@/components/games/TrendMasterGame";
 import { AICompetitorGame } from "@/components/games/AICompetitorGame";
+import { MarketReactionGame } from "@/components/games/MarketReactionGame";
+import { BudgetBalancerGame } from "@/components/games/BudgetBalancerGame";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -34,12 +36,20 @@ const Games = ({ onNavigate }: GamesProps) => {
     return <AICompetitorGame onClose={handleCloseGame} />;
   }
 
+  if (activeGame === "market-reaction") {
+    return <MarketReactionGame onClose={handleCloseGame} />;
+  }
+
+  if (activeGame === "budget-balancer") {
+    return <BudgetBalancerGame onClose={handleCloseGame} />;
+  }
+
   return (
     <div className="space-y-8">
       {/* Header Section */}
       <div className="flex items-center gap-4 animate-fade-in">
         <div className="w-14 h-14 rounded-2xl bg-gradient-primary flex items-center justify-center shadow-glow-soft">
-          <Trophy className="w-7 h-7 text-white" />
+          <Gamepad2 className="w-7 h-7 text-white" />
         </div>
         <div className="flex-1">
           <h1 className="text-3xl font-bold">Investment Games</h1>
@@ -47,121 +57,168 @@ const Games = ({ onNavigate }: GamesProps) => {
         </div>
       </div>
 
-      {/* AI Competitor Challenge Section */}
-      <Card className="p-6 bg-gradient-accent border-0 animate-fade-in shadow-glow-soft">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="w-12 h-12 rounded-xl bg-primary/20 flex items-center justify-center">
-            <Brain className="w-6 h-6 text-primary animate-pulse" />
-          </div>
-          <div className="flex-1">
-            <h3 className="font-bold text-lg">AI Competitor Challenge</h3>
-            <p className="text-sm text-muted-foreground">
-              Compete against 4 AI traders in real-time
-            </p>
-          </div>
-          <Button
-            size="lg"
-            className="bg-gradient-primary hover:opacity-90 shadow-glow-soft"
-            onClick={() => handlePlayGame('ai-competitor')}
-          >
-            Start Challenge
-          </Button>
-        </div>
-
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          {['Momentum Mike', 'Value Victor', 'Aggressive Amy', 'Conservative Chris'].map((name, idx) => {
-            const strategies = ['momentum', 'value', 'aggressive', 'conservative'];
-            const descriptions: Record<string, string> = {
-              momentum: "Fast-paced trader",
-              value: "Patient investor", 
-              aggressive: "Risk-taker",
-              conservative: "Defensive trader"
-            };
-            
-            return (
-              <div
-                key={name}
-                className="p-4 rounded-xl bg-card/50 border border-border animate-scale-in hover-lift cursor-pointer smooth-transition"
-                style={{ animationDelay: `${idx * 100}ms` }}
-              >
-                <div className="flex items-center justify-between mb-2">
-                  <span className="font-medium text-sm">{name}</span>
-                  <Badge variant="outline" className="text-xs capitalize">
-                    {strategies[idx]}
-                  </Badge>
-                </div>
-                <div className="text-xs text-muted-foreground mb-1">
-                  {descriptions[strategies[idx]]}
-                </div>
-                <div className="text-sm text-muted-foreground">
-                  Capital: $10,000
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </Card>
-
-
       {/* Featured Games Grid */}
       <div className="grid lg:grid-cols-2 gap-6">
-        {/* Life Sim Game */}
-        <div className="animate-fade-in">
-          <Card className="p-6 bg-gradient-primary text-white hover-lift cursor-pointer smooth-transition border-0 shadow-glow-soft h-full" onClick={() => handlePlayGame("life-sim")}>
-            <div className="flex flex-col h-full">
-              <div className="flex items-start gap-4 mb-4">
-                <div className="w-16 h-16 rounded-2xl bg-white/20 flex items-center justify-center shadow-glow">
-                  <Trophy className="w-9 h-9" />
-                </div>
-                <div className="flex-1">
-                  <div className="flex items-start justify-between mb-2">
-                    <h3 className="font-bold text-2xl">Life Sim: Investor Journey</h3>
-                    <Badge className="bg-white/20 text-white border-0">Epic</Badge>
-                  </div>
-                </div>
+        {/* Life Sim Game - Featured */}
+        <Card className="lg:col-span-2 p-6 bg-gradient-primary text-white border-0 shadow-glow-soft animate-fade-in overflow-hidden relative">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2" />
+          <div className="absolute bottom-0 left-0 w-32 h-32 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2" />
+          <div className="relative flex flex-col md:flex-row gap-6 items-center">
+            <div className="w-20 h-20 rounded-2xl bg-white/20 flex items-center justify-center shadow-glow flex-shrink-0">
+              <Trophy className="w-10 h-10" />
+            </div>
+            <div className="flex-1 text-center md:text-left">
+              <div className="flex items-center gap-2 justify-center md:justify-start mb-2">
+                <h3 className="font-bold text-2xl">Life Sim: Investor Journey</h3>
+                <Badge className="bg-white/20 text-white border-0">Epic</Badge>
               </div>
-              <p className="text-sm text-white/90 mb-6 flex-1">
-                Live a full investing life from age 22 to retirement! Make career moves, buy homes, manage portfolios, and face real market events. Your choices shape your financial destiny.
+              <p className="text-white/90 mb-4 max-w-xl">
+                Live a full investing life from age 22 to retirement! Make career moves, buy homes, 
+                manage portfolios, and face real market events. Your choices shape your financial destiny.
               </p>
-              <div className="flex items-center gap-4 flex-wrap">
+              <div className="flex items-center gap-4 flex-wrap justify-center md:justify-start">
                 <div className="flex items-center gap-2 text-sm">
                   <Coins className="w-5 h-5" />
                   <span className="font-bold">Variable Rewards</span>
                 </div>
                 <Badge variant="outline" className="bg-white/10 border-white/30 text-white">Immersive</Badge>
+                <Badge variant="outline" className="bg-white/10 border-white/30 text-white">40+ Years</Badge>
               </div>
             </div>
-          </Card>
-        </div>
+            <Button 
+              size="lg" 
+              className="bg-white text-primary hover:bg-white/90 shadow-lg gap-2 px-8"
+              onClick={() => handlePlayGame("life-sim")}
+            >
+              <Play className="w-5 h-5" />
+              Start Game
+            </Button>
+          </div>
+        </Card>
+
+        {/* Market Reaction Game - NEW */}
+        <Card className="p-6 bg-gradient-accent border-0 shadow-md animate-fade-in hover-lift cursor-pointer smooth-transition" onClick={() => handlePlayGame("market-reaction")}>
+          <div className="flex flex-col h-full">
+            <div className="flex items-start gap-4 mb-4">
+              <div className="w-14 h-14 rounded-2xl bg-primary/20 flex items-center justify-center shadow-glow-soft">
+                <Globe className="w-7 h-7 text-primary" />
+              </div>
+              <div className="flex-1">
+                <div className="flex items-start justify-between mb-2">
+                  <h3 className="font-bold text-xl">Market Reaction</h3>
+                  <Badge className="bg-success/20 text-success border-0">New!</Badge>
+                </div>
+              </div>
+            </div>
+            <p className="text-sm text-muted-foreground mb-4 flex-1">
+              Real-world news scenarios test your market instincts. Will the Fed rate cut cause a rally or crash? 
+              Predict bullish, bearish, or neutral reactions and learn how global events move markets.
+            </p>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 text-sm">
+                <Zap className="w-5 h-5 text-warning" />
+                <span className="font-bold text-primary">15 Scenarios</span>
+              </div>
+              <Button size="sm" className="gap-2">
+                <Play className="w-4 h-4" />
+                Play Now
+              </Button>
+            </div>
+          </div>
+        </Card>
+
+        {/* Budget Balancer Game - NEW */}
+        <Card className="p-6 bg-gradient-accent border-0 shadow-md animate-fade-in hover-lift cursor-pointer smooth-transition" onClick={() => handlePlayGame("budget-balancer")}>
+          <div className="flex flex-col h-full">
+            <div className="flex items-start gap-4 mb-4">
+              <div className="w-14 h-14 rounded-2xl bg-success/20 flex items-center justify-center shadow-glow-soft">
+                <Wallet className="w-7 h-7 text-success" />
+              </div>
+              <div className="flex-1">
+                <div className="flex items-start justify-between mb-2">
+                  <h3 className="font-bold text-xl">Budget Balancer</h3>
+                  <Badge className="bg-success/20 text-success border-0">New!</Badge>
+                </div>
+              </div>
+            </div>
+            <p className="text-sm text-muted-foreground mb-4 flex-1">
+              Master the 50/30/20 rule! Balance needs, wants, and savings across life scenarios. 
+              Fresh graduate? Family of four? Entrepreneur? Learn budgeting strategies that work.
+            </p>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 text-sm">
+                <Coins className="w-5 h-5 text-success" />
+                <span className="font-bold text-success">3 Challenges</span>
+              </div>
+              <Button size="sm" className="gap-2">
+                <Play className="w-4 h-4" />
+                Play Now
+              </Button>
+            </div>
+          </div>
+        </Card>
 
         {/* Trend Master Game */}
-        <div className="animate-fade-in" style={{ animationDelay: "100ms" }}>
-          <Card className="p-6 bg-gradient-accent hover-lift cursor-pointer smooth-transition border-0 shadow-md h-full" onClick={() => handlePlayGame("trend-master")}>
-            <div className="flex flex-col h-full">
-              <div className="flex items-start gap-4 mb-4">
-                <div className="w-16 h-16 rounded-2xl bg-primary/20 flex items-center justify-center shadow-glow-soft">
-                  <TrendingUp className="w-9 h-9 text-primary" />
-                </div>
-                <div className="flex-1">
-                  <div className="flex items-start justify-between mb-2">
-                    <h3 className="font-bold text-2xl">Trend Master</h3>
-                    <Badge variant="secondary">Featured</Badge>
-                  </div>
-                </div>
+        <Card className="p-6 bg-gradient-accent border-0 shadow-md animate-fade-in hover-lift cursor-pointer smooth-transition" onClick={() => handlePlayGame("trend-master")}>
+          <div className="flex flex-col h-full">
+            <div className="flex items-start gap-4 mb-4">
+              <div className="w-14 h-14 rounded-2xl bg-primary/20 flex items-center justify-center shadow-glow-soft">
+                <TrendingUp className="w-7 h-7 text-primary" />
               </div>
-              <p className="text-sm text-muted-foreground mb-6 flex-1">
-                Master the art of reading stock charts! Identify 20+ real chart patterns from uptrends to head-and-shoulders. Interactive charts, instant feedback, and mentor-style explanations help you see markets like a pro.
-              </p>
-              <div className="flex items-center gap-4 flex-wrap">
-                <div className="flex items-center gap-2 text-sm">
-                  <Brain className="w-5 h-5 text-primary" />
-                  <span className="font-bold text-primary">20+ Patterns</span>
+              <div className="flex-1">
+                <div className="flex items-start justify-between mb-2">
+                  <h3 className="font-bold text-xl">Trend Master</h3>
+                  <Badge variant="secondary">Featured</Badge>
                 </div>
-                <Badge variant="outline">Interactive</Badge>
               </div>
             </div>
-          </Card>
-        </div>
+            <p className="text-sm text-muted-foreground mb-4 flex-1">
+              Master the art of reading stock charts! Identify 20+ real chart patterns from uptrends to 
+              head-and-shoulders. Interactive charts, instant feedback, and mentor-style explanations.
+            </p>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 text-sm">
+                <Brain className="w-5 h-5 text-primary" />
+                <span className="font-bold text-primary">20+ Patterns</span>
+              </div>
+              <Button size="sm" className="gap-2">
+                <Play className="w-4 h-4" />
+                Play Now
+              </Button>
+            </div>
+          </div>
+        </Card>
+
+        {/* AI Competitor Game */}
+        <Card className="p-6 bg-gradient-accent border-0 shadow-md animate-fade-in hover-lift cursor-pointer smooth-transition" onClick={() => handlePlayGame("ai-competitor")}>
+          <div className="flex flex-col h-full">
+            <div className="flex items-start gap-4 mb-4">
+              <div className="w-14 h-14 rounded-2xl bg-purple-500/20 flex items-center justify-center shadow-glow-soft">
+                <Brain className="w-7 h-7 text-purple-500" />
+              </div>
+              <div className="flex-1">
+                <div className="flex items-start justify-between mb-2">
+                  <h3 className="font-bold text-xl">AI Challenge</h3>
+                  <Badge variant="secondary">Competitive</Badge>
+                </div>
+              </div>
+            </div>
+            <p className="text-sm text-muted-foreground mb-4 flex-1">
+              Compete against 4 AI traders with unique strategies: Momentum Mike, Value Victor, 
+              Aggressive Amy, and Conservative Chris. Can you outperform the algorithms?
+            </p>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 text-sm">
+                <Users className="w-5 h-5 text-purple-500" />
+                <span className="font-bold text-purple-500">4 AI Opponents</span>
+              </div>
+              <Button size="sm" className="gap-2">
+                <Play className="w-4 h-4" />
+                Play Now
+              </Button>
+            </div>
+          </div>
+        </Card>
       </div>
     </div>
   );
