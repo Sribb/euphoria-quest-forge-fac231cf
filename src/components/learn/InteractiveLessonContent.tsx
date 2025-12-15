@@ -901,6 +901,1258 @@ export const getLessonContent = (lessonOrderIndex: number): LessonSection[] => {
       },
       {
         title: "Evaluating Dividend Stocks",
+        content: "Key metrics for dividend investing: Payout ratio: Dividends as % of earnings (below 60% is sustainable). Dividend growth rate: Annual increase percentage. Free cash flow coverage: Can the company afford dividends? Debt levels: High debt threatens dividend safety. Sector considerations: Utilities and REITs typically pay higher yields. Avoid yield traps—extremely high yields often signal distress.",
+        quiz: {
+          question: "What is a healthy payout ratio for sustainable dividends?",
+          options: [
+            "Above 90%",
+            "Below 60%",
+            "Exactly 100%",
+            "It doesn't matter"
+          ],
+          correctAnswer: 1,
+          explanation: "A payout ratio below 60% indicates the company retains enough earnings to grow while maintaining dividend payments."
+        }
+      },
+      {
+        title: "Building a Dividend Portfolio",
+        content: "Diversify across sectors and industries. Focus on dividend growth, not just high yield. Reinvest dividends to compound returns. Use dividend ETFs (VYM, SCHD) for instant diversification. Consider tax implications—qualified dividends taxed at lower rates. Balance dividend stocks with growth stocks for optimal long-term returns.",
+      },
+    ],
+
+    // Lesson 21: Real Estate Investing
+    21: [
+      {
+        title: "Introduction to Real Estate Investing",
+        content: "Real estate is one of the oldest wealth-building strategies, offering income, appreciation, and tax benefits. Unlike stocks, real estate is a tangible asset you can see and improve. According to the Federal Reserve, real estate represents about 25% of American household wealth. Options include: direct property ownership, REITs, real estate crowdfunding, and real estate partnerships.",
+        quiz: {
+          question: "What percentage of American household wealth does real estate represent?",
+          options: ["10%", "25%", "50%", "75%"],
+          correctAnswer: 1,
+          explanation: "According to the Federal Reserve, real estate represents approximately 25% of American household wealth."
+        }
+      },
+      {
+        title: "Direct Property Investment",
+        content: "Owning rental properties provides monthly cash flow, appreciation potential, and significant tax deductions. The 1% rule: Monthly rent should equal 1% of purchase price. Cash-on-cash return measures annual income relative to cash invested. Cap rate (NOI ÷ Property Value) helps compare properties. Consider: location, condition, tenant quality, property management, and maintenance costs.",
+      },
+      {
+        title: "Real Estate Investment Trusts (REITs)",
+        content: "REITs are companies that own, operate, or finance income-producing real estate. They must distribute 90% of taxable income as dividends. Types include: residential, commercial, industrial, healthcare, and data centers. REITs provide real estate exposure without property management hassles. They trade like stocks, offering liquidity traditional real estate lacks. Average REIT dividend yields range from 3-6%.",
+        quiz: {
+          question: "What percentage of taxable income must REITs distribute as dividends?",
+          options: ["50%", "75%", "90%", "100%"],
+          correctAnswer: 2,
+          explanation: "REITs are required to distribute at least 90% of their taxable income to shareholders as dividends."
+        }
+      },
+      {
+        title: "Real Estate Investment Strategies",
+        content: "Buy and hold: Long-term appreciation and rental income. House hacking: Live in one unit, rent others. BRRRR: Buy, Rehab, Rent, Refinance, Repeat. Fix and flip: Buy distressed, renovate, sell quickly. Real estate syndications: Pool money with other investors. Each strategy has different risk/return profiles and capital requirements. Start with REITs or crowdfunding before buying physical property.",
+      },
+    ],
+
+    // Lesson 22: Tax-Advantaged Investing
+    22: [
+      {
+        title: "Understanding Tax-Advantaged Accounts",
+        content: "Tax-advantaged accounts legally reduce your tax burden while saving for retirement. The IRS provides incentives to encourage long-term saving. Pre-tax accounts (401k, Traditional IRA): Contributions reduce current taxes; withdrawals taxed in retirement. Post-tax accounts (Roth IRA, Roth 401k): No current deduction; withdrawals are tax-free. HSAs offer triple tax advantage: deduction, tax-free growth, and tax-free healthcare withdrawals.",
+        quiz: {
+          question: "What makes HSAs uniquely powerful for tax savings?",
+          options: [
+            "Only one tax advantage",
+            "Double tax advantage",
+            "Triple tax advantage",
+            "No tax advantages"
+          ],
+          correctAnswer: 2,
+          explanation: "HSAs offer triple tax advantage: tax-deductible contributions, tax-free growth, and tax-free withdrawals for healthcare expenses."
+        }
+      },
+      {
+        title: "401(k) and Employer Plans",
+        content: "401(k) plans allow up to $23,000 annual contributions (2024). Many employers match contributions—this is FREE money. A 50% match on 6% of salary adds thousands annually. Vesting schedules determine when employer contributions become yours. Investment options vary; choose low-cost index funds when available. Always contribute enough to capture the full employer match.",
+      },
+      {
+        title: "IRA Strategies",
+        content: "Traditional IRA: $7,000 annual limit (2024), $8,000 if 50+. Tax deduction depends on income and employer plan access. Roth IRA: Same limits, income restrictions apply ($161,000 single, $240,000 married). Backdoor Roth: High earners contribute to traditional IRA, convert to Roth. SEP-IRA and Solo 401(k): Self-employed can contribute up to $69,000 annually.",
+        quiz: {
+          question: "What is the 2024 annual contribution limit for IRAs?",
+          options: ["$5,000", "$6,000", "$7,000", "$10,000"],
+          correctAnswer: 2,
+          explanation: "The 2024 IRA contribution limit is $7,000 ($8,000 for those 50 and older)."
+        }
+      },
+      {
+        title: "Tax-Efficient Investing",
+        content: "Asset location matters: Hold bonds in tax-advantaged accounts (interest is taxed heavily). Keep stocks in taxable accounts (capital gains taxed lower). Tax-loss harvesting: Sell losers to offset gains. Avoid wash sales: Can't repurchase substantially identical security within 30 days. Long-term capital gains (held 1+ year) taxed at 0-20% vs. short-term at income rates.",
+      },
+    ],
+
+    // Lesson 23: Retirement Planning
+    23: [
+      {
+        title: "Retirement Planning Fundamentals",
+        content: "Retirement planning determines how much you need and how to get there. The 4% rule: Withdraw 4% of portfolio annually for sustainable 30-year retirement. For $50,000 annual expenses, you need $1.25 million saved. Modern research suggests 3.5% may be safer given longer lifespans. Consider: Social Security benefits, pensions, healthcare costs, and inflation.",
+        quiz: {
+          question: "According to the 4% rule, how much do you need saved for $50,000 annual retirement expenses?",
+          options: ["$500,000", "$1 million", "$1.25 million", "$2 million"],
+          correctAnswer: 2,
+          explanation: "The 4% rule: $50,000 ÷ 0.04 = $1.25 million needed to safely withdraw $50,000 annually."
+        }
+      },
+      {
+        title: "Calculating Your Retirement Number",
+        content: "Step 1: Estimate annual retirement expenses (often 70-80% of current spending). Step 2: Subtract guaranteed income (Social Security, pensions). Step 3: Multiply remaining need by 25-30 (inverse of 3-4% withdrawal rate). Example: $60,000 expenses - $24,000 Social Security = $36,000 needed. $36,000 × 25 = $900,000 portfolio target. Adjust for inflation—expenses double roughly every 20 years.",
+      },
+      {
+        title: "Retirement Account Strategies",
+        content: "In your 20s-30s: Maximize Roth contributions (lower tax bracket now). In your 40s-50s: Balance Traditional and Roth based on current vs. expected retirement taxes. At 50+: Catch-up contributions add $7,500 to 401(k), $1,000 to IRA. Before retirement: Build 1-2 years of expenses in cash/bonds for sequence risk protection. Consider Roth conversions during low-income years.",
+        quiz: {
+          question: "Why might young investors prefer Roth accounts?",
+          options: [
+            "Higher contribution limits",
+            "Lower tax bracket now means tax-free growth benefits later",
+            "Employer matching is better",
+            "Required by law"
+          ],
+          correctAnswer: 1,
+          explanation: "Young investors often have lower incomes/tax brackets, making it advantageous to pay taxes now and enjoy tax-free growth and withdrawals later."
+        }
+      },
+      {
+        title: "Social Security Optimization",
+        content: "You can claim Social Security from age 62-70. Claiming at 62: Reduced benefits (~70% of full amount). Full Retirement Age (67 for most): 100% of calculated benefit. Delaying to 70: ~132% of full benefit (8% increase per year). Spousal strategies: Lower-earning spouse can claim on higher earner's record. Break-even analysis helps determine optimal claiming age based on life expectancy.",
+      },
+    ],
+
+    // Lesson 24: International Investing
+    24: [
+      {
+        title: "Why Invest Internationally?",
+        content: "US stocks represent only ~60% of global market capitalization. International diversification reduces country-specific risk. Different economies grow at different rates—emerging markets offer higher growth potential. Currency movements can add returns or provide hedging benefits. Jack Bogle recommended 20-40% international allocation for most investors.",
+        quiz: {
+          question: "What percentage of global market capitalization do US stocks represent?",
+          options: ["40%", "60%", "80%", "95%"],
+          correctAnswer: 1,
+          explanation: "US stocks represent approximately 60% of global market cap—meaning 40% of investment opportunities are overseas."
+        }
+      },
+      {
+        title: "Developed vs. Emerging Markets",
+        content: "Developed markets (Europe, Japan, Australia): Lower risk, mature economies, stable currencies. ETFs: VEA, EFA, IEFA. Emerging markets (China, India, Brazil): Higher risk, faster growth, more volatility. ETFs: VWO, EEM, IEMG. Frontier markets (Vietnam, Nigeria): Highest risk, earliest development stage. Developed markets offer stability; emerging markets offer growth potential.",
+      },
+      {
+        title: "Currency Considerations",
+        content: "International investments include currency exposure. When US dollar weakens, international returns improve (and vice versa). Hedged ETFs eliminate currency risk but add costs. Unhedged exposure provides diversification benefits. Long-term: Currency movements tend to even out. For most investors, accepting currency exposure is appropriate for diversification benefits.",
+        quiz: {
+          question: "What happens to international returns when the US dollar weakens?",
+          options: [
+            "They decrease",
+            "They improve",
+            "No change",
+            "Currency doesn't affect returns"
+          ],
+          correctAnswer: 1,
+          explanation: "When the US dollar weakens, international investments translated back to dollars are worth more, improving returns."
+        }
+      },
+      {
+        title: "Building International Exposure",
+        content: "Simple approach: Total international stock fund (VXUS, IXUS) covers developed and emerging markets. Three-fund portfolio: US stocks, international stocks, bonds. Consider allocation: 20-40% of stocks in international. Many US companies derive significant revenue internationally—partial natural diversification. ADRs (American Depositary Receipts) allow buying individual foreign stocks on US exchanges.",
+      },
+    ],
+
+    // Lesson 25: Alternative Investments
+    25: [
+      {
+        title: "Beyond Stocks and Bonds",
+        content: "Alternative investments include assets outside traditional stocks, bonds, and cash. Examples: commodities, precious metals, real estate, private equity, hedge funds, collectibles, cryptocurrencies. Alternatives can provide diversification because they often move differently than stocks. However, they may have lower liquidity, higher fees, and more complexity. Most advisors recommend limiting alternatives to 5-20% of portfolio.",
+        quiz: {
+          question: "What's a key benefit of alternative investments?",
+          options: [
+            "Guaranteed returns",
+            "Zero fees",
+            "Diversification from stocks",
+            "Daily liquidity"
+          ],
+          correctAnswer: 2,
+          explanation: "Alternatives often move differently than traditional assets, providing valuable portfolio diversification."
+        }
+      },
+      {
+        title: "Commodities and Precious Metals",
+        content: "Commodities include oil, natural gas, agricultural products, and metals. Gold serves as a traditional store of value and inflation hedge. Silver has industrial uses alongside precious metal status. Ways to invest: Physical metals, ETFs (GLD, SLV), mining stocks, futures. Commodities don't produce income—returns come purely from price appreciation. Consider 5-10% allocation for inflation protection.",
+      },
+      {
+        title: "Private Equity and Venture Capital",
+        content: "Private equity invests in non-public companies. Venture capital funds early-stage startups with high growth potential. Historically limited to wealthy investors ($250,000+ minimums). Crowdfunding platforms now offer retail access. High potential returns but extreme risk—most startups fail. Illiquid: Money locked up for 7-10+ years. Consider only with a well-diversified core portfolio already established.",
+        quiz: {
+          question: "What's a major drawback of private equity investments?",
+          options: [
+            "Too low returns",
+            "Illiquidity—money locked for years",
+            "Too easy to access",
+            "Government guaranteed"
+          ],
+          correctAnswer: 1,
+          explanation: "Private equity typically requires 7-10+ years of illiquidity, meaning you cannot access your invested capital."
+        }
+      },
+      {
+        title: "Art, Collectibles, and Other Alternatives",
+        content: "Collectible categories: Fine art, wine, classic cars, sports memorabilia, rare coins. Platforms like Masterworks allow fractional art ownership. Returns are highly variable and markets less efficient. High transaction costs and storage/insurance expenses. Passion investments work best when you'd value ownership regardless of returns. Avoid allocating more than 5% to collectibles without expertise.",
+      },
+    ],
+
+    // Lesson 26: Fundamental Analysis Deep Dive
+    26: [
+      {
+        title: "Financial Statement Analysis",
+        content: "Fundamental analysis evaluates a company's intrinsic value through financial statements. Income Statement: Revenue, costs, profits—shows operational performance. Balance Sheet: Assets, liabilities, equity—shows financial position. Cash Flow Statement: Operating, investing, financing flows—shows actual cash movements. Warren Buffett: 'Accounting is the language of business.' Learn to read these statements fluently.",
+        quiz: {
+          question: "Which financial statement shows a company's actual cash movements?",
+          options: [
+            "Income Statement",
+            "Balance Sheet",
+            "Cash Flow Statement",
+            "Annual Report"
+          ],
+          correctAnswer: 2,
+          explanation: "The Cash Flow Statement tracks actual cash movements from operations, investing, and financing activities."
+        }
+      },
+      {
+        title: "Key Financial Ratios",
+        content: "Profitability ratios: Gross margin, operating margin, net margin, ROE, ROIC. Valuation ratios: P/E, P/B, P/S, EV/EBITDA. Liquidity ratios: Current ratio, quick ratio. Leverage ratios: Debt-to-equity, interest coverage. Efficiency ratios: Asset turnover, inventory turnover. Compare ratios to industry peers and historical averages for context.",
+      },
+      {
+        title: "Analyzing Revenue and Earnings",
+        content: "Revenue growth: Is the company growing organically or through acquisitions? Earnings quality: Are profits from core operations or one-time events? Consistency: Look for stable, predictable growth patterns. Guidance: Management projections vs. analyst expectations. Red flags: Declining margins, rising receivables faster than sales, frequent restructuring charges.",
+        quiz: {
+          question: "What's a red flag when analyzing company earnings?",
+          options: [
+            "Consistent revenue growth",
+            "Rising receivables faster than sales",
+            "Stable profit margins",
+            "Positive cash flow"
+          ],
+          correctAnswer: 1,
+          explanation: "Receivables growing faster than sales may indicate aggressive accounting or collection problems."
+        }
+      },
+      {
+        title: "Reading Annual Reports and 10-Ks",
+        content: "Annual reports contain management discussion, financial statements, and risk factors. 10-K filings with the SEC provide detailed unvarnished information. Focus on: MD&A section for management's view, risk factors, and footnotes. Look for: Accounting policy changes, related party transactions, off-balance-sheet items. Warren Buffett reads 500+ pages of reports daily—this research builds conviction.",
+      },
+    ],
+
+    // Lesson 27: Sector Analysis
+    27: [
+      {
+        title: "Understanding Market Sectors",
+        content: "The stock market divides into 11 GICS sectors: Information Technology, Healthcare, Financials, Consumer Discretionary, Communication Services, Industrials, Consumer Staples, Energy, Utilities, Real Estate, and Materials. Each sector has unique characteristics, growth drivers, and risks. Sector rotation strategies shift allocations based on economic cycles. Understanding sectors helps build balanced portfolios.",
+        quiz: {
+          question: "How many GICS sectors make up the stock market?",
+          options: ["5", "8", "11", "15"],
+          correctAnswer: 2,
+          explanation: "The Global Industry Classification Standard (GICS) divides markets into 11 sectors."
+        }
+      },
+      {
+        title: "Cyclical vs. Defensive Sectors",
+        content: "Cyclical sectors thrive in economic expansions: Technology, Consumer Discretionary, Financials, Industrials. They fall harder in recessions. Defensive sectors maintain stability regardless of economy: Utilities, Consumer Staples, Healthcare. Energy and Materials are commodity-dependent cycles. Real Estate is interest-rate sensitive. Balance cyclical growth potential with defensive stability.",
+      },
+      {
+        title: "Sector Rotation Strategies",
+        content: "Economic cycles favor different sectors: Early recovery: Financials, Industrials, Consumer Discretionary. Mid-cycle: Technology, Communication Services. Late cycle: Energy, Materials, Healthcare. Recession: Utilities, Consumer Staples, Healthcare. While timing is difficult, understanding relationships helps position portfolios. Many investors simply maintain diversification across all sectors.",
+        quiz: {
+          question: "Which sectors typically perform best in early economic recovery?",
+          options: [
+            "Utilities and Healthcare",
+            "Financials and Consumer Discretionary",
+            "Energy and Materials",
+            "Consumer Staples"
+          ],
+          correctAnswer: 1,
+          explanation: "Early recovery favors cyclical sectors like Financials and Consumer Discretionary that benefit from renewed economic activity."
+        }
+      },
+      {
+        title: "Evaluating Sector ETFs",
+        content: "Sector ETFs provide targeted exposure without individual stock selection. SPDR sectors: XLK (Tech), XLF (Financials), XLV (Healthcare), etc. Consider: expense ratios, holdings concentration, tracking accuracy. Top holdings often dominate—check if you're comfortable with concentration. Equal-weight ETFs (like RSP) reduce mega-cap dominance. Sector bets are active decisions—maintain core diversified holdings.",
+      },
+    ],
+
+    // Lesson 28: Growth vs. Value Investing
+    28: [
+      {
+        title: "Defining Growth and Value",
+        content: "Growth investing seeks companies with above-average earnings growth, willing to pay premium valuations. Value investing seeks undervalued companies trading below intrinsic worth. Growth stocks: Higher P/E ratios, reinvesting profits for expansion, often technology/healthcare. Value stocks: Lower valuations, established businesses, often paying dividends. Both styles work over time; leadership rotates based on conditions.",
+        quiz: {
+          question: "What's a characteristic of value stocks?",
+          options: [
+            "High P/E ratios",
+            "Lower valuations relative to fundamentals",
+            "No dividends",
+            "Only technology companies"
+          ],
+          correctAnswer: 1,
+          explanation: "Value stocks trade at lower valuations relative to earnings, book value, or other fundamentals."
+        }
+      },
+      {
+        title: "Growth Investing Strategies",
+        content: "Growth investors look for: Revenue growth 15%+ annually. Expanding market opportunity. Competitive advantages enabling sustained growth. Reinvestment of profits into expansion. Risks: High valuations vulnerable to disappointment. Growth requires patience—companies may not profit for years. Peter Lynch sought 'growth at a reasonable price' (GARP)—combining growth with valuation discipline.",
+      },
+      {
+        title: "Value Investing Strategies",
+        content: "Value investors seek: Low P/E, P/B, or P/S ratios vs. history/peers. High dividend yields. Strong balance sheets with low debt. Catalyst for value realization. Benjamin Graham's teachings: Buy $1 of assets for $0.50. Warren Buffett evolved Graham's approach: 'wonderful companies at fair prices.' Value traps exist—some stocks are cheap for good reasons.",
+        quiz: {
+          question: "Who taught Warren Buffett value investing principles?",
+          options: [
+            "Peter Lynch",
+            "Benjamin Graham",
+            "Ray Dalio",
+            "Jack Bogle"
+          ],
+          correctAnswer: 1,
+          explanation: "Benjamin Graham, known as the father of value investing, taught Buffett at Columbia and wrote 'The Intelligent Investor.'"
+        }
+      },
+      {
+        title: "Blending Growth and Value",
+        content: "Core-satellite approach: Index funds as core, selective growth/value tilts. Factor investing: Blend value, growth, quality, momentum factors. GARP: Growth at a reasonable price balances both styles. Total market funds naturally blend both. Avoid timing style rotations—both outperform at different times. Most successful investors incorporate elements of both philosophies.",
+      },
+    ],
+
+    // Lesson 29: Margin and Leverage
+    29: [
+      {
+        title: "Understanding Margin Trading",
+        content: "Margin is borrowing money from your broker to buy securities. Initial margin: Typically 50%—borrow up to half the purchase price. Maintenance margin: Minimum equity required (usually 25-30%). Margin call: If equity falls below maintenance, must deposit funds or sell. Interest charges apply on borrowed amounts. Margin amplifies both gains AND losses—use extreme caution.",
+        quiz: {
+          question: "What happens when your account equity falls below maintenance margin?",
+          options: [
+            "Nothing",
+            "Automatic profit",
+            "Margin call requiring deposit or sale",
+            "Free trading"
+          ],
+          correctAnswer: 2,
+          explanation: "A margin call requires you to deposit additional funds or sell securities to restore required equity levels."
+        }
+      },
+      {
+        title: "The Dangers of Leverage",
+        content: "Example: Buy $20,000 of stock with $10,000 cash + $10,000 margin. Stock rises 10% to $22,000: Your equity = $12,000 (20% gain on cash). Stock falls 10% to $18,000: Your equity = $8,000 (20% loss on cash). At -50%, you're wiped out entirely. Historic crashes often occur rapidly—margin calls force selling into declines, accelerating losses. Many experienced investors avoid margin entirely.",
+      },
+      {
+        title: "Leveraged ETFs",
+        content: "Leveraged ETFs (2x, 3x) use derivatives to multiply daily index returns. Example: TQQQ provides 3x daily Nasdaq-100 returns. Critical issue: Volatility decay erodes returns over time. A -10% day followed by +10% doesn't return to even—it's actually down. Leveraged ETFs are designed for day trading, not long-term holding. Avoid unless you fully understand the mathematical decay problem.",
+        quiz: {
+          question: "Why are leveraged ETFs problematic for long-term holding?",
+          options: [
+            "Too low returns",
+            "Volatility decay erodes returns over time",
+            "They're too safe",
+            "Low fees"
+          ],
+          correctAnswer: 1,
+          explanation: "Daily rebalancing causes mathematical decay—over time, leveraged ETFs underperform their stated multiple significantly."
+        }
+      },
+      {
+        title: "Responsible Use of Leverage",
+        content: "If using leverage: Never exceed 10-20% of portfolio. Have cash reserves for margin calls. Use only for well-understood positions. Set stop losses to limit downside. Better leverage alternatives: Home mortgage (low rate, tax-deductible). 401(k) employer match (100% guaranteed return). Options with defined risk. Most millionaires built wealth slowly without leverage—time and compounding beat risky shortcuts.",
+      },
+    ],
+
+    // Lesson 30: Short Selling
+    30: [
+      {
+        title: "How Short Selling Works",
+        content: "Short selling profits from price declines: Borrow shares from broker, sell at current price. Later, buy shares back (hopefully lower) and return to lender. Profit = Sale price - Repurchase price - Borrowing costs. Example: Short 100 shares at $50, cover at $40 = $1,000 profit. Short squeezes occur when prices rise, forcing shorts to cover at losses, accelerating the rise.",
+        quiz: {
+          question: "How do short sellers profit?",
+          options: [
+            "When prices rise",
+            "When prices fall",
+            "Through dividends",
+            "Interest payments"
+          ],
+          correctAnswer: 1,
+          explanation: "Short sellers profit when stock prices decline—they sell borrowed shares high and buy them back lower."
+        }
+      },
+      {
+        title: "Risks of Short Selling",
+        content: "Unlimited loss potential: Stock can rise infinitely (theoretically). Carrying costs: Interest on borrowed shares, dividend payments owed. Short squeeze risk: Forced covering amplifies losses. Margin requirements: Must maintain margin as prices move against you. Time works against you: Carrying costs accumulate while waiting for decline. The market can stay irrational longer than you can stay solvent.",
+      },
+      {
+        title: "Famous Short Squeezes",
+        content: "GameStop (2021): Retail investors coordinated purchases forcing hedge fund shorts to cover, causing 1,700% price spike. Volkswagen (2008): Briefly became world's most valuable company during squeeze. Short interest data is public—high short interest creates squeeze potential. Short selling requires conviction AND perfect timing. Professional short sellers like Jim Chanos spend months researching before shorting.",
+        quiz: {
+          question: "What caused the GameStop short squeeze in 2021?",
+          options: [
+            "Company earnings beat expectations",
+            "Coordinated retail buying forced short covering",
+            "Dividend announcement",
+            "Merger news"
+          ],
+          correctAnswer: 1,
+          explanation: "Retail investors coordinated buying pressure that forced heavily-shorted hedge funds to cover, creating a massive squeeze."
+        }
+      },
+      {
+        title: "Alternatives to Direct Short Selling",
+        content: "Inverse ETFs: SH (inverse S&P 500), SQQQ (3x inverse Nasdaq). Put options: Defined risk, profit from declines. Pair trades: Long one stock, short related one to hedge. These alternatives offer downside exposure without unlimited loss risk. For most investors, cash allocation during uncertainty is safer than active shorting. Short selling is a specialized skill—most investors should avoid it.",
+      },
+    ],
+
+    // Lesson 31: Dollar-Cost Averaging
+    31: [
+      {
+        title: "DCA: A Systematic Approach",
+        content: "Dollar-cost averaging (DCA) means investing fixed amounts at regular intervals regardless of price. When prices are high, you buy fewer shares. When prices are low, you buy more shares. This removes emotion and timing from investing decisions. Studies show DCA reduces regret and improves investor outcomes by eliminating paralysis. Automated investing through 401(k)s is natural DCA.",
+        quiz: {
+          question: "What happens when prices are low during dollar-cost averaging?",
+          options: [
+            "You buy fewer shares",
+            "You buy more shares",
+            "You stop investing",
+            "Nothing changes"
+          ],
+          correctAnswer: 1,
+          explanation: "With fixed dollar amounts, lower prices mean you automatically buy more shares—a key benefit of DCA."
+        }
+      },
+      {
+        title: "DCA vs. Lump Sum",
+        content: "Research shows lump sum beats DCA about 66% of the time over the long term—markets rise more often than fall. However: DCA reduces volatility and regret. Starting with lump sum right before a crash is psychologically devastating. Compromise: Invest half immediately, DCA the rest over 6-12 months. For ongoing savings, DCA is the natural approach since you don't have lump sums available.",
+      },
+      {
+        title: "Implementing DCA",
+        content: "Set up automatic investments on the same day each month. Choose broad market index funds or ETFs. Reinvest dividends automatically. Never check prices on investment day—it's irrelevant. Increase contributions with raises. During crashes, maintain or increase contributions—you're buying at sale prices. Consistency over decades matters far more than timing.",
+        quiz: {
+          question: "What should you do during market crashes with DCA?",
+          options: [
+            "Stop all investing",
+            "Maintain or increase contributions",
+            "Sell everything",
+            "Switch to bonds only"
+          ],
+          correctAnswer: 1,
+          explanation: "Crashes are sale opportunities—maintaining or increasing contributions buys more shares at lower prices."
+        }
+      },
+      {
+        title: "Value Averaging Alternative",
+        content: "Value averaging: Adjust contributions to hit portfolio value targets. Example: Target $1,000 growth monthly. If portfolio rises $800, contribute $200. If it falls $300, contribute $1,300. This naturally buys more when cheap, less when expensive. Requires more active management than DCA. May require cash reserves for large contributions during downturns. Both DCA and value averaging beat emotional timing attempts.",
+      },
+    ],
+
+    // Lesson 32: Investment Fees and Costs
+    32: [
+      {
+        title: "The Impact of Fees",
+        content: "Small fee differences compound to massive wealth differences. Example over 40 years with $100,000 at 7%: 0.10% fee: $1,427,000. 1.00% fee: $1,009,000. 2.00% fee: $698,000. A 1.9% fee difference costs $729,000! Fees are guaranteed drags; performance is uncertain. Warren Buffett: 'Performance comes and goes; fees never falter.'",
+        quiz: {
+          question: "Over 40 years, what's the approximate cost difference between 0.1% and 2% annual fees on $100,000?",
+          options: [
+            "$50,000",
+            "$200,000",
+            "$729,000",
+            "$1,000,000"
+          ],
+          correctAnswer: 2,
+          explanation: "The compounding effect of fee differences is enormous—nearly $730,000 difference over 40 years."
+        }
+      },
+      {
+        title: "Types of Investment Fees",
+        content: "Expense ratio: Annual fund operating costs (seek below 0.20%). Load fees: Sales charges when buying (front) or selling (back) funds—avoid completely. Trading commissions: Per-trade costs (many brokers now $0). Advisory fees: Financial advisor charges (typically 0.5-1.5% of assets). 12b-1 fees: Marketing costs within fund expenses. Read prospectuses carefully—fees hide in footnotes.",
+      },
+      {
+        title: "Hidden Costs",
+        content: "Bid-ask spreads: Difference between buying and selling prices. Trading costs within funds: Turnover creates transaction costs. Tax inefficiency: High turnover generates taxable distributions. Cash drag: Uninvested cash in funds earns nothing. Active funds average 70-100% annual turnover; index funds have 3-5%. Choose low-turnover funds for tax efficiency.",
+        quiz: {
+          question: "Why is high fund turnover costly?",
+          options: [
+            "Better returns",
+            "Creates taxable events and transaction costs",
+            "Lower expenses",
+            "More diversification"
+          ],
+          correctAnswer: 1,
+          explanation: "High turnover generates transaction costs and realizes taxable gains that reduce after-tax returns."
+        }
+      },
+      {
+        title: "Minimizing Costs",
+        content: "Index funds: Vanguard, Fidelity, Schwab offer 0.03-0.10% expense ratios. Commission-free ETFs: Most brokers offer thousands. Tax-advantaged accounts: Avoid annual tax drag. Buy-and-hold: Minimize trading costs. Fiduciary advisors: If needed, fee-only over commission-based. Every dollar saved in fees compounds tax-free—fee reduction is guaranteed return improvement.",
+      },
+    ],
+
+    // Lesson 33: Behavioral Finance
+    33: [
+      {
+        title: "How Emotions Sabotage Returns",
+        content: "DALBAR studies show average equity fund investors underperform the S&P 500 by ~4% annually. Why? Buying high (greed) and selling low (fear). Holding winners too long and losers longer. Chasing past performance. Overconfidence in stock-picking ability. Behavioral finance studies these systematic errors. Understanding your biases is the first step to overcoming them.",
+        quiz: {
+          question: "By how much do average investors typically underperform market benchmarks annually?",
+          options: [
+            "1%",
+            "2%",
+            "4%",
+            "10%"
+          ],
+          correctAnswer: 2,
+          explanation: "DALBAR studies show average investors underperform by roughly 4% annually due to behavioral mistakes."
+        }
+      },
+      {
+        title: "Key Cognitive Biases",
+        content: "Anchoring: Fixating on purchase price regardless of current fundamentals. Confirmation bias: Seeking information that supports existing beliefs. Disposition effect: Selling winners too soon, holding losers too long. Mental accounting: Treating money differently based on source. Narrative fallacy: Creating stories to explain random events. Recognize these patterns in your own thinking.",
+      },
+      {
+        title: "Emotional Biases",
+        content: "Loss aversion: Losses feel 2x more painful than equivalent gains feel good. Regret aversion: Avoiding decisions that might cause regret. Herding: Following the crowd feels safe but leads to buying tops and selling bottoms. Overconfidence: Believing you're above average (mathematically impossible for everyone). Status quo bias: Preferring current state even when changes would help.",
+        quiz: {
+          question: "How much more painful do losses feel compared to equivalent gains?",
+          options: [
+            "Same",
+            "1.5x more",
+            "2x more",
+            "4x more"
+          ],
+          correctAnswer: 2,
+          explanation: "Research shows losses feel approximately twice as painful as equivalent gains feel good—driving risk aversion."
+        }
+      },
+      {
+        title: "Building Better Behavior",
+        content: "Automate investing: Remove emotional decisions. Written investment policy: Define rules before emotions run high. Reduce checking frequency: Daily monitoring increases trading mistakes. Diversification: Less concentration reduces regret on individual positions. Long-term focus: Zoom out beyond daily noise. Investment journal: Track decisions and outcomes to learn from patterns. The best investors master their psychology.",
+      },
+    ],
+
+    // Lesson 34: Portfolio Construction
+    34: [
+      {
+        title: "Modern Portfolio Theory Basics",
+        content: "Harry Markowitz's Modern Portfolio Theory (MPT) demonstrates that portfolio risk isn't simply the average of component risks. Uncorrelated assets reduce overall volatility without sacrificing returns. The efficient frontier shows optimal risk/return combinations. Diversification is the only 'free lunch' in investing. MPT won the Nobel Prize and forms the foundation of portfolio construction.",
+        quiz: {
+          question: "What did Harry Markowitz's Modern Portfolio Theory demonstrate?",
+          options: [
+            "More stocks always means more risk",
+            "Uncorrelated assets reduce portfolio risk",
+            "Only bonds are safe",
+            "Timing the market works"
+          ],
+          correctAnswer: 1,
+          explanation: "MPT showed that combining uncorrelated assets reduces overall portfolio risk without sacrificing expected returns."
+        }
+      },
+      {
+        title: "Asset Allocation Decisions",
+        content: "Asset allocation accounts for ~90% of portfolio return variability. Start with stocks vs. bonds split based on timeline and risk tolerance. Within stocks: US vs. international, large vs. small, growth vs. value. Within bonds: Government vs. corporate, short vs. long duration. Add alternatives (REITs, commodities) for additional diversification. Target-date funds automate this process.",
+      },
+      {
+        title: "Correlation and Diversification",
+        content: "Correlation measures how assets move together (-1 to +1). Correlation of +1: Move exactly together (no diversification benefit). Correlation of 0: Move independently (excellent diversification). Correlation of -1: Move opposite (perfect hedge). US stocks and bonds: ~0.0 correlation. US stocks and international stocks: ~0.7 (diversified but related). Seek assets with low or negative correlations to your core holdings.",
+        quiz: {
+          question: "What correlation between assets provides the best diversification?",
+          options: [
+            "+1",
+            "+0.5",
+            "0 or negative",
+            "Correlation doesn't matter"
+          ],
+          correctAnswer: 2,
+          explanation: "Zero or negative correlation means assets move independently or opposite, providing maximum diversification benefits."
+        }
+      },
+      {
+        title: "Building Your Portfolio",
+        content: "Three-fund portfolio: Total US stock, total international stock, total bond market. Core-satellite: Broad index core with tactical positions around edges. Factor-based: Tilt toward value, momentum, quality factors. All-weather: Balance across economic environments. Start simple—3 funds suffices for most investors. Complexity doesn't improve returns but does increase costs and mistakes.",
+      },
+    ],
+
+    // Lesson 35: Due Diligence Process
+    35: [
+      {
+        title: "Research Before Buying",
+        content: "Due diligence is the systematic investigation before investing. Warren Buffett reads hundreds of pages before every investment. Peter Lynch visited companies, talked to employees and customers. Research prevents emotional decisions and reveals red flags. The investment process matters more than any single pick. Develop a consistent framework applied to every opportunity.",
+        quiz: {
+          question: "Why is a systematic due diligence process important?",
+          options: [
+            "It guarantees profits",
+            "It prevents emotional decisions and reveals red flags",
+            "It's required by law",
+            "It's not important"
+          ],
+          correctAnswer: 1,
+          explanation: "Systematic research prevents emotional decisions, reveals potential problems, and creates investment discipline."
+        }
+      },
+      {
+        title: "Quantitative Analysis",
+        content: "Financial statement review: Income statement, balance sheet, cash flows. Key ratios: P/E, P/B, ROE, debt/equity, current ratio. Trend analysis: How metrics are changing over time. Peer comparison: How does the company compare to competitors? Valuation: Is current price reasonable relative to intrinsic value? Quantitative screens filter opportunities; qualitative analysis provides conviction.",
+      },
+      {
+        title: "Qualitative Analysis",
+        content: "Business model: How does the company make money? Is it sustainable? Competitive advantages: Moats that protect profitability. Management quality: Track record, alignment with shareholders, capital allocation. Industry dynamics: Growth trends, competitive intensity, disruption risks. Corporate culture: Innovation, ethics, employee satisfaction. The best businesses combine strong financials with durable qualitative advantages.",
+        quiz: {
+          question: "What does qualitative analysis focus on?",
+          options: [
+            "Financial ratios only",
+            "Business model, moats, and management quality",
+            "Historical stock prices",
+            "Trading volume"
+          ],
+          correctAnswer: 1,
+          explanation: "Qualitative analysis examines non-numerical factors: business model sustainability, competitive moats, and management quality."
+        }
+      },
+      {
+        title: "Making the Decision",
+        content: "Create a checklist covering all research areas. Seek disconfirming evidence—argue against your thesis. Calculate intrinsic value using multiple methods. Require margin of safety (30%+ discount to value). Size positions based on conviction and risk. Document reasoning to review later. If anything doesn't check out, move on—there will always be other opportunities.",
+      },
+    ],
+
+    // Lesson 36: Market Cycles and Timing
+    36: [
+      {
+        title: "Understanding Market Cycles",
+        content: "Markets move in cycles driven by economic conditions and investor psychology. Bull markets: Extended periods of rising prices (average 5 years). Bear markets: Declines of 20%+ (average 14 months). Corrections: Declines of 10-20% (occur yearly on average). Crashes: Rapid severe declines (occur roughly every decade). Cycles are inevitable but timing is impossible—prepare psychologically and financially for both.",
+        quiz: {
+          question: "How long does the average bull market last?",
+          options: [
+            "6 months",
+            "2 years",
+            "5 years",
+            "10 years"
+          ],
+          correctAnswer: 2,
+          explanation: "Bull markets historically average about 5 years, though individual cycles vary significantly."
+        }
+      },
+      {
+        title: "The Futility of Market Timing",
+        content: "Studies consistently show timing attempts fail: Missing the 10 best days over 20 years cuts returns in half. Best and worst days often cluster together. Professional market timers fail more than succeed. Even correct predictions require getting re-entry timing right. Peter Lynch: 'Far more money has been lost by investors preparing for corrections, or trying to anticipate corrections, than has been lost in corrections themselves.'",
+      },
+      {
+        title: "Preparing for Bear Markets",
+        content: "Accept they're coming: ~1 every 3-4 years historically. Maintain appropriate asset allocation for your risk tolerance. Keep emergency fund separate from investments. Avoid panic: Create written plan to follow during declines. View as opportunities: Lower prices mean better future returns. Consider automatic rebalancing: Sells high, buys low systematically. Those who survive bear markets often do best in subsequent bulls.",
+        quiz: {
+          question: "How should you view bear markets?",
+          options: [
+            "Time to sell everything",
+            "Opportunities to buy at lower prices",
+            "Signs to stop investing",
+            "Rare events"
+          ],
+          correctAnswer: 1,
+          explanation: "Bear markets offer opportunities to buy quality assets at discounted prices, improving long-term returns for patient investors."
+        }
+      },
+      {
+        title: "Staying the Course",
+        content: "Time in market > timing the market. Contribute consistently regardless of conditions. Rebalance periodically to maintain risk levels. Focus on controllables: savings rate, costs, behavior. Tune out financial media during volatility—it's entertainment, not advice. Remember: The market has recovered from every crash in history. Patient investors are rewarded; panicked investors lock in losses.",
+      },
+    ],
+
+    // Lesson 37: Income Investing
+    37: [
+      {
+        title: "Building Income Streams",
+        content: "Income investing prioritizes regular cash payments over price appreciation. Sources: dividends, bond interest, REIT distributions, preferred stock payments. Particularly valuable for: retirees needing cash flow, risk-averse investors wanting tangible returns. Growing income can outpace inflation over time. Dividend growth investors focus on increasing payments rather than highest current yield.",
+        quiz: {
+          question: "What's the main goal of income investing?",
+          options: [
+            "Maximum capital gains",
+            "Regular cash payments",
+            "Tax losses",
+            "Beating the market"
+          ],
+          correctAnswer: 1,
+          explanation: "Income investing prioritizes receiving regular cash payments through dividends, interest, and distributions."
+        }
+      },
+      {
+        title: "Dividend Income Strategies",
+        content: "High dividend yield: Focus on above-average payouts (3-5%+). Dividend growth: Focus on companies increasing payouts annually. Dividend aristocrats: 25+ consecutive years of increases. Mix approaches: Core holdings in growers, satellite in high yield. Reinvest dividends in accumulation phase; take cash in retirement. Watch payout ratios—extremely high yields often indicate trouble.",
+      },
+      {
+        title: "Fixed Income Strategies",
+        content: "Bond ladders: Stagger maturities for consistent income and rate flexibility. Barbell strategy: Short-term and long-term bonds, nothing in middle. TIPS: Inflation-protected treasury bonds for real income. Municipal bonds: Tax-free income for high-bracket investors. I-Bonds: Inflation-adjusted savings bonds (limited annual purchases). Match duration to when you'll need the money.",
+        quiz: {
+          question: "What's the benefit of a bond ladder?",
+          options: [
+            "Highest possible yield",
+            "Consistent income and interest rate flexibility",
+            "Maximum price appreciation",
+            "No risk"
+          ],
+          correctAnswer: 1,
+          explanation: "Bond ladders provide consistent income as bonds mature, while allowing reinvestment at current rates."
+        }
+      },
+      {
+        title: "Creating a Complete Income Portfolio",
+        content: "Diversify income sources: Stocks, bonds, REITs, preferred shares. Balance yield and growth: Some high current income, some growing payments. Consider taxes: Qualified dividends taxed lower than bond interest. Plan for inflation: Growing dividends and TIPS protect purchasing power. Calculate coverage: Ensure income exceeds expenses with margin of safety. Review annually and adjust for changing needs and rates.",
+      },
+    ],
+
+    // Lesson 38: Value Investing Deep Dive
+    38: [
+      {
+        title: "Benjamin Graham's Value Principles",
+        content: "Benjamin Graham, the father of value investing, taught: Mr. Market offers prices daily—sometimes rational, often emotional. Exploit his mood swings. Margin of safety: Only buy when price is well below intrinsic value. Focus on intrinsic value, not market price. Be patient—wait for fat pitches. His 1949 book 'The Intelligent Investor' remains essential reading.",
+        quiz: {
+          question: "What is Graham's 'margin of safety'?",
+          options: [
+            "A diversified portfolio",
+            "Buying only when price is well below intrinsic value",
+            "Stop-loss orders",
+            "Insurance on investments"
+          ],
+          correctAnswer: 1,
+          explanation: "Margin of safety means buying assets for significantly less than their calculated intrinsic value, protecting against errors."
+        }
+      },
+      {
+        title: "Calculating Intrinsic Value",
+        content: "Methods to estimate intrinsic value: Discounted Cash Flow (DCF): Present value of future cash flows. Earnings power value: Normalized earnings × appropriate multiple. Asset-based: Net asset value for asset-heavy businesses. Relative valuation: Compare multiples to peers and history. Use multiple methods and look for convergence. Intrinsic value is a range, not a precise number.",
+      },
+      {
+        title: "Finding Undervalued Stocks",
+        content: "Where to look for value: Out-of-favor industries (cyclical downturns). Spinoffs (often sold indiscriminately). Small caps (less analyst coverage). Turnaround situations (temporary problems). 52-week low lists. Insider buying (management knows the business). Screening tools: Low P/E, P/B; high dividend yield; positive earnings. Then apply qualitative analysis to understand why it's cheap.",
+        quiz: {
+          question: "Why might spinoffs offer value opportunities?",
+          options: [
+            "They're always better companies",
+            "Often sold indiscriminately by index funds",
+            "Higher dividends",
+            "More media coverage"
+          ],
+          correctAnswer: 1,
+          explanation: "Spinoffs are often sold by index funds and institutions that don't want the new company, creating buying opportunities."
+        }
+      },
+      {
+        title: "Avoiding Value Traps",
+        content: "Value traps are cheap stocks that stay cheap or decline further. Warning signs: Declining industry with no turnaround catalyst. Deteriorating competitive position. Poor management with no change coming. High debt becoming unmanageable. Accounting irregularities. Cheap isn't enough—you need a reason for value to be realized. Catalysts: New management, strategic alternatives, activist investors, industry recovery.",
+      },
+    ],
+
+    // Lesson 39: Growth Investing Deep Dive
+    39: [
+      {
+        title: "Finding Growth Opportunities",
+        content: "Growth investing seeks companies expanding faster than the market. Look for: Revenue growth 15%+ annually. Expanding total addressable market. Product innovation and market share gains. Operating leverage improving margins. Strong reinvestment returns. Peter Lynch sought 'tenbaggers'—stocks that grow 10x. Many successful growth investors focus on what they know and observe in daily life.",
+        quiz: {
+          question: "What annual revenue growth rate typically defines a growth stock?",
+          options: [
+            "3%+",
+            "8%+",
+            "15%+",
+            "50%+"
+          ],
+          correctAnswer: 2,
+          explanation: "Growth stocks typically exhibit 15%+ annual revenue growth, significantly above market averages."
+        }
+      },
+      {
+        title: "Evaluating Growth Sustainability",
+        content: "Key questions: Is the market expanding or is the company just taking share? Are customers recurring or one-time? What's the competitive moat protecting growth? Is growth profitable or buying revenue with losses? How long can high growth continue? Rule of 40 (SaaS companies): Revenue growth % + profit margin % should exceed 40%. Sustainable growth requires profitable unit economics.",
+      },
+      {
+        title: "Growth at a Reasonable Price",
+        content: "GARP balances growth enthusiasm with valuation discipline. PEG ratio: P/E divided by growth rate (seek PEG below 1.5). Compare valuations to growth rates—high growth justifies higher P/E. Warren Buffett evolved from pure value to GARP: 'wonderful companies at fair prices.' Even great companies are bad investments at extreme valuations. Set price targets based on reasonable future valuations.",
+        quiz: {
+          question: "What PEG ratio generally indicates reasonable value?",
+          options: [
+            "Above 3",
+            "Exactly 2",
+            "Below 1.5",
+            "PEG doesn't matter"
+          ],
+          correctAnswer: 2,
+          explanation: "PEG below 1.5 suggests the stock's P/E multiple is reasonable relative to its growth rate."
+        }
+      },
+      {
+        title: "Managing Growth Stock Positions",
+        content: "Position sizing: Growth stocks are volatile—don't over-concentrate. Adding to winners: Consider adding as thesis confirms. Selling discipline: Fundamental deterioration vs. temporary setbacks. Valuation limits: Set price targets when to take profits. Tax management: Hold winners for long-term capital gains treatment. Growth investing requires patience—compounding takes years to show dramatic results.",
+      },
+    ],
+
+    // Lesson 40: Factor Investing
+    40: [
+      {
+        title: "What Are Investment Factors?",
+        content: "Factors are characteristics that explain stock returns beyond market exposure. Academic research has identified factors that persistently outperform over time. Major factors: Value (cheap stocks), Size (small companies), Momentum (recent winners), Quality (profitable stable companies), Low Volatility. Factors have academic backing and long historical records. Factor investing bridges passive and active management.",
+        quiz: {
+          question: "What are investment factors?",
+          options: [
+            "Industry sectors",
+            "Characteristics explaining excess returns",
+            "Market cap ranges",
+            "Geographic regions"
+          ],
+          correctAnswer: 1,
+          explanation: "Factors are stock characteristics (like value or momentum) that explain returns beyond simple market exposure."
+        }
+      },
+      {
+        title: "Major Factor Strategies",
+        content: "Value: Low P/E, P/B stocks (historically +2-3% annually over market). Size: Small cap stocks (historically +2% over large caps). Momentum: Recent winners continue outperforming (strongest factor). Quality: High profitability, low debt companies. Low Volatility: Paradoxically, low-vol stocks often match high-vol returns with less risk. Each factor has periods of outperformance and underperformance—diversify across factors.",
+      },
+      {
+        title: "Implementing Factor Strategies",
+        content: "Smart beta ETFs: Rules-based factor exposure (lower cost than active). Factor funds from major providers: Vanguard, Fidelity, DFA. Multi-factor funds: Combine several factors for diversification. Single-factor ETFs: Concentrated exposure (more volatile). Consider: Expense ratios matter—factors have modest premiums. Turnover creates taxes in taxable accounts.",
+        quiz: {
+          question: "Why diversify across multiple factors?",
+          options: [
+            "One factor always works",
+            "Each factor has periods of underperformance",
+            "Only momentum matters",
+            "Factors never work"
+          ],
+          correctAnswer: 1,
+          explanation: "Each factor experiences periods of underperformance; combining factors smooths returns over time."
+        }
+      },
+      {
+        title: "Factor Timing and Patience",
+        content: "Factor premiums are long-term phenomena requiring decades of patience. Value underperformed for 10+ years before 2022 resurgence. Momentum can reverse violently in market turns. Don't chase recent factor performance—it often reverses. Maintain consistent factor exposure or accept market-cap weighting. Factor investing works but requires discipline through underperformance periods.",
+      },
+    ],
+
+    // Lesson 41: ESG Investing
+    41: [
+      {
+        title: "What is ESG Investing?",
+        content: "ESG investing considers Environmental, Social, and Governance factors alongside financial analysis. Environmental: Climate impact, resource usage, pollution. Social: Labor practices, community relations, product safety. Governance: Board composition, executive pay, shareholder rights. ESG investing has grown dramatically—over $35 trillion in ESG assets globally. Motivations vary: values alignment, risk management, or belief in outperformance.",
+        quiz: {
+          question: "What does ESG stand for?",
+          options: [
+            "Earnings, Stocks, Growth",
+            "Environmental, Social, Governance",
+            "European Standard Guidelines",
+            "Equity Share Group"
+          ],
+          correctAnswer: 1,
+          explanation: "ESG stands for Environmental, Social, and Governance—the three pillars of sustainable investing criteria."
+        }
+      },
+      {
+        title: "ESG Investment Approaches",
+        content: "Negative screening: Exclude industries (tobacco, weapons, fossil fuels). Positive screening: Select best ESG performers within sectors. ESG integration: Consider ESG as risk factors alongside traditional analysis. Impact investing: Seek measurable positive outcomes. Shareholder engagement: Vote proxies and engage companies on ESG issues. Choose the approach matching your values and objectives.",
+      },
+      {
+        title: "ESG Performance Debate",
+        content: "ESG performance evidence is mixed and debated: Some studies show ESG leaders outperform on risk-adjusted basis. Others find no significant difference or underperformance. ESG may help avoid disasters (governance failures, environmental liabilities). Energy sector exclusion hurt during 2022 oil rally. Greenwashing concerns: Not all ESG funds are equally rigorous. Focus on ESG for values alignment; don't expect guaranteed outperformance.",
+        quiz: {
+          question: "What is a legitimate concern about ESG investing?",
+          options: [
+            "Always outperforms",
+            "Greenwashing—not all funds are equally rigorous",
+            "No options available",
+            "Required by law"
+          ],
+          correctAnswer: 1,
+          explanation: "Greenwashing is a real concern—ESG criteria and rigor vary significantly across funds and providers."
+        }
+      },
+      {
+        title: "Building an ESG Portfolio",
+        content: "Research fund methodologies—ESG means different things to different providers. Compare holdings—some ESG funds still hold controversial companies. Consider expense ratios—ESG funds often charge more. Check tracking error if using ESG index funds. Supplement with direct engagement—vote your proxies. Balance ESG preferences with diversification needs. Your values matter—invest in ways that let you sleep at night.",
+      },
+    ],
+
+    // Lesson 42: Tax-Loss Harvesting
+    42: [
+      {
+        title: "Understanding Tax-Loss Harvesting",
+        content: "Tax-loss harvesting sells losing positions to realize losses that offset taxable gains. Capital losses offset capital gains dollar-for-dollar. Excess losses offset up to $3,000 of ordinary income annually. Remaining losses carry forward indefinitely. This strategy lowers taxes without changing portfolio allocation. Robo-advisors automate this process; manual investors can do it too.",
+        quiz: {
+          question: "How much ordinary income can excess capital losses offset annually?",
+          options: [
+            "$1,000",
+            "$3,000",
+            "$10,000",
+            "Unlimited"
+          ],
+          correctAnswer: 1,
+          explanation: "After offsetting capital gains, up to $3,000 of capital losses can offset ordinary income each year."
+        }
+      },
+      {
+        title: "The Wash Sale Rule",
+        content: "IRS wash sale rule: Can't claim loss if you buy 'substantially identical' security within 30 days before or after sale. This 61-day window requires planning. Strategies: Switch to similar but not identical investment (different index fund). Wait 31 days then repurchase (risk missing gains). Harvest losses in taxable accounts while maintaining positions in IRAs. Track wash sales across all accounts—including spouse's.",
+      },
+      {
+        title: "Implementing Tax-Loss Harvesting",
+        content: "Review portfolio for losses, especially after market declines. Prioritize short-term losses (offset gains taxed at income rates). Consider transaction costs vs. tax benefits. Maintain intended asset allocation through similar replacements. Example: Sell S&P 500 fund at loss, buy total market fund. After 31 days, can switch back if desired. Harvest throughout the year, not just December.",
+        quiz: {
+          question: "Why prioritize harvesting short-term losses?",
+          options: [
+            "They're worth less",
+            "They offset gains taxed at higher income tax rates",
+            "Long-term losses don't count",
+            "IRS requires it"
+          ],
+          correctAnswer: 1,
+          explanation: "Short-term capital gains are taxed at ordinary income rates (up to 37%), so offsetting them provides greater tax savings."
+        }
+      },
+      {
+        title: "Long-term Tax Considerations",
+        content: "Harvesting resets cost basis—future gains will be larger. Evaluate net present value of deferring vs. eliminating taxes. If expecting lower future tax bracket, harvesting is clearly beneficial. If higher future bracket, consider implications. Step-up in basis at death eliminates gains—relevant for estate planning. Tax-loss harvesting works best in early accumulation years when you're in lower brackets.",
+      },
+    ],
+
+    // Lesson 43: Estate Planning for Investors
+    43: [
+      {
+        title: "Estate Planning Basics",
+        content: "Estate planning ensures assets transfer according to your wishes with minimal taxes. Key documents: Will, trust(s), power of attorney, healthcare directive. Beneficiary designations on retirement accounts override wills. Step-up in cost basis at death eliminates capital gains on appreciated assets. Estate tax exemption (2024): $13.61 million per person. Planning matters regardless of wealth level—it's about control and protection.",
+        quiz: {
+          question: "What happens to cost basis of appreciated assets at death?",
+          options: [
+            "It resets to zero",
+            "It steps up to current market value",
+            "Nothing changes",
+            "It becomes taxable immediately"
+          ],
+          correctAnswer: 1,
+          explanation: "The cost basis 'steps up' to market value at death, eliminating capital gains taxes on appreciation."
+        }
+      },
+      {
+        title: "Trusts for Investors",
+        content: "Revocable living trusts: Avoid probate, maintain control during life. Irrevocable trusts: Remove assets from estate, provide asset protection. Dynasty trusts: Multigenerational wealth transfer. Charitable remainder trusts: Income during life, charity at death. Bypass trusts: Maximize estate tax exemptions for married couples. Trust complexity requires professional guidance—costs are worth it for substantial estates.",
+      },
+      {
+        title: "Gifting Strategies",
+        content: "Annual gift exclusion: $18,000 per recipient (2024) without gift tax implications. Lifetime exemption: $13.61 million beyond annual exclusions. 529 contributions: Can superfund 5 years' gifts ($90,000) in one year. Direct payments for education/medical don't count toward limits. Gifting appreciated assets moves gains out of your estate. Start early—consistent gifting compounds over generations.",
+        quiz: {
+          question: "What is the 2024 annual gift tax exclusion per recipient?",
+          options: [
+            "$10,000",
+            "$15,000",
+            "$18,000",
+            "$25,000"
+          ],
+          correctAnswer: 2,
+          explanation: "The 2024 annual gift tax exclusion is $18,000 per recipient without using lifetime exemption."
+        }
+      },
+      {
+        title: "Charitable Planning",
+        content: "Donating appreciated assets: Avoid capital gains while getting full deduction. Donor-advised funds: Contribute now, distribute to charities over time. Qualified charitable distributions: Direct IRA distributions to charity (age 70.5+). Charitable remainder trusts: Income stream plus eventual charitable gift. Charitable lead trusts: Charity receives income, remainder to heirs. Philanthropy can be integrated with estate planning for tax efficiency.",
+      },
+    ],
+
+    // Lesson 44: Building Wealth Over Decades
+    44: [
+      {
+        title: "The Millionaire Next Door",
+        content: "Research on millionaires reveals common traits: They live below their means. They allocate time and money efficiently. They prioritize financial independence over status displays. Many are first-generation wealthy (80%+). Most common paths: Business ownership, high-income professions, consistent saving/investing. Wealth is what you don't see—the spending that didn't happen. Building wealth is boring and slow—but it works.",
+        quiz: {
+          question: "What percentage of millionaires are first-generation wealthy?",
+          options: [
+            "20%",
+            "50%",
+            "80%+",
+            "Nearly 100%"
+          ],
+          correctAnswer: 2,
+          explanation: "Research shows over 80% of millionaires are first-generation—they built their wealth, not inherited it."
+        }
+      },
+      {
+        title: "The Power of Savings Rate",
+        content: "Savings rate impacts retirement timeline more than investment returns. At 10% savings rate: ~50 years to retirement. At 25% savings rate: ~30 years to retirement. At 50% savings rate: ~17 years to retirement. At 75% savings rate: ~7 years to retirement. The math: Higher savings reduces expenses AND accelerates accumulation. Focus on increasing income and reducing spending—you control both.",
+      },
+      {
+        title: "Avoiding Lifestyle Inflation",
+        content: "Lifestyle inflation: Spending rises with income, preventing wealth building. Hedonic adaptation: We quickly adjust to new luxuries, wanting more. Strategy: When income increases, save 50%+ of the raise. Automate savings increases to remove temptation. Track spending to maintain awareness. Find fulfillment outside consumption. Many high earners are broke; many modest earners are wealthy. The difference is behavior.",
+        quiz: {
+          question: "What is lifestyle inflation?",
+          options: [
+            "Prices rising over time",
+            "Spending rising with income",
+            "Interest rates increasing",
+            "Portfolio volatility"
+          ],
+          correctAnswer: 1,
+          explanation: "Lifestyle inflation is when spending increases proportionally with income, preventing wealth accumulation."
+        }
+      },
+      {
+        title: "Wealth Building Mindset",
+        content: "Think in decades, not days. Embrace the boring consistency of systematic investing. Avoid comparing to others—run your own race. Focus on process (savings rate, costs, behavior) not outcomes (returns). Celebrate milestones but don't rest on them. Continual learning: Markets change, strategies evolve. Your biggest asset is human capital—invest in yourself. Wealth building is a marathon; start today and stay the course.",
+      },
+    ],
+
+    // Lesson 45: Financial Independence
+    45: [
+      {
+        title: "The FIRE Movement",
+        content: "FIRE: Financial Independence, Retire Early. Core concept: Accumulate 25x annual expenses to live off investments indefinitely. Variations: LeanFIRE (frugal lifestyle), FatFIRE (higher spending), CoastFIRE (front-load saving), BaristaFIRE (part-time work with benefits). The movement emphasizes intentional living and rejecting consumerism. Financial independence provides options—you don't have to retire, but you can.",
+        quiz: {
+          question: "How much do you need to accumulate for financial independence using the 4% rule?",
+          options: [
+            "10x annual expenses",
+            "15x annual expenses",
+            "25x annual expenses",
+            "50x annual expenses"
+          ],
+          correctAnswer: 2,
+          explanation: "The 4% rule suggests you need 25x annual expenses (1/0.04 = 25) to safely withdraw indefinitely."
+        }
+      },
+      {
+        title: "Calculating Your FI Number",
+        content: "Step 1: Track current spending accurately for 6-12 months. Step 2: Estimate retirement expenses (may be lower or higher). Step 3: Multiply by 25 for 4% withdrawal rate (or 33 for safer 3%). Example: $50,000 annual expenses × 25 = $1.25 million FI number. Include healthcare costs—significant before Medicare eligibility. Plan for taxes on withdrawals from traditional accounts.",
+      },
+      {
+        title: "Accelerating the Path to FI",
+        content: "Increase income: Career advancement, side businesses, skills development. Decrease expenses: Housing (biggest lever), transportation, food. Optimize taxes: Maximize tax-advantaged accounts. Investment efficiency: Low costs, tax-loss harvesting. Geographic arbitrage: Lower cost-of-living areas. The gap between income and expenses is everything. High earners who spend everything never reach FI; modest earners with high savings rates do.",
+        quiz: {
+          question: "What's the biggest lever for reducing expenses?",
+          options: [
+            "Coffee",
+            "Housing",
+            "Subscriptions",
+            "Clothing"
+          ],
+          correctAnswer: 1,
+          explanation: "Housing typically represents 25-35% of spending—changes here have the largest impact on savings rate."
+        }
+      },
+      {
+        title: "Life After FI",
+        content: "Financial independence is a beginning, not an end. Most FIRE achievers continue working—on their terms. Pursue meaningful activities: passion projects, volunteering, family. Guard against lifestyle inflation depleting your nest egg. Stay engaged mentally and socially—retirement isolation is real. Maintain flexibility in spending for market downturns. The goal isn't to stop working—it's to have choices about how you spend your time.",
+      },
+    ],
+
+    // Lesson 46: Investment Psychology Mastery
+    46: [
+      {
+        title: "Mastering Your Investment Mindset",
+        content: "Long-term investment success is 80% psychology, 20% strategy. The best strategy you can't stick with loses to a good strategy you can. Key mental shifts: Embrace volatility as the price of returns. See market drops as opportunities, not disasters. Focus on process over outcomes. Accept you can't control returns—only behavior. Develop emotional intelligence about money. Your mindset determines your results.",
+        quiz: {
+          question: "What percentage of investment success is psychology according to many experts?",
+          options: [
+            "20%",
+            "50%",
+            "80%",
+            "100%"
+          ],
+          correctAnswer: 2,
+          explanation: "Many experts argue that 80% of investment success comes from psychology and behavior, not strategy."
+        }
+      },
+      {
+        title: "Developing Patience",
+        content: "Markets reward patience, punish impatience. Average holding periods have declined from 8 years (1960s) to 6 months (2020s). Short-term trading generates fees, taxes, and behavioral errors. The best returns accrue to those who can sit and wait. Warren Buffett: 'The stock market is a device for transferring money from the impatient to the patient.' Practice patience in small ways to build the muscle for big moments.",
+      },
+      {
+        title: "Managing Fear and Greed",
+        content: "Fear: Sell low, miss recoveries, seek false safety. Counter: Remember past recoveries; focus on time horizon; automate. Greed: Buy high, concentrate, take excessive risk. Counter: Stick to allocation; remember past bubbles; maintain discipline. Keep an investment journal to identify your triggers. Create rules in advance: 'If the market drops 20%, I will add to positions.' Remove emotion by removing decisions in the moment.",
+        quiz: {
+          question: "What's the best way to manage emotional investing?",
+          options: [
+            "Check portfolio daily",
+            "Follow financial news constantly",
+            "Create rules in advance and automate",
+            "React quickly to market moves"
+          ],
+          correctAnswer: 2,
+          explanation: "Creating rules in advance and automating removes emotion from the decision-making process."
+        }
+      },
+      {
+        title: "Building Unshakeable Conviction",
+        content: "Conviction comes from understanding, not hope. Study investment history—every crash has recovered. Know your strategy deeply—why it works and when it struggles. Diversify to survive your mistakes. Build slowly—the market tests everyone's conviction. Find your personal 'why'—goals that transcend market noise. The investors who succeed are those who can't be shaken out. Be that investor.",
+      },
+    ],
+
+    // Lesson 47: Advanced Tax Strategies
+    47: [
+      {
+        title: "Tax-Efficient Account Placement",
+        content: "Different investments have different tax profiles—place them strategically. Tax-advantaged accounts (IRAs, 401k): Bonds (interest taxed as income), REITs, actively traded funds. Taxable accounts: Index funds, growth stocks (unrealized gains), municipal bonds. Roth accounts: Highest growth potential assets (gains are tax-free forever). This 'asset location' strategy can add 0.5%+ annually to after-tax returns.",
+        quiz: {
+          question: "Where should you hold REITs for tax efficiency?",
+          options: [
+            "Taxable accounts",
+            "Tax-advantaged accounts like IRAs",
+            "Checking accounts",
+            "Doesn't matter"
+          ],
+          correctAnswer: 1,
+          explanation: "REIT dividends are taxed as ordinary income, so holding them in tax-advantaged accounts shields this income."
+        }
+      },
+      {
+        title: "Roth Conversion Strategies",
+        content: "Roth conversions: Move traditional IRA/401k money to Roth, paying taxes now. Benefits: Tax-free growth and withdrawals forever; no RMDs. Optimal timing: Low-income years (early retirement, career transitions, sabbaticals). Fill lower tax brackets each year with conversions. Consider state taxes—convert before moving to high-tax state. Pro rata rule affects those with pre-tax IRA funds. Plan conversions over multiple years to manage tax brackets.",
+      },
+      {
+        title: "Qualified Opportunity Zones",
+        content: "QOZs offer tax benefits for investing capital gains in designated areas. Benefits: Defer current gains, reduce by 10% if held 5+ years, eliminate future gains if held 10+ years. Investments typically through Qualified Opportunity Funds (QOFs). Higher risk: Often underdeveloped areas with uncertain returns. Complexity: Many rules and requirements. Consider for large, concentrated gains—seek professional guidance.",
+        quiz: {
+          question: "What happens to QOZ gains if held for 10+ years?",
+          options: [
+            "Taxed at normal rates",
+            "Deferred",
+            "Eliminated entirely",
+            "Taxed at 50%"
+          ],
+          correctAnswer: 2,
+          explanation: "QOZ investments held 10+ years have appreciation gains eliminated entirely—a powerful tax benefit."
+        }
+      },
+      {
+        title: "Charitable Giving Tax Strategies",
+        content: "Donate appreciated stock: Avoid capital gains AND get full deduction. Bunch deductions: Alternate years of large charitable gifts to exceed standard deduction. Donor-Advised Funds: Contribute in high-income years, distribute later. Qualified Charitable Distributions: Direct IRA to charity, avoiding income (70.5+). Charitable Remainder Trusts: Complex but powerful for large estates. Align charitable intent with tax strategy for maximum impact.",
+      },
+    ],
+
+    // Lesson 48: International Tax Considerations
+    48: [
+      {
+        title: "Foreign Tax Credit",
+        content: "International investments often face foreign withholding taxes on dividends. Foreign Tax Credit: Offset US taxes with foreign taxes paid. Claimed on Form 1116 (or directly on Form 1040 if under $300 single/$600 married). Holding international investments in tax-advantaged accounts wastes the foreign tax credit. Consider tax-efficient placement: International stocks in taxable accounts to claim credits.",
+        quiz: {
+          question: "Where should you hold international stocks for tax efficiency?",
+          options: [
+            "Only in IRAs",
+            "Taxable accounts to claim foreign tax credits",
+            "Only in 401(k)s",
+            "Savings accounts"
+          ],
+          correctAnswer: 1,
+          explanation: "Taxable accounts allow claiming foreign tax credits; in tax-advantaged accounts, those credits are lost."
+        }
+      },
+      {
+        title: "Tax Treaties and Withholding",
+        content: "US has tax treaties with many countries reducing withholding rates. Treaty rates vary: UK 15%, Japan 10%, China 10%. Non-treaty countries may withhold 25-30%. ADRs have foreign taxes embedded in pricing. Check fund prospectuses for expected foreign tax drag. Ireland-domiciled ETFs may have favorable treaty rates. These details matter more as international allocation grows.",
+      },
+      {
+        title: "PFIC Rules for Foreign Funds",
+        content: "Passive Foreign Investment Company (PFIC) rules create punitive US taxation. Foreign mutual funds and ETFs are often PFICs. Consequences: Excess distributions taxed at highest rates plus interest. Avoid: Use US-domiciled funds for international exposure. If holding PFICs: Consider QEF or Mark-to-Market elections. This primarily affects US investors holding foreign-domiciled funds directly.",
+        quiz: {
+          question: "What should US investors avoid due to PFIC rules?",
+          options: [
+            "US index funds",
+            "Foreign-domiciled mutual funds",
+            "Treasury bonds",
+            "Domestic stocks"
+          ],
+          correctAnswer: 1,
+          explanation: "PFIC rules create punitive taxation on foreign-domiciled funds; use US-domiciled funds for international exposure."
+        }
+      },
+      {
+        title: "Expatriate and Dual-Citizen Considerations",
+        content: "US citizens owe taxes on worldwide income regardless of residence. FBAR: Report foreign accounts exceeding $10,000 total. FATCA: Report foreign financial assets above thresholds. Dual citizens face complexity—both countries may tax. Expatriation has tax consequences ('exit tax' on unrealized gains). Plan carefully before international moves or renouncing citizenship. International tax situations require specialized professional advice.",
+      },
+    ],
+
+    // Lesson 49: Risk Management Mastery
+    49: [
+      {
+        title: "Comprehensive Risk Assessment",
+        content: "Investment risk extends beyond market volatility. Market risk: Overall market declines. Concentration risk: Too much in single position or sector. Sequence risk: Poor returns early in retirement. Inflation risk: Purchasing power erosion. Longevity risk: Outliving your money. Behavioral risk: Your own mistakes. Currency risk: Exchange rate movements. Identify all risks facing your specific situation, then address each systematically.",
+        quiz: {
+          question: "What is sequence risk?",
+          options: [
+            "Buying stocks in the wrong order",
+            "Poor returns early in retirement depleting portfolio",
+            "Market timing risk",
+            "Currency fluctuations"
+          ],
+          correctAnswer: 1,
+          explanation: "Sequence risk is the danger of poor returns early in retirement when withdrawals magnify losses."
+        }
+      },
+      {
+        title: "Position Sizing and Concentration",
+        content: "Concentration builds wealth; diversification preserves it. Position limits prevent catastrophic losses from any single holding. Consider: No single stock exceeding 5% of portfolio. No sector exceeding 25%. Rebalance when limits are exceeded. Exceptions for company stock (vesting schedules)—plan for diversification. Even high-conviction ideas can go to zero—protect against the unthinkable.",
+      },
+      {
+        title: "Hedging Strategies",
+        content: "Hedging reduces risk at a cost (like insurance). Simple hedges: Cash allocation, bond allocation. Options hedges: Protective puts, collars. Inverse ETFs: Profit from declines (short-term only). Diversification across asset classes. Most investors should rely on diversification and allocation rather than complex hedges. The cost of hedging often exceeds the benefit for long-term investors.",
+        quiz: {
+          question: "What's the simplest form of hedging for most investors?",
+          options: [
+            "Complex options strategies",
+            "Diversification and proper allocation",
+            "Leveraged inverse ETFs",
+            "Short selling"
+          ],
+          correctAnswer: 1,
+          explanation: "For most investors, proper diversification and allocation provide effective risk management without complexity."
+        }
+      },
+      {
+        title: "Creating a Risk Management Plan",
+        content: "Document your risk tolerances and limits. Set rebalancing rules and triggers. Establish emergency fund (6-12 months expenses). Review insurance coverage: life, disability, liability. Create an investment policy statement. Plan for bear markets in advance—what will you do? Review quarterly but don't overreact to short-term moves. Risk management is about preparation, not prediction. Prepare for the worst; expect the best.",
+      },
+    ],
+
+    // Lesson 50: Becoming a Complete Investor
+    50: [
+      {
+        title: "Integrating Everything You've Learned",
+        content: "Successful investing combines knowledge, strategy, and psychology. Foundation: Understand risk/return, compounding, diversification. Strategy: Asset allocation, tax efficiency, cost minimization. Psychology: Patience, discipline, emotional control. Continuous improvement: Learn from mistakes, stay curious. The complete investor integrates all elements into a cohesive, personalized approach. Your investment journey is unique—build a system that works for you.",
+        quiz: {
+          question: "What are the three pillars of successful investing?",
+          options: [
+            "Stocks, bonds, cash",
+            "Knowledge, strategy, psychology",
+            "Buying, selling, holding",
+            "Analysis, trading, timing"
+          ],
+          correctAnswer: 1,
+          explanation: "Successful investing requires knowledge (understanding), strategy (approach), and psychology (discipline)."
+        }
+      },
+      {
+        title: "Creating Your Investment Philosophy",
+        content: "Every great investor develops a personal philosophy. Questions to answer: What is your purpose for investing? What risks are you willing to take? What time horizon guides your decisions? How do you define success? What strategies align with your personality? Write your investment philosophy—1-2 pages max. Review and refine annually. Your philosophy is your anchor during market storms.",
+      },
+      {
+        title: "Building Your Support System",
+        content: "Investing doesn't have to be solitary. Consider: Fee-only fiduciary advisors for complex situations. Investment communities for learning and accountability. Books and podcasts from trusted sources. Mentors who've achieved what you seek. Be careful: Avoid sources with conflicts of interest. Tune out noise; seek signal. Your support system should reinforce good behavior, not encourage speculation.",
+        quiz: {
+          question: "What type of financial advisor is generally recommended?",
+          options: [
+            "Commission-based brokers",
+            "Fee-only fiduciary advisors",
+            "Bank tellers",
+            "Insurance salespeople"
+          ],
+          correctAnswer: 1,
+          explanation: "Fee-only fiduciary advisors are legally required to act in your best interest without commission conflicts."
+        }
+      },
+      {
+        title: "Your Lifetime Investment Journey",
+        content: "You've completed this curriculum—congratulations! But learning never stops. Markets evolve, strategies improve, your situation changes. Key principles endure: Start early, stay consistent, keep costs low, diversify, stay disciplined. Review your portfolio annually. Adjust as life changes. Teach others what you've learned. The best investors are perpetual students. Your journey continues—invest wisely, live fully, and build the financial future you deserve.",
+      },
+    ],
+  };
+
+  return lessonContents[lessonOrderIndex] || [];
+};
         content: "Dividend yield: Higher isn't always better—may signal trouble. Payout ratio: Dividends as percentage of earnings (under 60% is sustainable). Dividend growth rate: Look for consistent annual increases. Free cash flow: Must support dividend payments. Debt levels: Excessive debt threatens dividend safety.",
       },
       {
