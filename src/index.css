@@ -219,18 +219,28 @@ All colors MUST be HSL.
 
   /* Z-index hierarchy for proper layering */
   .z-navigation {
+    z-index: 40;
+  }
+  
+  .z-dropdown {
+    z-index: 50;
+  }
+  
+  .z-modal {
+    z-index: 100;
+  }
+  
+  .z-tooltip {
     z-index: 50;
   }
 
-  .z-dropdown {
-    z-index: 60;
+  /* Shimmer animation for progress bars */
+  @keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
   }
-
-  .z-dialog {
-    z-index: 70;
-  }
-
-  .z-toast {
-    z-index: 100;
+  
+  .animate-shimmer {
+    animation: shimmer 2s infinite;
   }
 }
