@@ -2,6 +2,7 @@ import { InvestingSimulationLab } from "./lessons/InvestingSimulationLab";
 import { FinancialLifeSimulator } from "./lessons/FinancialLifeSimulator";
 import { FoundationsImmersive } from "./lessons/FoundationsImmersive";
 import { RiskRewardImmersive } from "./lessons/RiskRewardImmersive";
+import { Lesson2RiskRewardSlides } from "./lessons/Lesson2RiskRewardSlides";
 import { CompoundInterestImmersive } from "./lessons/CompoundInterestImmersive";
 import { StocksBondsImmersive } from "./lessons/StocksBondsImmersive";
 import { DiversificationImmersive } from "./lessons/DiversificationImmersive";
