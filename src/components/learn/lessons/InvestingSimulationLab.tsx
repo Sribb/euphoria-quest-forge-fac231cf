@@ -215,13 +215,13 @@ export const InvestingSimulationLab = () => {
             
             {/* High-impact opening narrative */}
             <h1 className="text-4xl md:text-5xl font-bold mb-6 leading-tight">
-              Your money can work <span className="text-emerald-400">for you</span>—<br />
+              Your money can work <span className="text-emerald-400">for you</span><br />
               or slowly lose its power.
             </h1>
             
             <p className="text-xl text-slate-300 max-w-2xl leading-relaxed">
               Every dollar you don't invest loses about 3% of its purchasing power each year. 
-              Over 20 years, that's almost half its value—gone to inflation. 
+              Over 20 years, that's almost half its value, gone to inflation. 
               <span className="text-slate-100 font-medium"> See it happen below.</span>
             </p>
           </div>
@@ -448,7 +448,7 @@ export const InvestingSimulationLab = () => {
                 step={100}
                 className="cursor-pointer"
               />
-              <p className="text-xs text-slate-500 mt-2">Start with what you have—consistency matters more.</p>
+              <p className="text-xs text-slate-500 mt-2">Start with what you have. Consistency matters more.</p>
             </div>
 
             {/* Monthly Contribution */}
@@ -462,7 +462,7 @@ export const InvestingSimulationLab = () => {
                       <HelpCircle className="h-3.5 w-3.5 text-slate-500" />
                     </TooltipTrigger>
                     <TooltipContent className="max-w-xs">
-                      <p>Regular contributions create "dollar-cost averaging"—you buy more shares when prices are low.</p>
+                      <p>Regular contributions create "dollar-cost averaging," meaning you buy more shares when prices are low.</p>
                     </TooltipContent>
                   </Tooltip>
                 </div>
@@ -504,7 +504,7 @@ export const InvestingSimulationLab = () => {
                 step={1}
                 className="cursor-pointer"
               />
-              <p className="text-xs text-slate-500 mt-2">Watch the curve steepen as years increase—that's compounding.</p>
+              <p className="text-xs text-slate-500 mt-2">Watch the curve steepen as years increase. That's compounding.</p>
             </div>
 
             {/* Risk Level */}
@@ -553,7 +553,7 @@ export const InvestingSimulationLab = () => {
               </div>
               <p className="text-3xl font-bold text-blue-400 mb-2">{formatCurrency(finalValues.saving)}</p>
               <p className="text-sm text-slate-400">
-                You'd earn <span className="text-blue-300 font-medium">{formatCurrency(finalValues.savingGain)}</span> in interest—
+                You'd earn <span className="text-blue-300 font-medium">{formatCurrency(finalValues.savingGain)}</span> in interest, 
                 barely keeping pace with inflation.
               </p>
             </div>
@@ -627,7 +627,7 @@ export const InvestingSimulationLab = () => {
                   {state.mode === "investing" ? (
                     <>
                       By investing {formatCurrency(state.monthlyContribution)}/month for {state.years} years at {riskLabels[state.riskLevel - 1].toLowerCase()} risk, 
-                      you'd have <span className="text-emerald-400 font-semibold">{formatCurrency(finalValues.investing)}</span>—that's{" "}
+                      you'd have <span className="text-emerald-400 font-semibold">{formatCurrency(finalValues.investing)}</span>. That's{" "}
                       <span className="text-emerald-400 font-semibold">{formatCurrency(finalValues.difference)} more</span> than just saving it.
                     </>
                   ) : (
