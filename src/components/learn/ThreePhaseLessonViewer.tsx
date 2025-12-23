@@ -14,6 +14,8 @@ import { LessonMasteryDashboard } from "./LessonMasteryDashboard";
 import { InteractiveLessonSimulation } from "./InteractiveLessonSimulation";
 import { TradingViewChart } from "./TradingViewChart";
 import { InteractiveLessonRouter } from "./InteractiveLessonRouter";
+import { Lesson1ReflectionSlide } from "./lessons/Lesson1ReflectionSlide";
+import { Lesson1InsightSlide } from "./lessons/Lesson1InsightSlide";
 
 interface ThreePhaseLessonViewerProps {
   lessonId: string;
@@ -266,79 +268,25 @@ export const ThreePhaseLessonViewer = ({ lessonId, onClose }: ThreePhaseLessonVi
                 </div>
               )}
 
-              {/* Phase 2: Reflection */}
+              {/* Phase 2: Reflection (Animated) */}
               {lesson1Phase === 'reflection' && (
-                <div className="animate-fade-in space-y-8">
-                  {/* Keep the simulation visible but smaller */}
-                  <div className="opacity-80 scale-95 origin-top pointer-events-none">
-                    <InteractiveLessonRouter lessonId="1" />
-                  </div>
-                  
-                  {/* Reflection Card */}
-                  <Card className="p-8 bg-slate-900/80 border-slate-700/50 backdrop-blur-sm">
-                    <div className="max-w-2xl mx-auto text-center space-y-8">
-                      <h2 className="text-3xl md:text-4xl font-bold text-slate-100 leading-tight">
-                        Why did choosing to save or invest lead to different results over time?
-                      </h2>
-                      
-                      <div className="flex flex-col gap-4 text-lg text-slate-400">
-                        <p className="italic">"Time makes small decisions powerful."</p>
-                        <p className="italic">"Growth depends on starting early."</p>
-                      </div>
-                      
-                      <Button
-                        onClick={() => setLesson1Phase('insight')}
-                        className="bg-gradient-primary mt-4"
-                        size="lg"
-                      >
-                        See the Answer
-                      </Button>
-                    </div>
-                  </Card>
+                <div className="animate-fade-in">
+                  <Lesson1ReflectionSlide 
+                    onComplete={() => setLesson1Phase('insight')} 
+                  />
                 </div>
               )}
 
-              {/* Phase 3: Insight */}
+              {/* Phase 3: Insight (Animated) */}
               {lesson1Phase === 'insight' && (
                 <div className="animate-fade-in">
-                  <Card className="p-8 md:p-12 bg-slate-900/80 border-slate-700/50 backdrop-blur-sm">
-                    <div className="max-w-2xl mx-auto space-y-8">
-                      <h2 className="text-3xl md:text-4xl font-bold text-center text-slate-100 mb-8">
-                        Here's why the outcomes were different
-                      </h2>
-                      
-                      <div className="space-y-6">
-                        <div className="flex items-start gap-4 p-4 bg-blue-500/10 rounded-xl border border-blue-500/20">
-                          <div className="w-3 h-3 rounded-full bg-blue-400 mt-2 flex-shrink-0" />
-                          <p className="text-xl text-slate-200">Saving keeps money safe.</p>
-                        </div>
-                        
-                        <div className="flex items-start gap-4 p-4 bg-emerald-500/10 rounded-xl border border-emerald-500/20">
-                          <div className="w-3 h-3 rounded-full bg-emerald-400 mt-2 flex-shrink-0" />
-                          <p className="text-xl text-slate-200">Investing helps money grow.</p>
-                        </div>
-                        
-                        <div className="flex items-start gap-4 p-4 bg-amber-500/10 rounded-xl border border-amber-500/20">
-                          <div className="w-3 h-3 rounded-full bg-amber-400 mt-2 flex-shrink-0" />
-                          <p className="text-xl text-slate-200">Time and compounding create the biggest difference.</p>
-                        </div>
-                      </div>
-                      
-                      <div className="flex justify-center pt-6">
-                        <Button
-                          onClick={() => {
-                            updateProgress(100, true);
-                            onClose();
-                            toast.success("Lesson 1 complete!");
-                          }}
-                          className="bg-gradient-primary"
-                          size="lg"
-                        >
-                          Complete Lesson
-                        </Button>
-                      </div>
-                    </div>
-                  </Card>
+                  <Lesson1InsightSlide 
+                    onComplete={() => {
+                      updateProgress(100, true);
+                      onClose();
+                      toast.success("Lesson 1 complete!");
+                    }} 
+                  />
                 </div>
               )}
             </>
