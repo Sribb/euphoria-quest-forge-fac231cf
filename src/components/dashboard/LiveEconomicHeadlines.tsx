@@ -4,62 +4,36 @@ import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
+import { supabase } from "@/integrations/supabase/client";
 
-interface NewsArticle {
+interface NewsItem {
+  id: number;
   title: string;
-  source_id: string;
-  pubDate: string;
-  description: string;
-  link: string;
-  sentiment?: string[];
+  summary: string;
+  source: string;
+  url: string;
+  time: string;
+  impact: "high" | "medium" | "low";
+  publishedAt: string;
 }
 
-interface NewsDataResponse {
-  results: NewsArticle[];
-}
-
-const fetchNewsData = async (): Promise<NewsArticle[]> => {
-  const response = await fetch(
-    "https://newsdata.io/api/1/latest?apikey=pub_0cb5b27a6dcb42c295b162ede2abfeba&q=economy%20OR%20finance&language=en"
-  );
+const fetchNewsData = async (): Promise<NewsItem[]> => {
+  const { data, error } = await supabase.functions.invoke('fetch-economic-news');
   
-  if (!response.ok) {
-    throw new Error(`API error: ${response.status}`);
+  if (error) {
+    throw new Error(`Failed to fetch news: ${error.message}`);
   }
   
-  const data: NewsDataResponse = await response.json();
-  return data.results || [];
-};
-
-const getRelativeTime = (pubDate: string) => {
-  const now = new Date();
-  const published = new Date(pubDate);
-  const diffMs = now.getTime() - published.getTime();
-  const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-  const diffMins = Math.floor(diffMs / (1000 * 60));
-  
-  if (diffHours > 24) {
-    const days = Math.floor(diffHours / 24);
-    return `${days}d ago`;
-  } else if (diffHours > 0) {
-    return `${diffHours}h ago`;
-  } else if (diffMins > 0) {
-    return `${diffMins}m ago`;
-  } else {
-    return "Just now";
+  if (!data?.success) {
+    throw new Error(data?.error || 'Failed to fetch news');
   }
+  
+  return data.data || [];
 };
 
-const getSentimentFromKeywords = (article: NewsArticle): "positive" | "negative" | "neutral" => {
-  const text = `${article.title} ${article.description || ""}`.toLowerCase();
-  const positiveWords = ["surge", "rally", "gains", "rise", "growth", "high", "strong", "boost"];
-  const negativeWords = ["fall", "drop", "decline", "crisis", "uncertainty", "loss", "weak", "cut"];
-  
-  const hasPositive = positiveWords.some(word => text.includes(word));
-  const hasNegative = negativeWords.some(word => text.includes(word));
-  
-  if (hasPositive && !hasNegative) return "positive";
-  if (hasNegative && !hasPositive) return "negative";
+const getSentimentFromImpact = (impact: string): "positive" | "negative" | "neutral" => {
+  if (impact === "high") return "negative";
+  if (impact === "low") return "positive";
   return "neutral";
 };
 
@@ -84,7 +58,7 @@ const getSentimentColor = (sentiment: string) => {
 
 export const LiveEconomicHeadlines = () => {
   const { data: headlines, isLoading, isError } = useQuery({
-    queryKey: ["economic-news"],
+    queryKey: ["economic-news-live"],
     queryFn: fetchNewsData,
     refetchInterval: 5 * 60 * 1000, // Refetch every 5 minutes
     staleTime: 2 * 60 * 1000, // Consider data stale after 2 minutes
@@ -123,11 +97,11 @@ export const LiveEconomicHeadlines = () => {
         ) : (
           <div className="space-y-3">
             {headlines?.slice(0, 10).map((article, index) => {
-              const sentiment = getSentimentFromKeywords(article);
+              const sentiment = getSentimentFromImpact(article.impact);
               return (
                 <a
-                  key={index}
-                  href={article.link}
+                  key={article.id}
+                  href={article.url}
                   target="_blank"
                   rel="noopener noreferrer"
                   className={`block p-4 rounded-xl border ${getSentimentColor(sentiment)} transition-all duration-300 hover:scale-[1.02] hover:shadow-lg cursor-pointer animate-fade-in`}
@@ -141,19 +115,25 @@ export const LiveEconomicHeadlines = () => {
                       <h4 className="font-semibold text-foreground mb-2 leading-snug hover:text-primary transition-colors">
                         {article.title}
                       </h4>
-                      {article.description && (
+                      {article.summary && (
                         <p className="text-xs text-muted-foreground mb-2 line-clamp-2">
-                          {article.description}
+                          {article.summary}
                         </p>
                       )}
                       <div className="flex items-center gap-3 text-xs text-muted-foreground">
                         <div className="flex items-center gap-1">
                           <Clock className="w-3 h-3" />
-                          {getRelativeTime(article.pubDate)}
+                          {article.time}
                         </div>
                         <span>•</span>
                         <Badge variant="outline" className="text-xs">
-                          {article.source_id}
+                          {article.source}
+                        </Badge>
+                        <Badge 
+                          variant={article.impact === "high" ? "destructive" : article.impact === "medium" ? "secondary" : "outline"}
+                          className="text-xs"
+                        >
+                          {article.impact} impact
                         </Badge>
                       </div>
                     </div>
@@ -167,7 +147,7 @@ export const LiveEconomicHeadlines = () => {
 
       <div className="mt-6 p-4 bg-primary/5 rounded-xl border border-primary/20 backdrop-blur-sm">
         <p className="text-xs text-center text-muted-foreground">
-          <span className="text-primary font-semibold">📡 Live Feed:</span> Headlines update automatically every 5 minutes via NewsData.io API
+          <span className="text-primary font-semibold">📡 Live Feed:</span> Headlines update automatically every 5 minutes
         </p>
       </div>
     </Card>
