@@ -237,7 +237,7 @@ export const Lesson2RiskRewardSlides = ({ onComplete }: Lesson2Props) => {
               </motion.p>
 
               <motion.div 
-                className="flex justify-center mt-8"
+                className="flex justify-center mt-8 relative z-10"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 2.2 }}
