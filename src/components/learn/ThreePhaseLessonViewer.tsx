@@ -19,6 +19,9 @@ import { Lesson1InsightSlide } from "./lessons/Lesson1InsightSlide";
 import { Lesson2RiskRewardSlides } from "./lessons/Lesson2RiskRewardSlides";
 import { Lesson3CompoundInterestSlides } from "./lessons/Lesson3CompoundInterestSlides";
 import { Lesson4AssetMixSlides } from "./lessons/Lesson4AssetMixSlides";
+import { Lesson5DiversificationSlides } from "./lessons/Lesson5DiversificationSlides";
+import { Lesson6MarketPsychologySlides } from "./lessons/Lesson6MarketPsychologySlides";
+import { Lesson7ValueInvestingSlides } from "./lessons/Lesson7ValueInvestingSlides";
 
 interface ThreePhaseLessonViewerProps {
   lessonId: string;
@@ -224,8 +227,8 @@ export const ThreePhaseLessonViewer = ({ lessonId, onClose }: ThreePhaseLessonVi
               completed={false}
             />
           </div>
-        ) : lesson.order_index === 2 || lesson.order_index === 3 || lesson.order_index === 4 ? (
-          // Lessons 2, 3, and 4 have internal slide navigation, no external phase tabs needed
+        ) : lesson.order_index === 2 || lesson.order_index === 3 || lesson.order_index === 4 || lesson.order_index === 5 || lesson.order_index === 6 || lesson.order_index === 7 ? (
+          // Lessons 2-7 have internal slide navigation, no external phase tabs needed
           null
         ) : (
           <div className="flex items-center gap-4 mb-6">
@@ -320,13 +323,42 @@ export const ThreePhaseLessonViewer = ({ lessonId, onClose }: ThreePhaseLessonVi
               />
             </div>
           ) : lesson.order_index === 4 ? (
-            // Special 4-slide flow for Lesson 4 (Stocks vs Bonds: Asset Mix)
             <div className="animate-fade-in">
               <Lesson4AssetMixSlides
                 onComplete={() => {
                   updateProgress(100, true);
                   onClose();
                   toast.success("Lesson 4 complete! You understand asset allocation.");
+                }}
+              />
+            </div>
+          ) : lesson.order_index === 5 ? (
+            <div className="animate-fade-in">
+              <Lesson5DiversificationSlides
+                onComplete={() => {
+                  updateProgress(100, true);
+                  onClose();
+                  toast.success("Lesson 5 complete! You understand diversification.");
+                }}
+              />
+            </div>
+          ) : lesson.order_index === 6 ? (
+            <div className="animate-fade-in">
+              <Lesson6MarketPsychologySlides
+                onComplete={() => {
+                  updateProgress(100, true);
+                  onClose();
+                  toast.success("Lesson 6 complete! You understand market psychology.");
+                }}
+              />
+            </div>
+          ) : lesson.order_index === 7 ? (
+            <div className="animate-fade-in">
+              <Lesson7ValueInvestingSlides
+                onComplete={() => {
+                  updateProgress(100, true);
+                  onClose();
+                  toast.success("Lesson 7 complete! You understand value investing.");
                 }}
               />
             </div>

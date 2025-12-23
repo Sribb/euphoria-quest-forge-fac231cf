@@ -376,7 +376,7 @@ export const Lesson4AssetMixSlides = ({ onComplete }: Lesson4Props) => {
                 <Slider
                   value={[userAge]}
                   onValueChange={(v) => setUserAge(v[0])}
-                  min={20}
+                  min={13}
                   max={70}
                   step={1}
                   className="mb-6"
@@ -652,7 +652,7 @@ export const Lesson4AssetMixSlides = ({ onComplete }: Lesson4Props) => {
                     <Slider
                       value={[userAge]}
                       onValueChange={(v) => setUserAge(v[0])}
-                      min={20}
+                      min={13}
                       max={70}
                       step={1}
                       className="mb-2"
@@ -724,15 +724,15 @@ export const Lesson4AssetMixSlides = ({ onComplete }: Lesson4Props) => {
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.6 }}
                 >
-                  <div className="h-48 relative">
+                  <div className="h-64 relative">
                     <ResponsiveContainer width="100%" height="100%">
                       <RechartsPie>
                         <Pie
                           data={pieData}
                           cx="50%"
                           cy="50%"
-                          innerRadius={60}
-                          outerRadius={90}
+                          innerRadius={70}
+                          outerRadius={110}
                           paddingAngle={2}
                           dataKey="value"
                           animationDuration={500}
@@ -744,8 +744,8 @@ export const Lesson4AssetMixSlides = ({ onComplete }: Lesson4Props) => {
                       </RechartsPie>
                     </ResponsiveContainer>
                     <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="text-center">
-                        <p className={`text-lg font-bold ${getProfileLabel().color}`}>{getProfileLabel().text}</p>
+                      <div className="text-center w-28">
+                        <p className={`text-sm font-bold leading-tight ${getProfileLabel().color}`}>{getProfileLabel().text}</p>
                       </div>
                     </div>
                   </div>
