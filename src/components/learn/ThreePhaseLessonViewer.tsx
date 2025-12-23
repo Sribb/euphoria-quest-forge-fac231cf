@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { X, BookOpen, Trophy, LineChart } from "lucide-react";
+import { X, BookOpen, MessageCircle, Lightbulb, Trophy, LineChart } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
@@ -20,12 +20,15 @@ interface ThreePhaseLessonViewerProps {
   onClose: () => void;
 }
 
+// Lesson 1 uses special phases: experience → reflection → insight
 type Phase = 'learn' | 'challenge' | 'feedback';
+type Lesson1Phase = 'experience' | 'reflection' | 'insight';
 
 export const ThreePhaseLessonViewer = ({ lessonId, onClose }: ThreePhaseLessonViewerProps) => {
   const { user } = useAuth();
   const [lesson, setLesson] = useState<any>(null);
   const [phase, setPhase] = useState<Phase>('learn');
+  const [lesson1Phase, setLesson1Phase] = useState<Lesson1Phase>('experience');
   const [currentSection, setCurrentSection] = useState(0);
   const [learnProgress, setLearnProgress] = useState(0);
   
@@ -191,53 +194,158 @@ export const ThreePhaseLessonViewer = ({ lessonId, onClose }: ThreePhaseLessonVi
           </Button>
         </div>
 
-        {/* Phase Indicator */}
-        <div className="flex items-center gap-4 mb-6">
-          <PhaseTab 
-            icon={<BookOpen className="w-4 h-4" />}
-            label="Learn"
-            active={phase === 'learn'}
-            completed={learnProgress >= 100}
-          />
-          <div className="flex-1 h-px bg-border" />
-          <PhaseTab 
-            icon={<Trophy className="w-4 h-4" />}
-            label="Challenge"
-            active={phase === 'challenge'}
-            completed={challengePassed}
-          />
-          <div className="flex-1 h-px bg-border" />
-          <PhaseTab 
-            icon={<LineChart className="w-4 h-4" />}
-            label="Feedback"
-            active={phase === 'feedback'}
-            completed={false}
-          />
-        </div>
+        {/* Phase Indicator - Different for Lesson 1 */}
+        {lesson.order_index === 1 ? (
+          <div className="flex items-center gap-4 mb-6">
+            <PhaseTab 
+              icon={<BookOpen className="w-4 h-4" />}
+              label="Experience"
+              active={lesson1Phase === 'experience'}
+              completed={lesson1Phase !== 'experience'}
+            />
+            <div className="flex-1 h-px bg-border" />
+            <PhaseTab 
+              icon={<MessageCircle className="w-4 h-4" />}
+              label="Reflection"
+              active={lesson1Phase === 'reflection'}
+              completed={lesson1Phase === 'insight'}
+            />
+            <div className="flex-1 h-px bg-border" />
+            <PhaseTab 
+              icon={<Lightbulb className="w-4 h-4" />}
+              label="Insight"
+              active={lesson1Phase === 'insight'}
+              completed={false}
+            />
+          </div>
+        ) : (
+          <div className="flex items-center gap-4 mb-6">
+            <PhaseTab 
+              icon={<BookOpen className="w-4 h-4" />}
+              label="Learn"
+              active={phase === 'learn'}
+              completed={learnProgress >= 100}
+            />
+            <div className="flex-1 h-px bg-border" />
+            <PhaseTab 
+              icon={<Trophy className="w-4 h-4" />}
+              label="Challenge"
+              active={phase === 'challenge'}
+              completed={challengePassed}
+            />
+            <div className="flex-1 h-px bg-border" />
+            <PhaseTab 
+              icon={<LineChart className="w-4 h-4" />}
+              label="Feedback"
+              active={phase === 'feedback'}
+              completed={false}
+            />
+          </div>
+        )}
 
         {/* Content */}
         <div className="max-w-7xl mx-auto">
-          {phase === 'learn' && (
+          {/* Special 3-phase flow for Lesson 1 */}
+          {lesson.order_index === 1 ? (
             <>
-              {/* Simulation-first approach for Lesson 1 */}
-              {lesson.order_index === 1 ? (
+              {/* Phase 1: Experience */}
+              {lesson1Phase === 'experience' && (
                 <div className="animate-fade-in">
                   <InteractiveLessonRouter lessonId="1" />
                   <div className="flex justify-center mt-8">
                     <Button
                       onClick={() => {
-                        updateProgress(100, false);
-                        setPhase('challenge');
-                        toast.success("Lab complete! Ready for the challenge?");
+                        setLesson1Phase('reflection');
                       }}
                       className="bg-gradient-primary"
                       size="lg"
                     >
-                      Continue to Challenge
+                      Continue to Reflection
                     </Button>
                   </div>
                 </div>
-              ) : (
+              )}
+
+              {/* Phase 2: Reflection */}
+              {lesson1Phase === 'reflection' && (
+                <div className="animate-fade-in space-y-8">
+                  {/* Keep the simulation visible but smaller */}
+                  <div className="opacity-80 scale-95 origin-top pointer-events-none">
+                    <InteractiveLessonRouter lessonId="1" />
+                  </div>
+                  
+                  {/* Reflection Card */}
+                  <Card className="p-8 bg-slate-900/80 border-slate-700/50 backdrop-blur-sm">
+                    <div className="max-w-2xl mx-auto text-center space-y-8">
+                      <h2 className="text-3xl md:text-4xl font-bold text-slate-100 leading-tight">
+                        Why did choosing to save or invest lead to different results over time?
+                      </h2>
+                      
+                      <div className="flex flex-col gap-4 text-lg text-slate-400">
+                        <p className="italic">"Time makes small decisions powerful."</p>
+                        <p className="italic">"Growth depends on starting early."</p>
+                      </div>
+                      
+                      <Button
+                        onClick={() => setLesson1Phase('insight')}
+                        className="bg-gradient-primary mt-4"
+                        size="lg"
+                      >
+                        See the Answer
+                      </Button>
+                    </div>
+                  </Card>
+                </div>
+              )}
+
+              {/* Phase 3: Insight */}
+              {lesson1Phase === 'insight' && (
+                <div className="animate-fade-in">
+                  <Card className="p-8 md:p-12 bg-slate-900/80 border-slate-700/50 backdrop-blur-sm">
+                    <div className="max-w-2xl mx-auto space-y-8">
+                      <h2 className="text-3xl md:text-4xl font-bold text-center text-slate-100 mb-8">
+                        Here's why the outcomes were different
+                      </h2>
+                      
+                      <div className="space-y-6">
+                        <div className="flex items-start gap-4 p-4 bg-blue-500/10 rounded-xl border border-blue-500/20">
+                          <div className="w-3 h-3 rounded-full bg-blue-400 mt-2 flex-shrink-0" />
+                          <p className="text-xl text-slate-200">Saving keeps money safe.</p>
+                        </div>
+                        
+                        <div className="flex items-start gap-4 p-4 bg-emerald-500/10 rounded-xl border border-emerald-500/20">
+                          <div className="w-3 h-3 rounded-full bg-emerald-400 mt-2 flex-shrink-0" />
+                          <p className="text-xl text-slate-200">Investing helps money grow.</p>
+                        </div>
+                        
+                        <div className="flex items-start gap-4 p-4 bg-amber-500/10 rounded-xl border border-amber-500/20">
+                          <div className="w-3 h-3 rounded-full bg-amber-400 mt-2 flex-shrink-0" />
+                          <p className="text-xl text-slate-200">Time and compounding create the biggest difference.</p>
+                        </div>
+                      </div>
+                      
+                      <div className="flex justify-center pt-6">
+                        <Button
+                          onClick={() => {
+                            updateProgress(100, true);
+                            onClose();
+                            toast.success("Lesson 1 complete!");
+                          }}
+                          className="bg-gradient-primary"
+                          size="lg"
+                        >
+                          Complete Lesson
+                        </Button>
+                      </div>
+                    </div>
+                  </Card>
+                </div>
+              )}
+            </>
+          ) : (
+            <>
+              {/* Normal flow for other lessons */}
+              {phase === 'learn' && (
                 <div className="space-y-6 animate-fade-in">
                   <Progress value={(currentSection + 1) / sections.length * 100} className="mb-6 h-3" />
                   
@@ -299,27 +407,27 @@ export const ThreePhaseLessonViewer = ({ lessonId, onClose }: ThreePhaseLessonVi
                   />
                 </div>
               )}
+
+              {phase === 'challenge' && (
+                <AdaptiveLessonChallenge
+                  lessonId={lessonId}
+                  onComplete={handleChallengeComplete}
+                  onBack={() => setPhase('learn')}
+                />
+              )}
+
+              {phase === 'feedback' && (
+                <LessonMasteryDashboard
+                  score={challengeScore}
+                  passed={challengePassed}
+                  weakAreas={weakAreas}
+                  masteryLevel={masteryLevel}
+                  attempts={attempts}
+                  onRetry={handleRetry}
+                  onContinue={handleContinue}
+                />
+              )}
             </>
-          )}
-
-          {phase === 'challenge' && (
-            <AdaptiveLessonChallenge
-              lessonId={lessonId}
-              onComplete={handleChallengeComplete}
-              onBack={() => setPhase('learn')}
-            />
-          )}
-
-          {phase === 'feedback' && (
-            <LessonMasteryDashboard
-              score={challengeScore}
-              passed={challengePassed}
-              weakAreas={weakAreas}
-              masteryLevel={masteryLevel}
-              attempts={attempts}
-              onRetry={handleRetry}
-              onContinue={handleContinue}
-            />
           )}
         </div>
       </div>
