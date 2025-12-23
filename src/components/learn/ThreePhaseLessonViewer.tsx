@@ -18,6 +18,7 @@ import { Lesson1ReflectionSlide } from "./lessons/Lesson1ReflectionSlide";
 import { Lesson1InsightSlide } from "./lessons/Lesson1InsightSlide";
 import { Lesson2RiskRewardSlides } from "./lessons/Lesson2RiskRewardSlides";
 import { Lesson3CompoundInterestSlides } from "./lessons/Lesson3CompoundInterestSlides";
+import { Lesson4AssetMixSlides } from "./lessons/Lesson4AssetMixSlides";
 
 interface ThreePhaseLessonViewerProps {
   lessonId: string;
@@ -223,8 +224,8 @@ export const ThreePhaseLessonViewer = ({ lessonId, onClose }: ThreePhaseLessonVi
               completed={false}
             />
           </div>
-        ) : lesson.order_index === 2 || lesson.order_index === 3 ? (
-          // Lesson 2 and 3 have internal slide navigation, no external phase tabs needed
+        ) : lesson.order_index === 2 || lesson.order_index === 3 || lesson.order_index === 4 ? (
+          // Lessons 2, 3, and 4 have internal slide navigation, no external phase tabs needed
           null
         ) : (
           <div className="flex items-center gap-4 mb-6">
@@ -315,6 +316,17 @@ export const ThreePhaseLessonViewer = ({ lessonId, onClose }: ThreePhaseLessonVi
                   updateProgress(100, true);
                   onClose();
                   toast.success("Lesson 3 complete! You understand compound interest.");
+                }}
+              />
+            </div>
+          ) : lesson.order_index === 4 ? (
+            // Special 4-slide flow for Lesson 4 (Stocks vs Bonds: Asset Mix)
+            <div className="animate-fade-in">
+              <Lesson4AssetMixSlides
+                onComplete={() => {
+                  updateProgress(100, true);
+                  onClose();
+                  toast.success("Lesson 4 complete! You understand asset allocation.");
                 }}
               />
             </div>
