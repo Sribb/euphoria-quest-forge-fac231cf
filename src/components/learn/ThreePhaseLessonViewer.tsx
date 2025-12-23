@@ -16,6 +16,7 @@ import { TradingViewChart } from "./TradingViewChart";
 import { InteractiveLessonRouter } from "./InteractiveLessonRouter";
 import { Lesson1ReflectionSlide } from "./lessons/Lesson1ReflectionSlide";
 import { Lesson1InsightSlide } from "./lessons/Lesson1InsightSlide";
+import { Lesson2RiskRewardSlides } from "./lessons/Lesson2RiskRewardSlides";
 
 interface ThreePhaseLessonViewerProps {
   lessonId: string;
@@ -23,6 +24,7 @@ interface ThreePhaseLessonViewerProps {
 }
 
 // Lesson 1 uses special phases: experience → reflection → insight
+// Lesson 2 uses its own 4-slide structure internally
 type Phase = 'learn' | 'challenge' | 'feedback';
 type Lesson1Phase = 'experience' | 'reflection' | 'insight';
 
@@ -196,7 +198,7 @@ export const ThreePhaseLessonViewer = ({ lessonId, onClose }: ThreePhaseLessonVi
           </Button>
         </div>
 
-        {/* Phase Indicator - Different for Lesson 1 */}
+        {/* Phase Indicator - Different for Lesson 1, hidden for Lesson 2 (has internal nav) */}
         {lesson.order_index === 1 ? (
           <div className="flex items-center gap-4 mb-6">
             <PhaseTab 
@@ -220,6 +222,9 @@ export const ThreePhaseLessonViewer = ({ lessonId, onClose }: ThreePhaseLessonVi
               completed={false}
             />
           </div>
+        ) : lesson.order_index === 2 ? (
+          // Lesson 2 has internal slide navigation, no external phase tabs needed
+          null
         ) : (
           <div className="flex items-center gap-4 mb-6">
             <PhaseTab 
@@ -290,6 +295,17 @@ export const ThreePhaseLessonViewer = ({ lessonId, onClose }: ThreePhaseLessonVi
                 </div>
               )}
             </>
+          ) : lesson.order_index === 2 ? (
+            // Special 4-slide flow for Lesson 2 (Risk vs Reward)
+            <div className="animate-fade-in">
+              <Lesson2RiskRewardSlides
+                onComplete={() => {
+                  updateProgress(100, true);
+                  onClose();
+                  toast.success("Lesson 2 complete! You understand risk vs reward.");
+                }}
+              />
+            </div>
           ) : (
             <>
               {/* Normal flow for other lessons */}
