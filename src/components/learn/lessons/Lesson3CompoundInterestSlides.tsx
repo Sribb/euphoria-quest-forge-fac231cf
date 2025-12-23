@@ -106,6 +106,8 @@ export const Lesson3CompoundInterestSlides = ({ onComplete }: Lesson3Props) => {
   const [hoveredPoint, setHoveredPoint] = useState<number | null>(null);
   const [comparisonRate, setComparisonRate] = useState(4);
   const [showComparison, setShowComparison] = useState(false);
+  const [currentTextSlide, setCurrentTextSlide] = useState(0);
+  const [chartAnimated, setChartAnimated] = useState(false);
   
   // Slide 4 state
   const [startAge, setStartAge] = useState(25);
@@ -115,6 +117,31 @@ export const Lesson3CompoundInterestSlides = ({ onComplete }: Lesson3Props) => {
   
   const GOAL_TARGET = 100000;
   const GOAL_AGE = 50;
+
+  // Text slides for Learn section
+  const textSlides = [
+    { icon: TrendingUp, text: "Compound interest means your earnings generate earnings.", color: "#10b981" },
+    { icon: Clock, text: "Time is your most powerful tool—starting early magnifies growth.", color: "#3b82f6" },
+    { icon: DollarSign, text: "Even small, consistent contributions grow substantially over decades.", color: "#a855f7" },
+  ];
+
+  // Animate text slides sequentially
+  useEffect(() => {
+    if (currentSlide === 1) {
+      setCurrentTextSlide(0);
+      setChartAnimated(false);
+      
+      // Trigger chart animation
+      setTimeout(() => setChartAnimated(true), 300);
+      
+      // Sequential text reveals
+      const timers = textSlides.map((_, index) => 
+        setTimeout(() => setCurrentTextSlide(index + 1), 1500 + index * 1500)
+      );
+      
+      return () => timers.forEach(clearTimeout);
+    }
+  }, [currentSlide]);
 
   // Update chart data when years change (Slide 1)
   useEffect(() => {
@@ -181,9 +208,42 @@ export const Lesson3CompoundInterestSlides = ({ onComplete }: Lesson3Props) => {
     }
   };
 
-  const slideLabels = ["Experience", "Reflect", "Insight", "Apply"];
+  const slideLabels = ["Learn", "Reflect", "Insight", "Apply"];
 
-  // Custom tooltip for chart
+  // Enhanced tooltip for chart showing all values
+  const EnhancedTooltip = ({ active, payload, label }: any) => {
+    if (active && payload && payload.length) {
+      const data = chartData.find(d => d.year === label);
+      if (!data) return null;
+      
+      return (
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="bg-background/95 backdrop-blur-sm border border-border rounded-xl p-4 shadow-xl"
+        >
+          <p className="font-bold text-lg mb-2">Year {label}</p>
+          <div className="space-y-2">
+            <div className="flex justify-between gap-6">
+              <span className="text-muted-foreground">Principal:</span>
+              <span className="font-semibold">${data.principal.toLocaleString()}</span>
+            </div>
+            <div className="flex justify-between gap-6">
+              <span className="text-muted-foreground">Interest Earned:</span>
+              <span className="font-semibold text-primary">${data.interestEarned.toLocaleString()}</span>
+            </div>
+            <div className="flex justify-between gap-6 pt-2 border-t border-border">
+              <span className="text-muted-foreground">Total Value:</span>
+              <span className="font-bold text-emerald-400">${data.compounded.toLocaleString()}</span>
+            </div>
+          </div>
+        </motion.div>
+      );
+    }
+    return null;
+  };
+
+  // Simple tooltip for other slides
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
       return (
@@ -219,7 +279,7 @@ export const Lesson3CompoundInterestSlides = ({ onComplete }: Lesson3Props) => {
       </div>
 
       <AnimatePresence mode="wait">
-        {/* Slide 1: Experience */}
+        {/* Slide 1: Learn */}
         {currentSlide === 1 && (
           <motion.div
             key="slide1"
@@ -229,54 +289,32 @@ export const Lesson3CompoundInterestSlides = ({ onComplete }: Lesson3Props) => {
             transition={{ duration: 0.5 }}
           >
             <Card className="p-8">
-              <Badge className="mb-4 bg-primary/20 text-primary border-primary/30">Experience</Badge>
+              <Badge className="mb-4 bg-primary/20 text-primary border-primary/30">Learn</Badge>
               
-              <motion.h2 
-                className="text-2xl font-bold mb-2"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-              >
-                Watch Your Money Grow
-              </motion.h2>
-              <motion.p 
-                className="text-muted-foreground mb-8"
+              {/* Chart Section - TOP */}
+              <motion.div 
+                className="h-80 relative mb-8"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.2 }}
               >
-                See how your money grows when interest earns interest over time. Even small contributions early can snowball into large wealth.
-              </motion.p>
-
-              {/* Years Slider */}
-              <motion.div 
-                className="mb-8 px-4"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 }}
-              >
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-sm text-muted-foreground flex items-center gap-1">
-                    <Clock className="w-4 h-4" /> Years of Investment
-                  </span>
-                  <span className="text-lg font-bold text-primary">{years} years</span>
+                {/* Years Slider - Overlaid on chart area */}
+                <div className="absolute top-0 right-0 z-10 bg-background/80 backdrop-blur-sm rounded-lg p-3 border border-border">
+                  <div className="flex items-center gap-3">
+                    <Clock className="w-4 h-4 text-muted-foreground" />
+                    <div className="w-32">
+                      <Slider
+                        value={[years]}
+                        onValueChange={(v) => setYears(v[0])}
+                        min={1}
+                        max={40}
+                        step={1}
+                      />
+                    </div>
+                    <span className="text-sm font-bold text-primary w-16">{years} years</span>
+                  </div>
                 </div>
-                <Slider
-                  value={[years]}
-                  onValueChange={(v) => setYears(v[0])}
-                  min={1}
-                  max={40}
-                  step={1}
-                  className="mb-4"
-                />
-              </motion.div>
 
-              {/* Dynamic Chart */}
-              <motion.div 
-                className="h-72 relative"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.6 }}
-              >
                 <ResponsiveContainer width="100%" height="100%">
                   <ComposedChart data={chartData}>
                     <defs>
@@ -289,19 +327,20 @@ export const Lesson3CompoundInterestSlides = ({ onComplete }: Lesson3Props) => {
                       dataKey="year" 
                       stroke="hsl(var(--muted-foreground))" 
                       fontSize={12}
-                      label={{ value: 'Years', position: 'bottom', offset: -5 }}
+                      label={{ value: "Years Invested", position: "bottom", offset: -5 }}
                     />
                     <YAxis 
                       stroke="hsl(var(--muted-foreground))" 
                       fontSize={12} 
                       tickFormatter={(v) => `$${(v/1000).toFixed(0)}k`}
                     />
-                    <Tooltip content={<CustomTooltip />} />
+                    <Tooltip content={<EnhancedTooltip />} />
                     <Area 
                       type="monotone" 
                       dataKey="compounded" 
                       fill="url(#compoundGradient)" 
                       stroke="none"
+                      animationDuration={chartAnimated ? 2000 : 0}
                     />
                     <Line 
                       type="monotone" 
@@ -319,53 +358,114 @@ export const Lesson3CompoundInterestSlides = ({ onComplete }: Lesson3Props) => {
                       strokeWidth={3}
                       dot={false}
                       name="Compound Growth"
+                      animationDuration={chartAnimated ? 2000 : 0}
                     />
                   </ComposedChart>
                 </ResponsiveContainer>
                 
-                {/* Pulsing effect on final point */}
+                {/* Legend */}
+                <div className="absolute bottom-8 left-12 flex items-center gap-4 text-xs">
+                  <div className="flex items-center gap-1">
+                    <div className="w-4 h-0.5 bg-muted-foreground" style={{ borderStyle: "dashed" }} />
+                    <span className="text-muted-foreground">Principal</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <div className="w-4 h-0.5 bg-emerald-500" />
+                    <span className="text-emerald-400">Compound Growth</span>
+                  </div>
+                </div>
+
+                {/* Pulsing sparkle effect */}
                 <motion.div
-                  className="absolute right-8 pointer-events-none"
-                  style={{ top: '20%' }}
-                  animate={{ scale: [1, 1.2, 1], opacity: [0.5, 1, 0.5] }}
+                  className="absolute right-16 top-12 pointer-events-none"
+                  animate={{ scale: [1, 1.3, 1], opacity: [0.5, 1, 0.5] }}
                   transition={{ repeat: Infinity, duration: 2 }}
                 >
                   <Sparkles className="w-6 h-6 text-emerald-400" />
                 </motion.div>
               </motion.div>
 
-              {/* Stats */}
+              {/* Sequential Text Slides - BOTTOM */}
+              <div className="space-y-4 mb-8">
+                {textSlides.map((slide, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, x: -30 }}
+                    animate={{ 
+                      opacity: currentTextSlide > index ? 1 : 0.3,
+                      x: currentTextSlide > index ? 0 : -10
+                    }}
+                    transition={{ duration: 0.5 }}
+                    className={`flex items-center gap-4 p-4 rounded-xl border transition-all ${
+                      currentTextSlide > index 
+                        ? "border-primary/30 bg-primary/5" 
+                        : "border-border/50 bg-muted/20"
+                    }`}
+                  >
+                    <motion.div
+                      animate={currentTextSlide > index ? { scale: [1, 1.2, 1] } : {}}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <slide.icon 
+                        className="w-8 h-8 flex-shrink-0" 
+                        style={{ color: currentTextSlide > index ? slide.color : "hsl(var(--muted-foreground))" }}
+                      />
+                    </motion.div>
+                    <p className={`text-lg transition-colors ${
+                      currentTextSlide > index ? "text-foreground" : "text-muted-foreground"
+                    }`}>
+                      {slide.text}
+                    </p>
+                    {currentTextSlide > index && (
+                      <motion.div
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        className="ml-auto"
+                      >
+                        <Sparkles className="w-5 h-5 text-primary" />
+                      </motion.div>
+                    )}
+                  </motion.div>
+                ))}
+              </div>
+
+              {/* Stats Summary */}
               <motion.div 
-                className="grid grid-cols-3 gap-4 mt-6"
+                className="grid grid-cols-3 gap-4 mb-8"
                 initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.8 }}
+                animate={{ opacity: currentTextSlide >= 3 ? 1 : 0.5 }}
+                transition={{ delay: 0.3 }}
               >
-                <div className="text-center p-3 rounded-lg bg-muted/50">
-                  <p className="text-xs text-muted-foreground">Starting Amount</p>
-                  <p className="text-xl font-bold">$1,000</p>
+                <div className="text-center p-4 rounded-xl bg-muted/50 border border-border">
+                  <p className="text-xs text-muted-foreground mb-1">Starting Amount</p>
+                  <p className="text-2xl font-bold">$1,000</p>
                 </div>
-                <div className="text-center p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
-                  <p className="text-xs text-muted-foreground">Final Value</p>
-                  <p className="text-xl font-bold text-emerald-400">
+                <div className="text-center p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30">
+                  <p className="text-xs text-muted-foreground mb-1">Final Value</p>
+                  <p className="text-2xl font-bold text-emerald-400">
                     ${chartData[chartData.length-1]?.compounded.toLocaleString()}
                   </p>
                 </div>
-                <div className="text-center p-3 rounded-lg bg-muted/50">
-                  <p className="text-xs text-muted-foreground">Interest Earned</p>
-                  <p className="text-xl font-bold text-primary">
+                <div className="text-center p-4 rounded-xl bg-primary/10 border border-primary/30">
+                  <p className="text-xs text-muted-foreground mb-1">Interest Earned</p>
+                  <p className="text-2xl font-bold text-primary">
                     ${chartData[chartData.length-1]?.interestEarned.toLocaleString()}
                   </p>
                 </div>
               </motion.div>
 
               <motion.div 
-                className="flex justify-center mt-8 relative z-10"
+                className="flex justify-center relative z-10"
                 initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 1 }}
+                animate={{ opacity: currentTextSlide >= 3 ? 1 : 0.5 }}
+                transition={{ delay: 0.5 }}
               >
-                <Button onClick={nextSlide} size="lg" className="gap-2">
+                <Button 
+                  onClick={nextSlide} 
+                  size="lg" 
+                  className="gap-2"
+                  disabled={currentTextSlide < 3}
+                >
                   Continue to Reflect <ArrowRight className="w-4 h-4" />
                 </Button>
               </motion.div>
