@@ -13,6 +13,7 @@ import { AdaptiveLessonChallenge } from "./AdaptiveLessonChallenge";
 import { LessonMasteryDashboard } from "./LessonMasteryDashboard";
 import { InteractiveLessonSimulation } from "./InteractiveLessonSimulation";
 import { TradingViewChart } from "./TradingViewChart";
+import { InteractiveLessonRouter } from "./InteractiveLessonRouter";
 
 interface ThreePhaseLessonViewerProps {
   lessonId: string;
@@ -215,68 +216,90 @@ export const ThreePhaseLessonViewer = ({ lessonId, onClose }: ThreePhaseLessonVi
         </div>
 
         {/* Content */}
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-7xl mx-auto">
           {phase === 'learn' && (
-            <div className="space-y-6 animate-fade-in">
-              <Progress value={(currentSection + 1) / sections.length * 100} className="mb-6 h-3" />
-              
-              <Card className="p-6">
-                <div className="mb-4">
-                  <Badge variant="secondary" className="mb-2">
-                    Section {currentSection + 1} of {sections.length}
-                  </Badge>
-                  <h2 className="text-2xl font-bold">{currentContent.title}</h2>
-                </div>
-
-                <div className="text-lg leading-relaxed mb-6">
-                  {currentContent.content}
-                </div>
-
-                {/* Interactive elements */}
-                {lesson.order_index >= 3 && lesson.order_index <= 6 && (
-                  <InteractiveLessonSimulation
-                    lessonId={lessonId}
-                    simulationType={
-                      lesson.order_index === 3 ? "diversification" :
-                      lesson.order_index === 4 ? "compound" :
-                      lesson.order_index === 5 ? "risk" : "portfolio"
-                    }
-                    onComplete={(score) => {
-                      toast.success(`Simulation complete! Score: ${score}/100`);
-                    }}
-                  />
-                )}
-
-                {lesson.order_index >= 7 && lesson.order_index <= 9 && (
-                  <div className="my-6">
-                    <TradingViewChart />
+            <>
+              {/* Simulation-first approach for Lesson 1 */}
+              {lesson.order_index === 1 ? (
+                <div className="animate-fade-in">
+                  <InteractiveLessonRouter lessonId="1" />
+                  <div className="flex justify-center mt-8">
+                    <Button
+                      onClick={() => {
+                        updateProgress(100, false);
+                        setPhase('challenge');
+                        toast.success("Lab complete! Ready for the challenge?");
+                      }}
+                      className="bg-gradient-primary"
+                      size="lg"
+                    >
+                      Continue to Challenge
+                    </Button>
                   </div>
-                )}
-
-                <div className="flex justify-between items-center mt-8 pt-4 border-t">
-                  <Button 
-                    variant="outline" 
-                    onClick={handleLearnBack}
-                    disabled={currentSection === 0}
-                  >
-                    Previous
-                  </Button>
-                  <Button
-                    onClick={handleLearnNext}
-                    className="bg-gradient-primary"
-                  >
-                    {currentSection === sections.length - 1 ? "Start Challenge" : "Next"}
-                  </Button>
                 </div>
-              </Card>
+              ) : (
+                <div className="space-y-6 animate-fade-in">
+                  <Progress value={(currentSection + 1) / sections.length * 100} className="mb-6 h-3" />
+                  
+                  <Card className="p-6">
+                    <div className="mb-4">
+                      <Badge variant="secondary" className="mb-2">
+                        Section {currentSection + 1} of {sections.length}
+                      </Badge>
+                      <h2 className="text-2xl font-bold">{currentContent.title}</h2>
+                    </div>
 
-              <AILessonChatbot
-                lessonId={lessonId}
-                lessonTitle={lesson.title}
-                currentContent={currentContent.title}
-                userProgress={learnProgress}
-              />
-            </div>
+                    <div className="text-lg leading-relaxed mb-6">
+                      {currentContent.content}
+                    </div>
+
+                    {/* Interactive elements */}
+                    {lesson.order_index >= 3 && lesson.order_index <= 6 && (
+                      <InteractiveLessonSimulation
+                        lessonId={lessonId}
+                        simulationType={
+                          lesson.order_index === 3 ? "diversification" :
+                          lesson.order_index === 4 ? "compound" :
+                          lesson.order_index === 5 ? "risk" : "portfolio"
+                        }
+                        onComplete={(score) => {
+                          toast.success(`Simulation complete! Score: ${score}/100`);
+                        }}
+                      />
+                    )}
+
+                    {lesson.order_index >= 7 && lesson.order_index <= 9 && (
+                      <div className="my-6">
+                        <TradingViewChart />
+                      </div>
+                    )}
+
+                    <div className="flex justify-between items-center mt-8 pt-4 border-t">
+                      <Button 
+                        variant="outline" 
+                        onClick={handleLearnBack}
+                        disabled={currentSection === 0}
+                      >
+                        Previous
+                      </Button>
+                      <Button
+                        onClick={handleLearnNext}
+                        className="bg-gradient-primary"
+                      >
+                        {currentSection === sections.length - 1 ? "Start Challenge" : "Next"}
+                      </Button>
+                    </div>
+                  </Card>
+
+                  <AILessonChatbot
+                    lessonId={lessonId}
+                    lessonTitle={lesson.title}
+                    currentContent={currentContent.title}
+                    userProgress={learnProgress}
+                  />
+                </div>
+              )}
+            </>
           )}
 
           {phase === 'challenge' && (

@@ -1,3 +1,4 @@
+import { InvestingSimulationLab } from "./lessons/InvestingSimulationLab";
 import { FinancialLifeSimulator } from "./lessons/FinancialLifeSimulator";
 import { FoundationsImmersive } from "./lessons/FoundationsImmersive";
 import { RiskRewardImmersive } from "./lessons/RiskRewardImmersive";
@@ -42,7 +43,7 @@ interface InteractiveLessonRouterProps {
 
 export const InteractiveLessonRouter = ({ lessonId }: InteractiveLessonRouterProps) => {
   const lessonComponents: Record<string, React.ReactNode> = {
-    "1": <FinancialLifeSimulator />,
+    "1": <InvestingSimulationLab />,
     "2": <RiskRewardImmersive />,
     "3": <CompoundInterestImmersive />,
     "4": <StocksBondsImmersive />,
