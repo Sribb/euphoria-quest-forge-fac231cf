@@ -161,16 +161,6 @@ const Learn = ({ onNavigate, selectedLesson, onLessonSelect }: LearnProps) => {
           </div>
         </div>
       )}
-
-      {/* Expert-Sourced Content Banner */}
-      <div className="px-8 pt-4 pb-4 animate-fade-in">
-        <div className="max-w-7xl mx-auto p-6 bg-primary/5 border border-primary/20 rounded-2xl">
-          <p className="text-sm text-muted-foreground leading-relaxed">
-            <span className="font-semibold text-foreground">📚 Expert-Sourced Content:</span> All challenges are based on proven principles from Warren Buffett, Benjamin Graham's "The Intelligent Investor", Peter Lynch's "One Up on Wall Street", Ray Dalio's "Principles", Investopedia educational modules, and Federal Reserve resources.
-          </p>
-        </div>
-      </div>
-
       {/* Learning Pathway - Full Vertical Scroll */}
       {isLoading ? (
         <div className="flex items-center justify-center min-h-[600px]">
