@@ -328,6 +328,36 @@ export const MarketReactionGame = ({ onClose }: MarketReactionGameProps) => {
   const currentScenario = SCENARIOS[currentIndex];
   const progress = ((currentIndex) / SCENARIOS.length) * 100;
 
+  // ALL HOOKS MUST BE BEFORE ANY CONDITIONAL RETURNS
+  const handleAnswer = useCallback((answer: "bullish" | "bearish" | "neutral" | "slightly_bullish" | "slightly_bearish") => {
+    if (showResult) return;
+    
+    setSelectedAnswer(answer);
+    const isCorrect = answer === currentScenario.correctAnswer;
+    setAnsweredCorrectly(isCorrect);
+    
+    if (isCorrect) {
+      const basePoints = currentScenario.difficulty === "easy" ? 100 : 
+                         currentScenario.difficulty === "medium" ? 150 : 200;
+      const timeBonus = Math.floor(timeLeft * 5);
+      const newStreak = streak + 1;
+      const newMultiplier = Math.min(1 + (newStreak * 0.25), 3);
+      const totalPoints = Math.floor((basePoints + timeBonus) * comboMultiplier);
+      
+      setScore(prev => prev + totalPoints);
+      setStreak(newStreak);
+      setComboMultiplier(newMultiplier);
+      setLastPoints(totalPoints);
+      setShowPointsPopup(true);
+      setTimeout(() => setShowPointsPopup(false), 800);
+    } else {
+      setStreak(0);
+      setComboMultiplier(1);
+    }
+    
+    setShowResult(true);
+  }, [currentScenario, streak, comboMultiplier, timeLeft, showResult]);
+
   // Timer effect - MUST be before any conditional returns
   useEffect(() => {
     if (showTutorial || showResult || gameComplete) return;
@@ -343,7 +373,7 @@ export const MarketReactionGame = ({ onClose }: MarketReactionGameProps) => {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [currentIndex, showResult, gameComplete, showTutorial]);
+  }, [currentIndex, showResult, gameComplete, showTutorial, handleAnswer]);
 
   // Tutorial Screen
   if (showTutorial) {
@@ -502,34 +532,6 @@ export const MarketReactionGame = ({ onClose }: MarketReactionGameProps) => {
     ));
   };
 
-  const handleAnswer = useCallback((answer: "bullish" | "bearish" | "neutral" | "slightly_bullish" | "slightly_bearish") => {
-    if (showResult) return;
-    
-    setSelectedAnswer(answer);
-    const isCorrect = answer === currentScenario.correctAnswer;
-    setAnsweredCorrectly(isCorrect);
-    
-    if (isCorrect) {
-      const basePoints = currentScenario.difficulty === "easy" ? 100 : 
-                         currentScenario.difficulty === "medium" ? 150 : 200;
-      const timeBonus = Math.floor(timeLeft * 5);
-      const newStreak = streak + 1;
-      const newMultiplier = Math.min(1 + (newStreak * 0.25), 3);
-      const totalPoints = Math.floor((basePoints + timeBonus) * comboMultiplier);
-      
-      setScore(prev => prev + totalPoints);
-      setStreak(newStreak);
-      setComboMultiplier(newMultiplier);
-      setLastPoints(totalPoints);
-      setShowPointsPopup(true);
-      setTimeout(() => setShowPointsPopup(false), 800);
-    } else {
-      setStreak(0);
-      setComboMultiplier(1);
-    }
-    
-    setShowResult(true);
-  }, [currentScenario, streak, comboMultiplier, timeLeft, showResult]);
 
   const getAnswerLabel = (answer: string) => {
     const labels: Record<string, string> = {
