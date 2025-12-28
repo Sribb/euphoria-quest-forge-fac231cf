@@ -312,6 +312,7 @@ const ScorePopup = ({ points, show }: { points: number; show: boolean }) => (
 );
 
 export const MarketReactionGame = ({ onClose }: MarketReactionGameProps) => {
+  const [showTutorial, setShowTutorial] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [score, setScore] = useState(0);
   const [streak, setStreak] = useState(0);
@@ -326,6 +327,131 @@ export const MarketReactionGame = ({ onClose }: MarketReactionGameProps) => {
 
   const currentScenario = SCENARIOS[currentIndex];
   const progress = ((currentIndex) / SCENARIOS.length) * 100;
+
+  // Tutorial Screen
+  if (showTutorial) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 p-4">
+        <div className="max-w-2xl mx-auto">
+          <Button
+            variant="ghost"
+            onClick={onClose}
+            className="mb-4 gap-2 text-muted-foreground hover:text-foreground"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Back to Games
+          </Button>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="relative"
+          >
+            {/* Tutorial Card */}
+            <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-card via-card to-primary/10 border border-border/50 shadow-2xl">
+              {/* Decorative elements */}
+              <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-primary/20 to-transparent rounded-full blur-3xl" />
+              <div className="absolute bottom-0 left-0 w-48 h-48 bg-gradient-to-tr from-success/20 to-transparent rounded-full blur-2xl" />
+              
+              <div className="relative p-8">
+                {/* Header */}
+                <div className="text-center mb-8">
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ delay: 0.2, type: "spring" }}
+                    className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-primary to-primary/70 mb-4 shadow-lg"
+                  >
+                    <Target className="w-10 h-10 text-primary-foreground" />
+                  </motion.div>
+                  <h1 className="text-3xl font-black text-foreground mb-2">How to Play</h1>
+                  <p className="text-muted-foreground">Master the market in 3 simple steps</p>
+                </div>
+
+                {/* Steps */}
+                <div className="space-y-4 mb-8">
+                  {[
+                    {
+                      icon: <Globe className="w-5 h-5" />,
+                      title: "Read the News",
+                      description: "A market headline appears. Understand what happened.",
+                      color: "from-blue-500 to-blue-600"
+                    },
+                    {
+                      icon: <TrendingUp className="w-5 h-5" />,
+                      title: "Predict the Reaction",
+                      description: "Will markets go up (Bullish), down (Bearish), or stay flat (Neutral)?",
+                      color: "from-success to-emerald-600"
+                    },
+                    {
+                      icon: <Timer className="w-5 h-5" />,
+                      title: "Beat the Clock",
+                      description: "Answer fast! Quicker answers = more bonus points.",
+                      color: "from-warning to-orange-600"
+                    }
+                  ].map((step, i) => (
+                    <motion.div
+                      key={i}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.3 + i * 0.1 }}
+                      className="flex items-start gap-4 p-4 rounded-xl bg-background/50 border border-border/30"
+                    >
+                      <div className={`flex-shrink-0 w-10 h-10 rounded-xl bg-gradient-to-br ${step.color} flex items-center justify-center text-white shadow-md`}>
+                        {step.icon}
+                      </div>
+                      <div>
+                        <h3 className="font-bold text-foreground">{step.title}</h3>
+                        <p className="text-sm text-muted-foreground">{step.description}</p>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+
+                {/* Scoring Tips */}
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.6 }}
+                  className="p-4 rounded-xl bg-primary/10 border border-primary/20 mb-6"
+                >
+                  <div className="flex items-center gap-2 mb-2">
+                    <Flame className="w-5 h-5 text-primary" />
+                    <span className="font-bold text-foreground">Pro Tips</span>
+                  </div>
+                  <ul className="text-sm text-muted-foreground space-y-1">
+                    <li className="flex items-center gap-2">
+                      <Sparkles className="w-3 h-3 text-warning" />
+                      Build streaks for up to 3x score multiplier
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <Star className="w-3 h-3 text-warning" />
+                      Harder questions = more points
+                    </li>
+                  </ul>
+                </motion.div>
+
+                {/* Start Button */}
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.7 }}
+                >
+                  <Button
+                    onClick={() => setShowTutorial(false)}
+                    className="w-full h-14 text-lg font-bold bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg gap-2"
+                  >
+                    <Zap className="w-5 h-5" />
+                    Start Game
+                  </Button>
+                </motion.div>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </div>
+    );
+  }
 
   // Timer effect
   useEffect(() => {
