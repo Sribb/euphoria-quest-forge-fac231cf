@@ -311,7 +311,18 @@ const ScorePopup = ({ points, show }: { points: number; show: boolean }) => (
   </AnimatePresence>
 );
 
+// Shuffle array utility
+const shuffleArray = <T,>(array: T[]): T[] => {
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+};
+
 export const MarketReactionGame = ({ onClose }: MarketReactionGameProps) => {
+  const [scenarios] = useState(() => shuffleArray(SCENARIOS));
   const [showTutorial, setShowTutorial] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [score, setScore] = useState(0);
@@ -325,8 +336,8 @@ export const MarketReactionGame = ({ onClose }: MarketReactionGameProps) => {
   const [showPointsPopup, setShowPointsPopup] = useState(false);
   const [comboMultiplier, setComboMultiplier] = useState(1);
 
-  const currentScenario = SCENARIOS[currentIndex];
-  const progress = ((currentIndex) / SCENARIOS.length) * 100;
+  const currentScenario = scenarios[currentIndex];
+  const progress = ((currentIndex) / scenarios.length) * 100;
 
   // ALL HOOKS MUST BE BEFORE ANY CONDITIONAL RETURNS
   const handleAnswer = useCallback((answer: "bullish" | "bearish" | "neutral" | "slightly_bullish" | "slightly_bearish") => {

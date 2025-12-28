@@ -2,11 +2,12 @@ import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Trophy, TrendingUp, RefreshCw, Lightbulb, Sparkles, Target, Award, Home } from "lucide-react";
+import { Trophy, TrendingUp, RefreshCw, Lightbulb, Sparkles, Target, Award, Home, BarChart3, Eye, Zap, ArrowLeft, Flame, Star } from "lucide-react";
 import { toast } from "sonner";
 import { CandlestickChart } from "./CandlestickChart";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { motion } from "framer-motion";
 
 // Pattern-specific insights shown when hint is activated
 const patternInsights: Record<string, string> = {
@@ -207,6 +208,7 @@ interface TrendMasterGameProps {
 }
 
 export const TrendMasterGame = ({ onClose }: TrendMasterGameProps) => {
+  const [showTutorial, setShowTutorial] = useState(true);
   const [scenarios, setScenarios] = useState(() => shuffleArray(chartScenarios));
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [score, setScore] = useState(0);
@@ -273,6 +275,127 @@ export const TrendMasterGame = ({ onClose }: TrendMasterGameProps) => {
     setGameComplete(false);
     setShowHint(false);
   };
+
+  // Tutorial Screen
+  if (showTutorial) {
+    return (
+      <div className="fixed inset-0 bg-background z-50 overflow-y-auto">
+        <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 p-4">
+          <div className="max-w-2xl mx-auto">
+            <Button
+              variant="ghost"
+              onClick={onClose}
+              className="mb-4 gap-2 text-muted-foreground hover:text-foreground"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Back to Games
+            </Button>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="relative"
+            >
+              <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-card via-card to-primary/10 border border-border/50 shadow-2xl">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-primary/20 to-transparent rounded-full blur-3xl" />
+                <div className="absolute bottom-0 left-0 w-48 h-48 bg-gradient-to-tr from-teal-500/20 to-transparent rounded-full blur-2xl" />
+                
+                <div className="relative p-8">
+                  <div className="text-center mb-8">
+                    <motion.div
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ delay: 0.2, type: "spring" }}
+                      className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-primary to-primary/70 mb-4 shadow-lg"
+                    >
+                      <BarChart3 className="w-10 h-10 text-primary-foreground" />
+                    </motion.div>
+                    <h1 className="text-3xl font-black text-foreground mb-2">How to Play</h1>
+                    <p className="text-muted-foreground">Become a chart pattern expert in 3 steps</p>
+                  </div>
+
+                  <div className="space-y-4 mb-8">
+                    {[
+                      {
+                        icon: <Eye className="w-5 h-5" />,
+                        title: "Study the Chart",
+                        description: "A candlestick chart appears showing a technical pattern.",
+                        color: "from-blue-500 to-blue-600"
+                      },
+                      {
+                        icon: <Target className="w-5 h-5" />,
+                        title: "Identify the Pattern",
+                        description: "Choose from 4 options: uptrend, double-top, head-shoulders, etc.",
+                        color: "from-teal-500 to-teal-600"
+                      },
+                      {
+                        icon: <TrendingUp className="w-5 h-5" />,
+                        title: "Learn & Improve",
+                        description: "Read explanations to understand why each pattern matters.",
+                        color: "from-purple-500 to-purple-600"
+                      }
+                    ].map((step, i) => (
+                      <motion.div
+                        key={i}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.3 + i * 0.1 }}
+                        className="flex items-start gap-4 p-4 rounded-xl bg-background/50 border border-border/30"
+                      >
+                        <div className={`flex-shrink-0 w-10 h-10 rounded-xl bg-gradient-to-br ${step.color} flex items-center justify-center text-white shadow-md`}>
+                          {step.icon}
+                        </div>
+                        <div>
+                          <h3 className="font-bold text-foreground">{step.title}</h3>
+                          <p className="text-sm text-muted-foreground">{step.description}</p>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </div>
+
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.6 }}
+                    className="p-4 rounded-xl bg-primary/10 border border-primary/20 mb-6"
+                  >
+                    <div className="flex items-center gap-2 mb-2">
+                      <Flame className="w-5 h-5 text-primary" />
+                      <span className="font-bold text-foreground">Pro Tips</span>
+                    </div>
+                    <ul className="text-sm text-muted-foreground space-y-1">
+                      <li className="flex items-center gap-2">
+                        <Sparkles className="w-3 h-3 text-warning" />
+                        Build answer streaks for bonus XP
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <Star className="w-3 h-3 text-warning" />
+                        Use Mentor Mode for hints on tricky patterns
+                      </li>
+                    </ul>
+                  </motion.div>
+
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.7 }}
+                  >
+                    <Button
+                      onClick={() => setShowTutorial(false)}
+                      className="w-full h-14 text-lg font-bold bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg gap-2"
+                    >
+                      <Zap className="w-5 h-5" />
+                      Start Game
+                    </Button>
+                  </motion.div>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (gameComplete) {
     const accuracy = Math.round((score / scenarios.length) * 100);
