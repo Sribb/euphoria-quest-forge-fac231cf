@@ -328,6 +328,23 @@ export const MarketReactionGame = ({ onClose }: MarketReactionGameProps) => {
   const currentScenario = SCENARIOS[currentIndex];
   const progress = ((currentIndex) / SCENARIOS.length) * 100;
 
+  // Timer effect - MUST be before any conditional returns
+  useEffect(() => {
+    if (showTutorial || showResult || gameComplete) return;
+    
+    const timer = setInterval(() => {
+      setTimeLeft(prev => {
+        if (prev <= 1) {
+          handleAnswer("neutral"); // Auto-submit neutral if time runs out
+          return 15;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [currentIndex, showResult, gameComplete, showTutorial]);
+
   // Tutorial Screen
   if (showTutorial) {
     return (
@@ -452,23 +469,6 @@ export const MarketReactionGame = ({ onClose }: MarketReactionGameProps) => {
       </div>
     );
   }
-
-  // Timer effect
-  useEffect(() => {
-    if (showResult || gameComplete) return;
-    
-    const timer = setInterval(() => {
-      setTimeLeft(prev => {
-        if (prev <= 1) {
-          handleAnswer("neutral"); // Auto-submit neutral if time runs out
-          return 15;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, [currentIndex, showResult, gameComplete]);
 
   const getCategoryIcon = (category: string) => {
     switch (category) {
