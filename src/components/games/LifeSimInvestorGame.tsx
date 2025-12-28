@@ -1,37 +1,30 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { 
-  ArrowLeft, TrendingUp, TrendingDown, User, Briefcase, 
+  ArrowLeft, TrendingUp, TrendingDown, Briefcase, 
   DollarSign, Trophy, Calendar, Zap, Target, Play, Sparkles, 
-  Star, Flame, Heart, Home, GraduationCap, Wallet, ChevronRight,
-  AlertTriangle, Gift, Building2, PiggyBank, CreditCard, TrendingDown as TrendDown
+  Star, Flame, Heart, Home, Wallet, ChevronRight,
+  AlertTriangle, Gift, PiggyBank, Timer, Rocket, Award
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
+import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, Area, AreaChart } from "recharts";
 
 interface PlayerState {
   age: number;
   cash: number;
   investments: number;
-  debt: number;
-  creditScore: number;
   salary: number;
   jobTitle: string;
-  education: string;
-  married: boolean;
-  children: number;
-  homeOwner: boolean;
-  homeValue: number;
-  riskTolerance: "low" | "medium" | "high";
-  careerPath: "corporate" | "entrepreneur" | "freelance" | "none";
-  emergencyFund: number;
-  retirementAccount: number;
+  yearlyInvestmentRate: number; // % of income invested
+  totalInvested: number; // Track lifetime contributions
+  firstInvestmentAge: number | null;
 }
 
 interface LifeEvent {
@@ -39,34 +32,35 @@ interface LifeEvent {
   title: string;
   description: string;
   icon: React.ReactNode;
-  type: "income" | "expense" | "investment" | "life" | "market" | "debt" | "opportunity";
+  type: "invest" | "spend" | "career" | "lesson";
   choices: {
     text: string;
     outcome: string;
-    effect: Partial<PlayerState> & { 
-      cashChange?: number; 
-      investmentChange?: number;
-      debtChange?: number;
-      creditChange?: number;
-      salaryMultiplier?: number;
-      unlocks?: string[];
-      blocks?: string[];
-    };
+    investPercent?: number;
+    cashChange?: number;
+    salaryChange?: number;
+    lesson?: string;
   }[];
 }
 
-interface GameLog {
-  year: number;
-  text: string;
-  type: "positive" | "negative" | "neutral" | "milestone";
+interface WealthHistory {
+  age: number;
+  invested: number;
+  growth: number;
+  total: number;
 }
 
 interface LifeSimInvestorGameProps {
   onClose: () => void;
 }
 
+const GOAL = 1000000; // $1M goal
+const ANNUAL_RETURN = 0.08; // 8% average annual return
+const RETIREMENT_AGE = 65;
+const START_AGE = 22;
+
 const formatMoney = (amount: number): string => {
-  if (Math.abs(amount) >= 1000000) return `$${(amount / 1000000).toFixed(1)}M`;
+  if (Math.abs(amount) >= 1000000) return `$${(amount / 1000000).toFixed(2)}M`;
   if (Math.abs(amount) >= 1000) return `$${(amount / 1000).toFixed(0)}k`;
   return `$${amount.toFixed(0)}`;
 };
@@ -75,405 +69,277 @@ export const LifeSimInvestorGame = ({ onClose }: LifeSimInvestorGameProps) => {
   const { user } = useAuth();
   const [showTutorial, setShowTutorial] = useState(true);
   const [gameOver, setGameOver] = useState(false);
+  const [won, setWon] = useState(false);
   const [currentEvent, setCurrentEvent] = useState<LifeEvent | null>(null);
-  const [gameLog, setGameLog] = useState<GameLog[]>([]);
-  const [unlockedPaths, setUnlockedPaths] = useState<string[]>([]);
-  const [blockedPaths, setBlockedPaths] = useState<string[]>([]);
-  const [marketCondition, setMarketCondition] = useState<"boom" | "stable" | "recession">("stable");
-  const [consecutiveGoodChoices, setConsecutiveGoodChoices] = useState(0);
+  const [wealthHistory, setWealthHistory] = useState<WealthHistory[]>([]);
+  const [comparisonHistory, setComparisonHistory] = useState<WealthHistory[]>([]);
+  const [showLesson, setShowLesson] = useState<string | null>(null);
   
   const [player, setPlayer] = useState<PlayerState>({
-    age: 22,
-    cash: 2500,
+    age: START_AGE,
+    cash: 5000,
     investments: 0,
-    debt: 35000, // Student loans
-    creditScore: 680,
-    salary: 0,
-    jobTitle: "Unemployed",
-    education: "College Graduate",
-    married: false,
-    children: 0,
-    homeOwner: false,
-    homeValue: 0,
-    riskTolerance: "medium",
-    careerPath: "none",
-    emergencyFund: 0,
-    retirementAccount: 0,
+    salary: 45000,
+    jobTitle: "Entry-Level",
+    yearlyInvestmentRate: 0,
+    totalInvested: 0,
+    firstInvestmentAge: null,
   });
 
-  const netWorth = player.cash + player.investments + player.homeValue + player.retirementAccount + player.emergencyFund - player.debt;
+  // Calculate compound growth
+  const totalWealth = player.cash + player.investments;
+  const progressToGoal = Math.min((totalWealth / GOAL) * 100, 100);
+  const yearsPlayed = player.age - START_AGE;
 
-  const addLog = useCallback((text: string, type: GameLog["type"]) => {
-    setGameLog(prev => [...prev, { year: player.age, text, type }]);
-  }, [player.age]);
-
-  // Generate events based on player state
-  const generateEvent = useCallback((): LifeEvent => {
-    const events: LifeEvent[] = [];
+  // Generate the "what if you started at 22" comparison
+  const generateComparison = useCallback((currentAge: number, monthlyInvestment: number) => {
+    const comparison: WealthHistory[] = [];
+    let invested = 0;
+    let total = 0;
     
-    // CAREER EVENTS - based on career path and salary
-    if (player.careerPath === "none" && player.age <= 25) {
-      events.push({
-        id: "first-job",
-        title: "Job Hunt",
-        description: "You've been sending out resumes. A few opportunities have come up.",
+    for (let age = START_AGE; age <= currentAge; age++) {
+      const yearlyContribution = monthlyInvestment * 12;
+      invested += yearlyContribution;
+      total = (total + yearlyContribution) * (1 + ANNUAL_RETURN);
+      comparison.push({ age, invested, growth: total - invested, total });
+    }
+    
+    return comparison;
+  }, []);
+
+  // Generate investment-focused events
+  const generateEvent = useCallback((): LifeEvent => {
+    const age = player.age;
+    const hasInvested = player.investments > 0;
+    
+    // Early game: Focus on teaching investing basics
+    if (age <= 25 && !hasInvested) {
+      return {
+        id: "first-invest-" + age,
+        title: "💡 Your First Paycheck",
+        description: `You earned ${formatMoney(player.salary)} this year. Your friend says you should start investing. "Even $200/month can become $500k+ by retirement!"`,
+        icon: <PiggyBank className="w-6 h-6" />,
+        type: "invest",
+        choices: [
+          { text: "Start with 20% ($750/mo)", outcome: "Smart! Time is your greatest asset.", investPercent: 20, lesson: "Starting early is the #1 factor in building wealth. A 22-year-old investing $500/mo will have MORE than a 32-year-old investing $1000/mo!" },
+          { text: "Start with 10% ($375/mo)", outcome: "Good start! Every bit counts.", investPercent: 10, lesson: "Even small amounts grow huge over time. $375/mo at 8% = $1.1M by 65!" },
+          { text: "Just save 5% ($188/mo)", outcome: "Better than nothing, but you're missing out on compound growth.", investPercent: 5, lesson: "Waiting costs you. Each year you delay costs you ~$100k in retirement!" },
+          { text: "I'll start later", outcome: "You spent it all. Future you will regret this.", investPercent: 0, lesson: "⚠️ COSTLY MISTAKE: Waiting even 5 years can cost you $300k+ in compound growth!" },
+        ]
+      };
+    }
+
+    // Career growth events
+    if (age % 3 === 0 && age <= 45) {
+      const raiseAmount = Math.floor(player.salary * 0.15);
+      return {
+        id: "raise-" + age,
+        title: "📈 Promotion Time!",
+        description: `You got a ${formatMoney(raiseAmount)}/year raise! What will you do with the extra income?`,
         icon: <Briefcase className="w-6 h-6" />,
-        type: "income",
+        type: "career",
         choices: [
-          { text: "Corporate Job ($45k)", outcome: "You start as an analyst at a big company.", effect: { salary: 45000, jobTitle: "Junior Analyst", careerPath: "corporate", cashChange: 0 } },
-          { text: "Startup ($35k + equity)", outcome: "High risk, high reward. You join a startup.", effect: { salary: 35000, jobTitle: "Startup Associate", careerPath: "entrepreneur", unlocks: ["startup-growth"] } },
-          { text: "Freelance ($30/hr)", outcome: "You become your own boss.", effect: { salary: 52000, jobTitle: "Freelancer", careerPath: "freelance", unlocks: ["freelance-gig"] } },
+          { text: "Invest the entire raise", outcome: "Lifestyle creep avoided! Your future self thanks you.", salaryChange: raiseAmount, investPercent: Math.min(player.yearlyInvestmentRate + 5, 40), lesson: "The 'raise rule': Invest at least 50% of every raise. You won't miss what you never had!" },
+          { text: "Invest half, spend half", outcome: "Balanced approach.", salaryChange: raiseAmount, investPercent: Math.min(player.yearlyInvestmentRate + 2, 35) },
+          { text: "Upgrade lifestyle", outcome: "Nice car! But your investment rate stayed flat.", salaryChange: raiseAmount, cashChange: -5000 },
         ]
-      });
-    } else if (player.salary > 0 && Math.random() < 0.3) {
-      // Raise/promotion events
-      if (player.careerPath === "corporate" && !blockedPaths.includes("promotion")) {
-        events.push({
-          id: "promotion",
-          title: "Performance Review",
-          description: `Your manager wants to discuss your future at the company. Current salary: ${formatMoney(player.salary)}`,
-          icon: <TrendingUp className="w-6 h-6" />,
-          type: "income",
-          choices: [
-            { text: "Ask for promotion", outcome: "Bold! You got a 20% raise and new title.", effect: { salaryMultiplier: 1.2, jobTitle: "Senior " + player.jobTitle, creditChange: 10 } },
-            { text: "Accept standard raise", outcome: "You got the standard 3% cost-of-living increase.", effect: { salaryMultiplier: 1.03 } },
-            { text: "Negotiate remote work", outcome: "Same pay, but you save on commuting.", effect: { cashChange: 200 } },
-          ]
-        });
-      }
+      };
+    }
+
+    // Mid-game: Show compound effects
+    if (hasInvested && age >= 30 && age <= 40) {
+      const yearsInvested = player.firstInvestmentAge ? age - player.firstInvestmentAge : 0;
+      const compoundGrowth = player.investments - player.totalInvested;
       
-      if (player.careerPath === "entrepreneur" && unlockedPaths.includes("startup-growth")) {
-        events.push({
-          id: "startup-event",
-          title: "Startup News",
-          description: "Your startup has been getting attention from investors.",
-          icon: <Building2 className="w-6 h-6" />,
-          type: "opportunity",
+      if (compoundGrowth > player.totalInvested * 0.3) {
+        return {
+          id: "compound-lesson-" + age,
+          title: "🚀 The Magic is Working!",
+          description: `After ${yearsInvested} years, you've contributed ${formatMoney(player.totalInvested)} but your investments are worth ${formatMoney(player.investments)}! That's ${formatMoney(compoundGrowth)} in FREE MONEY from compound growth!`,
+          icon: <Sparkles className="w-6 h-6" />,
+          type: "lesson",
           choices: [
-            { text: "Take funding ($50k)", outcome: "You got funding! Your salary doubles but you gave up equity.", effect: { salaryMultiplier: 2, cashChange: 50000, blocks: ["startup-ipo"] } },
-            { text: "Bootstrap it", outcome: "Slow and steady. Your equity is intact.", effect: { salaryMultiplier: 1.1, unlocks: ["startup-ipo"] } },
-            { text: "Get acquired", outcome: "Big payout! But the startup journey ends.", effect: { cashChange: 150000, salary: 0, jobTitle: "Unemployed", careerPath: "none" } },
+            { text: "Double down - invest more!", outcome: "Accelerating toward your goal!", investPercent: Math.min(player.yearlyInvestmentRate + 5, 50), lesson: "This is compound interest in action. Your money is now making more money than you do in some months!" },
+            { text: "Stay the course", outcome: "Consistency is key.", lesson: "Einstein called compound interest the 8th wonder of the world. You're seeing why!" },
           ]
-        });
+        };
       }
     }
 
-    // MARKET EVENTS - affect investments
-    if (player.investments > 1000) {
-      if (Math.random() < 0.25) {
-        const marketEvents: LifeEvent[] = [
-          {
-            id: "market-boom",
-            title: "🚀 Market Rally!",
-            description: `Tech stocks are soaring! Your ${formatMoney(player.investments)} portfolio is up 25%.`,
-            icon: <TrendingUp className="w-6 h-6" />,
-            type: "market",
-            choices: [
-              { text: "Take profits", outcome: "Smart! You locked in gains.", effect: { investmentChange: player.investments * 0.25, cashChange: player.investments * 0.25, investments: player.investments * 0.75 } },
-              { text: "Let it ride", outcome: "Diamond hands! Portfolio grew.", effect: { investmentChange: player.investments * 0.25 } },
-              { text: "Buy more", outcome: "Doubled down on the rally!", effect: { investmentChange: Math.min(player.cash * 0.5, 5000), cashChange: -Math.min(player.cash * 0.5, 5000) } },
-            ]
-          },
-          {
-            id: "market-crash",
-            title: "📉 Market Crash!",
-            description: `Markets are down 30%. Your portfolio dropped to ${formatMoney(player.investments * 0.7)}.`,
-            icon: <TrendDown className="w-6 h-6" />,
-            type: "market",
-            choices: [
-              { text: "Panic sell", outcome: "You sold at the bottom. Losses locked in.", effect: { investments: 0, cashChange: player.investments * 0.7, blocks: ["recovery-gains"] } },
-              { text: "Hold steady", outcome: "You weathered the storm.", effect: { investmentChange: -player.investments * 0.3, unlocks: ["recovery-gains"] } },
-              { text: "Buy the dip", outcome: "Contrarian play!", effect: { investmentChange: Math.min(player.cash * 0.3, 3000) - player.investments * 0.3, cashChange: -Math.min(player.cash * 0.3, 3000), unlocks: ["recovery-gains"] } },
-            ]
-          }
-        ];
-        events.push(marketEvents[Math.floor(Math.random() * marketEvents.length)]);
-      }
-    }
-
-    // EXPENSE/EMERGENCY EVENTS
-    if (Math.random() < 0.2) {
-      const emergencies: LifeEvent[] = [
+    // Temptation events - test discipline
+    if (Math.random() < 0.3) {
+      const temptations: LifeEvent[] = [
         {
-          id: "car-trouble",
-          title: "🚗 Car Trouble",
-          description: "Your car needs $2,500 in repairs or you need to buy a new one.",
+          id: "car-" + age,
+          title: "🚗 Dream Car",
+          description: `A luxury car catches your eye. It's $40,000. You could afford the payments, but it would cut into your investments.`,
           icon: <AlertTriangle className="w-6 h-6" />,
-          type: "expense",
+          type: "spend",
           choices: [
-            { text: "Pay for repairs", outcome: player.cash >= 2500 ? "Fixed! Back on the road." : "Had to put it on credit card.", effect: player.cash >= 2500 ? { cashChange: -2500 } : { debtChange: 2500, creditChange: -20 } },
-            { text: "Buy used car ($8k)", outcome: "New wheels!", effect: player.cash >= 8000 ? { cashChange: -8000 } : { debtChange: 8000, creditChange: -10 } },
-            { text: "Use public transit", outcome: "Saving money but losing time.", effect: { cashChange: 100, salaryMultiplier: 0.95 } },
+            { text: "Buy it (reduce investing)", outcome: "Nice wheels! But your wealth goal just got further away.", investPercent: Math.max(player.yearlyInvestmentRate - 10, 0), cashChange: -10000, lesson: "A $40k car at age 30 could have been $300k+ by retirement if invested instead." },
+            { text: "Buy reliable used ($15k)", outcome: "Smart choice! A car is transportation, not an investment.", cashChange: -15000 },
+            { text: "Keep current car, invest the difference", outcome: "Future millionaire mindset!", lesson: "The average millionaire drives a 4-year-old car. Wealth is built by spending less than you earn." },
           ]
         },
         {
-          id: "medical-bill",
-          title: "🏥 Medical Emergency",
-          description: "Unexpected surgery. Bill: $5,000 after insurance.",
+          id: "vacation-" + age,
+          title: "✈️ Luxury Vacation",
+          description: `Friends invite you on a $8,000 luxury vacation. You've been working hard...`,
           icon: <Heart className="w-6 h-6" />,
-          type: "expense",
+          type: "spend",
           choices: [
-            { text: "Pay in full", outcome: "Paid off, credit score improved!", effect: { cashChange: -5000, creditChange: 15 } },
-            { text: "Payment plan", outcome: "Manageable monthly payments.", effect: { debtChange: 5000 } },
-            { text: "Negotiate bill", outcome: "Got it reduced to $3,000!", effect: { cashChange: -3000 } },
+            { text: "YOLO! Full luxury trip", outcome: "Amazing memories! But it cost more than money.", cashChange: -8000, investPercent: Math.max(player.yearlyInvestmentRate - 3, 0), lesson: "$8k invested at 30 = $80k at 65. Is one trip worth $80k?" },
+            { text: "Budget version ($2k)", outcome: "Still had fun! And kept investing.", cashChange: -2000 },
+            { text: "Staycation, invest the rest", outcome: "Delayed gratification = future abundance.", lesson: "Rich people look poor, poor people look rich. Focus on net worth, not appearances." },
           ]
         },
       ];
-      
-      if (player.emergencyFund >= 3000) {
-        emergencies[0].choices.unshift({
-          text: "Use emergency fund",
-          outcome: "This is what it's for!",
-          effect: { emergencyFund: player.emergencyFund - 2500 }
-        });
-      }
-      
-      events.push(emergencies[Math.floor(Math.random() * emergencies.length)]);
+      return temptations[Math.floor(Math.random() * temptations.length)];
     }
 
-    // LIFE MILESTONE EVENTS based on age
-    if (player.age >= 25 && !player.married && Math.random() < 0.15) {
-      events.push({
-        id: "relationship",
-        title: "💍 Love & Money",
-        description: "Your partner of 2 years wants to get married. Wedding costs: $15-30k.",
-        icon: <Heart className="w-6 h-6" />,
-        type: "life",
+    // Market events
+    if (player.investments > 10000 && Math.random() < 0.2) {
+      const dropAmount = Math.floor(player.investments * 0.2);
+      return {
+        id: "market-drop-" + age,
+        title: "📉 Market Drops 20%!",
+        description: `Your ${formatMoney(player.investments)} portfolio just lost ${formatMoney(dropAmount)}! News is scary. What do you do?`,
+        icon: <TrendingDown className="w-6 h-6" />,
+        type: "lesson",
         choices: [
-          { text: "Big wedding ($30k)", outcome: "Dream wedding! But expensive.", effect: { married: true, cashChange: -30000, creditChange: -10 } },
-          { text: "Simple ceremony ($5k)", outcome: "Intimate and meaningful.", effect: { married: true, cashChange: -5000, salaryMultiplier: 1.1 } },
-          { text: "Courthouse ($500)", outcome: "Practical! More money for your future.", effect: { married: true, cashChange: -500, unlocks: ["dual-income"] } },
+          { text: "Panic sell everything", outcome: "You locked in losses. This is the #1 wealth destroyer.", investPercent: 0, cashChange: player.investments * 0.8, lesson: "⚠️ TIME IN the market beats TIMING the market. Those who sold in 2008 missed the 400% recovery!" },
+          { text: "Stop investing, wait it out", outcome: "You kept what you had, but missed buying low.", lesson: "Stopping contributions during crashes means missing the best buying opportunities." },
+          { text: "Keep investing (buy the dip!)", outcome: "You bought low! This is how wealth is built.", lesson: "✅ Market drops are SALES. The S&P 500 has recovered from every crash in history. Stay the course!" },
         ]
-      });
+      };
     }
 
-    if (player.married && player.children === 0 && player.age >= 28 && Math.random() < 0.1) {
-      events.push({
-        id: "children",
-        title: "👶 Family Planning",
-        description: "You're thinking about starting a family. Kids cost ~$15k/year.",
-        icon: <Heart className="w-6 h-6" />,
-        type: "life",
+    // Late game: Final push or regret
+    if (age >= 50 && totalWealth < GOAL * 0.5) {
+      return {
+        id: "late-regret-" + age,
+        title: "😰 Reality Check",
+        description: `At ${age}, you have ${formatMoney(totalWealth)}. The goal is ${formatMoney(GOAL)}. If only you had started earlier...`,
+        icon: <Timer className="w-6 h-6" />,
+        type: "lesson",
         choices: [
-          { text: "Have a child", outcome: "Congratulations! A new chapter begins.", effect: { children: 1, unlocks: ["childcare-costs"] } },
-          { text: "Wait a few years", outcome: "More time to build wealth first.", effect: { cashChange: 5000 } },
-          { text: "Decide against it", outcome: "You focus on other goals.", effect: { blocks: ["children"] } },
+          { text: "Max out investing now!", outcome: "Better late than never, but time is not on your side.", investPercent: 40, lesson: "Starting at 50 means you need to save 3-4x more per month than if you started at 22. Time is the real wealth." },
+          { text: "Accept the situation", outcome: "Some wealth is better than none.", lesson: "The best time to plant a tree was 20 years ago. The second best time is now." },
         ]
-      });
+      };
     }
 
-    // HOUSING EVENTS
-    if (!player.homeOwner && player.age >= 26 && player.salary > 50000 && Math.random() < 0.15) {
-      const downPayment = 40000;
-      events.push({
-        id: "buy-home",
-        title: "🏠 Buy a Home?",
-        description: `A nice starter home is available for $300k. You need ${formatMoney(downPayment)} down.`,
-        icon: <Home className="w-6 h-6" />,
-        type: "opportunity",
-        choices: [
-          { text: "Buy it", outcome: player.cash >= downPayment ? "You're a homeowner!" : "Not enough for down payment.", effect: player.cash >= downPayment ? { homeOwner: true, homeValue: 300000, cashChange: -downPayment, debtChange: 260000, creditChange: 30 } : {} },
-          { text: "Keep renting", outcome: "Flexibility is worth something.", effect: { cashChange: 500 } },
-          { text: "Save for bigger home", outcome: "Delayed gratification.", effect: { unlocks: ["bigger-home"] } },
-        ]
-      });
-    }
-
-    // INVESTMENT OPPORTUNITIES
-    if (player.cash > 5000 && Math.random() < 0.25) {
-      events.push({
-        id: "invest-opp",
-        title: "💹 Investment Opportunity",
-        description: `You have ${formatMoney(player.cash)} in savings. How should you invest?`,
-        icon: <TrendingUp className="w-6 h-6" />,
-        type: "investment",
-        choices: [
-          { text: "Index funds (safe)", outcome: "Diversified and steady.", effect: { investmentChange: Math.min(player.cash * 0.5, 10000), cashChange: -Math.min(player.cash * 0.5, 10000), riskTolerance: "low" } },
-          { text: "Individual stocks", outcome: "Higher risk, higher reward.", effect: { investmentChange: Math.min(player.cash * 0.4, 8000), cashChange: -Math.min(player.cash * 0.4, 8000), riskTolerance: "high" } },
-          { text: "Build emergency fund", outcome: "Smart! 6 months of expenses saved.", effect: { emergencyFund: player.emergencyFund + Math.min(player.cash * 0.3, 5000), cashChange: -Math.min(player.cash * 0.3, 5000) } },
-          { text: "Max out 401k", outcome: "Tax-advantaged retirement savings!", effect: { retirementAccount: player.retirementAccount + Math.min(player.cash * 0.4, 22500), cashChange: -Math.min(player.cash * 0.4, 22500) } },
-        ]
-      });
-    }
-
-    // DEBT EVENTS
-    if (player.debt > 10000 && Math.random() < 0.2) {
-      events.push({
-        id: "debt-decision",
-        title: "💳 Debt Strategy",
-        description: `You owe ${formatMoney(player.debt)}. Interest is eating your wealth.`,
-        icon: <CreditCard className="w-6 h-6" />,
-        type: "debt",
-        choices: [
-          { text: "Aggressive payoff", outcome: "Paid down debt significantly!", effect: { debtChange: -Math.min(player.cash * 0.8, player.debt), cashChange: -Math.min(player.cash * 0.8, player.debt), creditChange: 25 } },
-          { text: "Minimum payments", outcome: "Keeping options open, but interest accrues.", effect: { debtChange: player.debt * 0.05 } },
-          { text: "Refinance", outcome: "Lower interest rate!", effect: { debtChange: -player.debt * 0.1, creditChange: 10 } },
-        ]
-      });
-    }
-
-    // SIDE INCOME / WINDFALL
-    if (Math.random() < 0.1) {
-      const windfalls: LifeEvent[] = [
-        {
-          id: "bonus",
-          title: "🎁 Unexpected Bonus",
-          description: "Your company had a great quarter! You got a $5,000 bonus.",
-          icon: <Gift className="w-6 h-6" />,
-          type: "income",
-          choices: [
-            { text: "Save it all", outcome: "Emergency fund growing!", effect: { cashChange: 5000 } },
-            { text: "Invest it", outcome: "Put it to work!", effect: { investmentChange: 5000 } },
-            { text: "Pay off debt", outcome: "Debt reduced!", effect: { debtChange: -5000, creditChange: 10 } },
-            { text: "Treat yourself", outcome: "YOLO! But was it worth it?", effect: { cashChange: 1000 } },
-          ]
-        },
-        {
-          id: "inheritance",
-          title: "💰 Inheritance",
-          description: "A distant relative left you $25,000. What will you do?",
-          icon: <Gift className="w-6 h-6" />,
-          type: "income",
-          choices: [
-            { text: "Invest wisely", outcome: "Building generational wealth.", effect: { investmentChange: 20000, cashChange: 5000 } },
-            { text: "Buy a rental property", outcome: "Passive income stream!", effect: { cashChange: -25000, homeValue: player.homeValue + 150000, debtChange: 125000, unlocks: ["rental-income"] } },
-            { text: "Pay off all debt", outcome: "Freedom from debt!", effect: { cashChange: 25000 - Math.min(player.debt, 25000), debtChange: -Math.min(player.debt, 25000), creditChange: 50 } },
-          ]
-        }
-      ];
-      events.push(windfalls[Math.floor(Math.random() * windfalls.length)]);
-    }
-
-    // Education/Skill events
-    if (player.age <= 35 && Math.random() < 0.1) {
-      events.push({
-        id: "education",
-        title: "📚 Career Development",
-        description: "An MBA program or certification could boost your career.",
-        icon: <GraduationCap className="w-6 h-6" />,
-        type: "opportunity",
-        choices: [
-          { text: "Get MBA ($80k)", outcome: "2 years later... worth it!", effect: { debtChange: 80000, salaryMultiplier: 1.5, education: "MBA", unlocks: ["executive-track"] } },
-          { text: "Online cert ($2k)", outcome: "Quick boost to your skills.", effect: { cashChange: -2000, salaryMultiplier: 1.1 } },
-          { text: "Learn on the job", outcome: "Experience is the best teacher.", effect: { salaryMultiplier: 1.05 } },
-        ]
-      });
-    }
-
-    // Default fallback - yearly summary
-    if (events.length === 0) {
-      const yearlyIncome = player.salary;
-      const yearlyExpenses = 24000 + (player.children * 15000) + (player.homeOwner ? 12000 : 18000);
-      const netCashFlow = yearlyIncome - yearlyExpenses;
-      
-      events.push({
-        id: "yearly-summary",
-        title: "📅 Year in Review",
-        description: `Income: ${formatMoney(yearlyIncome)} | Expenses: ${formatMoney(yearlyExpenses)} | Net: ${formatMoney(netCashFlow)}`,
-        icon: <Calendar className="w-6 h-6" />,
-        type: "neutral" as any,
-        choices: [
-          { text: "Save aggressively", outcome: "Living frugally pays off.", effect: { cashChange: Math.max(netCashFlow * 0.7, 0) } },
-          { text: "Balanced approach", outcome: "Enjoying life while saving.", effect: { cashChange: Math.max(netCashFlow * 0.5, 0) } },
-          { text: "Live it up", outcome: "Memories made, money spent.", effect: { cashChange: Math.max(netCashFlow * 0.2, -5000) } },
-        ]
-      });
-    }
-
-    // Weight events based on player state for variety
-    return events[Math.floor(Math.random() * events.length)];
-  }, [player, unlockedPaths, blockedPaths]);
+    // Default: Regular investment decision
+    const monthlyInvestment = (player.salary * player.yearlyInvestmentRate / 100) / 12;
+    return {
+      id: "invest-decision-" + age,
+      title: "📊 Annual Investment Review",
+      description: `You're investing ${formatMoney(monthlyInvestment)}/month (${player.yearlyInvestmentRate}% of income). Your investments: ${formatMoney(player.investments)}`,
+      icon: <TrendingUp className="w-6 h-6" />,
+      type: "invest",
+      choices: [
+        { text: "Increase to " + Math.min(player.yearlyInvestmentRate + 5, 50) + "%", outcome: "Accelerating wealth building!", investPercent: Math.min(player.yearlyInvestmentRate + 5, 50), lesson: "Every 5% increase compounds. At $75k salary, 5% more = $312/mo = $500k+ extra by 65!" },
+        { text: "Keep at " + player.yearlyInvestmentRate + "%", outcome: "Steady progress.", investPercent: player.yearlyInvestmentRate },
+        { text: "Reduce investing", outcome: "More spending money now, less wealth later.", investPercent: Math.max(player.yearlyInvestmentRate - 5, 0), lesson: "Each % reduction costs you ~$50k+ in compound growth over time." },
+      ]
+    };
+  }, [player]);
 
   const handleChoice = (choice: LifeEvent["choices"][0]) => {
     if (!currentEvent) return;
+
+    // Show lesson if available
+    if (choice.lesson) {
+      setShowLesson(choice.lesson);
+    }
 
     // Apply effects
     setPlayer(prev => {
       const updated = { ...prev };
       
-      if (choice.effect.cashChange) updated.cash = Math.max(0, updated.cash + choice.effect.cashChange);
-      if (choice.effect.investmentChange) updated.investments = Math.max(0, updated.investments + choice.effect.investmentChange);
-      if (choice.effect.debtChange) updated.debt = Math.max(0, updated.debt + choice.effect.debtChange);
-      if (choice.effect.creditChange) updated.creditScore = Math.max(300, Math.min(850, updated.creditScore + choice.effect.creditChange));
-      if (choice.effect.salaryMultiplier) updated.salary = Math.floor(updated.salary * choice.effect.salaryMultiplier);
-      if (choice.effect.salary !== undefined) updated.salary = choice.effect.salary;
-      if (choice.effect.jobTitle) updated.jobTitle = choice.effect.jobTitle;
-      if (choice.effect.careerPath) updated.careerPath = choice.effect.careerPath;
-      if (choice.effect.married !== undefined) updated.married = choice.effect.married;
-      if (choice.effect.children !== undefined) updated.children = choice.effect.children;
-      if (choice.effect.homeOwner !== undefined) updated.homeOwner = choice.effect.homeOwner;
-      if (choice.effect.homeValue !== undefined) updated.homeValue = choice.effect.homeValue;
-      if (choice.effect.education) updated.education = choice.effect.education;
-      if (choice.effect.riskTolerance) updated.riskTolerance = choice.effect.riskTolerance;
-      if (choice.effect.emergencyFund !== undefined) updated.emergencyFund = choice.effect.emergencyFund;
-      if (choice.effect.retirementAccount !== undefined) updated.retirementAccount = choice.effect.retirementAccount;
-      if (choice.effect.investments !== undefined) updated.investments = choice.effect.investments;
+      if (choice.investPercent !== undefined) {
+        updated.yearlyInvestmentRate = choice.investPercent;
+        if (choice.investPercent > 0 && !prev.firstInvestmentAge) {
+          updated.firstInvestmentAge = prev.age;
+        }
+      }
+      if (choice.cashChange) updated.cash = Math.max(0, updated.cash + choice.cashChange);
+      if (choice.salaryChange) updated.salary = updated.salary + choice.salaryChange;
       
       return updated;
     });
 
-    // Handle unlocks/blocks
-    if (choice.effect.unlocks) {
-      setUnlockedPaths(prev => [...new Set([...prev, ...choice.effect.unlocks!])]);
-    }
-    if (choice.effect.blocks) {
-      setBlockedPaths(prev => [...new Set([...prev, ...choice.effect.blocks!])]);
-    }
-
-    // Track good financial choices
-    if (choice.effect.debtChange && choice.effect.debtChange < 0) {
-      setConsecutiveGoodChoices(prev => prev + 1);
-    }
-
-    // Log the outcome
-    const logType: GameLog["type"] = 
-      (choice.effect.cashChange && choice.effect.cashChange > 0) || 
-      (choice.effect.investmentChange && choice.effect.investmentChange > 0) ? "positive" :
-      (choice.effect.debtChange && choice.effect.debtChange > 0) ? "negative" : "neutral";
-    
-    addLog(`${currentEvent.title}: ${choice.outcome}`, logType);
-
-    // Apply passive effects (investment growth, debt interest)
-    setPlayer(prev => {
-      const investmentGrowth = prev.investments * (marketCondition === "boom" ? 0.12 : marketCondition === "recession" ? -0.05 : 0.07);
-      const homeAppreciation = prev.homeValue * 0.03;
-      const debtInterest = prev.debt * 0.05;
-      const retirementGrowth = prev.retirementAccount * 0.08;
-      
-      return {
-        ...prev,
-        age: prev.age + 1,
-        investments: Math.max(0, prev.investments + investmentGrowth),
-        homeValue: prev.homeValue + homeAppreciation,
-        debt: prev.debt + debtInterest,
-        retirementAccount: prev.retirementAccount + retirementGrowth,
-      };
-    });
-
-    // Update market conditions
-    const marketRoll = Math.random();
-    if (marketRoll < 0.1) setMarketCondition("boom");
-    else if (marketRoll < 0.2) setMarketCondition("recession");
-    else setMarketCondition("stable");
-
+    toast.success(choice.outcome);
     setCurrentEvent(null);
-
-    // Check game over
-    if (player.age >= 64) {
-      endGame();
-    }
   };
 
   const advanceYear = () => {
+    // If showing lesson, clear it first
+    if (showLesson) {
+      setShowLesson(null);
+    }
+
+    // Apply yearly investment and growth
+    setPlayer(prev => {
+      const yearlyContribution = (prev.salary * prev.yearlyInvestmentRate / 100);
+      const livingExpenses = prev.salary * 0.6; // 60% goes to living
+      const cashAfterExpenses = prev.cash + prev.salary - livingExpenses - yearlyContribution;
+      
+      // Apply compound growth to investments
+      const investmentGrowth = prev.investments * ANNUAL_RETURN;
+      const newInvestments = prev.investments + yearlyContribution + investmentGrowth;
+      
+      const newState = {
+        ...prev,
+        age: prev.age + 1,
+        cash: Math.max(0, cashAfterExpenses),
+        investments: newInvestments,
+        totalInvested: prev.totalInvested + yearlyContribution,
+      };
+
+      // Update wealth history
+      setWealthHistory(h => [...h, {
+        age: newState.age,
+        invested: newState.totalInvested,
+        growth: newState.investments - newState.totalInvested,
+        total: newState.investments
+      }]);
+
+      // Generate comparison (if started at 22 with same monthly amount)
+      const monthlyAmount = yearlyContribution / 12;
+      if (monthlyAmount > 0) {
+        setComparisonHistory(generateComparison(newState.age, monthlyAmount));
+      }
+
+      return newState;
+    });
+
+    // Check win/lose condition
+    const newTotal = player.investments + (player.investments * ANNUAL_RETURN) + 
+                     (player.salary * player.yearlyInvestmentRate / 100);
+    
+    if (newTotal >= GOAL) {
+      setWon(true);
+      setGameOver(true);
+      return;
+    }
+
+    if (player.age >= RETIREMENT_AGE - 1) {
+      setGameOver(true);
+      return;
+    }
+
+    // Generate next event
     const event = generateEvent();
     setCurrentEvent(event);
   };
 
   const endGame = async () => {
-    setGameOver(true);
-    const finalNetWorth = netWorth;
-    const score = Math.floor(finalNetWorth / 1000) + (consecutiveGoodChoices * 50);
-    const coinsEarned = Math.floor(score / 100);
+    const yearsToGoal = won ? player.age - START_AGE : null;
+    const score = won 
+      ? Math.max(1000 - (yearsToGoal || 43) * 20, 100) // Faster = higher score
+      : Math.floor(totalWealth / 10000);
+    const coinsEarned = Math.floor(score / 50);
 
     try {
       if (user?.id) {
@@ -486,20 +352,16 @@ export const LifeSimInvestorGame = ({ onClose }: LifeSimInvestorGameProps) => {
         });
         await supabase.rpc("increment_coins", { user_id_param: user.id, amount: coinsEarned });
       }
-      toast.success(`Retired with ${formatMoney(finalNetWorth)}! Earned ${coinsEarned} coins.`);
     } catch (error) {
       console.error("Error saving game:", error);
     }
   };
 
-  const getGrade = () => {
-    if (netWorth >= 2000000) return { grade: "A+", label: "Millionaire", color: "text-yellow-500" };
-    if (netWorth >= 1000000) return { grade: "A", label: "Wealthy", color: "text-success" };
-    if (netWorth >= 500000) return { grade: "B", label: "Comfortable", color: "text-primary" };
-    if (netWorth >= 100000) return { grade: "C", label: "Stable", color: "text-warning" };
-    if (netWorth >= 0) return { grade: "D", label: "Getting By", color: "text-muted-foreground" };
-    return { grade: "F", label: "In Debt", color: "text-destructive" };
-  };
+  useEffect(() => {
+    if (gameOver) {
+      endGame();
+    }
+  }, [gameOver]);
 
   // Tutorial Screen
   if (showTutorial) {
@@ -524,25 +386,50 @@ export const LifeSimInvestorGame = ({ onClose }: LifeSimInvestorGameProps) => {
                       transition={{ delay: 0.2, type: "spring" }}
                       className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-primary to-primary/70 mb-4 shadow-lg"
                     >
-                      <Trophy className="w-10 h-10 text-primary-foreground" />
+                      <Target className="w-10 h-10 text-primary-foreground" />
                     </motion.div>
-                    <h1 className="text-3xl font-black text-foreground mb-2">Financial Life</h1>
-                    <p className="text-muted-foreground">Make choices. Build wealth. Retire rich.</p>
+                    <h1 className="text-3xl font-black text-foreground mb-2">Race to $1 Million</h1>
+                    <p className="text-muted-foreground">The earlier you invest, the faster you win!</p>
                   </div>
 
-                  <div className="space-y-4 mb-8">
+                  {/* The Core Lesson */}
+                  <motion.div 
+                    initial={{ opacity: 0, scale: 0.95 }} 
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: 0.3 }}
+                    className="p-4 rounded-xl bg-gradient-to-r from-success/20 to-success/5 border border-success/30 mb-6"
+                  >
+                    <div className="flex items-center gap-3 mb-3">
+                      <Rocket className="w-6 h-6 text-success" />
+                      <span className="font-bold text-lg text-success">The Power of Starting Early</span>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4 text-sm">
+                      <div className="p-3 rounded-lg bg-background/50">
+                        <div className="text-success font-bold">Start at 22</div>
+                        <div className="text-muted-foreground">$500/month → <span className="text-success font-bold">$1.7M</span> by 65</div>
+                      </div>
+                      <div className="p-3 rounded-lg bg-background/50">
+                        <div className="text-destructive font-bold">Start at 32</div>
+                        <div className="text-muted-foreground">$500/month → <span className="text-destructive font-bold">$745k</span> by 65</div>
+                      </div>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-2 text-center">
+                      <strong>10 years of delay = $1 MILLION less!</strong> Time is your greatest asset.
+                    </p>
+                  </motion.div>
+
+                  <div className="space-y-3 mb-6">
                     {[
-                      { icon: <Calendar className="w-5 h-5" />, title: "Year-by-Year Choices", description: "Navigate life events that pop up based on your age, income, and past decisions.", color: "from-blue-500 to-blue-600" },
-                      { icon: <TrendingUp className="w-5 h-5" />, title: "Compounding Decisions", description: "Early choices unlock or block future opportunities. Every decision matters.", color: "from-success to-emerald-600" },
-                      { icon: <Zap className="w-5 h-5" />, title: "Random Events", description: "Market crashes, windfalls, emergencies—handle whatever life throws at you.", color: "from-warning to-orange-600" },
-                      { icon: <Target className="w-5 h-5" />, title: "Retire Wealthy", description: "Maximize your net worth by age 65. Can you become a millionaire?", color: "from-purple-500 to-purple-600" }
+                      { icon: <Target className="w-5 h-5" />, title: "Goal: Reach $1,000,000", description: "Hit the million-dollar mark before retirement at 65", color: "from-primary to-primary/60" },
+                      { icon: <Timer className="w-5 h-5" />, title: "Speed Matters", description: "The faster you reach $1M, the higher your score", color: "from-warning to-warning/60" },
+                      { icon: <TrendingUp className="w-5 h-5" />, title: "Compound Growth", description: "Your investments grow 8% per year automatically", color: "from-success to-success/60" },
                     ].map((step, i) => (
                       <motion.div
                         key={i}
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.3 + i * 0.1 }}
-                        className="flex items-start gap-4 p-4 rounded-xl bg-background/50 border border-border/30"
+                        transition={{ delay: 0.4 + i * 0.1 }}
+                        className="flex items-start gap-3 p-3 rounded-xl bg-background/50 border border-border/30"
                       >
                         <div className={`flex-shrink-0 w-10 h-10 rounded-xl bg-gradient-to-br ${step.color} flex items-center justify-center text-white shadow-md`}>
                           {step.icon}
@@ -555,21 +442,9 @@ export const LifeSimInvestorGame = ({ onClose }: LifeSimInvestorGameProps) => {
                     ))}
                   </div>
 
-                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.7 }} className="p-4 rounded-xl bg-primary/10 border border-primary/20 mb-6">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Flame className="w-5 h-5 text-primary" />
-                      <span className="font-bold text-foreground">Pro Tips</span>
-                    </div>
-                    <ul className="text-sm text-muted-foreground space-y-1">
-                      <li className="flex items-center gap-2"><Sparkles className="w-3 h-3 text-warning" />Build an emergency fund before investing</li>
-                      <li className="flex items-center gap-2"><Star className="w-3 h-3 text-warning" />Pay off high-interest debt first</li>
-                      <li className="flex items-center gap-2"><Sparkles className="w-3 h-3 text-warning" />Your choices today shape tomorrow's options</li>
-                    </ul>
-                  </motion.div>
-
                   <Button onClick={() => { setShowTutorial(false); advanceYear(); }} className="w-full h-14 text-lg font-bold bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg gap-2">
                     <Play className="w-5 h-5" />
-                    Start Your Life
+                    Start at Age 22
                   </Button>
                 </div>
               </div>
@@ -582,46 +457,71 @@ export const LifeSimInvestorGame = ({ onClose }: LifeSimInvestorGameProps) => {
 
   // Game Over Screen
   if (gameOver) {
-    const grade = getGrade();
+    const yearsToGoal = won ? player.age - START_AGE : null;
     return (
       <div className="fixed inset-0 bg-background z-50 overflow-y-auto">
         <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 p-4 flex items-center justify-center">
           <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="max-w-md w-full">
-            <Card className="p-8 text-center bg-gradient-to-br from-card to-primary/5 border-primary/20">
-              <Trophy className={`w-16 h-16 mx-auto mb-4 ${grade.color}`} />
-              <h1 className="text-3xl font-black mb-2">Retired at 65!</h1>
-              <p className="text-muted-foreground mb-6">{player.jobTitle} • {player.education}</p>
-              
-              <div className="space-y-4 mb-6">
-                <div className="p-4 rounded-xl bg-background/50 border border-border/50">
-                  <div className="text-4xl font-black text-primary">{formatMoney(netWorth)}</div>
-                  <div className="text-sm text-muted-foreground">Final Net Worth</div>
-                </div>
-                
-                <div className={`p-4 rounded-xl bg-background/50 border border-border/50`}>
-                  <div className={`text-4xl font-black ${grade.color}`}>{grade.grade}</div>
-                  <div className="text-sm text-muted-foreground">{grade.label}</div>
-                </div>
+            <Card className={`p-8 text-center border-2 ${won ? 'bg-gradient-to-br from-success/10 to-card border-success/30' : 'bg-gradient-to-br from-card to-muted/20 border-border'}`}>
+              {won ? (
+                <>
+                  <Trophy className="w-20 h-20 mx-auto mb-4 text-success" />
+                  <h1 className="text-3xl font-black text-success mb-2">MILLIONAIRE!</h1>
+                  <p className="text-muted-foreground mb-4">You reached $1M at age {player.age}!</p>
+                  
+                  <div className="p-4 rounded-xl bg-success/10 border border-success/30 mb-4">
+                    <div className="text-4xl font-black text-success">{yearsToGoal} years</div>
+                    <div className="text-sm text-muted-foreground">Time to $1 Million</div>
+                  </div>
 
-                <div className="grid grid-cols-2 gap-2 text-sm">
-                  <div className="p-3 rounded-lg bg-background/50 border border-border/30">
-                    <div className="font-bold text-foreground">{formatMoney(player.investments)}</div>
-                    <div className="text-muted-foreground">Investments</div>
+                  {player.firstInvestmentAge && (
+                    <div className="p-3 rounded-lg bg-background/50 border border-border/50 mb-4 text-sm">
+                      <span className="text-muted-foreground">Started investing at age </span>
+                      <span className="font-bold text-foreground">{player.firstInvestmentAge}</span>
+                      {player.firstInvestmentAge <= 23 && (
+                        <Badge className="ml-2 bg-success/20 text-success border-success/30">Early Bird!</Badge>
+                      )}
+                    </div>
+                  )}
+                </>
+              ) : (
+                <>
+                  <Timer className="w-20 h-20 mx-auto mb-4 text-muted-foreground" />
+                  <h1 className="text-3xl font-black text-foreground mb-2">Time's Up!</h1>
+                  <p className="text-muted-foreground mb-4">You retired at 65 with {formatMoney(totalWealth)}</p>
+                  
+                  <div className="p-4 rounded-xl bg-destructive/10 border border-destructive/30 mb-4">
+                    <div className="text-2xl font-bold text-destructive">{formatMoney(GOAL - totalWealth)} short</div>
+                    <div className="text-sm text-muted-foreground">of the $1M goal</div>
                   </div>
-                  <div className="p-3 rounded-lg bg-background/50 border border-border/30">
-                    <div className="font-bold text-foreground">{formatMoney(player.retirementAccount)}</div>
-                    <div className="text-muted-foreground">401k</div>
-                  </div>
-                  <div className="p-3 rounded-lg bg-background/50 border border-border/30">
-                    <div className="font-bold text-foreground">{player.married ? "Yes" : "No"}</div>
-                    <div className="text-muted-foreground">Married</div>
-                  </div>
-                  <div className="p-3 rounded-lg bg-background/50 border border-border/30">
-                    <div className="font-bold text-foreground">{player.children}</div>
-                    <div className="text-muted-foreground">Children</div>
-                  </div>
+
+                  {player.firstInvestmentAge && player.firstInvestmentAge > 25 && (
+                    <div className="p-3 rounded-lg bg-warning/10 border border-warning/30 mb-4 text-sm">
+                      <p className="text-warning">💡 If you had started at 22 instead of {player.firstInvestmentAge}, you would have had an extra <strong>{formatMoney((player.firstInvestmentAge - 22) * 50000)}+</strong> from compound growth!</p>
+                    </div>
+                  )}
+                </>
+              )}
+
+              {/* Growth Chart */}
+              {wealthHistory.length > 2 && (
+                <div className="h-32 mb-4">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart data={wealthHistory}>
+                      <defs>
+                        <linearGradient id="colorTotal" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3}/>
+                          <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0}/>
+                        </linearGradient>
+                      </defs>
+                      <XAxis dataKey="age" tick={{ fontSize: 10 }} />
+                      <YAxis tick={{ fontSize: 10 }} tickFormatter={(v) => `$${(v/1000).toFixed(0)}k`} />
+                      <Tooltip formatter={(v: number) => formatMoney(v)} />
+                      <Area type="monotone" dataKey="total" stroke="hsl(var(--primary))" fill="url(#colorTotal)" />
+                    </AreaChart>
+                  </ResponsiveContainer>
                 </div>
-              </div>
+              )}
 
               <div className="flex gap-2">
                 <Button onClick={onClose} variant="outline" className="flex-1">Exit</Button>
@@ -635,6 +535,8 @@ export const LifeSimInvestorGame = ({ onClose }: LifeSimInvestorGameProps) => {
   }
 
   // Main Game UI
+  const monthlyInvestment = (player.salary * player.yearlyInvestmentRate / 100) / 12;
+
   return (
     <div className="fixed inset-0 bg-background z-50 flex flex-col">
       {/* Header */}
@@ -644,41 +546,45 @@ export const LifeSimInvestorGame = ({ onClose }: LifeSimInvestorGameProps) => {
             <div className="flex items-center gap-3">
               <Button variant="ghost" size="icon" onClick={onClose}><ArrowLeft className="w-5 h-5" /></Button>
               <div>
-                <h1 className="font-bold text-lg">Financial Life</h1>
-                <p className="text-xs text-muted-foreground">{player.jobTitle} • Age {player.age}</p>
+                <h1 className="font-bold text-lg">Race to $1 Million</h1>
+                <p className="text-xs text-muted-foreground">Age {player.age} • {player.jobTitle}</p>
               </div>
             </div>
-            <Badge variant={marketCondition === "boom" ? "default" : marketCondition === "recession" ? "destructive" : "secondary"}>
-              {marketCondition === "boom" ? "📈 Bull Market" : marketCondition === "recession" ? "📉 Recession" : "📊 Stable"}
-            </Badge>
-          </div>
-
-          {/* Stats */}
-          <div className="grid grid-cols-4 gap-2">
-            <div className="p-2 rounded-lg bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/20 text-center">
-              <div className="text-xs text-muted-foreground flex items-center justify-center gap-1"><Wallet className="w-3 h-3" />Net Worth</div>
-              <div className={`font-black ${netWorth >= 0 ? 'text-primary' : 'text-destructive'}`}>{formatMoney(netWorth)}</div>
-            </div>
-            <div className="p-2 rounded-lg bg-muted/30 border border-border/50 text-center">
-              <div className="text-xs text-muted-foreground flex items-center justify-center gap-1"><DollarSign className="w-3 h-3" />Cash</div>
-              <div className="font-bold text-foreground">{formatMoney(player.cash)}</div>
-            </div>
-            <div className="p-2 rounded-lg bg-muted/30 border border-border/50 text-center">
-              <div className="text-xs text-muted-foreground flex items-center justify-center gap-1"><CreditCard className="w-3 h-3" />Debt</div>
-              <div className="font-bold text-destructive">{formatMoney(player.debt)}</div>
-            </div>
-            <div className="p-2 rounded-lg bg-muted/30 border border-border/50 text-center">
-              <div className="text-xs text-muted-foreground flex items-center justify-center gap-1"><Star className="w-3 h-3" />Credit</div>
-              <div className="font-bold text-foreground">{player.creditScore}</div>
+            <div className="text-right">
+              <div className="text-xs text-muted-foreground">Investing</div>
+              <div className="font-bold text-primary">{formatMoney(monthlyInvestment)}/mo</div>
             </div>
           </div>
 
-          {/* Progress */}
-          <div className="mt-3">
-            <Progress value={((player.age - 22) / 43) * 100} className="h-2" />
-            <div className="flex justify-between text-xs text-muted-foreground mt-1">
-              <span>Age 22</span>
-              <span>Retirement 65</span>
+          {/* Goal Progress */}
+          <div className="mb-2">
+            <div className="flex justify-between text-xs mb-1">
+              <span className="text-muted-foreground">Progress to $1M</span>
+              <span className="font-bold text-primary">{formatMoney(player.investments)}</span>
+            </div>
+            <div className="relative">
+              <Progress value={progressToGoal} className="h-4" />
+              <div className="absolute right-0 top-0 h-4 w-0.5 bg-success"></div>
+            </div>
+            <div className="flex justify-between text-xs mt-1 text-muted-foreground">
+              <span>$0</span>
+              <span className="text-success font-medium">$1M Goal</span>
+            </div>
+          </div>
+
+          {/* Key Stats */}
+          <div className="grid grid-cols-3 gap-2 text-center">
+            <div className="p-2 rounded-lg bg-muted/30 border border-border/50">
+              <div className="text-xs text-muted-foreground">Total Invested</div>
+              <div className="font-bold text-foreground">{formatMoney(player.totalInvested)}</div>
+            </div>
+            <div className="p-2 rounded-lg bg-success/10 border border-success/30">
+              <div className="text-xs text-muted-foreground">Compound Growth</div>
+              <div className="font-bold text-success">+{formatMoney(player.investments - player.totalInvested)}</div>
+            </div>
+            <div className="p-2 rounded-lg bg-muted/30 border border-border/50">
+              <div className="text-xs text-muted-foreground">Years Left</div>
+              <div className="font-bold text-foreground">{RETIREMENT_AGE - player.age}</div>
             </div>
           </div>
         </div>
@@ -687,28 +593,82 @@ export const LifeSimInvestorGame = ({ onClose }: LifeSimInvestorGameProps) => {
       {/* Main Content */}
       <div className="flex-1 overflow-hidden flex flex-col max-w-2xl mx-auto w-full">
         <ScrollArea className="flex-1 p-4">
-          {/* Life Log */}
-          <div className="space-y-2 mb-4">
-            {gameLog.slice(-8).map((log, i) => (
+          {/* Lesson Modal */}
+          <AnimatePresence>
+            {showLesson && (
               <motion.div
-                key={i}
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                className={`p-3 rounded-lg border text-sm ${
-                  log.type === "positive" ? "bg-success/10 border-success/30 text-success" :
-                  log.type === "negative" ? "bg-destructive/10 border-destructive/30 text-destructive" :
-                  log.type === "milestone" ? "bg-primary/10 border-primary/30 text-primary" :
-                  "bg-muted/30 border-border/50 text-muted-foreground"
-                }`}
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="mb-4 p-4 rounded-xl bg-gradient-to-r from-primary/10 to-primary/5 border border-primary/30"
               >
-                <span className="font-medium">Age {log.year}:</span> {log.text}
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center flex-shrink-0">
+                    <Sparkles className="w-4 h-4 text-primary" />
+                  </div>
+                  <div>
+                    <div className="font-bold text-foreground mb-1">💡 Financial Lesson</div>
+                    <p className="text-sm text-muted-foreground">{showLesson}</p>
+                  </div>
+                </div>
+                <Button 
+                  size="sm" 
+                  variant="ghost" 
+                  className="mt-2 w-full"
+                  onClick={() => setShowLesson(null)}
+                >
+                  Got it!
+                </Button>
               </motion.div>
-            ))}
-          </div>
+            )}
+          </AnimatePresence>
+
+          {/* Wealth Growth Chart */}
+          {wealthHistory.length > 1 && !currentEvent && (
+            <Card className="p-4 mb-4 bg-gradient-to-br from-muted/30 to-card">
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="font-bold text-sm text-foreground">Your Wealth Journey</h3>
+                <Badge variant="outline" className="text-xs">
+                  {player.firstInvestmentAge ? `Started at ${player.firstInvestmentAge}` : 'Not investing yet'}
+                </Badge>
+              </div>
+              <div className="h-32">
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={wealthHistory}>
+                    <defs>
+                      <linearGradient id="colorInvested" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="hsl(var(--muted-foreground))" stopOpacity={0.3}/>
+                        <stop offset="95%" stopColor="hsl(var(--muted-foreground))" stopOpacity={0}/>
+                      </linearGradient>
+                      <linearGradient id="colorGrowth" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="hsl(var(--success))" stopOpacity={0.5}/>
+                        <stop offset="95%" stopColor="hsl(var(--success))" stopOpacity={0}/>
+                      </linearGradient>
+                    </defs>
+                    <XAxis dataKey="age" tick={{ fontSize: 10 }} />
+                    <YAxis tick={{ fontSize: 10 }} tickFormatter={(v) => `$${(v/1000).toFixed(0)}k`} />
+                    <Tooltip formatter={(v: number) => formatMoney(v)} />
+                    <Area type="monotone" dataKey="invested" stackId="1" stroke="hsl(var(--muted-foreground))" fill="url(#colorInvested)" name="Your Contributions" />
+                    <Area type="monotone" dataKey="growth" stackId="1" stroke="hsl(var(--success))" fill="url(#colorGrowth)" name="Compound Growth" />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
+              <div className="flex justify-center gap-4 mt-2 text-xs">
+                <div className="flex items-center gap-1">
+                  <div className="w-3 h-3 rounded bg-muted-foreground/30"></div>
+                  <span className="text-muted-foreground">Your Money</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <div className="w-3 h-3 rounded bg-success/50"></div>
+                  <span className="text-muted-foreground">Free Growth</span>
+                </div>
+              </div>
+            </Card>
+          )}
 
           {/* Current Event */}
           <AnimatePresence mode="wait">
-            {currentEvent && (
+            {currentEvent && !showLesson && (
               <motion.div
                 key={currentEvent.id}
                 initial={{ opacity: 0, y: 20 }}
@@ -717,20 +677,16 @@ export const LifeSimInvestorGame = ({ onClose }: LifeSimInvestorGameProps) => {
                 className="mb-4"
               >
                 <Card className={`p-6 border-2 ${
-                  currentEvent.type === "income" ? "border-success/50 bg-gradient-to-br from-success/5 to-card" :
-                  currentEvent.type === "expense" ? "border-destructive/50 bg-gradient-to-br from-destructive/5 to-card" :
-                  currentEvent.type === "investment" ? "border-primary/50 bg-gradient-to-br from-primary/5 to-card" :
-                  currentEvent.type === "market" ? "border-warning/50 bg-gradient-to-br from-warning/5 to-card" :
-                  currentEvent.type === "life" ? "border-pink-500/50 bg-gradient-to-br from-pink-500/5 to-card" :
+                  currentEvent.type === "invest" ? "border-primary/50 bg-gradient-to-br from-primary/5 to-card" :
+                  currentEvent.type === "spend" ? "border-warning/50 bg-gradient-to-br from-warning/5 to-card" :
+                  currentEvent.type === "lesson" ? "border-success/50 bg-gradient-to-br from-success/5 to-card" :
                   "border-border bg-card"
                 }`}>
                   <div className="flex items-center gap-3 mb-4">
                     <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
-                      currentEvent.type === "income" ? "bg-success/20 text-success" :
-                      currentEvent.type === "expense" ? "bg-destructive/20 text-destructive" :
-                      currentEvent.type === "investment" ? "bg-primary/20 text-primary" :
-                      currentEvent.type === "market" ? "bg-warning/20 text-warning" :
-                      currentEvent.type === "life" ? "bg-pink-500/20 text-pink-500" :
+                      currentEvent.type === "invest" ? "bg-primary/20 text-primary" :
+                      currentEvent.type === "spend" ? "bg-warning/20 text-warning" :
+                      currentEvent.type === "lesson" ? "bg-success/20 text-success" :
                       "bg-muted text-muted-foreground"
                     }`}>
                       {currentEvent.icon}
@@ -759,47 +715,9 @@ export const LifeSimInvestorGame = ({ onClose }: LifeSimInvestorGameProps) => {
             )}
           </AnimatePresence>
 
-          {/* Quick Stats Panel */}
-          {!currentEvent && (
+          {/* Next Year Button */}
+          {!currentEvent && !showLesson && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-              <Card className="p-4 mb-4 bg-gradient-to-br from-muted/30 to-card">
-                <h3 className="font-bold mb-3 text-foreground flex items-center gap-2">
-                  <User className="w-4 h-4" /> Your Life at {player.age}
-                </h3>
-                <div className="grid grid-cols-2 gap-3 text-sm">
-                  <div className="flex items-center gap-2">
-                    <Briefcase className="w-4 h-4 text-muted-foreground" />
-                    <span className="text-muted-foreground">Job:</span>
-                    <span className="font-medium text-foreground">{player.jobTitle}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <DollarSign className="w-4 h-4 text-muted-foreground" />
-                    <span className="text-muted-foreground">Salary:</span>
-                    <span className="font-medium text-foreground">{formatMoney(player.salary)}/yr</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <TrendingUp className="w-4 h-4 text-muted-foreground" />
-                    <span className="text-muted-foreground">Invested:</span>
-                    <span className="font-medium text-success">{formatMoney(player.investments)}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <PiggyBank className="w-4 h-4 text-muted-foreground" />
-                    <span className="text-muted-foreground">401k:</span>
-                    <span className="font-medium text-primary">{formatMoney(player.retirementAccount)}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Home className="w-4 h-4 text-muted-foreground" />
-                    <span className="text-muted-foreground">Home:</span>
-                    <span className="font-medium text-foreground">{player.homeOwner ? formatMoney(player.homeValue) : "Renting"}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Heart className="w-4 h-4 text-muted-foreground" />
-                    <span className="text-muted-foreground">Family:</span>
-                    <span className="font-medium text-foreground">{player.married ? `Married${player.children > 0 ? `, ${player.children} kid${player.children > 1 ? 's' : ''}` : ''}` : "Single"}</span>
-                  </div>
-                </div>
-              </Card>
-
               <Button onClick={advanceYear} className="w-full h-14 text-lg font-bold gap-2 bg-gradient-to-r from-primary to-primary/80">
                 <Calendar className="w-5 h-5" />
                 Next Year (Age {player.age + 1})
