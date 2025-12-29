@@ -2,6 +2,7 @@ import { PlacementQuiz } from "@/components/quiz/PlacementQuiz";
 import { useOnboarding } from "@/hooks/useOnboarding";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { useEffect } from "react";
 
 interface OnboardingProps {
   isRetake?: boolean;
@@ -9,8 +10,15 @@ interface OnboardingProps {
 }
 
 const Onboarding = ({ isRetake = false, onComplete }: OnboardingProps) => {
-  const { completeOnboarding, refetch } = useOnboarding();
+  const { completeOnboarding, refetch, hasCompletedOnboarding, isLoading } = useOnboarding();
   const navigate = useNavigate();
+
+  // Redirect to app if already completed (unless retaking)
+  useEffect(() => {
+    if (!isLoading && hasCompletedOnboarding && !isRetake) {
+      navigate("/app", { replace: true });
+    }
+  }, [hasCompletedOnboarding, isLoading, isRetake, navigate]);
 
   const handleQuizComplete = async (score: number, placementLesson: number): Promise<void> => {
     try {
@@ -24,7 +32,6 @@ const Onboarding = ({ isRetake = false, onComplete }: OnboardingProps) => {
         onComplete?.();
       } else {
         toast.success(`Welcome! You've been placed at Lesson ${placementLesson}`);
-        // Use replace to prevent going back to onboarding
         navigate("/app", { replace: true });
       }
     } catch (error) {
@@ -33,6 +40,20 @@ const Onboarding = ({ isRetake = false, onComplete }: OnboardingProps) => {
       throw error;
     }
   };
+
+  // Show loading while checking onboarding status
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  // Don't render quiz if already completed (redirect will happen)
+  if (hasCompletedOnboarding && !isRetake) {
+    return null;
+  }
 
   return (
     <PlacementQuiz 
