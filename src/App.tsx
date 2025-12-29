@@ -36,6 +36,25 @@ const OnboardingCheck = ({ children }: { children: React.ReactNode }) => {
   return <>{children}</>;
 };
 
+// Redirect away from onboarding if already completed
+const OnboardingRedirect = ({ children }: { children: React.ReactNode }) => {
+  const { hasCompletedOnboarding, isLoading } = useOnboarding();
+  
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+  
+  if (hasCompletedOnboarding) {
+    return <Navigate to="/app" replace />;
+  }
+  
+  return <>{children}</>;
+};
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -51,7 +70,9 @@ const App = () => (
             path="/onboarding"
             element={
               <ProtectedRoute>
-                <Onboarding />
+                <OnboardingRedirect>
+                  <Onboarding />
+                </OnboardingRedirect>
               </ProtectedRoute>
             }
           />
