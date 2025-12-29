@@ -13,7 +13,8 @@ import {
   TrendingDown,
   Timer,
   BarChart3,
-  Zap
+  Zap,
+  Lightbulb
 } from "lucide-react";
 
 type Slide = 1 | 2 | 3 | 4;
@@ -399,34 +400,57 @@ export const Lesson13PatternRecognitionSlides = ({ onComplete }: Lesson13Props) 
             <Card className="p-8">
               <Badge className="mb-4 bg-purple-500/20 text-purple-400 border-purple-500/30">Apply</Badge>
               
-              <h2 className="text-2xl font-bold text-center mb-2">Your Pattern Recognition Score</h2>
-              <p className="text-center text-muted-foreground mb-8">Review your performance</p>
+              <h2 className="text-2xl font-bold text-center mb-2">Pattern Recognition Action Plan</h2>
+              <p className="text-center text-muted-foreground mb-8">Apply chart pattern knowledge in your trading</p>
 
               <Card className="p-6 bg-muted/50 mb-6 text-center">
-                <div className="text-6xl font-bold mb-4" style={{ color: score >= 3 ? "#22c55e" : score >= 2 ? "#f59e0b" : "#ef4444" }}>
-                  {score}/{chartPatterns.length}
+                <div className="text-4xl font-bold mb-2" style={{ color: score >= 3 ? "#22c55e" : score >= 2 ? "#f59e0b" : "#ef4444" }}>
+                  {score}/{chartPatterns.length} Correct
                 </div>
-                <p className="text-lg font-medium mb-2">
-                  {score === 4 ? "Pattern Master!" : score >= 3 ? "Great job!" : score >= 2 ? "Good start!" : "Keep practicing!"}
-                </p>
                 <p className="text-muted-foreground">
-                  {score >= 3 
-                    ? "You have a strong foundation in technical analysis." 
-                    : "Practice identifying patterns to improve your trading edge."}
+                  {score >= 3 ? "Strong foundation in pattern recognition!" : "Keep practicing to sharpen your eye."}
                 </p>
               </Card>
 
-              <div className="grid gap-3 mb-6">
-                {chartPatterns.map((p, idx) => (
-                  <div key={p.id} className={`p-4 rounded-xl flex items-center gap-4 ${answers[idx]?.correct ? "bg-emerald-500/10 border border-emerald-500/30" : "bg-destructive/10 border border-destructive/30"}`}>
-                    {answers[idx]?.correct ? <CheckCircle className="w-5 h-5 text-emerald-500" /> : <XCircle className="w-5 h-5 text-destructive" />}
-                    <div className="flex-1">
-                      <p className="font-medium">{p.name}</p>
-                      <p className="text-sm text-muted-foreground">Correct: {p.correctAnswer}</p>
+              <div className="space-y-4 mb-6">
+                {[
+                  { action: "Practice on historical charts daily", tip: "Use TradingView's replay feature to practice identifying patterns in real-time conditions" },
+                  { action: "Wait for confirmation before trading", tip: "A pattern isn't complete until price breaks the neckline or key level with volume" },
+                  { action: "Set clear entry and exit rules", tip: "Define your stop-loss at the pattern's invalidation point before entering" },
+                  { action: "Keep a pattern journal", tip: "Track which patterns work best for you and in which market conditions" },
+                  { action: "Combine patterns with other indicators", tip: "Patterns are stronger when RSI, MACD, or volume confirm the expected move" },
+                ].map((item, idx) => (
+                  <motion.div
+                    key={idx}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: idx * 0.1 }}
+                    className="p-4 rounded-xl bg-muted/50 border border-border"
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center text-sm font-bold text-primary">
+                        {idx + 1}
+                      </div>
+                      <div>
+                        <p className="font-medium">{item.action}</p>
+                        <p className="text-sm text-muted-foreground">{item.tip}</p>
+                      </div>
                     </div>
-                  </div>
+                  </motion.div>
                 ))}
               </div>
+
+              <Card className="p-4 bg-emerald-500/10 border border-emerald-500/30 mb-6">
+                <div className="flex items-start gap-3">
+                  <Lightbulb className="w-5 h-5 text-emerald-500 mt-1" />
+                  <div>
+                    <h4 className="font-bold text-emerald-500">Key Takeaway</h4>
+                    <p className="text-sm text-muted-foreground">
+                      Patterns are probabilistic, not predictive. Even the best patterns fail 30-40% of the time. Always use stop-losses and never risk more than 2% of your account on any single trade.
+                    </p>
+                  </div>
+                </div>
+              </Card>
 
               <div className="flex justify-center">
                 <Button onClick={nextSlide} size="lg" className="gap-2">

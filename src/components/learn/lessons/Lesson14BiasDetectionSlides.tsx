@@ -374,30 +374,54 @@ export const Lesson14BiasDetectionSlides = ({ onComplete }: Lesson14Props) => {
             <Card className="p-8">
               <Badge className="mb-4 bg-purple-500/20 text-purple-400 border-purple-500/30">Apply</Badge>
               
-              <h2 className="text-2xl font-bold text-center mb-2">Your Bias Awareness Score</h2>
-              <p className="text-center text-muted-foreground mb-8">Review your performance</p>
+              <h2 className="text-2xl font-bold text-center mb-2">Combat Cognitive Biases</h2>
+              <p className="text-center text-muted-foreground mb-8">Practical strategies to improve your decision-making</p>
 
-              <Card className="p-6 bg-muted/50 mb-6 text-center">
-                <div className="text-6xl font-bold mb-4" style={{ color: score >= 4 ? "#22c55e" : score >= 3 ? "#f59e0b" : "#ef4444" }}>
-                  {score}/{biasScenarios.length}
-                </div>
-                <p className="text-lg font-medium mb-2">
-                  {score >= 4 ? "Bias Detective!" : score >= 3 ? "Good awareness!" : "Keep learning!"}
+              <Card className="p-4 bg-muted/50 mb-6 text-center">
+                <p className="text-2xl font-bold" style={{ color: score >= 4 ? "#22c55e" : score >= 3 ? "#f59e0b" : "#ef4444" }}>
+                  You identified {score}/{biasScenarios.length} biases correctly
                 </p>
               </Card>
 
-              {/* Bias Summary */}
-              <div className="grid gap-3 mb-6">
-                {biasScenarios.map((s, idx) => (
-                  <div key={s.id} className={`p-4 rounded-xl flex items-center gap-4 ${answers[idx]?.correct ? "bg-emerald-500/10 border border-emerald-500/30" : "bg-amber-500/10 border border-amber-500/30"}`}>
-                    {answers[idx]?.correct ? <CheckCircle className="w-5 h-5 text-emerald-500" /> : <AlertTriangle className="w-5 h-5 text-amber-500" />}
-                    <div className="flex-1">
-                      <p className="font-medium">{s.bias}</p>
-                      <p className="text-xs text-muted-foreground">{s.explanation}</p>
+              <div className="space-y-4 mb-6">
+                {[
+                  { action: "Create a pre-investment checklist", tip: "Write down your thesis BEFORE buying. If the thesis breaks, sell—regardless of price" },
+                  { action: "Seek out opposing viewpoints", tip: "Actively find 3 bear cases for every stock you're bullish on to counter confirmation bias" },
+                  { action: "Use a decision journal", tip: "Record why you made each trade. Review monthly to spot recurring bias patterns" },
+                  { action: "Implement cooling-off periods", tip: "Wait 24-48 hours before acting on any investment idea to reduce emotional decisions" },
+                  { action: "Set automatic rules", tip: "Use stop-losses and rebalancing triggers to remove emotion from execution" },
+                ].map((item, idx) => (
+                  <motion.div
+                    key={idx}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: idx * 0.1 }}
+                    className="p-4 rounded-xl bg-muted/50 border border-border"
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center text-sm font-bold text-primary">
+                        {idx + 1}
+                      </div>
+                      <div>
+                        <p className="font-medium">{item.action}</p>
+                        <p className="text-sm text-muted-foreground">{item.tip}</p>
+                      </div>
                     </div>
-                  </div>
+                  </motion.div>
                 ))}
               </div>
+
+              <Card className="p-4 bg-emerald-500/10 border border-emerald-500/30 mb-6">
+                <div className="flex items-start gap-3">
+                  <Lightbulb className="w-5 h-5 text-emerald-500 mt-1" />
+                  <div>
+                    <h4 className="font-bold text-emerald-500">Key Takeaway</h4>
+                    <p className="text-sm text-muted-foreground">
+                      The best investors aren't bias-free—they're bias-aware. Building systematic processes that check your thinking is more reliable than willpower alone.
+                    </p>
+                  </div>
+                </div>
+              </Card>
 
               <div className="flex justify-center">
                 <Button onClick={nextSlide} size="lg" className="gap-2">

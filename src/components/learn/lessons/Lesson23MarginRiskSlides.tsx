@@ -117,8 +117,38 @@ export const Lesson23MarginRiskSlides = ({ onComplete }: Lesson23Props) => {
           <motion.div key="slide4" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
             <Card className="p-8">
               <Badge className="mb-4 bg-purple-500/20 text-purple-400 border-purple-500/30">Apply</Badge>
-              <h2 className="text-2xl font-bold text-center mb-8">Manage Margin Risk</h2>
-              <Card className="p-4 bg-destructive/10 border border-destructive/30 mb-6"><div className="flex items-start gap-3"><AlertTriangle className="w-5 h-5 text-destructive mt-1" /><div><h4 className="font-bold text-destructive">Warning</h4><p className="text-sm text-muted-foreground">Most investors should avoid margin entirely. If you must use it, never exceed 1.5x leverage and always maintain 30%+ cash buffer.</p></div></div></Card>
+              <h2 className="text-2xl font-bold text-center mb-2">Margin Risk Management Rules</h2>
+              <p className="text-center text-muted-foreground mb-8">If you ever use margin, follow these strict guidelines</p>
+
+              <div className="space-y-4 mb-6">
+                {[
+                  { action: "Never use more than 1.5x leverage", tip: "At 2x leverage, a 50% drop wipes you out. At 1.5x, you survive to recover" },
+                  { action: "Keep 30%+ cash buffer at all times", tip: "This prevents margin calls during normal volatility and gives you buying power in crashes" },
+                  { action: "Set hard stop-losses before entering", tip: "Decide your exit point when calm, not when panicking during a margin call" },
+                  { action: "Avoid margin during high volatility", tip: "VIX above 25? Pay down margin. Crashes happen when leverage is highest" },
+                  { action: "Only margin with diversified holdings", tip: "Never use margin on single stocks. If you must, only on broad index ETFs" },
+                ].map((item, idx) => (
+                  <motion.div key={idx} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.1 }} className="p-4 rounded-xl bg-muted/50 border border-border">
+                    <div className="flex items-start gap-3">
+                      <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center text-sm font-bold text-primary">{idx + 1}</div>
+                      <div>
+                        <p className="font-medium">{item.action}</p>
+                        <p className="text-sm text-muted-foreground">{item.tip}</p>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+
+              <Card className="p-4 bg-destructive/10 border border-destructive/30 mb-6">
+                <div className="flex items-start gap-3">
+                  <AlertTriangle className="w-5 h-5 text-destructive mt-1" />
+                  <div>
+                    <h4 className="font-bold text-destructive">Critical Warning</h4>
+                    <p className="text-sm text-muted-foreground">Most retail investors should never use margin. The math is against you: gains are capped, but losses can exceed your investment. If you wouldn't take a loan from a bank to buy stocks, don't use margin.</p>
+                  </div>
+                </div>
+              </Card>
               <div className="flex justify-center"><Button onClick={nextSlide} size="lg" className="gap-2">Complete Lesson <CheckCircle className="w-4 h-4" /></Button></div>
             </Card>
           </motion.div>
