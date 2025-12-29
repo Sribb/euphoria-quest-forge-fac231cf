@@ -22,6 +22,10 @@ import { Lesson4AssetMixSlides } from "./lessons/Lesson4AssetMixSlides";
 import { Lesson5DiversificationSlides } from "./lessons/Lesson5DiversificationSlides";
 import { Lesson6MarketPsychologySlides } from "./lessons/Lesson6MarketPsychologySlides";
 import { Lesson7ValueInvestingSlides } from "./lessons/Lesson7ValueInvestingSlides";
+import { Lesson8FinancialStatementsSlides } from "./lessons/Lesson8FinancialStatementsSlides";
+import { Lesson9MoatBuilderSlides } from "./lessons/Lesson9MoatBuilderSlides";
+import { Lesson10StressTestSlides } from "./lessons/Lesson10StressTestSlides";
+import { Lesson11LifePathSlides } from "./lessons/Lesson11LifePathSlides";
 
 interface ThreePhaseLessonViewerProps {
   lessonId: string;
@@ -227,8 +231,8 @@ export const ThreePhaseLessonViewer = ({ lessonId, onClose }: ThreePhaseLessonVi
               completed={false}
             />
           </div>
-        ) : lesson.order_index === 2 || lesson.order_index === 3 || lesson.order_index === 4 || lesson.order_index === 5 || lesson.order_index === 6 || lesson.order_index === 7 ? (
-          // Lessons 2-7 have internal slide navigation, no external phase tabs needed
+        ) : lesson.order_index >= 2 && lesson.order_index <= 11 ? (
+          // Lessons 2-11 have internal slide navigation, no external phase tabs needed
           null
         ) : (
           <div className="flex items-center gap-4 mb-6">
@@ -359,6 +363,46 @@ export const ThreePhaseLessonViewer = ({ lessonId, onClose }: ThreePhaseLessonVi
                   updateProgress(100, true);
                   onClose();
                   toast.success("Lesson 7 complete! You understand value investing.");
+                }}
+              />
+            </div>
+          ) : lesson.order_index === 8 ? (
+            <div className="animate-fade-in">
+              <Lesson8FinancialStatementsSlides
+                onComplete={() => {
+                  updateProgress(100, true);
+                  onClose();
+                  toast.success("Lesson 8 complete! You can analyze financial statements.");
+                }}
+              />
+            </div>
+          ) : lesson.order_index === 9 ? (
+            <div className="animate-fade-in">
+              <Lesson9MoatBuilderSlides
+                onComplete={() => {
+                  updateProgress(100, true);
+                  onClose();
+                  toast.success("Lesson 9 complete! You understand competitive moats.");
+                }}
+              />
+            </div>
+          ) : lesson.order_index === 10 ? (
+            <div className="animate-fade-in">
+              <Lesson10StressTestSlides
+                onComplete={() => {
+                  updateProgress(100, true);
+                  onClose();
+                  toast.success("Lesson 10 complete! You can stress test portfolios.");
+                }}
+              />
+            </div>
+          ) : lesson.order_index === 11 ? (
+            <div className="animate-fade-in">
+              <Lesson11LifePathSlides
+                onComplete={() => {
+                  updateProgress(100, true);
+                  onClose();
+                  toast.success("Lesson 11 complete! You understand life path planning.");
                 }}
               />
             </div>
