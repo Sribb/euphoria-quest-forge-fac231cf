@@ -6,14 +6,34 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
+import Onboarding from "./pages/Onboarding";
 import NotFound from "./pages/NotFound";
 import { useAuth } from "@/hooks/useAuth";
+import { useOnboarding } from "@/hooks/useOnboarding";
 
 const RootRedirect = () => {
   const { user, loading } = useAuth();
   
   if (loading) return null;
   return <Navigate to={user ? "/app" : "/auth"} replace />;
+};
+
+const OnboardingCheck = ({ children }: { children: React.ReactNode }) => {
+  const { hasCompletedOnboarding, isLoading } = useOnboarding();
+  
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+  
+  if (!hasCompletedOnboarding) {
+    return <Navigate to="/onboarding" replace />;
+  }
+  
+  return <>{children}</>;
 };
 
 const queryClient = new QueryClient();
@@ -28,10 +48,20 @@ const App = () => (
           <Route path="/" element={<RootRedirect />} />
           <Route path="/auth" element={<Auth />} />
           <Route
+            path="/onboarding"
+            element={
+              <ProtectedRoute>
+                <Onboarding />
+              </ProtectedRoute>
+            }
+          />
+          <Route
             path="/app/*"
             element={
               <ProtectedRoute>
-                <Index />
+                <OnboardingCheck>
+                  <Index />
+                </OnboardingCheck>
               </ProtectedRoute>
             }
           />

@@ -1,4 +1,4 @@
-import { User, Award, TrendingUp, Target, Edit, Palette, Bell, Lock, Settings as SettingsIcon, RotateCcw } from "lucide-react";
+import { User, Award, TrendingUp, Target, Edit, Palette, Bell, Lock, Settings as SettingsIcon, RotateCcw, Brain, BookOpen } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -6,6 +6,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useOnboarding } from "@/hooks/useOnboarding";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
@@ -32,6 +33,7 @@ import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { formatDollar } from "@/lib/formatters";
 import { useNavigate } from "react-router-dom";
+import Onboarding from "./Onboarding";
 
 const PRESET_AVATARS = [
   { id: 1, color: "#9b87f5", alt: "Purple avatar" },
@@ -52,6 +54,7 @@ const Profile = ({ onNavigate }: ProfileProps) => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { onboarding, placementLesson, refetch: refetchOnboarding } = useOnboarding();
   const [isEditing, setIsEditing] = useState(false);
   const [displayName, setDisplayName] = useState("");
   const [primaryColor, setPrimaryColor] = useState("#9b87f5");
@@ -60,6 +63,7 @@ const Profile = ({ onNavigate }: ProfileProps) => {
   const [selectedAvatar, setSelectedAvatar] = useState<string>("");
   const [showAvatarDialog, setShowAvatarDialog] = useState(false);
   const [showResetDialog, setShowResetDialog] = useState(false);
+  const [showRetakeQuiz, setShowRetakeQuiz] = useState(false);
   
 
   useEffect(() => {
@@ -550,6 +554,34 @@ const Profile = ({ onNavigate }: ProfileProps) => {
 
           <Card className="p-6">
             <div className="flex items-center gap-3 mb-4">
+              <Brain className="w-5 h-5 text-primary" />
+              <h2 className="text-xl font-bold">Learning Placement</h2>
+            </div>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between p-4 border border-border rounded-lg">
+                <div>
+                  <p className="font-semibold">Current Placement: Lesson {placementLesson}</p>
+                  <p className="text-sm text-muted-foreground">
+                    Score: {onboarding?.quiz_score || 0}/20 • Level: {onboarding?.investment_level || "beginner"}
+                  </p>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowRetakeQuiz(true)}
+                >
+                  <BookOpen className="w-4 h-4 mr-2" />
+                  Retake Quiz
+                </Button>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Retake the placement quiz to improve your score and unlock more lessons (max: Lesson 25).
+              </p>
+            </div>
+          </Card>
+
+          <Card className="p-6">
+            <div className="flex items-center gap-3 mb-4">
               <SettingsIcon className="w-5 h-5 text-primary" />
               <h2 className="text-xl font-bold">Account Management</h2>
             </div>
@@ -570,6 +602,20 @@ const Profile = ({ onNavigate }: ProfileProps) => {
               </div>
             </div>
           </Card>
+
+          {/* Retake Quiz Dialog */}
+          <Dialog open={showRetakeQuiz} onOpenChange={setShowRetakeQuiz}>
+            <DialogContent className="max-w-4xl h-[90vh] p-0 overflow-hidden">
+              <Onboarding 
+                isRetake={true} 
+                onComplete={() => {
+                  setShowRetakeQuiz(false);
+                  refetchOnboarding();
+                  queryClient.invalidateQueries({ queryKey: ["lessons"] });
+                }} 
+              />
+            </DialogContent>
+          </Dialog>
 
           <Card className="p-6">
             <div className="flex items-center gap-3 mb-4">

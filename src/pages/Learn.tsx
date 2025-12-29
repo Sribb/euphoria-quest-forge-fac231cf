@@ -3,6 +3,7 @@ import { ThreePhaseLessonViewer } from "@/components/learn/ThreePhaseLessonViewe
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useOnboarding } from "@/hooks/useOnboarding";
 
 interface LearnProps {
   onNavigate: (tab: string) => void;
@@ -12,9 +13,10 @@ interface LearnProps {
 
 const Learn = ({ onNavigate, selectedLesson, onLessonSelect }: LearnProps) => {
   const { user } = useAuth();
+  const { placementLesson } = useOnboarding();
 
   const { data: lessons = [], isLoading, refetch } = useQuery({
-    queryKey: ["lessons", user?.id],
+    queryKey: ["lessons", user?.id, placementLesson],
     queryFn: async () => {
       // Fetch all lessons
       const { data: lessonsData, error: lessonsError } = await supabase
@@ -43,19 +45,23 @@ const Learn = ({ onNavigate, selectedLesson, onLessonSelect }: LearnProps) => {
       if (progressError) throw progressError;
 
       // Merge lesson data with progress
-      // A lesson is unlocked if it's the first one, or the previous one is completed
+      // A lesson is unlocked based on placement OR if previous lesson is completed
       return lessonsData.map((lesson, index) => {
         const progress = progressData?.find((p) => p.lesson_id === lesson.id);
         const isCompleted = progress?.completed || false;
         
         // A lesson is unlocked if:
-        // 1. It's the first lesson, OR
-        // 2. The previous lesson is completed
+        // 1. Its order_index is <= placementLesson, OR
+        // 2. The previous lesson is completed, OR
+        // 3. It's already completed
         const previousLesson = index > 0 ? lessonsData[index - 1] : null;
         const previousProgress = previousLesson 
           ? progressData?.find((p) => p.lesson_id === previousLesson.id)
           : null;
-        const isUnlocked = index === 0 || previousProgress?.completed || isCompleted;
+        
+        const isUnlockedByPlacement = lesson.order_index <= placementLesson;
+        const isUnlockedByProgress = previousProgress?.completed || false;
+        const isUnlocked = index === 0 || isUnlockedByPlacement || isUnlockedByProgress || isCompleted;
         
         // Generate random star rating (1-3) for completed lessons
         const stars = isCompleted ? Math.floor(Math.random() * 3) + 1 : 0;
