@@ -63,6 +63,7 @@ const Profile = ({ onNavigate }: ProfileProps) => {
   const [selectedAvatar, setSelectedAvatar] = useState<string>("");
   const [showAvatarDialog, setShowAvatarDialog] = useState(false);
   const [showResetDialog, setShowResetDialog] = useState(false);
+  const [showRetakeWarning, setShowRetakeWarning] = useState(false);
   const [showRetakeQuiz, setShowRetakeQuiz] = useState(false);
   
 
@@ -568,7 +569,7 @@ const Profile = ({ onNavigate }: ProfileProps) => {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => setShowRetakeQuiz(true)}
+                  onClick={() => setShowRetakeWarning(true)}
                 >
                   <BookOpen className="w-4 h-4 mr-2" />
                   Retake Quiz
@@ -602,6 +603,46 @@ const Profile = ({ onNavigate }: ProfileProps) => {
               </div>
             </div>
           </Card>
+
+          {/* Retake Quiz Warning Dialog */}
+          <AlertDialog open={showRetakeWarning} onOpenChange={setShowRetakeWarning}>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle className="flex items-center gap-2">
+                  <Brain className="w-5 h-5 text-amber-500" />
+                  Retake Placement Quiz?
+                </AlertDialogTitle>
+                <AlertDialogDescription className="space-y-3">
+                  <p>
+                    Your placement quiz score determines which lessons are unlocked for you.
+                  </p>
+                  <div className="p-3 bg-amber-500/10 border border-amber-500/20 rounded-lg">
+                    <p className="text-amber-600 dark:text-amber-400 font-medium text-sm">
+                      ⚠️ Warning: Your level can go <strong>down</strong> as well as up!
+                    </p>
+                    <p className="text-amber-600/80 dark:text-amber-400/80 text-sm mt-1">
+                      If you score lower than before, you may have fewer lessons unlocked than you currently do.
+                    </p>
+                  </div>
+                  <p className="text-sm">
+                    Current placement: <strong>Lesson {placementLesson}</strong> • Score: <strong>{onboarding?.quiz_score || 0}/20</strong>
+                  </p>
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction 
+                  onClick={() => {
+                    setShowRetakeWarning(false);
+                    setShowRetakeQuiz(true);
+                  }}
+                  className="bg-amber-500 hover:bg-amber-600 text-white"
+                >
+                  I Understand, Continue
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
 
           {/* Retake Quiz Dialog */}
           <Dialog open={showRetakeQuiz} onOpenChange={setShowRetakeQuiz}>
