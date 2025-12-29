@@ -16,7 +16,7 @@ interface Lesson {
   completed: boolean;
   progress: number;
   stars?: number;
-  skipped?: boolean;
+  skippedByPlacement?: boolean;
 }
 
 interface LearningPathwayProps {
@@ -236,6 +236,7 @@ export const LearningPathway = ({
                   orderIndex={lesson.order_index}
                   isLocked={lesson.is_locked}
                   isCompleted={lesson.completed}
+                  isSkippedByPlacement={lesson.skippedByPlacement}
                   stars={lesson.completed ? (lesson.stars || 3) : 0}
                   onClick={() => handleNodeClick(lesson)}
                   isNext={isNextLesson}
