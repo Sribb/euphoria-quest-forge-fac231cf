@@ -9,12 +9,15 @@ interface OnboardingProps {
 }
 
 const Onboarding = ({ isRetake = false, onComplete }: OnboardingProps) => {
-  const { completeOnboarding } = useOnboarding();
+  const { completeOnboarding, refetch } = useOnboarding();
   const navigate = useNavigate();
 
   const handleQuizComplete = async (score: number, placementLesson: number): Promise<void> => {
     try {
       await completeOnboarding.mutateAsync({ score, placementLesson });
+      
+      // Refetch to update hasCompletedOnboarding before navigation
+      await refetch();
       
       if (isRetake) {
         toast.success(`Your new placement: Lesson ${placementLesson}!`);
@@ -27,7 +30,7 @@ const Onboarding = ({ isRetake = false, onComplete }: OnboardingProps) => {
     } catch (error) {
       console.error("Failed to save onboarding:", error);
       toast.error("Failed to save your results. Please try again.");
-      throw error; // Re-throw so the quiz can reset the submitting state
+      throw error;
     }
   };
 
