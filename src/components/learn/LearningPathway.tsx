@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { PathwayNode } from "./PathwayNode";
 import { ChallengeModal } from "./ChallengeModal";
-import { Trophy, Award, SkipForward, ChevronDown, ChevronUp, Map, Sparkles, Flag, Mountain, Castle, Scroll } from "lucide-react";
+import { Trophy, Award, Map, Sparkles, Flag, Mountain, Castle, Scroll } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -24,7 +24,6 @@ interface LearningPathwayProps {
   onLessonSelect: (lessonId: string) => void;
   completedCount: number;
   totalCount: number;
-  startingLesson?: number;
 }
 
 export const LearningPathway = ({
@@ -32,13 +31,8 @@ export const LearningPathway = ({
   onLessonSelect,
   completedCount,
   totalCount,
-  startingLesson = 1,
 }: LearningPathwayProps) => {
   const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
-  const [showSkippedLessons, setShowSkippedLessons] = useState(false);
-
-  const skippedLessons = lessons.filter(l => l.skipped);
-  const activeLessons = lessons.filter(l => !l.skipped);
 
   const handleNodeClick = (lesson: Lesson) => {
     if (!lesson.is_locked) {
@@ -53,9 +47,8 @@ export const LearningPathway = ({
     }
   };
 
-  const actualCompletedLessons = lessons.filter(l => l.completed && !l.skipped).length;
-  const actualTotalLessons = lessons.filter(l => !l.skipped).length;
-  const progressPercentage = actualTotalLessons > 0 ? Math.round((actualCompletedLessons / actualTotalLessons) * 100) : 0;
+  const completedLessons = lessons.filter(l => l.completed).length;
+  const progressPercentage = lessons.length > 0 ? Math.round((completedLessons / lessons.length) * 100) : 0;
 
   // Get chapter info based on lesson index
   const getChapterInfo = (index: number) => {
@@ -119,7 +112,7 @@ export const LearningPathway = ({
             <div className="flex items-center gap-6">
               <div className="text-right">
                 <div className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-primary to-yellow-500">
-                  {actualCompletedLessons}/{actualTotalLessons}
+                  {completedLessons}/{lessons.length}
                 </div>
                 <p className="text-xs text-muted-foreground font-medium">Chapters Complete</p>
               </div>
@@ -172,70 +165,6 @@ export const LearningPathway = ({
           )}
         </div>
       </div>
-
-      {/* Skipped Lessons Banner */}
-      {skippedLessons.length > 0 && (
-        <div className="max-w-3xl mx-auto px-6 mt-6">
-          <div className="p-4 bg-gradient-to-r from-primary/5 via-primary/10 to-primary/5 border border-primary/20 rounded-2xl backdrop-blur-sm">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-xl bg-primary/20 flex items-center justify-center">
-                  <SkipForward className="w-6 h-6 text-primary" />
-                </div>
-                <div>
-                  <p className="font-bold text-foreground">
-                    {skippedLessons.length} Prologue Chapters Skipped
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    Your wisdom earned you a head start at Chapter {startingLesson}
-                  </p>
-                </div>
-              </div>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setShowSkippedLessons(!showSkippedLessons)}
-                className="gap-2 rounded-xl border-primary/30 hover:bg-primary/10"
-              >
-                {showSkippedLessons ? (
-                  <>Hide <ChevronUp className="w-4 h-4" /></>
-                ) : (
-                  <>Explore <ChevronDown className="w-4 h-4" /></>
-                )}
-              </Button>
-            </div>
-
-            {showSkippedLessons && (
-              <div className="mt-4 pt-4 border-t border-primary/20 animate-fade-in">
-                <p className="text-xs text-muted-foreground mb-3">
-                  Revisit these foundational chapters anytime:
-                </p>
-                <div className="grid gap-2 max-h-48 overflow-y-auto pr-2">
-                  {skippedLessons.map((lesson) => (
-                    <button
-                      key={lesson.id}
-                      onClick={() => handleNodeClick(lesson)}
-                      className="flex items-center justify-between p-3 bg-background/50 hover:bg-background rounded-xl border border-border/50 transition-all hover:border-primary/30 text-left group"
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center text-sm font-bold text-muted-foreground group-hover:bg-primary/20 group-hover:text-primary transition-colors">
-                          {lesson.order_index}
-                        </div>
-                        <div>
-                          <p className="font-semibold text-sm">{lesson.title}</p>
-                          <p className="text-xs text-muted-foreground">{lesson.duration} · {lesson.difficulty}</p>
-                        </div>
-                      </div>
-                      <span className="text-xs text-primary font-semibold opacity-0 group-hover:opacity-100 transition-opacity">Begin →</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-
       {/* The Saga Path */}
       <div className="relative max-w-3xl mx-auto px-8 py-12 pb-40">
         {/* Central pathway decoration */}
@@ -243,11 +172,11 @@ export const LearningPathway = ({
           <div className="absolute inset-0 bg-gradient-to-b from-primary/30 via-primary/10 to-transparent" />
         </div>
 
-        {activeLessons.map((lesson, index) => {
+        {lessons.map((lesson, index) => {
           const isNextLesson = !lesson.is_locked && !lesson.completed && 
-            index === activeLessons.findIndex(l => !l.is_locked && !l.completed);
+            index === lessons.findIndex(l => !l.is_locked && !l.completed);
           const side = index % 2 === 0 ? "left" : "right";
-          const isLastNode = index === activeLessons.length - 1;
+          const isLastNode = index === lessons.length - 1;
           const isMilestone = (index + 1) % 5 === 0;
           const chapterInfo = getChapterInfo(index);
 
