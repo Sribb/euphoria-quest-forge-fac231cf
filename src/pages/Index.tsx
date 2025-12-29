@@ -8,19 +8,14 @@ import Analytics from "./Analytics";
 import Community from "./Community";
 import Certificates from "./Certificates";
 import Profile from "./Profile";
-import Onboarding from "./Onboarding";
 import StockSearch from "./StockSearch";
 import StockDetail from "./StockDetail";
-import { useOnboarding } from "@/hooks/useOnboarding";
-import { useAuth } from "@/hooks/useAuth";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
   const [selectedLesson, setSelectedLesson] = useState<string | null>(null);
   const [selectedStock, setSelectedStock] = useState<string | null>(null);
   const [showStockSearch, setShowStockSearch] = useState(false);
-  const { user } = useAuth();
-  const { hasCompletedOnboarding, isLoading } = useOnboarding();
 
   const handleNavigate = (tab: string) => {
     setActiveTab(tab);
@@ -65,19 +60,6 @@ const Index = () => {
 
   const backProps = getBackButtonProps();
 
-  // Show loading while checking onboarding status
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin" />
-      </div>
-    );
-  }
-
-  // Show onboarding if user is logged in and hasn't completed it
-  if (user && !hasCompletedOnboarding) {
-    return <Onboarding onComplete={() => window.location.reload()} />;
-  }
 
   // Show stock detail page
   if (selectedStock) {

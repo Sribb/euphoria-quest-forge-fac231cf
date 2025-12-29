@@ -1,4 +1,4 @@
-import { User, Award, TrendingUp, Target, Edit, Palette, Bell, Lock, Settings as SettingsIcon, RotateCcw, GraduationCap } from "lucide-react";
+import { User, Award, TrendingUp, Target, Edit, Palette, Bell, Lock, Settings as SettingsIcon, RotateCcw } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -60,7 +60,7 @@ const Profile = ({ onNavigate }: ProfileProps) => {
   const [selectedAvatar, setSelectedAvatar] = useState<string>("");
   const [showAvatarDialog, setShowAvatarDialog] = useState(false);
   const [showResetDialog, setShowResetDialog] = useState(false);
-  const [showRetakeDialog, setShowRetakeDialog] = useState(false);
+  
 
   useEffect(() => {
     // Load theme preference from localStorage
@@ -573,29 +573,6 @@ const Profile = ({ onNavigate }: ProfileProps) => {
 
           <Card className="p-6">
             <div className="flex items-center gap-3 mb-4">
-              <GraduationCap className="w-5 h-5 text-primary" />
-              <h2 className="text-xl font-bold">Learning Placement</h2>
-            </div>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between p-4 border border-border rounded-lg">
-                <div>
-                  <p className="font-semibold">Retake Placement Assessment</p>
-                  <p className="text-sm text-muted-foreground">Update your starting lesson based on a new knowledge assessment</p>
-                </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setShowRetakeDialog(true)}
-                >
-                  <GraduationCap className="w-4 h-4 mr-2" />
-                  Retake
-                </Button>
-              </div>
-            </div>
-          </Card>
-
-          <Card className="p-6">
-            <div className="flex items-center gap-3 mb-4">
               <Lock className="w-5 h-5 text-primary" />
               <h2 className="text-xl font-bold">Security</h2>
             </div>
@@ -630,73 +607,6 @@ const Profile = ({ onNavigate }: ProfileProps) => {
                 <AlertDialogCancel>Cancel</AlertDialogCancel>
                 <AlertDialogAction onClick={handleResetPersonalization}>
                   Reset to Defaults
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-
-          <AlertDialog open={showRetakeDialog} onOpenChange={setShowRetakeDialog}>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle className="flex items-center gap-2">
-                  <GraduationCap className="w-5 h-5 text-primary" />
-                  Retake Placement Assessment?
-                </AlertDialogTitle>
-                <AlertDialogDescription className="space-y-3">
-                  <p>
-                    This will completely reset your learning progress and take you through the investment knowledge quiz again.
-                  </p>
-                  <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
-                    <p className="text-destructive font-medium text-sm">
-                      ⚠️ Warning: Your new placement level may be lower or higher than your current level based on your quiz performance. All lesson progress will be erased.
-                    </p>
-                  </div>
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction 
-                  className="bg-destructive hover:bg-destructive/90"
-                  onClick={async () => {
-                    try {
-                      // Delete all lesson progress data
-                      await supabase
-                        .from("user_lesson_progress")
-                        .delete()
-                        .eq("user_id", user?.id);
-                      
-                      // Delete lesson question performance data
-                      await supabase
-                        .from("lesson_question_performance")
-                        .delete()
-                        .eq("user_id", user?.id);
-                      
-                      // Delete existing onboarding data
-                      const { error } = await supabase
-                        .from("user_onboarding")
-                        .delete()
-                        .eq("user_id", user?.id);
-                      
-                      if (error) throw error;
-                      
-                      // Clear ALL related queries from cache
-                      queryClient.removeQueries({ queryKey: ["onboarding"] });
-                      queryClient.removeQueries({ queryKey: ["user-onboarding"] });
-                      queryClient.removeQueries({ queryKey: ["lessonProgress"] });
-                      queryClient.removeQueries({ queryKey: ["lesson-progress"] });
-                      
-                      setShowRetakeDialog(false);
-                      toast.success("Redirecting to placement assessment...");
-                      
-                      // Small delay to ensure cache is cleared before reload
-                      setTimeout(() => {
-                        window.location.reload();
-                      }, 100);
-                    } catch (error) {
-                      toast.error("Failed to reset placement. Please try again.");
-                    }
-                  }}>
-                  Reset & Retake
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>

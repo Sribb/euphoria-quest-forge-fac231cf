@@ -1,12 +1,8 @@
-import { useState } from "react";
 import { LearningPathway } from "@/components/learn/LearningPathway";
 import { ThreePhaseLessonViewer } from "@/components/learn/ThreePhaseLessonViewer";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import { useOnboarding } from "@/hooks/useOnboarding";
-import { GraduationCap, Trophy, Target } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 
 interface LearnProps {
   onNavigate: (tab: string) => void;
@@ -16,22 +12,9 @@ interface LearnProps {
 
 const Learn = ({ onNavigate, selectedLesson, onLessonSelect }: LearnProps) => {
   const { user } = useAuth();
-  const { investmentLevel, quizScore, startingLesson } = useOnboarding();
-
-  // Format investment level for display
-  const getLevelDisplay = (level: string) => {
-    switch (level) {
-      case "advanced": return { label: "Advanced", color: "bg-purple-500/20 text-purple-400 border-purple-500/30" };
-      case "intermediate": return { label: "Intermediate", color: "bg-primary/20 text-primary border-primary/30" };
-      case "beginner-plus": return { label: "Beginner+", color: "bg-blue-500/20 text-blue-400 border-blue-500/30" };
-      default: return { label: "Beginner", color: "bg-green-500/20 text-green-400 border-green-500/30" };
-    }
-  };
-
-  const levelDisplay = getLevelDisplay(investmentLevel);
 
   const { data: lessons = [], isLoading, refetch } = useQuery({
-    queryKey: ["lessons", user?.id, startingLesson],
+    queryKey: ["lessons", user?.id],
     queryFn: async () => {
       // Fetch all lessons
       const { data: lessonsData, error: lessonsError } = await supabase
@@ -60,43 +43,30 @@ const Learn = ({ onNavigate, selectedLesson, onLessonSelect }: LearnProps) => {
       if (progressError) throw progressError;
 
       // Merge lesson data with progress
-      // Lessons before starting lesson are marked as skipped/completed
+      // A lesson is unlocked if it's the first one, or the previous one is completed
       return lessonsData.map((lesson, index) => {
-        const lessonNumber = index + 1;
         const progress = progressData?.find((p) => p.lesson_id === lesson.id);
         const isCompleted = progress?.completed || false;
         
-        // If lesson is before starting lesson, mark it as skipped (unlocked but not required)
-        const isBeforeStarting = lessonNumber < startingLesson;
-        
         // A lesson is unlocked if:
-        // 1. It's before or at the starting lesson from onboarding, OR
-        // 2. The user has actually completed the previous lesson
-        const previousLessonsCompleted = lessonsData
-          .slice(Math.max(0, startingLesson - 1), index)
-          .every((_, idx) => {
-            const prevProgress = progressData?.find(
-              (p) => p.lesson_id === lessonsData[startingLesson - 1 + idx]?.id
-            );
-            return prevProgress?.completed || false;
-          });
-        
-        const isUnlocked = lessonNumber <= startingLesson || 
-          (index === startingLesson - 1) || // Starting lesson is always unlocked
-          (index > 0 && previousLessonsCompleted) ||
-          isCompleted;
+        // 1. It's the first lesson, OR
+        // 2. The previous lesson is completed
+        const previousLesson = index > 0 ? lessonsData[index - 1] : null;
+        const previousProgress = previousLesson 
+          ? progressData?.find((p) => p.lesson_id === previousLesson.id)
+          : null;
+        const isUnlocked = index === 0 || previousProgress?.completed || isCompleted;
         
         // Generate random star rating (1-3) for completed lessons
         const stars = isCompleted ? Math.floor(Math.random() * 3) + 1 : 0;
         
         return {
           ...lesson,
-          progress: isBeforeStarting && !isCompleted ? 100 : (progress?.progress || 0),
-          completed: isBeforeStarting || isCompleted,
-          skipped: isBeforeStarting && !isCompleted,
+          progress: progress?.progress || 0,
+          completed: isCompleted,
           duration: `${lesson.duration_minutes} min`,
           is_locked: !isUnlocked,
-          stars: isBeforeStarting ? 0 : stars,
+          stars,
         };
       });
     },
@@ -122,45 +92,6 @@ const Learn = ({ onNavigate, selectedLesson, onLessonSelect }: LearnProps) => {
 
   return (
     <div className="min-h-screen w-full bg-background">
-      {/* Placement Summary Banner */}
-      {startingLesson > 1 && (
-        <div className="px-8 pt-8 pb-2 animate-fade-in">
-          <div className="max-w-7xl mx-auto p-4 bg-gradient-to-r from-primary/10 to-purple-500/10 border border-primary/20 rounded-2xl">
-            <div className="flex items-center justify-between flex-wrap gap-4">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-xl bg-primary/20 flex items-center justify-center">
-                  <GraduationCap className="w-6 h-6 text-primary" />
-                </div>
-                <div>
-                  <p className="font-semibold text-foreground">Your Placement Results</p>
-                  <p className="text-sm text-muted-foreground">
-                    Based on your assessment, you're starting at Lesson {startingLesson}
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-center gap-3">
-                <div className="text-center px-4 py-2 bg-background/50 rounded-lg">
-                  <div className="flex items-center gap-1 text-sm font-bold text-primary">
-                    <Trophy className="w-4 h-4" />
-                    {quizScore}%
-                  </div>
-                  <p className="text-xs text-muted-foreground">Quiz Score</p>
-                </div>
-                <div className="text-center px-4 py-2 bg-background/50 rounded-lg">
-                  <div className="flex items-center gap-1 text-sm font-bold text-primary">
-                    <Target className="w-4 h-4" />
-                    {startingLesson}
-                  </div>
-                  <p className="text-xs text-muted-foreground">Start Lesson</p>
-                </div>
-                <Badge className={`${levelDisplay.color} border`}>
-                  {levelDisplay.label}
-                </Badge>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
       {/* Learning Pathway - Full Vertical Scroll */}
       {isLoading ? (
         <div className="flex items-center justify-center min-h-[600px]">
@@ -176,7 +107,6 @@ const Learn = ({ onNavigate, selectedLesson, onLessonSelect }: LearnProps) => {
             onLessonSelect={onLessonSelect}
             completedCount={completedLessons}
             totalCount={totalLessons}
-            startingLesson={startingLesson}
           />
         </div>
       )}
