@@ -1,4 +1,4 @@
-import { Lock, Star, Sparkles, Crown, Zap, Target, BookOpen, Sword, Shield, Gem } from "lucide-react";
+import { Lock, Star, Sparkles, Crown, Zap, Target, BookOpen, Sword, Shield, Gem, FastForward } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface PathwayNodeProps {
@@ -6,6 +6,7 @@ interface PathwayNodeProps {
   orderIndex: number;
   isLocked: boolean;
   isCompleted: boolean;
+  isSkippedByPlacement?: boolean;
   stars?: number;
   onClick: () => void;
   isNext?: boolean;
@@ -28,6 +29,7 @@ export const PathwayNode = ({
   orderIndex,
   isLocked,
   isCompleted,
+  isSkippedByPlacement = false,
   stars = 0,
   onClick,
   isNext = false,
@@ -126,25 +128,40 @@ export const PathwayNode = ({
             </div>
           ) : isCompleted ? (
             <div className="space-y-1">
-              {/* Stars display */}
-              <div className="flex justify-center gap-0.5 mb-1">
-                {[1, 2, 3].map((i) => (
-                  <Star
-                    key={i}
-                    className={cn(
-                      "w-4 h-4 drop-shadow-md transition-all",
-                      i <= stars 
-                        ? "text-yellow-400 fill-yellow-400" 
-                        : "text-muted-foreground/30"
-                    )}
-                  />
-                ))}
-              </div>
-              {/* Level number with gem */}
-              <div className="flex items-center justify-center gap-1">
-                <Gem className="w-3 h-3 text-primary" />
-                <span className="text-sm font-bold text-primary">{orderIndex}</span>
-              </div>
+              {isSkippedByPlacement ? (
+                <>
+                  {/* Skipped indicator */}
+                  <div className="flex justify-center mb-1">
+                    <FastForward className="w-5 h-5 text-blue-400" />
+                  </div>
+                  {/* Level number */}
+                  <div className="flex items-center justify-center gap-1">
+                    <span className="text-xs font-bold text-blue-400">{orderIndex}</span>
+                  </div>
+                </>
+              ) : (
+                <>
+                  {/* Stars display */}
+                  <div className="flex justify-center gap-0.5 mb-1">
+                    {[1, 2, 3].map((i) => (
+                      <Star
+                        key={i}
+                        className={cn(
+                          "w-4 h-4 drop-shadow-md transition-all",
+                          i <= stars 
+                            ? "text-yellow-400 fill-yellow-400" 
+                            : "text-muted-foreground/30"
+                        )}
+                      />
+                    ))}
+                  </div>
+                  {/* Level number with gem */}
+                  <div className="flex items-center justify-center gap-1">
+                    <Gem className="w-3 h-3 text-primary" />
+                    <span className="text-sm font-bold text-primary">{orderIndex}</span>
+                  </div>
+                </>
+              )}
             </div>
           ) : isNext ? (
             <div className="flex flex-col items-center gap-1">
@@ -169,17 +186,19 @@ export const PathwayNode = ({
         "max-w-[140px]",
         isLocked && "bg-muted/30",
         !isLocked && !isCompleted && "bg-card/60 border border-border/50 group-hover:bg-card group-hover:border-primary/30",
-        isCompleted && "bg-yellow-500/10 border border-yellow-500/20",
+        isCompleted && !isSkippedByPlacement && "bg-yellow-500/10 border border-yellow-500/20",
+        isCompleted && isSkippedByPlacement && "bg-blue-500/10 border border-blue-500/20",
         isNext && "bg-primary/10 border border-primary/30"
       )}>
         <p className={cn(
           "text-xs font-semibold leading-tight text-center",
           isLocked && "text-muted-foreground",
           !isLocked && !isCompleted && !isNext && "text-foreground/80",
-          isCompleted && "text-yellow-600 dark:text-yellow-400",
+          isCompleted && !isSkippedByPlacement && "text-yellow-600 dark:text-yellow-400",
+          isCompleted && isSkippedByPlacement && "text-blue-500 dark:text-blue-400",
           isNext && "text-primary font-bold"
         )}>
-          {title}
+          {isSkippedByPlacement ? "Skipped by Quiz" : title}
         </p>
       </div>
 
@@ -229,9 +248,11 @@ export const PathwayNode = ({
             )}>
               <span className={cn(
                 "text-xs font-semibold",
-                isCompleted ? "text-yellow-500" : "text-primary"
+                isCompleted && !isSkippedByPlacement && "text-yellow-500",
+                isCompleted && isSkippedByPlacement && "text-blue-500",
+                !isCompleted && "text-primary"
               )}>
-                {isCompleted ? "✓ Completed — Replay" : "Click to begin →"}
+                {isSkippedByPlacement ? "⏭️ Skipped — Take Lesson" : isCompleted ? "✓ Completed — Replay" : "Click to begin →"}
               </span>
             </div>
           </div>

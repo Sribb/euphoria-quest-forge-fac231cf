@@ -48,7 +48,13 @@ const Learn = ({ onNavigate, selectedLesson, onLessonSelect }: LearnProps) => {
       // A lesson is unlocked based on placement OR if previous lesson is completed
       return lessonsData.map((lesson, index) => {
         const progress = progressData?.find((p) => p.lesson_id === lesson.id);
-        const isCompleted = progress?.completed || false;
+        const isActuallyCompleted = progress?.completed || false;
+        
+        // A lesson is "skipped" if it's below placement level and user hasn't actually completed it
+        const isSkippedByPlacement = lesson.order_index < placementLesson && !isActuallyCompleted;
+        
+        // For display purposes, skipped lessons show as completed
+        const isCompleted = isActuallyCompleted || isSkippedByPlacement;
         
         // A lesson is unlocked if:
         // 1. Its order_index is <= placementLesson, OR
@@ -70,6 +76,7 @@ const Learn = ({ onNavigate, selectedLesson, onLessonSelect }: LearnProps) => {
           ...lesson,
           progress: progress?.progress || 0,
           completed: isCompleted,
+          skippedByPlacement: isSkippedByPlacement,
           duration: `${lesson.duration_minutes} min`,
           is_locked: !isUnlocked,
           stars,
