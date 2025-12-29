@@ -19,268 +19,313 @@ interface Question {
   id: number;
   type: "multiple-choice" | "scenario" | "decision";
   category: string;
+  lessonTopic: string;
   question: string;
   options: { id: string; text: string; isCorrect: boolean }[];
   explanation?: string;
 }
 
+// Questions aligned with actual lesson topics (Lessons 1-25)
 const quizQuestions: Question[] = [
-  // Budgeting & Basics (Questions 1-3)
+  // Lesson 1: Introduction to Investing
   {
     id: 1,
     type: "multiple-choice",
-    category: "Budgeting",
-    question: "What is the recommended percentage of income to save before investing?",
+    category: "Fundamentals",
+    lessonTopic: "Introduction to Investing",
+    question: "What is the primary purpose of investing rather than keeping money in a savings account?",
     options: [
-      { id: "a", text: "0% - invest everything immediately", isCorrect: false },
-      { id: "b", text: "10-20% after building an emergency fund", isCorrect: true },
-      { id: "c", text: "100% - never spend anything", isCorrect: false },
-      { id: "d", text: "5% is more than enough", isCorrect: false },
+      { id: "a", text: "To avoid paying taxes on your income", isCorrect: false },
+      { id: "b", text: "To grow wealth over time by earning returns that outpace inflation", isCorrect: true },
+      { id: "c", text: "To qualify for better credit card offers", isCorrect: false },
+      { id: "d", text: "To receive government subsidies for investors", isCorrect: false },
     ],
-    explanation: "Financial experts recommend saving 10-20% of income, but only after establishing a 3-6 month emergency fund.",
+    explanation: "Investing helps grow wealth by earning returns that typically exceed both savings account rates and inflation over the long term.",
   },
+  // Lesson 2: Risk vs Reward
   {
     id: 2,
     type: "scenario",
-    category: "Budgeting",
-    question: "You receive a $5,000 bonus. You have $2,000 in credit card debt at 18% APR and no emergency fund. What's the wisest first step?",
+    category: "Risk Management",
+    lessonTopic: "Risk vs. Reward",
+    question: "Investment A offers a guaranteed 4% annual return. Investment B has historically returned 10% annually but can fluctuate between -20% and +40% in any given year. For a 25-year retirement goal, which analysis is most accurate?",
     options: [
-      { id: "a", text: "Invest it all in stocks for maximum growth", isCorrect: false },
-      { id: "b", text: "Pay off the credit card debt first", isCorrect: true },
-      { id: "c", text: "Put it all in a savings account", isCorrect: false },
-      { id: "d", text: "Buy cryptocurrency for quick gains", isCorrect: false },
+      { id: "a", text: "Investment A is always better because you never lose money", isCorrect: false },
+      { id: "b", text: "Investment B likely builds more wealth over time despite short-term volatility", isCorrect: true },
+      { id: "c", text: "Both will produce identical results over 25 years", isCorrect: false },
+      { id: "d", text: "Investment B is only better if you can predict market timing", isCorrect: false },
     ],
-    explanation: "High-interest debt should be paid off first as it costs more than most investments return.",
+    explanation: "With a long time horizon, higher-return investments can recover from short-term losses, typically building more wealth than low-return guaranteed options.",
   },
+  // Lesson 3: Compound Interest
   {
     id: 3,
     type: "multiple-choice",
-    category: "Budgeting",
-    question: "What is the purpose of an emergency fund?",
+    category: "Wealth Building",
+    lessonTopic: "Compound Interest",
+    question: "Why is compound interest often called 'the eighth wonder of the world'?",
     options: [
-      { id: "a", text: "To invest in high-risk opportunities", isCorrect: false },
-      { id: "b", text: "To cover 3-6 months of living expenses for unexpected events", isCorrect: true },
-      { id: "c", text: "To save for vacation", isCorrect: false },
-      { id: "d", text: "To make monthly bill payments", isCorrect: false },
+      { id: "a", text: "It allows banks to charge higher fees over time", isCorrect: false },
+      { id: "b", text: "Your earnings generate their own earnings, creating exponential growth", isCorrect: true },
+      { id: "c", text: "It was invented by Einstein for complex physics equations", isCorrect: false },
+      { id: "d", text: "It only works for people with very large initial investments", isCorrect: false },
     ],
+    explanation: "Compound interest means you earn returns on both your original investment AND on previous returns, creating a snowball effect over time.",
   },
-  // Risk & Return (Questions 4-6)
+  // Lesson 4: Stocks vs Bonds
   {
     id: 4,
-    type: "multiple-choice",
-    category: "Risk Tolerance",
-    question: "What is the general relationship between risk and potential return in investing?",
+    type: "decision",
+    category: "Asset Classes",
+    lessonTopic: "Stocks vs. Bonds",
+    question: "A 30-year-old with stable income is saving for retirement at 65. Their financial advisor suggests a portfolio of 80% stocks and 20% bonds. What is the reasoning behind this allocation?",
     options: [
-      { id: "a", text: "Higher risk = lower potential returns", isCorrect: false },
-      { id: "b", text: "Higher risk = higher potential returns (but also higher potential losses)", isCorrect: true },
-      { id: "c", text: "Risk and return are unrelated", isCorrect: false },
-      { id: "d", text: "Lower risk always means better returns", isCorrect: false },
+      { id: "a", text: "Bonds always perform better than stocks over any time period", isCorrect: false },
+      { id: "b", text: "With 35 years until retirement, stocks' higher long-term returns outweigh short-term volatility risks", isCorrect: true },
+      { id: "c", text: "This ratio is legally required for retirement accounts", isCorrect: false },
+      { id: "d", text: "Stocks are safer than bonds for all investors", isCorrect: false },
     ],
+    explanation: "Younger investors can take more risk with stocks because they have time to recover from market downturns, while bonds add stability.",
   },
+  // Lesson 5: Diversification
   {
     id: 5,
     type: "scenario",
-    category: "Risk Tolerance",
-    question: "Your portfolio drops 20% in one month. You don't need the money for 20 years. What should you do?",
+    category: "Portfolio Strategy",
+    lessonTopic: "Diversification",
+    question: "An investor puts their entire $50,000 portfolio into a single tech company's stock because 'it always goes up.' What is the primary risk of this approach?",
     options: [
-      { id: "a", text: "Sell everything immediately to prevent more losses", isCorrect: false },
-      { id: "b", text: "Stay calm and maintain your long-term strategy", isCorrect: true },
-      { id: "c", text: "Double down by investing your emergency fund", isCorrect: false },
-      { id: "d", text: "Move everything to cryptocurrency", isCorrect: false },
+      { id: "a", text: "Tech stocks never pay dividends", isCorrect: false },
+      { id: "b", text: "If that company fails or declines, they could lose most or all of their investment", isCorrect: true },
+      { id: "c", text: "The government will tax concentrated positions more heavily", isCorrect: false },
+      { id: "d", text: "They can only sell the stock once per year", isCorrect: false },
     ],
-    explanation: "With a 20-year timeline, temporary market drops are normal and historically recover over time.",
+    explanation: "Concentration in a single stock means your entire portfolio's fate depends on one company. Diversification spreads this risk.",
   },
+  // Lesson 6: Market Psychology
   {
     id: 6,
-    type: "decision",
-    category: "Risk Tolerance",
-    question: "A 'conservative' investment portfolio typically contains:",
+    type: "scenario",
+    category: "Behavioral Finance",
+    lessonTopic: "Market Psychology: Fear and Greed",
+    question: "During a market crash, headlines scream 'Investors Flee Stocks!' and your portfolio is down 30%. You don't need this money for 20 years. What does behavioral finance suggest is the common mistake most investors make?",
     options: [
-      { id: "a", text: "100% stocks for maximum growth", isCorrect: false },
-      { id: "b", text: "A higher allocation to bonds and stable assets", isCorrect: true },
-      { id: "c", text: "Only cryptocurrency and options", isCorrect: false },
-      { id: "d", text: "Exclusively real estate investments", isCorrect: false },
+      { id: "a", text: "They ignore the news entirely and take on more debt", isCorrect: false },
+      { id: "b", text: "They panic sell at the bottom, locking in losses and missing the recovery", isCorrect: true },
+      { id: "c", text: "They immediately buy real estate instead", isCorrect: false },
+      { id: "d", text: "They correctly time the market bottom and buy more", isCorrect: false },
     ],
+    explanation: "Fear drives investors to sell at the worst time. Historically, markets recover, and those who sell during crashes often miss the rebound.",
   },
-  // Compound Interest (Questions 7-9)
+  // Lesson 7: Value Investing
   {
     id: 7,
     type: "multiple-choice",
-    category: "Compound Interest",
-    question: "If you invest $1,000 at 10% annual return, approximately how much will you have after 7 years (using the Rule of 72)?",
+    category: "Investment Styles",
+    lessonTopic: "Value Investing",
+    question: "Warren Buffett's value investing philosophy focuses on:",
     options: [
-      { id: "a", text: "$1,700", isCorrect: false },
-      { id: "b", text: "$2,000 (your money doubles)", isCorrect: true },
-      { id: "c", text: "$10,000", isCorrect: false },
-      { id: "d", text: "$1,100", isCorrect: false },
+      { id: "a", text: "Buying stocks that have risen the most in the past month", isCorrect: false },
+      { id: "b", text: "Finding companies trading below their intrinsic worth based on fundamentals", isCorrect: true },
+      { id: "c", text: "Only investing in technology companies", isCorrect: false },
+      { id: "d", text: "Timing the market by analyzing charts and patterns", isCorrect: false },
     ],
-    explanation: "The Rule of 72: divide 72 by your return rate to estimate years to double. 72/10 = 7.2 years.",
+    explanation: "Value investors seek stocks priced below their true worth, buying 'a dollar for fifty cents' as Buffett describes.",
   },
+  // Lesson 8: Fundamental Analysis
   {
     id: 8,
-    type: "scenario",
-    category: "Compound Interest",
-    question: "Person A invests $200/month from age 25-35 then stops. Person B invests $200/month from age 35-65. Assuming 8% returns, who has more at 65?",
+    type: "decision",
+    category: "Analysis",
+    lessonTopic: "Fundamental Analysis",
+    question: "When evaluating a company's financial health, which combination of metrics would a fundamental analyst prioritize?",
     options: [
-      { id: "a", text: "Person B - they invested for 30 years vs 10", isCorrect: false },
-      { id: "b", text: "Person A - early investments compound longer", isCorrect: true },
-      { id: "c", text: "They'll have exactly the same amount", isCorrect: false },
-      { id: "d", text: "It depends on market conditions", isCorrect: false },
+      { id: "a", text: "The company's logo design and social media follower count", isCorrect: false },
+      { id: "b", text: "Revenue growth, profit margins, debt-to-equity ratio, and cash flow", isCorrect: true },
+      { id: "c", text: "How many times the CEO appears on television", isCorrect: false },
+      { id: "d", text: "The stock's trading volume and price momentum only", isCorrect: false },
     ],
-    explanation: "Time in market beats timing the market. Person A's early start gives compound interest more time to work.",
+    explanation: "Fundamental analysis examines a company's financial statements, profitability, debt levels, and cash generation to determine its true value.",
   },
+  // Lesson 9: Economic Moats
   {
     id: 9,
     type: "multiple-choice",
-    category: "Compound Interest",
-    question: "What does 'compound interest' mean?",
+    category: "Competitive Analysis",
+    lessonTopic: "Economic Moats",
+    question: "What is an 'economic moat' in investing terminology?",
     options: [
-      { id: "a", text: "Interest paid only on the original principal", isCorrect: false },
-      { id: "b", text: "Interest earned on both principal and previously earned interest", isCorrect: true },
-      { id: "c", text: "A fixed interest rate that never changes", isCorrect: false },
-      { id: "d", text: "Interest that decreases over time", isCorrect: false },
+      { id: "a", text: "A physical barrier around a company's headquarters", isCorrect: false },
+      { id: "b", text: "A sustainable competitive advantage that protects a company from competitors", isCorrect: true },
+      { id: "c", text: "A type of municipal bond investment", isCorrect: false },
+      { id: "d", text: "A government regulation that limits stock trading", isCorrect: false },
     ],
+    explanation: "An economic moat (like strong brands, patents, or network effects) protects a company's profits from competition, like a castle's moat protects from invaders.",
   },
-  // Diversification (Questions 10-12)
+  // Lesson 10: Portfolio Management
   {
     id: 10,
-    type: "multiple-choice",
-    category: "Diversification",
-    question: "Why is diversification important in investing?",
+    type: "scenario",
+    category: "Portfolio Strategy",
+    lessonTopic: "Portfolio Management",
+    question: "Your portfolio has grown to 50% in one stock due to its price appreciation, while your target was 20%. What is the purpose of 'rebalancing'?",
     options: [
-      { id: "a", text: "It guarantees you'll never lose money", isCorrect: false },
-      { id: "b", text: "It spreads risk across different investments to reduce overall portfolio volatility", isCorrect: true },
-      { id: "c", text: "It helps you pick only winning stocks", isCorrect: false },
-      { id: "d", text: "It eliminates the need for research", isCorrect: false },
+      { id: "a", text: "To always maximize returns by holding winners forever", isCorrect: false },
+      { id: "b", text: "To restore your target allocation by selling some of the winner and buying underweighted assets", isCorrect: true },
+      { id: "c", text: "To eliminate all stocks and move to cash", isCorrect: false },
+      { id: "d", text: "Rebalancing is only necessary when a stock loses value", isCorrect: false },
     ],
+    explanation: "Rebalancing maintains your desired risk level and forces a 'sell high, buy low' discipline by trimming winners and adding to underweighted positions.",
   },
+  // Lesson 13: Technical Analysis
   {
     id: 11,
-    type: "decision",
-    category: "Diversification",
-    question: "You have $10,000 to invest. Which approach demonstrates proper diversification?",
+    type: "multiple-choice",
+    category: "Technical Analysis",
+    lessonTopic: "Technical Analysis Fundamentals",
+    question: "Technical analysis primarily uses what type of data to make investment decisions?",
     options: [
-      { id: "a", text: "Put it all in your employer's stock - you know the company", isCorrect: false },
-      { id: "b", text: "Split between a total stock market ETF, bond ETF, and international ETF", isCorrect: true },
-      { id: "c", text: "Invest in 10 different tech stocks", isCorrect: false },
-      { id: "d", text: "Keep it all in cash for safety", isCorrect: false },
+      { id: "a", text: "Company earnings reports and balance sheets", isCorrect: false },
+      { id: "b", text: "Historical price movements, volume, and chart patterns", isCorrect: true },
+      { id: "c", text: "Economic reports and Federal Reserve statements only", isCorrect: false },
+      { id: "d", text: "Interviews with company management", isCorrect: false },
     ],
-    explanation: "True diversification means spreading across asset classes and geographies, not just multiple stocks in one sector.",
+    explanation: "Technical analysts study price charts, trading volume, and patterns to predict future price movements, regardless of fundamental factors.",
   },
+  // Lesson 14: Investment Psychology
   {
     id: 12,
-    type: "multiple-choice",
-    category: "Diversification",
-    question: "What is an ETF (Exchange-Traded Fund)?",
+    type: "scenario",
+    category: "Behavioral Finance",
+    lessonTopic: "Investment Psychology",
+    question: "You bought a stock at $100. It dropped to $60, but you refuse to sell because you 'haven't lost money until you sell.' This thinking demonstrates which cognitive bias?",
     options: [
-      { id: "a", text: "A type of savings account", isCorrect: false },
-      { id: "b", text: "A fund that holds multiple investments and trades on an exchange like a stock", isCorrect: true },
-      { id: "c", text: "A government bond", isCorrect: false },
-      { id: "d", text: "A type of cryptocurrency", isCorrect: false },
+      { id: "a", text: "Confirmation bias - seeking information that supports your view", isCorrect: false },
+      { id: "b", text: "Loss aversion - the pain of losses feels stronger than equivalent gains", isCorrect: true },
+      { id: "c", text: "Recency bias - overweighting recent events", isCorrect: false },
+      { id: "d", text: "Optimism bias - believing good things will happen", isCorrect: false },
     ],
+    explanation: "Loss aversion makes us hold losing positions too long, hoping to 'break even,' while the money could be better deployed elsewhere.",
   },
-  // Inflation (Questions 13-14)
+  // Lesson 15: Options Trading
   {
     id: 13,
-    type: "scenario",
-    category: "Inflation",
-    question: "If inflation averages 3% per year, what happens to $10,000 kept in a 0.5% savings account over 10 years?",
+    type: "multiple-choice",
+    category: "Derivatives",
+    lessonTopic: "Options Trading Fundamentals",
+    question: "A 'call option' gives the buyer the right to:",
     options: [
-      { id: "a", text: "It grows to over $11,000", isCorrect: false },
-      { id: "b", text: "Its purchasing power decreases significantly despite the balance growing slightly", isCorrect: true },
-      { id: "c", text: "It stays exactly the same in real value", isCorrect: false },
-      { id: "d", text: "The bank protects it from inflation", isCorrect: false },
+      { id: "a", text: "Sell shares at a specific price before expiration", isCorrect: false },
+      { id: "b", text: "Buy shares at a specific price before expiration", isCorrect: true },
+      { id: "c", text: "Collect dividend payments from any stock", isCorrect: false },
+      { id: "d", text: "Force a company to buy back its shares", isCorrect: false },
     ],
-    explanation: "When inflation exceeds your interest rate, your money loses purchasing power over time.",
+    explanation: "A call option gives you the right (not obligation) to purchase shares at the strike price, which is profitable if the stock rises above that price.",
   },
+  // Lesson 16: ETFs and Index Funds
   {
     id: 14,
-    type: "multiple-choice",
-    category: "Inflation",
-    question: "Which type of investment has historically outpaced inflation over the long term?",
+    type: "decision",
+    category: "Investment Vehicles",
+    lessonTopic: "ETFs and Index Funds",
+    question: "An S&P 500 index fund offers exposure to 500 large US companies with an expense ratio of 0.03%. Why might this be preferable to picking individual stocks?",
     options: [
-      { id: "a", text: "Keeping cash under your mattress", isCorrect: false },
-      { id: "b", text: "A diversified stock portfolio", isCorrect: true },
-      { id: "c", text: "A standard savings account", isCorrect: false },
-      { id: "d", text: "Buying lottery tickets", isCorrect: false },
+      { id: "a", text: "Index funds are guaranteed to never lose money", isCorrect: false },
+      { id: "b", text: "Instant diversification, low costs, and studies show most active managers underperform indexes", isCorrect: true },
+      { id: "c", text: "They pay higher dividends than any individual stock", isCorrect: false },
+      { id: "d", text: "Index funds are only available to professional investors", isCorrect: false },
     ],
+    explanation: "Index funds provide broad diversification at minimal cost, and historically, most actively managed funds fail to beat their benchmark index.",
   },
-  // Market Cycles (Questions 15-16)
+  // Lesson 17: Bonds and Fixed Income
   {
     id: 15,
     type: "multiple-choice",
-    category: "Market Cycles",
-    question: "A 'bear market' is typically defined as:",
+    category: "Fixed Income",
+    lessonTopic: "Bonds and Fixed Income",
+    question: "When interest rates rise, what typically happens to existing bond prices?",
     options: [
-      { id: "a", text: "A market that only goes up", isCorrect: false },
-      { id: "b", text: "A decline of 20% or more from recent highs", isCorrect: true },
-      { id: "c", text: "A market with lots of animal investors", isCorrect: false },
-      { id: "d", text: "Any day the market goes down", isCorrect: false },
+      { id: "a", text: "Bond prices rise because higher rates are better for bondholders", isCorrect: false },
+      { id: "b", text: "Bond prices fall because new bonds offer more attractive yields", isCorrect: true },
+      { id: "c", text: "Bond prices stay exactly the same regardless of interest rates", isCorrect: false },
+      { id: "d", text: "All bonds are automatically converted to higher-rate bonds", isCorrect: false },
     ],
+    explanation: "Existing bonds with lower rates become less attractive when new bonds offer higher yields, so their prices must drop to be competitive.",
   },
+  // Lesson 18: Market Cycles
   {
     id: 16,
-    type: "decision",
-    category: "Market Cycles",
-    question: "During a market recession, a long-term investor with 30 years until retirement should:",
+    type: "multiple-choice",
+    category: "Market Dynamics",
+    lessonTopic: "Market Cycles and Timing",
+    question: "A 'bear market' is typically defined as:",
     options: [
-      { id: "a", text: "Sell everything and wait for recovery", isCorrect: false },
-      { id: "b", text: "Continue regular investing - buying at lower prices", isCorrect: true },
-      { id: "c", text: "Stop investing until the economy improves", isCorrect: false },
-      { id: "d", text: "Move everything to gold", isCorrect: false },
+      { id: "a", text: "Any single day the market goes down", isCorrect: false },
+      { id: "b", text: "A decline of 20% or more from recent highs", isCorrect: true },
+      { id: "c", text: "When more people are buying than selling", isCorrect: false },
+      { id: "d", text: "A market that only contains energy stocks", isCorrect: false },
     ],
-    explanation: "Dollar-cost averaging during downturns allows you to buy more shares at lower prices.",
+    explanation: "A bear market represents a 20%+ decline, typically accompanied by widespread pessimism and economic concerns.",
   },
-  // Advanced Concepts (Questions 17-20)
+  // Lesson 20: Dividend Investing
   {
     id: 17,
-    type: "multiple-choice",
-    category: "Advanced Investing",
-    question: "What is a P/E (Price-to-Earnings) ratio?",
+    type: "scenario",
+    category: "Income Investing",
+    lessonTopic: "Dividend Investing",
+    question: "A company has paid and increased its dividend every year for 25 years. It currently yields 3%. What is the main appeal for dividend growth investors?",
     options: [
-      { id: "a", text: "The profit a company makes per employee", isCorrect: false },
-      { id: "b", text: "A measure comparing a stock's price to its earnings per share", isCorrect: true },
-      { id: "c", text: "The percentage return on investment", isCorrect: false },
-      { id: "d", text: "The number of products a company sells", isCorrect: false },
+      { id: "a", text: "The 3% yield is higher than any other investment can offer", isCorrect: false },
+      { id: "b", text: "Growing dividends provide increasing income and often indicate company health", isCorrect: true },
+      { id: "c", text: "Dividend stocks never decline in price", isCorrect: false },
+      { id: "d", text: "Dividends are tax-free in all countries", isCorrect: false },
     ],
+    explanation: "Dividend growth investors value the rising income stream and the discipline/stability that long dividend histories often represent.",
   },
+  // Lesson 21: Technical Indicators
   {
     id: 18,
-    type: "scenario",
-    category: "Advanced Investing",
-    question: "You're choosing between two index funds that track the same index. Fund A has a 0.03% expense ratio, Fund B has a 1.0% expense ratio. Over 30 years on a $100,000 investment with 7% returns, the difference is approximately:",
+    type: "multiple-choice",
+    category: "Technical Analysis",
+    lessonTopic: "Technical Indicators",
+    question: "The RSI (Relative Strength Index) measures what aspect of a stock?",
     options: [
-      { id: "a", text: "About $100 - expense ratios don't matter much", isCorrect: false },
-      { id: "b", text: "Over $100,000 - fees compound significantly over time", isCorrect: true },
-      { id: "c", text: "Exactly $970 - just the fee difference times 1000", isCorrect: false },
-      { id: "d", text: "Fund B probably performs better to justify the fee", isCorrect: false },
+      { id: "a", text: "The company's revenue relative to competitors", isCorrect: false },
+      { id: "b", text: "Whether a stock may be overbought or oversold based on recent price movements", isCorrect: true },
+      { id: "c", text: "The total market capitalization of a company", isCorrect: false },
+      { id: "d", text: "How strong the company's management team is", isCorrect: false },
     ],
-    explanation: "A 1% annual fee difference compounds dramatically over decades, potentially costing hundreds of thousands.",
+    explanation: "RSI ranges from 0-100, with readings above 70 suggesting overbought conditions and below 30 suggesting oversold conditions.",
   },
+  // Lesson 23: Margin and Leverage
   {
     id: 19,
-    type: "multiple-choice",
-    category: "Advanced Investing",
-    question: "What is dollar-cost averaging?",
+    type: "scenario",
+    category: "Risk Management",
+    lessonTopic: "Margin Trading and Leverage",
+    question: "An investor uses 2:1 margin to buy $20,000 worth of stock with $10,000 of their own money. If the stock drops 25%, what is their actual loss percentage on their invested capital?",
     options: [
-      { id: "a", text: "Only investing when the market is at its lowest", isCorrect: false },
-      { id: "b", text: "Investing a fixed amount regularly regardless of market conditions", isCorrect: true },
-      { id: "c", text: "Converting all investments to dollars", isCorrect: false },
-      { id: "d", text: "A way to guarantee investment returns", isCorrect: false },
+      { id: "a", text: "25% - the same as the stock's decline", isCorrect: false },
+      { id: "b", text: "50% - leverage amplifies both gains and losses", isCorrect: true },
+      { id: "c", text: "12.5% - margin protects against losses", isCorrect: false },
+      { id: "d", text: "0% - you can only lose what you borrowed", isCorrect: false },
     ],
+    explanation: "With 2:1 leverage, a 25% stock decline ($5,000 loss on $20,000) wipes out 50% of your $10,000 invested capital. Leverage amplifies risk.",
   },
+  // Lesson 25: Short Selling
   {
     id: 20,
     type: "decision",
-    category: "Advanced Investing",
-    question: "For tax-advantaged retirement investing in the US, which account type allows contributions to grow tax-free and be withdrawn tax-free in retirement?",
+    category: "Advanced Strategies",
+    lessonTopic: "Short Selling",
+    question: "When you 'short sell' a stock, you profit when:",
     options: [
-      { id: "a", text: "Traditional IRA", isCorrect: false },
-      { id: "b", text: "Roth IRA", isCorrect: true },
-      { id: "c", text: "Regular brokerage account", isCorrect: false },
-      { id: "d", text: "Savings account", isCorrect: false },
+      { id: "a", text: "The stock price increases above your entry point", isCorrect: false },
+      { id: "b", text: "The stock price decreases below your entry point", isCorrect: true },
+      { id: "c", text: "The company pays a dividend", isCorrect: false },
+      { id: "d", text: "You hold the stock for more than one year", isCorrect: false },
     ],
-    explanation: "Roth IRAs are funded with after-tax dollars, but all growth and qualified withdrawals are tax-free.",
+    explanation: "Short selling involves borrowing shares to sell them, hoping to buy them back cheaper later. You profit when the price falls.",
   },
 ];
 
@@ -297,6 +342,7 @@ export const PlacementQuiz = ({ onComplete, isRetake = false }: PlacementQuizPro
   const [answers, setAnswers] = useState<{ questionId: number; correct: boolean }[]>([]);
   const [quizComplete, setQuizComplete] = useState(false);
   const [started, setStarted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const question = quizQuestions[currentQuestion];
   const progress = ((currentQuestion + 1) / quizQuestions.length) * 100;
@@ -338,9 +384,17 @@ export const PlacementQuiz = ({ onComplete, isRetake = false }: PlacementQuizPro
     }
   };
 
-  const handleFinish = () => {
-    const placement = calculatePlacement(score);
-    onComplete(score, placement);
+  const handleFinish = async () => {
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+    
+    try {
+      const placement = calculatePlacement(score);
+      await onComplete(score, placement);
+    } catch (error) {
+      console.error("Error completing quiz:", error);
+      setIsSubmitting(false);
+    }
   };
 
   if (!started) {
@@ -385,7 +439,7 @@ export const PlacementQuiz = ({ onComplete, isRetake = false }: PlacementQuizPro
               <div className="space-y-3 text-left p-4 rounded-lg bg-primary/5 border border-primary/10">
                 <p className="font-semibold text-sm">Topics Covered:</p>
                 <div className="flex flex-wrap gap-2">
-                  {["Budgeting", "Risk Tolerance", "Compound Interest", "Diversification", "Inflation", "Market Cycles", "Advanced Investing"].map(topic => (
+                  {["Fundamentals", "Risk & Return", "Compound Interest", "Diversification", "Market Psychology", "Technical Analysis", "Options", "Fixed Income"].map(topic => (
                     <Badge key={topic} variant="secondary" className="text-xs">
                       {topic}
                     </Badge>
@@ -461,7 +515,7 @@ export const PlacementQuiz = ({ onComplete, isRetake = false }: PlacementQuizPro
                   transition={{ delay: 0.5 }}
                   className="p-4 rounded-lg bg-amber-500/10 border border-amber-500/20"
                 >
-                  <p className="font-semibold text-amber-500">🎉 Perfect Score!</p>
+                  <p className="font-semibold text-amber-500">Perfect Score!</p>
                   <p className="text-sm text-muted-foreground">You've been placed at the highest lesson level!</p>
                 </motion.div>
               )}
@@ -473,9 +527,23 @@ export const PlacementQuiz = ({ onComplete, isRetake = false }: PlacementQuizPro
                 </p>
               )}
 
-              <Button onClick={handleFinish} size="lg" className="w-full gap-2">
-                Continue to Learning
-                <ArrowRight className="w-5 h-5" />
+              <Button 
+                onClick={handleFinish} 
+                size="lg" 
+                className="w-full gap-2"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? (
+                  <>
+                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    Saving...
+                  </>
+                ) : (
+                  <>
+                    Continue to Learning
+                    <ArrowRight className="w-5 h-5" />
+                  </>
+                )}
               </Button>
             </div>
           </Card>
@@ -490,7 +558,12 @@ export const PlacementQuiz = ({ onComplete, isRetake = false }: PlacementQuizPro
         {/* Progress Header */}
         <div className="mb-6 space-y-2">
           <div className="flex justify-between items-center">
-            <Badge variant="secondary">{question.category}</Badge>
+            <div className="flex items-center gap-2">
+              <Badge variant="secondary">{question.category}</Badge>
+              <span className="text-xs text-muted-foreground hidden sm:inline">
+                {question.lessonTopic}
+              </span>
+            </div>
             <span className="text-sm text-muted-foreground">
               Question {currentQuestion + 1} of {quizQuestions.length}
             </span>
