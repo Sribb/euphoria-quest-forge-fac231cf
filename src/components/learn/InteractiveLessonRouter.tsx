@@ -10,8 +10,14 @@ import { MarketPsychologyImmersive } from "./lessons/MarketPsychologyImmersive";
 import { CompoundVisualizer } from "./lessons/CompoundVisualizer";
 import { AllocationBuilder } from "./lessons/AllocationBuilder";
 import { StockValuationCalculator } from "./lessons/StockValuationCalculator";
-import { FinancialStatementAnalyzer } from "./lessons/FinancialStatementAnalyzer";
-import { MoatIdentifier } from "./lessons/MoatIdentifier";
+import { FinancialEscapeRoom } from "./lessons/FinancialEscapeRoom";
+import { MoatBuilderGame } from "./lessons/MoatBuilderGame";
+import { PortfolioStressTest } from "./lessons/PortfolioStressTest";
+import { LifePathSimulator } from "./lessons/LifePathSimulator";
+import { DecisionChecklistGrader } from "./lessons/DecisionChecklistGrader";
+import { TimedPatternChallenge } from "./lessons/TimedPatternChallenge";
+import { PressureBiasDetector } from "./lessons/PressureBiasDetector";
+import { OptionsPayoffSandbox } from "./lessons/OptionsPayoffSandbox";
 import { ChartPatternQuiz } from "./lessons/ChartPatternQuiz";
 import { DCASimulator } from "./lessons/DCASimulator";
 import { TaxOptimizer } from "./lessons/TaxOptimizer";
@@ -51,14 +57,14 @@ export const InteractiveLessonRouter = ({ lessonId }: InteractiveLessonRouterPro
     "5": <DiversificationImmersive />,
     "6": <MarketPsychologyImmersive />,
     "7": <StockValuationCalculator />,
-    "8": <FinancialStatementAnalyzer />,
-    "9": <MoatIdentifier />,
-    "10": <ChartPatternQuiz />,
-    "11": <DCASimulator />,
-    "12": <TaxOptimizer />,
-    "13": <ChartPatternQuiz />,
-    "14": <BiasDetector />,
-    "15": <OptionsSimulator />,
+    "8": <FinancialEscapeRoom />,
+    "9": <MoatBuilderGame />,
+    "10": <PortfolioStressTest />,
+    "11": <LifePathSimulator />,
+    "12": <DecisionChecklistGrader />,
+    "13": <TimedPatternChallenge />,
+    "14": <PressureBiasDetector />,
+    "15": <OptionsPayoffSandbox />,
     "16": <ETFComparison />,
     "17": <BondCalculator />,
     "18": <SectorAnalyzer />,
