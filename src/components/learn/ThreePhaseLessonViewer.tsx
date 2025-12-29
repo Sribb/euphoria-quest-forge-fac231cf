@@ -26,6 +26,20 @@ import { Lesson8FinancialStatementsSlides } from "./lessons/Lesson8FinancialStat
 import { Lesson9MoatBuilderSlides } from "./lessons/Lesson9MoatBuilderSlides";
 import { Lesson10StressTestSlides } from "./lessons/Lesson10StressTestSlides";
 import { Lesson11LifePathSlides } from "./lessons/Lesson11LifePathSlides";
+import { Lesson12DecisionChecklistSlides } from "./lessons/Lesson12DecisionChecklistSlides";
+import { Lesson13PatternRecognitionSlides } from "./lessons/Lesson13PatternRecognitionSlides";
+import { Lesson14BiasDetectionSlides } from "./lessons/Lesson14BiasDetectionSlides";
+import { Lesson15OptionsBasicsSlides } from "./lessons/Lesson15OptionsBasicsSlides";
+import { Lesson16CostDragSlides } from "./lessons/Lesson16CostDragSlides";
+import { Lesson17YieldCurveSlides } from "./lessons/Lesson17YieldCurveSlides";
+import { Lesson18EconomicCyclesSlides } from "./lessons/Lesson18EconomicCyclesSlides";
+import { Lesson19VolatilitySlides } from "./lessons/Lesson19VolatilitySlides";
+import { Lesson20DividendIncomeSlides } from "./lessons/Lesson20DividendIncomeSlides";
+import { Lesson21IndicatorSignalsSlides } from "./lessons/Lesson21IndicatorSignalsSlides";
+import { Lesson22REITComparisonSlides } from "./lessons/Lesson22REITComparisonSlides";
+import { Lesson23MarginRiskSlides } from "./lessons/Lesson23MarginRiskSlides";
+import { Lesson24PortfolioConstraintsSlides } from "./lessons/Lesson24PortfolioConstraintsSlides";
+import { Lesson25ShortSellingSlides } from "./lessons/Lesson25ShortSellingSlides";
 
 interface ThreePhaseLessonViewerProps {
   lessonId: string;
@@ -231,8 +245,8 @@ export const ThreePhaseLessonViewer = ({ lessonId, onClose }: ThreePhaseLessonVi
               completed={false}
             />
           </div>
-        ) : lesson.order_index >= 2 && lesson.order_index <= 11 ? (
-          // Lessons 2-11 have internal slide navigation, no external phase tabs needed
+        ) : lesson.order_index >= 2 && lesson.order_index <= 25 ? (
+          // Lessons 2-25 have internal slide navigation, no external phase tabs needed
           null
         ) : (
           <div className="flex items-center gap-4 mb-6">
@@ -403,6 +417,146 @@ export const ThreePhaseLessonViewer = ({ lessonId, onClose }: ThreePhaseLessonVi
                   updateProgress(100, true);
                   onClose();
                   toast.success("Lesson 11 complete! You understand life path planning.");
+                }}
+              />
+            </div>
+          ) : lesson.order_index === 12 ? (
+            <div className="animate-fade-in">
+              <Lesson12DecisionChecklistSlides
+                onComplete={() => {
+                  updateProgress(100, true);
+                  onClose();
+                  toast.success("Lesson 12 complete! You've mastered decision checklists.");
+                }}
+              />
+            </div>
+          ) : lesson.order_index === 13 ? (
+            <div className="animate-fade-in">
+              <Lesson13PatternRecognitionSlides
+                onComplete={() => {
+                  updateProgress(100, true);
+                  onClose();
+                  toast.success("Lesson 13 complete! You can recognize chart patterns.");
+                }}
+              />
+            </div>
+          ) : lesson.order_index === 14 ? (
+            <div className="animate-fade-in">
+              <Lesson14BiasDetectionSlides
+                onComplete={() => {
+                  updateProgress(100, true);
+                  onClose();
+                  toast.success("Lesson 14 complete! You can detect cognitive biases.");
+                }}
+              />
+            </div>
+          ) : lesson.order_index === 15 ? (
+            <div className="animate-fade-in">
+              <Lesson15OptionsBasicsSlides
+                onComplete={() => {
+                  updateProgress(100, true);
+                  onClose();
+                  toast.success("Lesson 15 complete! You understand options basics.");
+                }}
+              />
+            </div>
+          ) : lesson.order_index === 16 ? (
+            <div className="animate-fade-in">
+              <Lesson16CostDragSlides
+                onComplete={() => {
+                  updateProgress(100, true);
+                  onClose();
+                  toast.success("Lesson 16 complete! You understand cost drag impact.");
+                }}
+              />
+            </div>
+          ) : lesson.order_index === 17 ? (
+            <div className="animate-fade-in">
+              <Lesson17YieldCurveSlides
+                onComplete={() => {
+                  updateProgress(100, true);
+                  onClose();
+                  toast.success("Lesson 17 complete! You understand yield curves.");
+                }}
+              />
+            </div>
+          ) : lesson.order_index === 18 ? (
+            <div className="animate-fade-in">
+              <Lesson18EconomicCyclesSlides
+                onComplete={() => {
+                  updateProgress(100, true);
+                  onClose();
+                  toast.success("Lesson 18 complete! You understand economic cycles.");
+                }}
+              />
+            </div>
+          ) : lesson.order_index === 19 ? (
+            <div className="animate-fade-in">
+              <Lesson19VolatilitySlides
+                onComplete={() => {
+                  updateProgress(100, true);
+                  onClose();
+                  toast.success("Lesson 19 complete! You understand volatility management.");
+                }}
+              />
+            </div>
+          ) : lesson.order_index === 20 ? (
+            <div className="animate-fade-in">
+              <Lesson20DividendIncomeSlides
+                onComplete={() => {
+                  updateProgress(100, true);
+                  onClose();
+                  toast.success("Lesson 20 complete! You understand dividend income.");
+                }}
+              />
+            </div>
+          ) : lesson.order_index === 21 ? (
+            <div className="animate-fade-in">
+              <Lesson21IndicatorSignalsSlides
+                onComplete={() => {
+                  updateProgress(100, true);
+                  onClose();
+                  toast.success("Lesson 21 complete! You understand technical indicators.");
+                }}
+              />
+            </div>
+          ) : lesson.order_index === 22 ? (
+            <div className="animate-fade-in">
+              <Lesson22REITComparisonSlides
+                onComplete={() => {
+                  updateProgress(100, true);
+                  onClose();
+                  toast.success("Lesson 22 complete! You understand REIT investing.");
+                }}
+              />
+            </div>
+          ) : lesson.order_index === 23 ? (
+            <div className="animate-fade-in">
+              <Lesson23MarginRiskSlides
+                onComplete={() => {
+                  updateProgress(100, true);
+                  onClose();
+                  toast.success("Lesson 23 complete! You understand margin risk.");
+                }}
+              />
+            </div>
+          ) : lesson.order_index === 24 ? (
+            <div className="animate-fade-in">
+              <Lesson24PortfolioConstraintsSlides
+                onComplete={() => {
+                  updateProgress(100, true);
+                  onClose();
+                  toast.success("Lesson 24 complete! You understand portfolio constraints.");
+                }}
+              />
+            </div>
+          ) : lesson.order_index === 25 ? (
+            <div className="animate-fade-in">
+              <Lesson25ShortSellingSlides
+                onComplete={() => {
+                  updateProgress(100, true);
+                  onClose();
+                  toast.success("Lesson 25 complete! You understand short selling.");
                 }}
               />
             </div>
