@@ -10,10 +10,10 @@ import { MarketPsychologyImmersive } from "./lessons/MarketPsychologyImmersive";
 import { CompoundVisualizer } from "./lessons/CompoundVisualizer";
 import { AllocationBuilder } from "./lessons/AllocationBuilder";
 import { StockValuationCalculator } from "./lessons/StockValuationCalculator";
-import { FinancialEscapeRoom } from "./lessons/FinancialEscapeRoom";
-import { MoatBuilderGame } from "./lessons/MoatBuilderGame";
-import { PortfolioStressTest } from "./lessons/PortfolioStressTest";
-import { LifePathSimulator } from "./lessons/LifePathSimulator";
+import { Lesson8FinancialStatementsSlides } from "./lessons/Lesson8FinancialStatementsSlides";
+import { Lesson9MoatBuilderSlides } from "./lessons/Lesson9MoatBuilderSlides";
+import { Lesson10StressTestSlides } from "./lessons/Lesson10StressTestSlides";
+import { Lesson11LifePathSlides } from "./lessons/Lesson11LifePathSlides";
 import { DecisionChecklistGrader } from "./lessons/DecisionChecklistGrader";
 import { TimedPatternChallenge } from "./lessons/TimedPatternChallenge";
 import { PressureBiasDetector } from "./lessons/PressureBiasDetector";
@@ -57,10 +57,10 @@ export const InteractiveLessonRouter = ({ lessonId }: InteractiveLessonRouterPro
     "5": <DiversificationImmersive />,
     "6": <MarketPsychologyImmersive />,
     "7": <StockValuationCalculator />,
-    "8": <FinancialEscapeRoom />,
-    "9": <MoatBuilderGame />,
-    "10": <PortfolioStressTest />,
-    "11": <LifePathSimulator />,
+    "8": <Lesson8FinancialStatementsSlides />,
+    "9": <Lesson9MoatBuilderSlides />,
+    "10": <Lesson10StressTestSlides />,
+    "11": <Lesson11LifePathSlides />,
     "12": <DecisionChecklistGrader />,
     "13": <TimedPatternChallenge />,
     "14": <PressureBiasDetector />,
