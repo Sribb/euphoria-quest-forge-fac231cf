@@ -92,8 +92,38 @@ export const Lesson25ShortSellingSlides = ({ onComplete }: Lesson25Props) => {
           <motion.div key="slide4" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
             <Card className="p-8">
               <Badge className="mb-4 bg-purple-500/20 text-purple-400 border-purple-500/30">Apply</Badge>
-              <h2 className="text-2xl font-bold text-center mb-8">Short Selling Takeaways</h2>
-              <Card className="p-4 bg-destructive/10 border border-destructive/30 mb-6"><div className="flex items-start gap-3"><AlertTriangle className="w-5 h-5 text-destructive mt-1" /><div><h4 className="font-bold text-destructive">Warning</h4><p className="text-sm text-muted-foreground">Short selling is for experienced traders only. Most retail investors should never short individual stocks. Consider inverse ETFs for bearish bets with defined risk.</p></div></div></Card>
+              <h2 className="text-2xl font-bold text-center mb-2">Safer Alternatives to Short Selling</h2>
+              <p className="text-center text-muted-foreground mb-8">How to profit from downturns without unlimited risk</p>
+
+              <div className="space-y-4 mb-6">
+                {[
+                  { action: "Use inverse ETFs instead of shorting", tip: "Inverse S&P 500 ETFs have defined risk. You can only lose what you invest, not more" },
+                  { action: "Buy put options for bearish bets", tip: "Puts give you downside exposure with max loss = premium paid. Much safer than shorting" },
+                  { action: "Hedge with options, don't speculate", tip: "Protective puts on stocks you own is smart risk management, not gambling" },
+                  { action: "If you must short, use strict stop-losses", tip: "Set a 20-25% stop-loss. Never let a short position run against you hoping it reverses" },
+                  { action: "Size short positions tiny", tip: "Professional short sellers rarely exceed 2% of portfolio per position. You should use even less" },
+                ].map((item, idx) => (
+                  <motion.div key={idx} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.1 }} className="p-4 rounded-xl bg-muted/50 border border-border">
+                    <div className="flex items-start gap-3">
+                      <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center text-sm font-bold text-primary">{idx + 1}</div>
+                      <div>
+                        <p className="font-medium">{item.action}</p>
+                        <p className="text-sm text-muted-foreground">{item.tip}</p>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+
+              <Card className="p-4 bg-destructive/10 border border-destructive/30 mb-6">
+                <div className="flex items-start gap-3">
+                  <AlertTriangle className="w-5 h-5 text-destructive mt-1" />
+                  <div>
+                    <h4 className="font-bold text-destructive">Final Warning</h4>
+                    <p className="text-sm text-muted-foreground">Short selling has destroyed professional hedge funds. If experts with billions and research teams blow up shorting, retail investors have even worse odds. When in doubt, simply reduce long exposure instead of going short.</p>
+                  </div>
+                </div>
+              </Card>
               <div className="flex justify-center"><Button onClick={nextSlide} size="lg" className="gap-2">Complete Lesson <CheckCircle className="w-4 h-4" /></Button></div>
             </Card>
           </motion.div>

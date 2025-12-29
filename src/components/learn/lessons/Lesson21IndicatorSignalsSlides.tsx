@@ -119,9 +119,37 @@ export const Lesson21IndicatorSignalsSlides = ({ onComplete }: Lesson21Props) =>
           <motion.div key="slide4" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
             <Card className="p-8">
               <Badge className="mb-4 bg-purple-500/20 text-purple-400 border-purple-500/30">Apply</Badge>
-              <h2 className="text-2xl font-bold text-center mb-8">Apply Technical Analysis</h2>
+              <h2 className="text-2xl font-bold text-center mb-2">Build Your Indicator Toolkit</h2>
+              <p className="text-center text-muted-foreground mb-8">Practical steps to use technical indicators effectively</p>
+              
+              <div className="space-y-4 mb-6">
+                {[
+                  { action: "Master 2-3 indicators deeply before adding more", tip: "RSI + MACD + Volume is enough for most traders. Complexity doesn't equal better results" },
+                  { action: "Look for confluence before trading", tip: "Wait for 3+ indicators to agree. Single indicator signals have high false-positive rates" },
+                  { action: "Watch for divergences as warnings", tip: "When price makes new highs but RSI doesn't, momentum is fading—be cautious" },
+                  { action: "Adjust settings for your timeframe", tip: "Shorter periods (RSI-7) for day trading, longer (RSI-21) for swing trading" },
+                  { action: "Backtest before trading live", tip: "Test your indicator strategy on historical data. If it doesn't work in the past, it won't work now" },
+                ].map((item, idx) => (
+                  <motion.div key={idx} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.1 }} className="p-4 rounded-xl bg-muted/50 border border-border">
+                    <div className="flex items-start gap-3">
+                      <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center text-sm font-bold text-primary">{idx + 1}</div>
+                      <div>
+                        <p className="font-medium">{item.action}</p>
+                        <p className="text-sm text-muted-foreground">{item.tip}</p>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+
               <Card className="p-4 bg-emerald-500/10 border border-emerald-500/30 mb-6">
-                <div className="flex items-start gap-3"><Lightbulb className="w-5 h-5 text-emerald-500 mt-1" /><div><h4 className="font-bold text-emerald-500">Key Takeaway</h4><p className="text-sm text-muted-foreground">Use indicators as a toolkit, not a crystal ball. Combine technical signals with fundamental analysis and risk management for best results.</p></div></div>
+                <div className="flex items-start gap-3">
+                  <Lightbulb className="w-5 h-5 text-emerald-500 mt-1" />
+                  <div>
+                    <h4 className="font-bold text-emerald-500">Key Takeaway</h4>
+                    <p className="text-sm text-muted-foreground">Indicators are tools, not crystal balls. They work best when combined with price action, volume analysis, and sound risk management. No indicator predicts the future.</p>
+                  </div>
+                </div>
               </Card>
               <div className="flex justify-center"><Button onClick={nextSlide} size="lg" className="gap-2">Complete Lesson <CheckCircle className="w-4 h-4" /></Button></div>
             </Card>

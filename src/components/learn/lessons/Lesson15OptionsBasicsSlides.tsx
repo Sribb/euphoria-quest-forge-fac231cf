@@ -357,45 +357,69 @@ export const Lesson15OptionsBasicsSlides = ({ onComplete }: Lesson15Props) => {
             <Card className="p-8">
               <Badge className="mb-4 bg-purple-500/20 text-purple-400 border-purple-500/30">Apply</Badge>
               
-              <h2 className="text-2xl font-bold text-center mb-2">Options Knowledge Summary</h2>
-              <p className="text-center text-muted-foreground mb-8">You now understand the basics of options</p>
+              <h2 className="text-2xl font-bold text-center mb-2">Getting Started with Options</h2>
+              <p className="text-center text-muted-foreground mb-8">Safe steps for beginners entering the options market</p>
 
-              <Card className="p-6 bg-muted/50 mb-6">
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30">
-                    <TrendingUp className="w-8 h-8 text-emerald-500 mb-3" />
-                    <h3 className="font-bold mb-2">Call Options</h3>
-                    <ul className="text-sm text-muted-foreground space-y-1">
-                      <li>• Right to BUY at strike price</li>
-                      <li>• Profit when stock goes UP</li>
-                      <li>• Max loss = premium paid</li>
-                      <li>• Bullish strategy</li>
-                    </ul>
-                  </div>
-                  <div className="p-4 rounded-xl bg-destructive/10 border border-destructive/30">
-                    <TrendingDown className="w-8 h-8 text-destructive mb-3" />
-                    <h3 className="font-bold mb-2">Put Options</h3>
-                    <ul className="text-sm text-muted-foreground space-y-1">
-                      <li>• Right to SELL at strike price</li>
-                      <li>• Profit when stock goes DOWN</li>
-                      <li>• Max loss = premium paid</li>
-                      <li>• Bearish/hedging strategy</li>
-                    </ul>
-                  </div>
-                </div>
-              </Card>
+              <div className="grid md:grid-cols-2 gap-4 mb-6">
+                <Card className="p-4 bg-emerald-500/10 border border-emerald-500/30">
+                  <TrendingUp className="w-6 h-6 text-emerald-500 mb-2" />
+                  <h3 className="font-bold mb-2">Calls: Bullish Bets</h3>
+                  <ul className="text-sm text-muted-foreground space-y-1">
+                    <li>• Right to BUY at strike price</li>
+                    <li>• Profit when stock rises</li>
+                    <li>• Max loss = premium paid</li>
+                  </ul>
+                </Card>
+                <Card className="p-4 bg-destructive/10 border border-destructive/30">
+                  <TrendingDown className="w-6 h-6 text-destructive mb-2" />
+                  <h3 className="font-bold mb-2">Puts: Bearish/Hedge</h3>
+                  <ul className="text-sm text-muted-foreground space-y-1">
+                    <li>• Right to SELL at strike price</li>
+                    <li>• Profit when stock falls</li>
+                    <li>• Great for portfolio protection</li>
+                  </ul>
+                </Card>
+              </div>
 
-              <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 mb-6">
+              <div className="space-y-4 mb-6">
+                {[
+                  { action: "Start with paper trading", tip: "Practice with virtual money for 3+ months before risking real capital" },
+                  { action: "Learn the Greeks first", tip: "Understand Delta, Theta, and IV before placing any trade—they determine your P&L" },
+                  { action: "Start with buying options only", tip: "Selling options has unlimited risk. Buy calls/puts first to limit losses to premium paid" },
+                  { action: "Use options for hedging, not speculation", tip: "Protective puts on stocks you own is a safer starting point than directional bets" },
+                  { action: "Never risk more than 2-5% per trade", tip: "Options can go to zero quickly. Size positions assuming total loss is possible" },
+                ].map((item, idx) => (
+                  <motion.div
+                    key={idx}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: idx * 0.1 }}
+                    className="p-4 rounded-xl bg-muted/50 border border-border"
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center text-sm font-bold text-primary">
+                        {idx + 1}
+                      </div>
+                      <div>
+                        <p className="font-medium">{item.action}</p>
+                        <p className="text-sm text-muted-foreground">{item.tip}</p>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+
+              <Card className="p-4 bg-amber-500/10 border border-amber-500/30 mb-6">
                 <div className="flex items-start gap-3">
                   <AlertTriangle className="w-5 h-5 text-amber-500 mt-1" />
                   <div>
-                    <h4 className="font-bold text-amber-500">Risk Warning</h4>
+                    <h4 className="font-bold text-amber-500">Critical Warning</h4>
                     <p className="text-sm text-muted-foreground">
-                      Options are complex instruments. Most options expire worthless. Never risk more than you can afford to lose, and consider paper trading before using real money.
+                      90% of options expire worthless. Options are complex and most retail traders lose money. Never trade options with money you cannot afford to lose completely.
                     </p>
                   </div>
                 </div>
-              </div>
+              </Card>
 
               <div className="flex justify-center">
                 <Button onClick={nextSlide} size="lg" className="gap-2">

@@ -103,8 +103,38 @@ export const Lesson22REITComparisonSlides = ({ onComplete }: Lesson22Props) => {
           <motion.div key="slide4" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
             <Card className="p-8">
               <Badge className="mb-4 bg-purple-500/20 text-purple-400 border-purple-500/30">Apply</Badge>
-              <h2 className="text-2xl font-bold text-center mb-8">Choose Your Approach</h2>
-              <Card className="p-4 bg-emerald-500/10 border border-emerald-500/30 mb-6"><div className="flex items-start gap-3"><Lightbulb className="w-5 h-5 text-emerald-500 mt-1" /><div><h4 className="font-bold text-emerald-500">Key Takeaway</h4><p className="text-sm text-muted-foreground">REITs offer real estate exposure with stock-like liquidity. Direct property offers control and tax advantages but ties up capital. Match your choice to your liquidity needs.</p></div></div></Card>
+              <h2 className="text-2xl font-bold text-center mb-2">Real Estate Investment Strategy</h2>
+              <p className="text-center text-muted-foreground mb-8">Choose the right approach for your situation</p>
+
+              <div className="space-y-4 mb-6">
+                {[
+                  { action: "Assess your liquidity needs first", tip: "If you might need the money in 5 years, REITs are safer. Direct property requires 7-10 year horizons" },
+                  { action: "Start with REITs for diversification", tip: "REIT index funds give exposure to thousands of properties across sectors for minimal investment" },
+                  { action: "Consider REIT types carefully", tip: "Equity REITs own properties. Mortgage REITs lend money—much riskier. Know the difference" },
+                  { action: "Evaluate tax implications", tip: "REIT dividends are taxed as ordinary income. Hold in tax-advantaged accounts when possible" },
+                  { action: "Direct property for active investors only", tip: "Being a landlord is a part-time job. Factor in your time, not just returns" },
+                ].map((item, idx) => (
+                  <motion.div key={idx} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.1 }} className="p-4 rounded-xl bg-muted/50 border border-border">
+                    <div className="flex items-start gap-3">
+                      <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center text-sm font-bold text-primary">{idx + 1}</div>
+                      <div>
+                        <p className="font-medium">{item.action}</p>
+                        <p className="text-sm text-muted-foreground">{item.tip}</p>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+
+              <Card className="p-4 bg-emerald-500/10 border border-emerald-500/30 mb-6">
+                <div className="flex items-start gap-3">
+                  <Lightbulb className="w-5 h-5 text-emerald-500 mt-1" />
+                  <div>
+                    <h4 className="font-bold text-emerald-500">Key Takeaway</h4>
+                    <p className="text-sm text-muted-foreground">REITs offer real estate exposure with stock-like liquidity and diversification. Direct property offers control but requires capital, time, and long holding periods. Most investors benefit from starting with REITs.</p>
+                  </div>
+                </div>
+              </Card>
               <div className="flex justify-center"><Button onClick={nextSlide} size="lg" className="gap-2">Complete Lesson <CheckCircle className="w-4 h-4" /></Button></div>
             </Card>
           </motion.div>

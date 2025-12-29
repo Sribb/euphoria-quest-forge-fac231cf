@@ -95,8 +95,38 @@ export const Lesson24PortfolioConstraintsSlides = ({ onComplete }: Lesson24Props
           <motion.div key="slide4" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
             <Card className="p-8">
               <Badge className="mb-4 bg-purple-500/20 text-purple-400 border-purple-500/30">Apply</Badge>
-              <h2 className="text-2xl font-bold text-center mb-8">Your Portfolio Rules</h2>
-              <Card className="p-4 bg-emerald-500/10 border border-emerald-500/30 mb-6"><div className="flex items-start gap-3"><Lightbulb className="w-5 h-5 text-emerald-500 mt-1" /><div><h4 className="font-bold text-emerald-500">Key Takeaway</h4><p className="text-sm text-muted-foreground">Write down your portfolio rules before investing: asset allocation ranges, max position sizes, and rebalancing triggers. Rules remove emotion from decisions.</p></div></div></Card>
+              <h2 className="text-2xl font-bold text-center mb-2">Create Your Investment Policy</h2>
+              <p className="text-center text-muted-foreground mb-8">Document your portfolio rules before you need them</p>
+
+              <div className="space-y-4 mb-6">
+                {[
+                  { action: "Write a one-page Investment Policy Statement", tip: "Include target allocation, rebalancing triggers, and max position sizes. Review annually" },
+                  { action: "Set asset class limits based on your age", tip: "A common rule: bond allocation = your age. Adjust based on risk tolerance and goals" },
+                  { action: "Cap individual positions at 5-10%", tip: "Even your highest conviction idea shouldn't dominate. Concentration kills portfolios" },
+                  { action: "Schedule quarterly rebalancing reviews", tip: "Set calendar reminders. When positions drift 5%+ from targets, rebalance" },
+                  { action: "Define your panic protocol now", tip: "Write down what you'll do in a 30% crash. Having a plan prevents emotional selling" },
+                ].map((item, idx) => (
+                  <motion.div key={idx} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.1 }} className="p-4 rounded-xl bg-muted/50 border border-border">
+                    <div className="flex items-start gap-3">
+                      <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center text-sm font-bold text-primary">{idx + 1}</div>
+                      <div>
+                        <p className="font-medium">{item.action}</p>
+                        <p className="text-sm text-muted-foreground">{item.tip}</p>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+
+              <Card className="p-4 bg-emerald-500/10 border border-emerald-500/30 mb-6">
+                <div className="flex items-start gap-3">
+                  <Lightbulb className="w-5 h-5 text-emerald-500 mt-1" />
+                  <div>
+                    <h4 className="font-bold text-emerald-500">Key Takeaway</h4>
+                    <p className="text-sm text-muted-foreground">Rules protect you from yourself. The best investors automate discipline through constraints. Write your rules when calm, follow them when chaos hits.</p>
+                  </div>
+                </div>
+              </Card>
               <div className="flex justify-center"><Button onClick={nextSlide} size="lg" className="gap-2">Complete Lesson <CheckCircle className="w-4 h-4" /></Button></div>
             </Card>
           </motion.div>
