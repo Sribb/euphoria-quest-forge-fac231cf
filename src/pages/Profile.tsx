@@ -11,50 +11,62 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { formatDollar } from "@/lib/formatters";
 import { useNavigate } from "react-router-dom";
 import Onboarding from "./Onboarding";
-
-const PRESET_AVATARS = [
-  { id: 1, color: "#9b87f5", alt: "Purple avatar" },
-  { id: 2, color: "#0EA5E9", alt: "Blue avatar" },
-  { id: 3, color: "#10B981", alt: "Green avatar" },
-  { id: 4, color: "#F59E0B", alt: "Orange avatar" },
-  { id: 5, color: "#EF4444", alt: "Red avatar" },
-  { id: 6, color: "#EC4899", alt: "Pink avatar" },
-  { id: 7, color: "#8B5CF6", alt: "Violet avatar" },
-  { id: 8, color: "#14B8A6", alt: "Teal avatar" },
-];
-
+const PRESET_AVATARS = [{
+  id: 1,
+  color: "#9b87f5",
+  alt: "Purple avatar"
+}, {
+  id: 2,
+  color: "#0EA5E9",
+  alt: "Blue avatar"
+}, {
+  id: 3,
+  color: "#10B981",
+  alt: "Green avatar"
+}, {
+  id: 4,
+  color: "#F59E0B",
+  alt: "Orange avatar"
+}, {
+  id: 5,
+  color: "#EF4444",
+  alt: "Red avatar"
+}, {
+  id: 6,
+  color: "#EC4899",
+  alt: "Pink avatar"
+}, {
+  id: 7,
+  color: "#8B5CF6",
+  alt: "Violet avatar"
+}, {
+  id: 8,
+  color: "#14B8A6",
+  alt: "Teal avatar"
+}];
 interface ProfileProps {
   onNavigate: (tab: string) => void;
 }
-
-const Profile = ({ onNavigate }: ProfileProps) => {
-  const { user } = useAuth();
+const Profile = ({
+  onNavigate
+}: ProfileProps) => {
+  const {
+    user
+  } = useAuth();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const { onboarding, placementLesson, refetch: refetchOnboarding } = useOnboarding();
+  const {
+    onboarding,
+    placementLesson,
+    refetch: refetchOnboarding
+  } = useOnboarding();
   const [isEditing, setIsEditing] = useState(false);
   const [displayName, setDisplayName] = useState("");
   const [primaryColor, setPrimaryColor] = useState("#9b87f5");
@@ -65,123 +77,115 @@ const Profile = ({ onNavigate }: ProfileProps) => {
   const [showResetDialog, setShowResetDialog] = useState(false);
   const [showRetakeWarning, setShowRetakeWarning] = useState(false);
   const [showRetakeQuiz, setShowRetakeQuiz] = useState(false);
-  
-
   useEffect(() => {
     // Load theme preference from localStorage
     const savedTheme = localStorage.getItem("theme");
     setDarkMode(savedTheme === "dark" || savedTheme === null);
-
     const savedColor = localStorage.getItem("primaryColor");
     if (savedColor) setPrimaryColor(savedColor);
   }, []);
-
-  const { data: profile } = useQuery({
+  const {
+    data: profile
+  } = useQuery({
     queryKey: ["profile", user?.id],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("id", user?.id)
-        .single();
-      
+      const {
+        data,
+        error
+      } = await supabase.from("profiles").select("*").eq("id", user?.id).single();
       if (error) throw error;
       setDisplayName(data.display_name || "");
       setSelectedAvatar(data.avatar_url || "");
       return data;
     },
-    enabled: !!user?.id,
+    enabled: !!user?.id
   });
-
-  const { data: portfolio } = useQuery({
+  const {
+    data: portfolio
+  } = useQuery({
     queryKey: ["portfolio", user?.id],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("portfolios")
-        .select("*")
-        .eq("user_id", user?.id)
-        .single();
-      
+      const {
+        data,
+        error
+      } = await supabase.from("portfolios").select("*").eq("user_id", user?.id).single();
       if (error) throw error;
       return data;
     },
-    enabled: !!user?.id,
+    enabled: !!user?.id
   });
-
-  const { data: streak } = useQuery({
+  const {
+    data: streak
+  } = useQuery({
     queryKey: ["streak", user?.id],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("streaks")
-        .select("*")
-        .eq("user_id", user?.id)
-        .single();
-      
+      const {
+        data,
+        error
+      } = await supabase.from("streaks").select("*").eq("user_id", user?.id).single();
       if (error) throw error;
       return data;
     },
-    enabled: !!user?.id,
+    enabled: !!user?.id
   });
-
-  const { data: userAchievements } = useQuery({
+  const {
+    data: userAchievements
+  } = useQuery({
     queryKey: ["userAchievements", user?.id],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("user_achievements")
-        .select(`
+      const {
+        data,
+        error
+      } = await supabase.from("user_achievements").select(`
           *,
           achievements(*)
-        `)
-        .eq("user_id", user?.id);
-      
+        `).eq("user_id", user?.id);
       if (error) throw error;
       return data;
     },
-    enabled: !!user?.id,
+    enabled: !!user?.id
   });
-
   const updateProfileMutation = useMutation({
     mutationFn: async (newDisplayName: string) => {
-      const { error } = await supabase
-        .from("profiles")
-        .update({ display_name: newDisplayName })
-        .eq("id", user?.id);
-      
+      const {
+        error
+      } = await supabase.from("profiles").update({
+        display_name: newDisplayName
+      }).eq("id", user?.id);
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["profile"] });
+      queryClient.invalidateQueries({
+        queryKey: ["profile"]
+      });
       setIsEditing(false);
       toast.success("Profile updated!");
     },
     onError: () => {
       toast.error("Failed to update profile");
-    },
+    }
   });
-
   const updateAvatarMutation = useMutation({
     mutationFn: async (avatarUrl: string) => {
-      const { error } = await supabase
-        .from("profiles")
-        .update({ avatar_url: avatarUrl })
-        .eq("id", user?.id);
-      
+      const {
+        error
+      } = await supabase.from("profiles").update({
+        avatar_url: avatarUrl
+      }).eq("id", user?.id);
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["profile"] });
+      queryClient.invalidateQueries({
+        queryKey: ["profile"]
+      });
       setShowAvatarDialog(false);
       toast.success("Avatar updated!");
     },
     onError: () => {
       toast.error("Failed to update avatar");
-    },
+    }
   });
-
-  const portfolioReturn = portfolio
-    ? ((Number(portfolio.total_value) - 10000) / 10000) * 100
-    : 0;
-
+  const portfolioReturn = portfolio ? (Number(portfolio.total_value) - 10000) / 10000 * 100 : 0;
   const applyThemeColor = (color: string) => {
     setPrimaryColor(color);
     localStorage.setItem("primaryColor", color);
@@ -190,44 +194,43 @@ const Profile = ({ onNavigate }: ProfileProps) => {
     const r = parseInt(color.slice(1, 3), 16) / 255;
     const g = parseInt(color.slice(3, 5), 16) / 255;
     const b = parseInt(color.slice(5, 7), 16) / 255;
-
     const max = Math.max(r, g, b);
     const min = Math.min(r, g, b);
-    let h = 0, s = 0, l = (max + min) / 2;
-
+    let h = 0,
+      s = 0,
+      l = (max + min) / 2;
     if (max !== min) {
       const d = max - min;
       s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-      
       switch (max) {
-        case r: h = ((g - b) / d + (g < b ? 6 : 0)) / 6; break;
-        case g: h = ((b - r) / d + 2) / 6; break;
-        case b: h = ((r - g) / d + 4) / 6; break;
+        case r:
+          h = ((g - b) / d + (g < b ? 6 : 0)) / 6;
+          break;
+        case g:
+          h = ((b - r) / d + 2) / 6;
+          break;
+        case b:
+          h = ((r - g) / d + 4) / 6;
+          break;
       }
     }
-
     h = Math.round(h * 360);
     s = Math.round(s * 100);
     l = Math.round(l * 100);
-
     document.documentElement.style.setProperty("--primary", `${h} ${s}% ${l}%`);
     toast.success("Theme color updated");
   };
-
   const toggleDarkMode = () => {
     const newMode = !darkMode;
     setDarkMode(newMode);
     localStorage.setItem("theme", newMode ? "dark" : "light");
-    
     if (newMode) {
       document.documentElement.classList.add("dark");
     } else {
       document.documentElement.classList.remove("dark");
     }
-    
     toast.success(`${newMode ? "Dark" : "Light"} mode enabled`);
   };
-
   const handleResetPersonalization = async () => {
     try {
       // Reset to default values
@@ -246,29 +249,25 @@ const Profile = ({ onNavigate }: ProfileProps) => {
       document.documentElement.style.setProperty("--primary", "262 83% 58%");
 
       // Reset avatar and display name in database
-      const { error } = await supabase
-        .from("profiles")
-        .update({ 
-          avatar_url: defaultAvatar,
-          display_name: "Euphoria User"
-        })
-        .eq("id", user?.id);
-
+      const {
+        error
+      } = await supabase.from("profiles").update({
+        avatar_url: defaultAvatar,
+        display_name: "Euphoria User"
+      }).eq("id", user?.id);
       if (error) throw error;
-
       setDisplayName("Euphoria User");
       setSelectedAvatar(defaultAvatar);
-      
-      queryClient.invalidateQueries({ queryKey: ["profile"] });
+      queryClient.invalidateQueries({
+        queryKey: ["profile"]
+      });
       setShowResetDialog(false);
       toast.success("Personalization settings reset to defaults");
     } catch (error) {
       toast.error("Failed to reset personalization settings");
     }
   };
-
-  return (
-    <div className="space-y-6 pt-4">
+  return <div className="space-y-6 pt-4">
       <div className="flex items-center gap-3 animate-fade-in">
         <div className="w-12 h-12 rounded-xl bg-gradient-primary flex items-center justify-center shadow-glow">
           <User className="w-6 h-6 text-white" />
@@ -295,10 +294,9 @@ const Profile = ({ onNavigate }: ProfileProps) => {
                   <DialogTrigger asChild>
                     <button className="relative group">
                       <Avatar className="w-20 h-20 cursor-pointer ring-2 ring-primary/20 group-hover:ring-primary transition-all">
-                        <AvatarFallback 
-                          className="text-3xl font-bold text-white"
-                          style={{ backgroundColor: profile?.avatar_url || "#9b87f5" }}
-                        >
+                        <AvatarFallback className="text-3xl font-bold text-white" style={{
+                        backgroundColor: profile?.avatar_url || "#9b87f5"
+                      }}>
                           {displayName ? displayName[0].toUpperCase() : "E"}
                         </AvatarFallback>
                       </Avatar>
@@ -318,10 +316,9 @@ const Profile = ({ onNavigate }: ProfileProps) => {
                       {/* Preview */}
                       <div className="flex justify-center">
                         <Avatar className="w-24 h-24 ring-2 ring-primary/20">
-                          <AvatarFallback 
-                            className="text-4xl font-bold text-white"
-                            style={{ backgroundColor: selectedAvatar || "#9b87f5" }}
-                          >
+                          <AvatarFallback className="text-4xl font-bold text-white" style={{
+                          backgroundColor: selectedAvatar || "#9b87f5"
+                        }}>
                             {displayName ? displayName[0].toUpperCase() : "E"}
                           </AvatarFallback>
                         </Avatar>
@@ -330,54 +327,28 @@ const Profile = ({ onNavigate }: ProfileProps) => {
                       <div>
                         <Label className="mb-3 block">Select Color</Label>
                         <div className="grid grid-cols-4 gap-3">
-                          {PRESET_AVATARS.map((avatar) => (
-                            <button
-                              key={avatar.id}
-                              onClick={() => setSelectedAvatar(avatar.color)}
-                              className={`relative w-full aspect-square rounded-lg transition-all hover:scale-105 ${
-                                selectedAvatar === avatar.color 
-                                  ? "ring-2 ring-primary ring-offset-2" 
-                                  : "ring-1 ring-border"
-                              }`}
-                              style={{ backgroundColor: avatar.color }}
-                              title={avatar.alt}
-                              aria-label={avatar.alt}
-                            >
+                          {PRESET_AVATARS.map(avatar => <button key={avatar.id} onClick={() => setSelectedAvatar(avatar.color)} className={`relative w-full aspect-square rounded-lg transition-all hover:scale-105 ${selectedAvatar === avatar.color ? "ring-2 ring-primary ring-offset-2" : "ring-1 ring-border"}`} style={{
+                          backgroundColor: avatar.color
+                        }} title={avatar.alt} aria-label={avatar.alt}>
                               <span className="text-2xl text-white font-bold">
                                 {displayName ? displayName[0].toUpperCase() : "E"}
                               </span>
-                            </button>
-                          ))}
+                            </button>)}
                         </div>
                       </div>
-                      <Button 
-                        onClick={() => updateAvatarMutation.mutate(selectedAvatar)}
-                        disabled={updateAvatarMutation.isPending}
-                        className="w-full"
-                      >
+                      <Button onClick={() => updateAvatarMutation.mutate(selectedAvatar)} disabled={updateAvatarMutation.isPending} className="w-full">
                         Save Avatar
                       </Button>
                     </div>
                   </DialogContent>
                 </Dialog>
                 <div>
-                  {isEditing ? (
-                    <div className="flex gap-2">
-                      <Input
-                        value={displayName}
-                        onChange={(e) => setDisplayName(e.target.value)}
-                        className="w-48"
-                      />
-                      <Button
-                        size="sm"
-                        onClick={() => updateProfileMutation.mutate(displayName)}
-                      >
+                  {isEditing ? <div className="flex gap-2">
+                      <Input value={displayName} onChange={e => setDisplayName(e.target.value)} className="w-48" />
+                      <Button size="sm" onClick={() => updateProfileMutation.mutate(displayName)}>
                         Save
                       </Button>
-                    </div>
-                  ) : (
-                    <h2 className="text-2xl font-bold">{displayName || "Euphoria User"}</h2>
-                  )}
+                    </div> : <h2 className="text-2xl font-bold">{displayName || "Euphoria User"}</h2>}
                   <p className="text-muted-foreground">{user?.email}</p>
                   <div className="flex gap-2 mt-2">
                     <Badge>Level {profile?.level || 1}</Badge>
@@ -385,16 +356,10 @@ const Profile = ({ onNavigate }: ProfileProps) => {
                   </div>
                 </div>
               </div>
-              {!isEditing && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setIsEditing(true)}
-                >
+              {!isEditing && <Button variant="outline" size="sm" onClick={() => setIsEditing(true)}>
                   <Edit className="w-4 h-4 mr-2" />
                   Edit
-                </Button>
-              )}
+                </Button>}
             </div>
           </Card>
 
@@ -444,13 +409,7 @@ const Profile = ({ onNavigate }: ProfileProps) => {
               <div>
                 <Label htmlFor="primaryColor">Primary Color</Label>
                 <div className="flex items-center gap-4 mt-2">
-                  <Input
-                    id="primaryColor"
-                    type="color"
-                    value={primaryColor}
-                    onChange={(e) => applyThemeColor(e.target.value)}
-                    className="w-20 h-12 cursor-pointer"
-                  />
+                  <Input id="primaryColor" type="color" value={primaryColor} onChange={e => applyThemeColor(e.target.value)} className="w-20 h-12 cursor-pointer" />
                   <div className="flex-1">
                     <p className="text-sm text-muted-foreground">
                       Choose your preferred accent color for buttons, links, and highlights
@@ -458,36 +417,21 @@ const Profile = ({ onNavigate }: ProfileProps) => {
                   </div>
                 </div>
                 <div className="flex gap-2 mt-3">
-                  <button
-                    onClick={() => applyThemeColor("#9b87f5")}
-                    className="w-8 h-8 rounded-full border-2 border-border"
-                    style={{ backgroundColor: "#9b87f5" }}
-                    title="Purple (Default)"
-                  />
-                  <button
-                    onClick={() => applyThemeColor("#0EA5E9")}
-                    className="w-8 h-8 rounded-full border-2 border-border"
-                    style={{ backgroundColor: "#0EA5E9" }}
-                    title="Blue"
-                  />
-                  <button
-                    onClick={() => applyThemeColor("#10B981")}
-                    className="w-8 h-8 rounded-full border-2 border-border"
-                    style={{ backgroundColor: "#10B981" }}
-                    title="Green"
-                  />
-                  <button
-                    onClick={() => applyThemeColor("#F59E0B")}
-                    className="w-8 h-8 rounded-full border-2 border-border"
-                    style={{ backgroundColor: "#F59E0B" }}
-                    title="Orange"
-                  />
-                  <button
-                    onClick={() => applyThemeColor("#EF4444")}
-                    className="w-8 h-8 rounded-full border-2 border-border"
-                    style={{ backgroundColor: "#EF4444" }}
-                    title="Red"
-                  />
+                  <button onClick={() => applyThemeColor("#9b87f5")} className="w-8 h-8 rounded-full border-2 border-border" style={{
+                  backgroundColor: "#9b87f5"
+                }} title="Purple (Default)" />
+                  <button onClick={() => applyThemeColor("#0EA5E9")} className="w-8 h-8 rounded-full border-2 border-border" style={{
+                  backgroundColor: "#0EA5E9"
+                }} title="Blue" />
+                  <button onClick={() => applyThemeColor("#10B981")} className="w-8 h-8 rounded-full border-2 border-border" style={{
+                  backgroundColor: "#10B981"
+                }} title="Green" />
+                  <button onClick={() => applyThemeColor("#F59E0B")} className="w-8 h-8 rounded-full border-2 border-border" style={{
+                  backgroundColor: "#F59E0B"
+                }} title="Orange" />
+                  <button onClick={() => applyThemeColor("#EF4444")} className="w-8 h-8 rounded-full border-2 border-border" style={{
+                  backgroundColor: "#EF4444"
+                }} title="Red" />
                 </div>
               </div>
             </div>
@@ -504,54 +448,15 @@ const Profile = ({ onNavigate }: ProfileProps) => {
                   <p className="font-semibold">Enable Notifications</p>
                   <p className="text-sm text-muted-foreground">Receive updates about lessons, games, and achievements</p>
                 </div>
-                <Switch
-                  checked={notificationsEnabled}
-                  onCheckedChange={(checked) => {
-                    setNotificationsEnabled(checked);
-                    toast.success(checked ? "Notifications enabled" : "Notifications disabled");
-                  }}
-                />
+                <Switch checked={notificationsEnabled} onCheckedChange={checked => {
+                setNotificationsEnabled(checked);
+                toast.success(checked ? "Notifications enabled" : "Notifications disabled");
+              }} />
               </div>
             </div>
           </Card>
 
-          <Card className="p-6 bg-gradient-gold border-0">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
-                <span className="text-xl">👑</span>
-              </div>
-              <h2 className="text-xl font-bold text-white">Premium Subscription</h2>
-            </div>
-            <div className="space-y-4">
-              <p className="text-white/90">
-                Upgrade to Premium to unlock exclusive features:
-              </p>
-              <ul className="space-y-2 text-sm text-white/80">
-                <li className="flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-white/80" />
-                  Real-time market data and advanced charts
-                </li>
-                <li className="flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-white/80" />
-                  Unlimited stock analysis tools
-                </li>
-                <li className="flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-white/80" />
-                  Priority support and exclusive lessons
-                </li>
-                <li className="flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-white/80" />
-                  Ad-free experience
-                </li>
-              </ul>
-              <Button 
-                className="w-full bg-white text-primary hover:bg-white/90 font-bold"
-                disabled
-              >
-                Coming Soon - $9.99/month
-              </Button>
-            </div>
-          </Card>
+          
 
           <Card className="p-6">
             <div className="flex items-center gap-3 mb-4">
@@ -566,11 +471,7 @@ const Profile = ({ onNavigate }: ProfileProps) => {
                     Score: {onboarding?.quiz_score || 0}/20 • Level: {onboarding?.investment_level || "beginner"}
                   </p>
                 </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setShowRetakeWarning(true)}
-                >
+                <Button variant="outline" size="sm" onClick={() => setShowRetakeWarning(true)}>
                   <BookOpen className="w-4 h-4 mr-2" />
                   Retake Quiz
                 </Button>
@@ -592,11 +493,7 @@ const Profile = ({ onNavigate }: ProfileProps) => {
                   <p className="font-semibold">Reset Personalization</p>
                   <p className="text-sm text-muted-foreground">Restore color theme, avatar, and display name to defaults</p>
                 </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setShowResetDialog(true)}
-                >
+                <Button variant="outline" size="sm" onClick={() => setShowResetDialog(true)}>
                   <RotateCcw className="w-4 h-4 mr-2" />
                   Reset
                 </Button>
@@ -631,13 +528,10 @@ const Profile = ({ onNavigate }: ProfileProps) => {
               </AlertDialogHeader>
               <AlertDialogFooter>
                 <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction 
-                  onClick={() => {
-                    setShowRetakeWarning(false);
-                    setShowRetakeQuiz(true);
-                  }}
-                  className="bg-amber-500 hover:bg-amber-600 text-white"
-                >
+                <AlertDialogAction onClick={() => {
+                setShowRetakeWarning(false);
+                setShowRetakeQuiz(true);
+              }} className="bg-amber-500 hover:bg-amber-600 text-white">
                   I Understand, Continue
                 </AlertDialogAction>
               </AlertDialogFooter>
@@ -647,14 +541,13 @@ const Profile = ({ onNavigate }: ProfileProps) => {
           {/* Retake Quiz Dialog */}
           <Dialog open={showRetakeQuiz} onOpenChange={setShowRetakeQuiz}>
             <DialogContent className="max-w-4xl h-[90vh] p-0 overflow-hidden">
-              <Onboarding 
-                isRetake={true} 
-                onComplete={() => {
-                  setShowRetakeQuiz(false);
-                  refetchOnboarding();
-                  queryClient.invalidateQueries({ queryKey: ["lessons"] });
-                }} 
-              />
+              <Onboarding isRetake={true} onComplete={() => {
+              setShowRetakeQuiz(false);
+              refetchOnboarding();
+              queryClient.invalidateQueries({
+                queryKey: ["lessons"]
+              });
+            }} />
             </DialogContent>
           </Dialog>
 
@@ -664,19 +557,15 @@ const Profile = ({ onNavigate }: ProfileProps) => {
               <h2 className="text-xl font-bold">Security</h2>
             </div>
             <div className="space-y-4">
-              <Button
-                variant="outline"
-                onClick={async () => {
-                  try {
-                    await supabase.auth.signOut();
-                    toast.success("Signed out successfully");
-                    window.location.href = "/auth";
-                  } catch (error) {
-                    toast.error("Failed to sign out");
-                  }
-                }}
-                className="w-full"
-              >
+              <Button variant="outline" onClick={async () => {
+              try {
+                await supabase.auth.signOut();
+                toast.success("Signed out successfully");
+                window.location.href = "/auth";
+              } catch (error) {
+                toast.error("Failed to sign out");
+              }
+            }} className="w-full">
                 Sign Out
               </Button>
             </div>
@@ -707,15 +596,10 @@ const Profile = ({ onNavigate }: ProfileProps) => {
               <Award className="w-5 h-5" />
               Your Achievements
             </h3>
-            {userAchievements && userAchievements.length > 0 ? (
-              <div className="grid grid-cols-2 gap-3">
-                {userAchievements.map((ua) => {
-                  const achievement = ua.achievements as any;
-                  return (
-                    <div
-                      key={ua.id}
-                      className="p-4 bg-gradient-hero rounded-lg border border-primary/20"
-                    >
+            {userAchievements && userAchievements.length > 0 ? <div className="grid grid-cols-2 gap-3">
+                {userAchievements.map(ua => {
+              const achievement = ua.achievements as any;
+              return <div key={ua.id} className="p-4 bg-gradient-hero rounded-lg border border-primary/20">
                       <div className="text-3xl mb-2">{achievement.icon}</div>
                       <p className="font-bold text-sm">{achievement.title}</p>
                       <p className="text-xs text-muted-foreground mt-1">
@@ -724,20 +608,14 @@ const Profile = ({ onNavigate }: ProfileProps) => {
                       <p className="text-xs text-muted-foreground mt-2">
                         Earned {new Date(ua.earned_at).toLocaleDateString()}
                       </p>
-                    </div>
-                  );
-                })}
-              </div>
-            ) : (
-              <p className="text-center text-muted-foreground py-12">
+                    </div>;
+            })}
+              </div> : <p className="text-center text-muted-foreground py-12">
                 Complete games and lessons to earn achievements!
-              </p>
-            )}
+              </p>}
           </Card>
         </TabsContent>
       </Tabs>
-    </div>
-  );
+    </div>;
 };
-
 export default Profile;
