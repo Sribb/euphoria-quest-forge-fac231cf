@@ -1,9 +1,7 @@
-import { useState } from "react";
 import { TrendingUp, ArrowLeft, Brain, BarChart3, Zap } from "lucide-react";
 import { InteractiveAIMarket } from "@/components/trade/InteractiveAIMarket";
-import { PortfolioSummary } from "@/components/trade/PortfolioSummary";
+import { PortfolioOverview } from "@/components/trade/PortfolioOverview";
 import { AssetAllocation } from "@/components/trade/AssetAllocation";
-import { PortfolioGraph } from "@/components/trade/PortfolioGraph";
 import { TransactionHistory } from "@/components/trade/TransactionHistory";
 import { StockTrading } from "@/components/trade/StockTrading";
 import { Button } from "@/components/ui/button";
@@ -71,10 +69,7 @@ const Trade = ({ onNavigate, onStockSearch }: TradeProps) => {
 
           {/* Overview Tab */}
           <TabsContent value="overview" className="space-y-6 animate-fade-in">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <PortfolioSummary />
-              <PortfolioGraph />
-            </div>
+            <PortfolioOverview />
             <AssetAllocation />
             <TransactionHistory />
           </TabsContent>
