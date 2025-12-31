@@ -103,7 +103,8 @@ const Analytics = ({ onNavigate }: AnalyticsProps) => {
           progress: lessonProgress?.progress || 0,
           completed: lessonProgress?.completed || false,
           duration: lesson.duration_minutes,
-          completedAt: lessonProgress?.completed_at,
+          // Use completed_at if available, otherwise fall back to updated_at for completed lessons
+          completedAt: lessonProgress?.completed_at || (lessonProgress?.completed ? lessonProgress?.updated_at : null),
         };
       });
     },
