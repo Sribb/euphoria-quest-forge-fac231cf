@@ -3,6 +3,7 @@ import { Card } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useOnboarding } from "@/hooks/useOnboarding";
 import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ResponsiveContainer } from "recharts";
 import { alphaVantageService } from "@/lib/alphaVantageService";
 import { useEffect } from "react";
@@ -17,6 +18,7 @@ interface AnalyticsProps {
 
 const Analytics = ({ onNavigate }: AnalyticsProps) => {
   const { user } = useAuth();
+  const { placementLesson } = useOnboarding();
 
   const { data: profile } = useQuery({
     queryKey: ["profile", user?.id],
@@ -97,14 +99,24 @@ const Analytics = ({ onNavigate }: AnalyticsProps) => {
       if (progressError) throw progressError;
 
       return lessons.map(lesson => {
-        const lessonProgress = progress?.find(p => p.lesson_id === lesson.id);
+        const lessonProgressData = progress?.find(p => p.lesson_id === lesson.id);
+        const isActuallyCompleted = lessonProgressData?.completed || false;
+        // Apply same skipped-by-placement logic as Learn page
+        const isSkippedByPlacement = lesson.order_index < placementLesson && !isActuallyCompleted;
+        const isCompleted = isActuallyCompleted || isSkippedByPlacement;
+        
         return {
           title: lesson.title,
-          progress: lessonProgress?.progress || 0,
-          completed: lessonProgress?.completed || false,
+          orderIndex: lesson.order_index,
+          progress: lessonProgressData?.progress || 0,
+          completed: isCompleted,
+          actuallyCompleted: isActuallyCompleted,
+          skippedByPlacement: isSkippedByPlacement,
           duration: lesson.duration_minutes,
-          // Use completed_at if available, otherwise fall back to updated_at for completed lessons
-          completedAt: lessonProgress?.completed_at || (lessonProgress?.completed ? lessonProgress?.updated_at : null),
+          // Only use completedAt for actually completed lessons (not skipped ones)
+          completedAt: isActuallyCompleted 
+            ? (lessonProgressData?.completed_at || lessonProgressData?.updated_at) 
+            : null,
         };
       });
     },
@@ -180,9 +192,14 @@ const Analytics = ({ onNavigate }: AnalyticsProps) => {
   const completedLessons = lessonProgress?.filter(l => l.completed).length || 0;
   const overallProgress = totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
   
+  // Only count time for actually completed lessons (not skipped ones)
   const timeSpent = lessonProgress?.reduce((sum, lesson) => {
-    if (lesson.completed) {
+    if (lesson.actuallyCompleted) {
       return sum + lesson.duration;
+    }
+    // Don't count time for skipped lessons
+    if (lesson.skippedByPlacement) {
+      return sum;
     }
     return sum + (lesson.duration * (lesson.progress / 100));
   }, 0) || 0;
