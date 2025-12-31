@@ -102,11 +102,15 @@ export const PortfolioOverview = () => {
   ];
 
   return (
-    <Card className="overflow-hidden border-0 shadow-xl animate-fade-in bg-gradient-to-br from-card via-card to-muted/30">
+    <Card className="overflow-hidden border border-white/10 shadow-2xl animate-fade-in bg-gradient-to-br from-background/80 via-card/60 to-muted/40 backdrop-blur-xl relative">
       {/* Header Section */}
       <div className="relative p-6 pb-0">
-        {/* Decorative gradient orb */}
-        <div className="absolute -top-20 -right-20 w-64 h-64 rounded-full bg-gradient-to-br from-primary/20 via-success/10 to-transparent blur-3xl pointer-events-none" />
+      {/* Glass noise overlay */}
+      <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMDAiIGhlaWdodD0iMzAwIj48ZmlsdGVyIGlkPSJhIiB4PSIwIiB5PSIwIj48ZmVUdXJidWxlbmNlIGJhc2VGcmVxdWVuY3k9Ii43NSIgc3RpdGNoVGlsZXM9InN0aXRjaCIgdHlwZT0iZnJhY3RhbE5vaXNlIi8+PGZlQ29sb3JNYXRyaXggdHlwZT0ic2F0dXJhdGUiIHZhbHVlcz0iMCIvPjwvZmlsdGVyPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbHRlcj0idXJsKCNhKSIgb3BhY2l0eT0iMC4wNSIvPjwvc3ZnPg==')] opacity-50 pointer-events-none" />
+      
+      {/* Decorative gradient orbs */}
+      <div className="absolute -top-32 -right-32 w-80 h-80 rounded-full bg-gradient-to-br from-primary/30 via-success/20 to-transparent blur-3xl pointer-events-none" />
+      <div className="absolute -bottom-20 -left-20 w-60 h-60 rounded-full bg-gradient-to-tr from-primary/20 via-transparent to-transparent blur-3xl pointer-events-none" />
         
         <div className="relative flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
           {/* Main Value */}
@@ -140,7 +144,7 @@ export const PortfolioOverview = () => {
           </div>
 
           {/* Time Frame Selector */}
-          <div className="flex items-center gap-1 p-1 bg-muted/50 rounded-xl backdrop-blur-sm">
+          <div className="flex items-center gap-1 p-1.5 bg-white/5 border border-white/10 rounded-xl backdrop-blur-md">
             {timeFrames.map((tf) => (
               <Button
                 key={tf}
@@ -231,7 +235,7 @@ export const PortfolioOverview = () => {
         {stats.map((stat, index) => (
           <div 
             key={stat.label}
-            className="relative group p-4 rounded-xl bg-gradient-to-br from-muted/50 to-muted/20 border border-border/50 hover:border-border transition-all duration-300 hover:shadow-lg"
+            className="relative group p-4 rounded-xl bg-white/5 border border-white/10 backdrop-blur-sm hover:bg-white/10 hover:border-white/20 transition-all duration-300 hover:shadow-lg hover:shadow-primary/5"
             style={{ animationDelay: `${index * 50}ms` }}
           >
             <div className={`absolute top-3 right-3 w-8 h-8 rounded-lg ${stat.bgColor} flex items-center justify-center`}>
