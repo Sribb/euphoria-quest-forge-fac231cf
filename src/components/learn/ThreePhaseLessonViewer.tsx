@@ -169,12 +169,19 @@ export const ThreePhaseLessonViewer = ({ lessonId, onClose }: ThreePhaseLessonVi
   };
 
   const updateProgress = async (newProgress: number, isCompleted: boolean = false) => {
-    const { error } = await supabase.from("user_lesson_progress").upsert({
+    const updateData: any = {
       user_id: user?.id,
       lesson_id: lessonId,
       progress: newProgress,
       completed: isCompleted,
-    }, {
+    };
+    
+    // Set completed_at timestamp when marking as complete
+    if (isCompleted) {
+      updateData.completed_at = new Date().toISOString();
+    }
+    
+    const { error } = await supabase.from("user_lesson_progress").upsert(updateData, {
       onConflict: 'user_id,lesson_id'
     });
 
