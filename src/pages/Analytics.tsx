@@ -8,7 +8,7 @@ import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, Responsi
 import { alphaVantageService } from "@/lib/alphaVantageService";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { PerformanceHeatmap } from "@/components/analytics/PerformanceHeatmap";
+
 import { ScenarioPlayground } from "@/components/analytics/ScenarioPlayground";
 
 interface AnalyticsProps {
@@ -207,30 +207,6 @@ const Analytics = ({ onNavigate }: AnalyticsProps) => {
   const totalCoinsEarned = gameSessions?.reduce((sum, session) => sum + (session.coins_earned || 0), 0) || 0;
   const avgGameScore = gameSessions?.reduce((sum, session) => sum + (session.score || 0), 0) / (totalGames || 1) || 0;
 
-  // Heatmap data (last 7 days)
-  const heatmapData = Array.from({ length: 7 }, (_, i) => {
-    const date = new Date();
-    date.setDate(date.getDate() - (6 - i));
-    const dayStr = date.toLocaleDateString('en-US', { weekday: 'short' });
-    
-    const dayLessons = lessonProgress?.filter(l => {
-      if (!l.completedAt) return false;
-      const completedDate = new Date(l.completedAt);
-      return completedDate.toDateString() === date.toDateString();
-    }).length || 0;
-
-    const dayGames = gameSessions?.filter(g => {
-      const gameDate = new Date(g.created_at);
-      return gameDate.toDateString() === date.toDateString();
-    }).length || 0;
-
-    const dayTrades = transactions?.filter(t => {
-      const tradeDate = new Date(t.created_at);
-      return tradeDate.toDateString() === date.toDateString();
-    }).length || 0;
-
-    return { day: dayStr, lessons: dayLessons, games: dayGames, trades: dayTrades };
-  });
 
   // Radar chart data for skills
   const skillsData = [
@@ -309,7 +285,7 @@ const Analytics = ({ onNavigate }: AnalyticsProps) => {
           </Card>
         </div>
 
-        <PerformanceHeatmap data={heatmapData} />
+        
 
         <Card className="p-6 animate-fade-in overflow-hidden">
           <h3 className="text-lg font-bold mb-4">Skills Radar</h3>
