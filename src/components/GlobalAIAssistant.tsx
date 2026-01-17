@@ -166,7 +166,7 @@ export const GlobalAIAssistant = () => {
         onClick={() => setIsOpen(!isOpen)}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
-        className="fixed bottom-24 right-4 z-[100] w-14 h-14 rounded-full bg-card border-2 border-primary/30 shadow-glow flex items-center justify-center overflow-hidden hover:border-primary/60 transition-colors duration-300"
+        className="fixed bottom-4 right-4 z-[100] w-14 h-14 rounded-full bg-card border-2 border-primary/30 shadow-glow flex items-center justify-center overflow-hidden hover:border-primary/60 transition-colors duration-300"
         whileTap={{ scale: 0.85 }}
         transition={{ type: "spring", stiffness: 400, damping: 15 }}
       >
@@ -187,7 +187,7 @@ export const GlobalAIAssistant = () => {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.9 }}
             transition={{ type: "spring", stiffness: 300, damping: 25 }}
-            className="fixed bottom-44 right-4 z-[100] w-[360px] max-w-[calc(100vw-2rem)]"
+            className="fixed bottom-20 right-4 z-[100] w-[360px] max-w-[calc(100vw-2rem)]"
           >
             <Card className="border-primary/20 shadow-glow overflow-hidden">
               {/* Header */}
