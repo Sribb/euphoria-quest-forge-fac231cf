@@ -1,4 +1,4 @@
-import { BarChart3, BookOpen, Clock, Trophy, Target, ArrowLeft, Brain, Sparkles } from "lucide-react";
+import { BarChart3, BookOpen, Clock, Trophy, Target, ArrowLeft, Brain } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -8,7 +8,6 @@ import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, Responsi
 import { alphaVantageService } from "@/lib/alphaVantageService";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { AIAnalyticsChat } from "@/components/analytics/AIAnalyticsChat";
 import { PerformanceHeatmap } from "@/components/analytics/PerformanceHeatmap";
 import { ScenarioPlayground } from "@/components/analytics/ScenarioPlayground";
 
@@ -266,90 +265,68 @@ const Analytics = ({ onNavigate }: AnalyticsProps) => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 space-y-6">
-          {/* Overview Section */}
-          <div className="space-y-6">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 animate-fade-in">
-              <Card className="p-4 bg-gradient-success border-0">
-                <div className="flex items-center gap-2 mb-2">
-                  <BookOpen className="w-5 h-5 text-white shrink-0" />
-                  <span className="text-sm text-white/80 truncate">Lessons Completed</span>
-                </div>
-                <p className="text-2xl font-bold text-white">
-                  {completedLessons}/{totalLessons}
-                </p>
-                <p className="text-sm text-white/80 mt-1">
-                  {overallProgress}% overall progress
-                </p>
-              </Card>
-
-              <Card className="p-4 bg-gradient-primary border-0">
-                <div className="flex items-center gap-2 mb-2">
-                  <Clock className="w-5 h-5 text-white shrink-0" />
-                  <span className="text-sm text-white/80 truncate">Time Invested</span>
-                </div>
-                <p className="text-2xl font-bold text-white">{Math.round(timeSpent)} min</p>
-                <p className="text-sm text-white/80 mt-1">Learning time</p>
-              </Card>
-
-              <Card className="p-4 bg-gradient-accent border-0">
-                <div className="flex items-center gap-2 mb-2">
-                  <Trophy className="w-5 h-5 text-white shrink-0" />
-                  <span className="text-sm text-white/80 truncate">Total Coins</span>
-                </div>
-                <p className="text-2xl font-bold text-white">{profile?.coins || 0}</p>
-                <p className="text-sm text-white/80 mt-1">Current balance</p>
-              </Card>
-
-              <Card className="p-4 bg-gradient-hero border-0">
-                <div className="flex items-center gap-2 mb-2">
-                  <Target className="w-5 h-5 text-white shrink-0" />
-                  <span className="text-sm text-white/80 truncate">Games Played</span>
-                </div>
-                <p className="text-2xl font-bold text-white">{totalGames}</p>
-                <p className="text-sm text-white/80 mt-1">Avg score: {avgGameScore.toFixed(0)}</p>
-              </Card>
+      <div className="space-y-6">
+        {/* Overview Section */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 animate-fade-in">
+          <Card className="p-4 bg-gradient-success border-0">
+            <div className="flex items-center gap-2 mb-2">
+              <BookOpen className="w-5 h-5 text-white shrink-0" />
+              <span className="text-sm text-white/80 truncate">Lessons Completed</span>
             </div>
+            <p className="text-2xl font-bold text-white">
+              {completedLessons}/{totalLessons}
+            </p>
+            <p className="text-sm text-white/80 mt-1">
+              {overallProgress}% overall progress
+            </p>
+          </Card>
 
-            <PerformanceHeatmap data={heatmapData} />
+          <Card className="p-4 bg-gradient-primary border-0">
+            <div className="flex items-center gap-2 mb-2">
+              <Clock className="w-5 h-5 text-white shrink-0" />
+              <span className="text-sm text-white/80 truncate">Time Invested</span>
+            </div>
+            <p className="text-2xl font-bold text-white">{Math.round(timeSpent)} min</p>
+            <p className="text-sm text-white/80 mt-1">Learning time</p>
+          </Card>
 
-            <Card className="p-6 animate-fade-in overflow-hidden">
-              <h3 className="text-lg font-bold mb-4">Skills Radar</h3>
-              <div className="w-full overflow-x-auto">
-                <ResponsiveContainer width="100%" height={300}>
-                  <RadarChart data={skillsData}>
-                    <PolarGrid stroke="hsl(var(--border))" />
-                    <PolarAngleAxis dataKey="skill" tick={{ fill: 'hsl(var(--foreground))', fontSize: 12 }} />
-                    <PolarRadiusAxis angle={90} domain={[0, 100]} tick={{ fill: 'hsl(var(--muted-foreground))' }} />
-                    <Radar name="Performance" dataKey="value" stroke="hsl(var(--primary))" fill="hsl(var(--primary))" fillOpacity={0.6} />
-                  </RadarChart>
-                </ResponsiveContainer>
-              </div>
-            </Card>
-          </div>
+          <Card className="p-4 bg-gradient-accent border-0">
+            <div className="flex items-center gap-2 mb-2">
+              <Trophy className="w-5 h-5 text-white shrink-0" />
+              <span className="text-sm text-white/80 truncate">Total Coins</span>
+            </div>
+            <p className="text-2xl font-bold text-white">{profile?.coins || 0}</p>
+            <p className="text-sm text-white/80 mt-1">Current balance</p>
+          </Card>
 
-          {/* Scenario Playground */}
-          <ScenarioPlayground />
+          <Card className="p-4 bg-gradient-hero border-0">
+            <div className="flex items-center gap-2 mb-2">
+              <Target className="w-5 h-5 text-white shrink-0" />
+              <span className="text-sm text-white/80 truncate">Games Played</span>
+            </div>
+            <p className="text-2xl font-bold text-white">{totalGames}</p>
+            <p className="text-sm text-white/80 mt-1">Avg score: {avgGameScore.toFixed(0)}</p>
+          </Card>
         </div>
 
-        {/* AI Assistant - Always Visible on Right */}
-        <div className="lg:col-span-1">
-          <div className="sticky top-6">
-            <AIAnalyticsChat
-              title="Euphoria AI Assistant"
-              description="Your personal analytics guide"
-              icon={<Sparkles className="w-5 h-5 text-white" />}
-              presetQuestions={[
-                "What's my overall progress?",
-                "Explain this scenario",
-                "What should I focus on?",
-                "How does volatility affect me?",
-              ]}
-              isCollapsible={false}
-            />
+        <PerformanceHeatmap data={heatmapData} />
+
+        <Card className="p-6 animate-fade-in overflow-hidden">
+          <h3 className="text-lg font-bold mb-4">Skills Radar</h3>
+          <div className="w-full overflow-x-auto">
+            <ResponsiveContainer width="100%" height={300}>
+              <RadarChart data={skillsData}>
+                <PolarGrid stroke="hsl(var(--border))" />
+                <PolarAngleAxis dataKey="skill" tick={{ fill: 'hsl(var(--foreground))', fontSize: 12 }} />
+                <PolarRadiusAxis angle={90} domain={[0, 100]} tick={{ fill: 'hsl(var(--muted-foreground))' }} />
+                <Radar name="Performance" dataKey="value" stroke="hsl(var(--primary))" fill="hsl(var(--primary))" fillOpacity={0.6} />
+              </RadarChart>
+            </ResponsiveContainer>
           </div>
-        </div>
+        </Card>
+
+        {/* Scenario Playground */}
+        <ScenarioPlayground />
       </div>
     </div>
   );
