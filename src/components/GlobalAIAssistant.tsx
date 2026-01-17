@@ -24,6 +24,7 @@ const presetQuestions = [
 export const GlobalAIAssistant = () => {
   const { user } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -163,16 +164,18 @@ export const GlobalAIAssistant = () => {
       {/* Floating Logo Button */}
       <motion.button
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed bottom-24 right-4 z-[100] w-14 h-14 rounded-full bg-card border-2 border-primary/30 shadow-glow flex items-center justify-center overflow-hidden hover:border-primary/60 transition-all duration-300"
-        whileHover={{ scale: 1.1 }}
-        whileTap={{ scale: 0.95 }}
-        animate={{ rotate: isOpen ? 180 : 0 }}
-        transition={{ type: "spring", stiffness: 300, damping: 20 }}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        className="fixed bottom-24 right-4 z-[100] w-14 h-14 rounded-full bg-card border-2 border-primary/30 shadow-glow flex items-center justify-center overflow-hidden hover:border-primary/60 transition-colors duration-300"
+        whileTap={{ scale: 0.85 }}
+        transition={{ type: "spring", stiffness: 400, damping: 15 }}
       >
-        <img 
+        <motion.img 
           src={euphoriaLogo} 
           alt="Euphoria AI" 
           className="w-10 h-10 object-contain"
+          animate={{ rotate: isHovered ? 360 : 0 }}
+          transition={{ duration: 0.5, ease: "easeInOut" }}
         />
       </motion.button>
 
