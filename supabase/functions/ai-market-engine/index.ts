@@ -222,56 +222,78 @@ async function updateMarketPrices(supabase: any, sessionId: string, apiKey: stri
     .eq('session_id', sessionId)
     .eq('is_active', true);
 
-  // Use AI to determine price movements
-  const aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${apiKey}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      model: 'google/gemini-2.5-flash',
-      messages: [{
-        role: 'system',
-        content: `You are a market simulation AI. Generate realistic price movements for stocks based on:
+  // Use AI to determine price movements - with fallback for errors
+  let priceUpdates = { updates: [] as { symbol: string; price_change_percent: number }[] };
+  
+  try {
+    const aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'google/gemini-2.5-flash',
+        messages: [{
+          role: 'system',
+          content: `You are a market simulation AI. Generate realistic price movements for stocks based on:
 - Market trend: ${session.market_trend}
 - Volatility: ${session.market_volatility}
 - Active events: ${JSON.stringify(events || [])}
 Return JSON with symbol and price_change_percent for each stock.`
-      }, {
-        role: 'user',
-        content: `Current prices: ${JSON.stringify(prices)}. Generate next tick price movements.`
-      }],
-      tools: [{
-        type: "function",
-        function: {
-          name: "update_prices",
-          parameters: {
-            type: "object",
-            properties: {
-              updates: {
-                type: "array",
-                items: {
-                  type: "object",
-                  properties: {
-                    symbol: { type: "string" },
-                    price_change_percent: { type: "number" }
-                  },
-                  required: ["symbol", "price_change_percent"]
+        }, {
+          role: 'user',
+          content: `Current prices: ${JSON.stringify(prices)}. Generate next tick price movements.`
+        }],
+        tools: [{
+          type: "function",
+          function: {
+            name: "update_prices",
+            parameters: {
+              type: "object",
+              properties: {
+                updates: {
+                  type: "array",
+                  items: {
+                    type: "object",
+                    properties: {
+                      symbol: { type: "string" },
+                      price_change_percent: { type: "number" }
+                    },
+                    required: ["symbol", "price_change_percent"]
+                  }
                 }
-              }
-            },
-            required: ["updates"]
+              },
+              required: ["updates"]
+            }
           }
-        }
-      }],
-      tool_choice: { type: "function", function: { name: "update_prices" } }
-    })
-  });
+        }],
+        tool_choice: { type: "function", function: { name: "update_prices" } }
+      })
+    });
 
-  const aiData = await aiResponse.json();
-  const toolCall = aiData.choices[0]?.message?.tool_calls?.[0];
-  const priceUpdates = toolCall ? JSON.parse(toolCall.function.arguments) : { updates: [] };
+    if (!aiResponse.ok) {
+      console.warn('AI API returned error, using fallback price updates');
+      // Generate fallback price updates based on volatility
+      priceUpdates.updates = (prices || []).map((p: any) => ({
+        symbol: p.symbol,
+        price_change_percent: (Math.random() - 0.5) * session.market_volatility * 2
+      }));
+    } else {
+      const aiData = await aiResponse.json();
+      const toolCall = aiData.choices?.[0]?.message?.tool_calls?.[0];
+      if (toolCall) {
+        priceUpdates = JSON.parse(toolCall.function.arguments);
+      }
+    }
+  } catch (aiError) {
+    console.warn('AI request failed, using fallback:', aiError);
+    // Generate fallback price updates
+    priceUpdates.updates = (prices || []).map((p: any) => ({
+      symbol: p.symbol,
+      price_change_percent: (Math.random() - 0.5) * (session?.market_volatility || 0.3) * 2
+    }));
+  }
 
   // Apply price updates
   for (const update of priceUpdates.updates) {
@@ -309,60 +331,70 @@ async function updateCompetitorActions(supabase: any, sessionId: string, prices:
     .eq('session_id', sessionId);
 
   for (const competitor of competitors || []) {
-    // AI decides what competitor should do
-    const aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'google/gemini-2.5-flash',
-        messages: [{
-          role: 'system',
-          content: `You are ${competitor.name}, a ${competitor.strategy_type} trader with personality: ${JSON.stringify(competitor.personality_traits)}. Decide your next trade based on market conditions.`
-        }, {
-          role: 'user',
-          content: `Current prices: ${JSON.stringify(prices)}. Portfolio: ${JSON.stringify(competitor.portfolio)}. Capital: ${competitor.capital}. What's your next move?`
-        }],
-        tools: [{
-          type: "function",
-          function: {
-            name: "make_trade",
-            parameters: {
-              type: "object",
-              properties: {
-                action: { type: "string", enum: ["buy", "sell", "hold"] },
-                symbol: { type: "string" },
-                quantity: { type: "number" },
-                reasoning: { type: "string" }
-              },
-              required: ["action", "reasoning"]
+    try {
+      // AI decides what competitor should do
+      const aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${apiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'google/gemini-2.5-flash',
+          messages: [{
+            role: 'system',
+            content: `You are ${competitor.name}, a ${competitor.strategy_type} trader with personality: ${JSON.stringify(competitor.personality_traits)}. Decide your next trade based on market conditions.`
+          }, {
+            role: 'user',
+            content: `Current prices: ${JSON.stringify(prices)}. Portfolio: ${JSON.stringify(competitor.portfolio)}. Capital: ${competitor.capital}. What's your next move?`
+          }],
+          tools: [{
+            type: "function",
+            function: {
+              name: "make_trade",
+              parameters: {
+                type: "object",
+                properties: {
+                  action: { type: "string", enum: ["buy", "sell", "hold"] },
+                  symbol: { type: "string" },
+                  quantity: { type: "number" },
+                  reasoning: { type: "string" }
+                },
+                required: ["action", "reasoning"]
+              }
             }
-          }
-        }],
-        tool_choice: { type: "function", function: { name: "make_trade" } }
-      })
-    });
-
-    const aiData = await aiResponse.json();
-    const toolCall = aiData.choices[0]?.message?.tool_calls?.[0];
-    
-    if (toolCall) {
-      const trade = JSON.parse(toolCall.function.arguments);
-      
-      // Update competitor's learning data
-      const learningData = competitor.learning_data || {};
-      learningData[new Date().toISOString()] = trade;
-      
-      await supabase
-        .from('ai_competitors')
-        .update({
-          learning_data: learningData,
-          last_action_at: new Date().toISOString(),
-          total_trades: competitor.total_trades + 1
+          }],
+          tool_choice: { type: "function", function: { name: "make_trade" } }
         })
-        .eq('id', competitor.id);
+      });
+
+      if (!aiResponse.ok) {
+        console.warn(`AI failed for competitor ${competitor.name}, skipping update`);
+        continue;
+      }
+
+      const aiData = await aiResponse.json();
+      const toolCall = aiData.choices?.[0]?.message?.tool_calls?.[0];
+      
+      if (toolCall) {
+        const trade = JSON.parse(toolCall.function.arguments);
+        
+        // Update competitor's learning data
+        const learningData = competitor.learning_data || {};
+        learningData[new Date().toISOString()] = trade;
+        
+        await supabase
+          .from('ai_competitors')
+          .update({
+            learning_data: learningData,
+            last_action_at: new Date().toISOString(),
+            total_trades: competitor.total_trades + 1
+          })
+          .eq('id', competitor.id);
+      }
+    } catch (error) {
+      console.warn(`Error updating competitor ${competitor.name}:`, error);
+      // Continue with other competitors even if one fails
     }
   }
 }
@@ -393,53 +425,71 @@ async function simulateTradeImpact(
     .select('*')
     .eq('session_id', sessionId);
 
-  // Use AI to predict trade impact
-  const aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${apiKey}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      model: 'google/gemini-2.5-flash',
-      messages: [{
-        role: 'system',
-        content: `Analyze the market impact of a ${side} order for ${quantity} shares of ${symbol}.
+  // Use AI to predict trade impact with fallback
+  let impact: any = {
+    price_impact_percent: (Math.random() - 0.5) * 2,
+    competitor_reactions: ['Monitoring the trade', 'Adjusting positions'],
+    market_sentiment_shift: Math.random() * 0.5,
+    risk_level: 'medium',
+    opportunity_score: 50 + Math.random() * 30
+  };
+
+  try {
+    const aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'google/gemini-2.5-flash',
+        messages: [{
+          role: 'system',
+          content: `Analyze the market impact of a ${side} order for ${quantity} shares of ${symbol}.
 Consider:
-- Current price: $${price.current_price}
-- Market volatility: ${session.market_volatility}
+- Current price: $${price?.current_price || 100}
+- Market volatility: ${session?.market_volatility || 0.3}
 - AI competitor reactions
-- Price momentum: ${price.price_momentum}
+- Price momentum: ${price?.price_momentum || 0}
 
 Provide detailed impact prediction.`
-      }],
-      tools: [{
-        type: "function",
-        function: {
-          name: "predict_impact",
-          parameters: {
-            type: "object",
-            properties: {
-              price_impact_percent: { type: "number" },
-              competitor_reactions: {
-                type: "array",
-                items: { type: "string" }
+        }],
+        tools: [{
+          type: "function",
+          function: {
+            name: "predict_impact",
+            parameters: {
+              type: "object",
+              properties: {
+                price_impact_percent: { type: "number" },
+                competitor_reactions: {
+                  type: "array",
+                  items: { type: "string" }
+                },
+                market_sentiment_shift: { type: "number" },
+                risk_level: { type: "string", enum: ["low", "medium", "high"] },
+                opportunity_score: { type: "number" }
               },
-              market_sentiment_shift: { type: "number" },
-              risk_level: { type: "string", enum: ["low", "medium", "high"] },
-              opportunity_score: { type: "number" }
-            },
-            required: ["price_impact_percent", "competitor_reactions", "market_sentiment_shift", "risk_level", "opportunity_score"]
+              required: ["price_impact_percent", "competitor_reactions", "market_sentiment_shift", "risk_level", "opportunity_score"]
+            }
           }
-        }
-      }],
-      tool_choice: { type: "function", function: { name: "predict_impact" } }
-    })
-  });
+        }],
+        tool_choice: { type: "function", function: { name: "predict_impact" } }
+      })
+    });
 
-  const aiData = await aiResponse.json();
-  const toolCall = aiData.choices[0]?.message?.tool_calls?.[0];
-  const impact = toolCall ? JSON.parse(toolCall.function.arguments) : {};
+    if (aiResponse.ok) {
+      const aiData = await aiResponse.json();
+      const toolCall = aiData.choices?.[0]?.message?.tool_calls?.[0];
+      if (toolCall) {
+        impact = JSON.parse(toolCall.function.arguments);
+      }
+    } else {
+      console.warn('AI failed for trade impact, using fallback');
+    }
+  } catch (error) {
+    console.warn('Error predicting trade impact:', error);
+  }
 
   return new Response(
     JSON.stringify({ impact, competitors }),
@@ -453,18 +503,31 @@ async function triggerMarketEvent(supabase: any, sessionId: string, apiKey: stri
     .select('*')
     .eq('session_id', sessionId);
 
-  // AI generates a market event
-  const aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${apiKey}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      model: 'google/gemini-2.5-flash',
-      messages: [{
-        role: 'system',
-        content: `You are a market simulation AI generating realistic market events with professional formatting.
+  const symbols = (prices || []).map((p: any) => p.symbol);
+  
+  // Default fallback event
+  let event: any = {
+    title: 'Market Volatility Spike',
+    description: 'Increased trading activity has led to heightened market volatility across multiple sectors.',
+    event_type: 'macro',
+    severity: 'medium',
+    affected_symbols: symbols.slice(0, 3),
+    impact_multiplier: 1 + Math.random() * 0.5,
+    cause_chain: ['Trading volume increase', 'Algorithmic trading response', 'Volatility adjustment']
+  };
+
+  try {
+    const aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'google/gemini-2.5-flash',
+        messages: [{
+          role: 'system',
+          content: `You are a market simulation AI generating realistic market events with professional formatting.
 
 CRITICAL FORMATTING REQUIREMENTS:
 - Use proper grammar, punctuation, and capitalization in all text fields
@@ -474,33 +537,42 @@ CRITICAL FORMATTING REQUIREMENTS:
 - Use correct financial terminology
 
 Generate a realistic market event (macro or micro) that will affect stock prices. Include a multi-step cause-and-effect chain with clear, well-written descriptions.`
-      }],
-      tools: [{
-        type: "function",
-        function: {
-          name: "create_event",
-          parameters: {
-            type: "object",
-            properties: {
-              title: { type: "string" },
-              description: { type: "string" },
-              event_type: { type: "string", enum: ["macro", "micro"] },
-              severity: { type: "string", enum: ["low", "medium", "high", "critical"] },
-              affected_symbols: { type: "array", items: { type: "string" } },
-              impact_multiplier: { type: "number" },
-              cause_chain: { type: "array", items: { type: "string" } }
-            },
-            required: ["title", "description", "event_type", "severity", "affected_symbols", "impact_multiplier", "cause_chain"]
+        }],
+        tools: [{
+          type: "function",
+          function: {
+            name: "create_event",
+            parameters: {
+              type: "object",
+              properties: {
+                title: { type: "string" },
+                description: { type: "string" },
+                event_type: { type: "string", enum: ["macro", "micro"] },
+                severity: { type: "string", enum: ["low", "medium", "high", "critical"] },
+                affected_symbols: { type: "array", items: { type: "string" } },
+                impact_multiplier: { type: "number" },
+                cause_chain: { type: "array", items: { type: "string" } }
+              },
+              required: ["title", "description", "event_type", "severity", "affected_symbols", "impact_multiplier", "cause_chain"]
+            }
           }
-        }
-      }],
-      tool_choice: { type: "function", function: { name: "create_event" } }
-    })
-  });
+        }],
+        tool_choice: { type: "function", function: { name: "create_event" } }
+      })
+    });
 
-  const aiData = await aiResponse.json();
-  const toolCall = aiData.choices[0]?.message?.tool_calls?.[0];
-  const event = toolCall ? JSON.parse(toolCall.function.arguments) : null;
+    if (aiResponse.ok) {
+      const aiData = await aiResponse.json();
+      const toolCall = aiData.choices?.[0]?.message?.tool_calls?.[0];
+      if (toolCall) {
+        event = JSON.parse(toolCall.function.arguments);
+      }
+    } else {
+      console.warn('AI failed for market event, using fallback');
+    }
+  } catch (error) {
+    console.warn('Error generating market event:', error);
+  }
 
   if (event) {
     const expiresAt = new Date();
