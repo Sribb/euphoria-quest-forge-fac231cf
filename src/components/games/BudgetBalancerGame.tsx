@@ -8,9 +8,11 @@ import {
   ArrowLeft, Wallet, PiggyBank, Home, Car, Coffee, 
   ShoppingBag, Smartphone, Heart, GraduationCap, TrendingUp,
   Check, X, Lightbulb, Target, Award, AlertTriangle, Zap,
-  HelpCircle, ChevronRight, CreditCard, Briefcase, Users
+  HelpCircle, ChevronRight, CreditCard, Briefcase, Users,
+  ChevronDown, ChevronUp, Flame, Wifi, Dumbbell, Music
 } from "lucide-react";
 import { toast } from "sonner";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 interface BudgetCategory {
   id: string;
@@ -20,8 +22,9 @@ interface BudgetCategory {
   minAmount: number;
   maxAmount: number;
   type: "need" | "want" | "savings" | "debt";
+  group: "essentials" | "lifestyle" | "debt" | "savings";
   isEssential?: boolean;
-  maxReduction?: number; // Max percentage you can reduce essentials by
+  maxReduction?: number;
 }
 
 interface Scenario {
@@ -31,6 +34,7 @@ interface Scenario {
   impact: string;
   icon: React.ReactNode;
   incomeChange?: number;
+  debtChange?: { categoryId: string; amount: number }[];
   requiredActions: {
     categoryId: string;
     direction: "increase" | "decrease" | "maintain";
@@ -46,223 +50,248 @@ interface BudgetBalancerGameProps {
 }
 
 const INITIAL_BUDGET: BudgetCategory[] = [
-  { id: "housing", name: "Housing/Rent", icon: <Home className="w-5 h-5" />, amount: 1100, minAmount: 950, maxAmount: 1400, type: "need", isEssential: true, maxReduction: 15 },
-  { id: "utilities", name: "Utilities", icon: <Lightbulb className="w-5 h-5" />, amount: 180, minAmount: 140, maxAmount: 250, type: "need", isEssential: true, maxReduction: 20 },
-  { id: "groceries", name: "Groceries", icon: <ShoppingBag className="w-5 h-5" />, amount: 500, minAmount: 400, maxAmount: 700, type: "need", isEssential: true, maxReduction: 25 },
-  { id: "transport", name: "Transportation", icon: <Car className="w-5 h-5" />, amount: 350, minAmount: 150, maxAmount: 500, type: "need", isEssential: true, maxReduction: 40 },
-  { id: "insurance", name: "Insurance", icon: <Heart className="w-5 h-5" />, amount: 220, minAmount: 180, maxAmount: 300, type: "need", isEssential: true, maxReduction: 18 },
-  { id: "student-loan", name: "Student Loan", icon: <GraduationCap className="w-5 h-5" />, amount: 150, minAmount: 100, maxAmount: 400, type: "debt" },
-  { id: "credit-card", name: "Credit Card Debt", icon: <CreditCard className="w-5 h-5" />, amount: 50, minAmount: 25, maxAmount: 300, type: "debt" },
-  { id: "dining", name: "Dining Out", icon: <Coffee className="w-5 h-5" />, amount: 300, minAmount: 0, maxAmount: 500, type: "want" },
-  { id: "entertainment", name: "Entertainment", icon: <Smartphone className="w-5 h-5" />, amount: 200, minAmount: 0, maxAmount: 400, type: "want" },
-  { id: "shopping", name: "Shopping", icon: <ShoppingBag className="w-5 h-5" />, amount: 180, minAmount: 0, maxAmount: 400, type: "want" },
-  { id: "emergency", name: "Emergency Fund", icon: <PiggyBank className="w-5 h-5" />, amount: 400, minAmount: 0, maxAmount: 1000, type: "savings" },
-  { id: "investing", name: "Investments", icon: <TrendingUp className="w-5 h-5" />, amount: 350, minAmount: 0, maxAmount: 1200, type: "savings" },
+  // Essentials (Housing & Utilities)
+  { id: "housing", name: "Housing/Rent", icon: <Home className="w-5 h-5" />, amount: 1200, minAmount: 1000, maxAmount: 1600, type: "need", group: "essentials", isEssential: true, maxReduction: 15 },
+  { id: "utilities", name: "Utilities", icon: <Lightbulb className="w-5 h-5" />, amount: 150, minAmount: 100, maxAmount: 250, type: "need", group: "essentials", isEssential: true, maxReduction: 20 },
+  { id: "internet", name: "Internet & Phone", icon: <Wifi className="w-5 h-5" />, amount: 120, minAmount: 60, maxAmount: 200, type: "need", group: "essentials", isEssential: true, maxReduction: 40 },
+  { id: "groceries", name: "Groceries", icon: <ShoppingBag className="w-5 h-5" />, amount: 450, minAmount: 300, maxAmount: 700, type: "need", group: "essentials", isEssential: true, maxReduction: 25 },
+  { id: "transport", name: "Transportation", icon: <Car className="w-5 h-5" />, amount: 300, minAmount: 100, maxAmount: 500, type: "need", group: "essentials", isEssential: true, maxReduction: 40 },
+  { id: "insurance", name: "Insurance", icon: <Heart className="w-5 h-5" />, amount: 200, minAmount: 150, maxAmount: 350, type: "need", group: "essentials", isEssential: true, maxReduction: 18 },
+  
+  // Lifestyle (Wants)
+  { id: "dining", name: "Dining Out", icon: <Coffee className="w-5 h-5" />, amount: 250, minAmount: 0, maxAmount: 500, type: "want", group: "lifestyle" },
+  { id: "entertainment", name: "Entertainment", icon: <Smartphone className="w-5 h-5" />, amount: 150, minAmount: 0, maxAmount: 400, type: "want", group: "lifestyle" },
+  { id: "subscriptions", name: "Subscriptions", icon: <Music className="w-5 h-5" />, amount: 80, minAmount: 0, maxAmount: 200, type: "want", group: "lifestyle" },
+  { id: "shopping", name: "Shopping", icon: <ShoppingBag className="w-5 h-5" />, amount: 150, minAmount: 0, maxAmount: 400, type: "want", group: "lifestyle" },
+  { id: "fitness", name: "Gym & Fitness", icon: <Dumbbell className="w-5 h-5" />, amount: 60, minAmount: 0, maxAmount: 150, type: "want", group: "lifestyle" },
+  
+  // Debt
+  { id: "student-loan", name: "Student Loan", icon: <GraduationCap className="w-5 h-5" />, amount: 100, minAmount: 50, maxAmount: 400, type: "debt", group: "debt" },
+  { id: "credit-card", name: "Credit Card", icon: <CreditCard className="w-5 h-5" />, amount: 50, minAmount: 25, maxAmount: 300, type: "debt", group: "debt" },
+  
+  // Savings & Investments
+  { id: "emergency", name: "Emergency Fund", icon: <PiggyBank className="w-5 h-5" />, amount: 300, minAmount: 0, maxAmount: 1000, type: "savings", group: "savings" },
+  { id: "investing", name: "Investments", icon: <TrendingUp className="w-5 h-5" />, amount: 250, minAmount: 0, maxAmount: 1200, type: "savings", group: "savings" },
 ];
+
+const CATEGORY_GROUPS = {
+  essentials: {
+    label: "🏠 Essentials",
+    description: "Housing, utilities, food, transport",
+    color: "primary",
+    bgColor: "bg-primary/5",
+    borderColor: "border-l-primary",
+  },
+  lifestyle: {
+    label: "🎯 Lifestyle",
+    description: "Dining, entertainment, subscriptions",
+    color: "warning",
+    bgColor: "bg-warning/5",
+    borderColor: "border-l-warning",
+  },
+  debt: {
+    label: "💳 Debt Payments",
+    description: "Loans and credit cards",
+    color: "destructive",
+    bgColor: "bg-destructive/5",
+    borderColor: "border-l-destructive",
+  },
+  savings: {
+    label: "💰 Savings & Investing",
+    description: "Emergency fund, investments",
+    color: "success",
+    bgColor: "bg-success/5",
+    borderColor: "border-l-success",
+  },
+};
 
 const SCENARIOS: Scenario[] = [
   {
-    id: "job-loss",
-    title: "🚨 Job Loss",
-    description: "You've been laid off unexpectedly. Your income drops to unemployment benefits while you search for a new job.",
-    impact: "Income reduced by 60%",
-    icon: <AlertTriangle className="w-6 h-6 text-destructive" />,
-    incomeChange: -2400,
-    requiredActions: [
-      { categoryId: "dining", direction: "decrease", minChange: 180, reason: "Cut non-essential dining to survive on reduced income" },
-      { categoryId: "entertainment", direction: "decrease", minChange: 100, reason: "Reduce entertainment spending during unemployment" },
-      { categoryId: "shopping", direction: "decrease", minChange: 80, reason: "Pause non-essential purchases" },
-      { categoryId: "credit-card", direction: "decrease", reason: "Pay minimum on credit card to preserve cash" },
-    ],
-    tips: [
-      "Cut wants drastically - dining, entertainment, shopping",
-      "Pay only minimums on debt to preserve cash flow",
-      "Don't touch emergency fund unless absolutely necessary",
-      "Apply for unemployment benefits immediately"
-    ],
-    difficulty: "hard"
-  },
-  {
     id: "salary-raise",
-    title: "🎉 20% Salary Raise!",
-    description: "Congratulations! You've received a significant raise. How will you adjust your budget to avoid lifestyle creep?",
-    impact: "Income increased by $800/month",
+    title: "🎉 15% Salary Raise!",
+    description: "Congratulations! You've received a raise. How will you use the extra money wisely?",
+    impact: "Income increased by $600/month",
     icon: <Zap className="w-6 h-6 text-success" />,
-    incomeChange: 800,
+    incomeChange: 600,
     requiredActions: [
-      { categoryId: "investing", direction: "increase", minChange: 300, reason: "Invest at least 40% of your raise" },
-      { categoryId: "emergency", direction: "increase", minChange: 150, reason: "Boost emergency fund with extra income" },
-      { categoryId: "student-loan", direction: "increase", minChange: 100, reason: "Accelerate student loan payoff" },
+      { categoryId: "investing", direction: "increase", minChange: 200, reason: "Invest at least 30% of your raise" },
+      { categoryId: "emergency", direction: "increase", minChange: 100, reason: "Boost emergency fund" },
     ],
     tips: [
-      "Follow the 50/30/20 rule with new income",
       "Avoid lifestyle creep - don't increase wants proportionally",
-      "Prioritize paying off high-interest debt first",
-      "Consider increasing retirement contributions"
+      "Prioritize investing and savings with extra income",
+      "Consider paying off debt faster"
     ],
     difficulty: "easy"
   },
   {
-    id: "student-loan-payoff",
-    title: "🎓 Student Loan Payoff Push",
-    description: "Your student loan interest rate increased to 7%. Financial advisors suggest paying it off aggressively before it grows.",
-    impact: "Need extra $200/month for loans",
-    icon: <GraduationCap className="w-6 h-6 text-primary" />,
+    id: "car-repair",
+    title: "🚗 Unexpected Car Repair",
+    description: "Your car broke down and needs $1,500 in repairs. You put it on your credit card.",
+    impact: "Credit card debt +$150/month for 10 months",
+    icon: <AlertTriangle className="w-6 h-6 text-destructive" />,
     incomeChange: 0,
+    debtChange: [{ categoryId: "credit-card", amount: 150 }],
     requiredActions: [
-      { categoryId: "student-loan", direction: "increase", minChange: 200, reason: "Increase loan payments to pay off faster" },
-      { categoryId: "dining", direction: "decrease", minChange: 100, reason: "Cut dining to fund extra loan payments" },
-      { categoryId: "entertainment", direction: "decrease", minChange: 50, reason: "Reduce entertainment to accelerate payoff" },
+      { categoryId: "credit-card", direction: "increase", minChange: 100, reason: "Pay off car repair debt faster" },
+      { categoryId: "dining", direction: "decrease", minChange: 80, reason: "Cut dining to pay off debt" },
     ],
     tips: [
-      "High-interest debt should be priority over investing",
-      "Refinancing could lower your interest rate",
-      "Every extra dollar toward principal saves interest",
-      "Consider the debt avalanche method"
+      "Pay more than the minimum to avoid interest",
+      "Cut wants temporarily to clear debt faster",
+      "This is why emergency funds matter!"
     ],
     difficulty: "medium"
   },
   {
-    id: "getting-married",
-    title: "💒 Getting Married",
-    description: "Wedding costs average $30,000. You have 18 months to save. Your partner will contribute half, but you need $15,000.",
-    impact: "Need to save $850/month for wedding",
-    icon: <Heart className="w-6 h-6 text-primary" />,
+    id: "student-loan-pause",
+    title: "📚 Student Loan Pause Ends",
+    description: "Your student loan payment pause has ended. Payments resume at a higher rate.",
+    impact: "Student loan +$100/month",
+    icon: <GraduationCap className="w-6 h-6 text-destructive" />,
     incomeChange: 0,
+    debtChange: [{ categoryId: "student-loan", amount: 100 }],
     requiredActions: [
-      { categoryId: "emergency", direction: "increase", minChange: 300, reason: "Redirect savings toward wedding fund" },
-      { categoryId: "dining", direction: "decrease", minChange: 150, reason: "Cook at home more to save for wedding" },
-      { categoryId: "shopping", direction: "decrease", minChange: 100, reason: "Pause shopping to fund wedding" },
-      { categoryId: "entertainment", direction: "decrease", minChange: 100, reason: "Free date nights while saving for the big day" },
+      { categoryId: "student-loan", direction: "increase", minChange: 50, reason: "Account for resumed payments" },
+      { categoryId: "entertainment", direction: "decrease", minChange: 50, reason: "Cut entertainment to cover payments" },
+      { categoryId: "subscriptions", direction: "decrease", minChange: 30, reason: "Cancel some subscriptions" },
     ],
     tips: [
-      "Set a realistic wedding budget and stick to it",
-      "Consider what's truly important vs nice-to-have",
-      "Don't go into debt for a wedding",
-      "Your partner's financial habits matter - align your budgets"
+      "Review which subscriptions you actually use",
+      "Consider income-driven repayment plans",
+      "Don't sacrifice savings entirely for debt"
     ],
     difficulty: "medium"
   },
   {
-    id: "starting-business",
-    title: "🚀 Starting a Business",
-    description: "You're launching a side business that could replace your income. Initial investment needed: $5,000 over 6 months.",
-    impact: "Need $850/month for business startup",
-    icon: <Briefcase className="w-6 h-6 text-primary" />,
+    id: "debt-payoff",
+    title: "🎊 Credit Card Paid Off!",
+    description: "You've paid off your credit card! Now you have extra monthly cash flow.",
+    impact: "Credit card debt eliminated! +$50/month freed up",
+    icon: <Award className="w-6 h-6 text-success" />,
     incomeChange: 0,
+    debtChange: [{ categoryId: "credit-card", amount: -50 }],
     requiredActions: [
-      { categoryId: "investing", direction: "decrease", minChange: 150, reason: "Temporarily redirect investments to business" },
-      { categoryId: "dining", direction: "decrease", minChange: 200, reason: "Cut dining out significantly" },
-      { categoryId: "entertainment", direction: "decrease", minChange: 100, reason: "Reduce entertainment spending" },
-      { categoryId: "shopping", direction: "decrease", minChange: 100, reason: "Pause discretionary shopping" },
+      { categoryId: "investing", direction: "increase", minChange: 30, reason: "Redirect old debt payments to investing" },
+      { categoryId: "emergency", direction: "increase", minChange: 20, reason: "Build emergency fund with freed cash" },
     ],
     tips: [
-      "Don't quit your job until business proves viable",
-      "Keep emergency fund intact - business is risky",
-      "Set a budget limit for the business investment",
-      "Have a runway of 6+ months expenses saved"
+      "Don't let the freed money disappear into lifestyle",
+      "Apply old debt payments to investments or other debt",
+      "Celebrate but stay disciplined!"
     ],
-    difficulty: "hard"
+    difficulty: "easy"
   },
   {
-    id: "medical-emergency",
-    title: "🏥 Medical Emergency",
-    description: "An unexpected surgery costs $8,000. Insurance covers half, but you owe $4,000 out of pocket.",
-    impact: "Need to find $4,000 for medical bills",
+    id: "medical-bill",
+    title: "🏥 Medical Bill",
+    description: "An unexpected doctor visit and tests cost $800. You set up a payment plan.",
+    impact: "New payment: $100/month for 8 months",
     icon: <Heart className="w-6 h-6 text-destructive" />,
     incomeChange: 0,
+    debtChange: [{ categoryId: "credit-card", amount: 100 }],
     requiredActions: [
-      { categoryId: "emergency", direction: "decrease", minChange: 200, reason: "This is exactly what emergency funds are for" },
-      { categoryId: "dining", direction: "decrease", minChange: 150, reason: "Temporarily cut dining to rebuild savings" },
-      { categoryId: "entertainment", direction: "decrease", minChange: 80, reason: "Reduce entertainment spending" },
+      { categoryId: "dining", direction: "decrease", minChange: 50, reason: "Reduce dining to cover medical payments" },
+      { categoryId: "shopping", direction: "decrease", minChange: 50, reason: "Pause shopping temporarily" },
     ],
     tips: [
-      "Use emergency fund first - that's what it's for!",
-      "Negotiate a payment plan if needed",
-      "Cut wants temporarily to rebuild emergency fund",
-      "Don't stop investing entirely, just reduce temporarily"
+      "Always ask for payment plans - most providers offer them",
+      "Medical debt often has 0% interest payment plans",
+      "Don't drain emergency fund for non-emergencies"
     ],
-    difficulty: "medium"
-  },
-  {
-    id: "new-baby",
-    title: "👶 New Baby Arriving",
-    description: "You're expecting a baby in 6 months! Childcare will cost $1,200/month and you need to prepare.",
-    impact: "New expense: $1,200/month for childcare",
-    icon: <Users className="w-6 h-6 text-primary" />,
-    incomeChange: 0,
-    requiredActions: [
-      { categoryId: "dining", direction: "decrease", minChange: 150, reason: "Reduce dining out to afford childcare" },
-      { categoryId: "entertainment", direction: "decrease", minChange: 100, reason: "Less time for entertainment anyway!" },
-      { categoryId: "shopping", direction: "decrease", minChange: 80, reason: "Prioritize baby needs over wants" },
-      { categoryId: "emergency", direction: "increase", minChange: 100, reason: "Build buffer for unexpected baby expenses" },
-    ],
-    tips: [
-      "Start adjusting budget 6 months before baby arrives",
-      "Build up emergency fund for unexpected baby costs",
-      "Look into FSA/dependent care benefits",
-      "Cut wants, not savings - babies are expensive!"
-    ],
-    difficulty: "medium"
-  },
-  {
-    id: "credit-card-crisis",
-    title: "💳 Credit Card Interest Spike",
-    description: "Your credit card APR jumped to 29.99%. With $3,000 balance, you're losing $75/month to interest alone.",
-    impact: "Must pay off $3,000 ASAP",
-    icon: <CreditCard className="w-6 h-6 text-destructive" />,
-    incomeChange: 0,
-    requiredActions: [
-      { categoryId: "credit-card", direction: "increase", minChange: 200, reason: "Aggressively pay down high-interest debt" },
-      { categoryId: "dining", direction: "decrease", minChange: 150, reason: "Every dollar goes to credit card payoff" },
-      { categoryId: "shopping", direction: "decrease", minChange: 100, reason: "Stop all discretionary spending" },
-      { categoryId: "investing", direction: "decrease", minChange: 100, reason: "Pause investing until 29% debt is gone" },
-    ],
-    tips: [
-      "29% APR debt is an emergency - pay it off first",
-      "Pause investing to kill high-interest debt",
-      "Consider a 0% balance transfer card",
-      "Cut all wants until the balance is $0"
-    ],
-    difficulty: "hard"
-  },
-  {
-    id: "rent-increase",
-    title: "📈 Rent Going Up 15%",
-    description: "Your landlord is raising rent by 15% ($210/month). You can move or absorb the cost.",
-    impact: "Housing cost +$210/month",
-    icon: <Home className="w-6 h-6 text-warning" />,
-    incomeChange: 0,
-    requiredActions: [
-      { categoryId: "dining", direction: "decrease", minChange: 100, reason: "Offset rent increase by cutting dining" },
-      { categoryId: "entertainment", direction: "decrease", minChange: 60, reason: "Reduce entertainment to balance budget" },
-      { categoryId: "shopping", direction: "decrease", minChange: 50, reason: "Cut shopping to cover rent increase" },
-    ],
-    tips: [
-      "Calculate if moving costs less than rent increase",
-      "Negotiate with landlord for smaller increase",
-      "Cut wants to absorb fixed cost increases",
-      "Consider getting a roommate"
-    ],
-    difficulty: "medium"
+    difficulty: "easy"
   },
   {
     id: "inflation",
-    title: "📊 High Inflation (8%)",
-    description: "Groceries, gas, and utilities have all increased significantly. Your dollar doesn't go as far.",
-    impact: "Everyday expenses up ~$250/month",
-    icon: <TrendingUp className="w-6 h-6 text-destructive" />,
+    title: "📈 Rising Costs",
+    description: "Groceries and utilities have increased due to inflation.",
+    impact: "Essential costs up ~$80/month",
+    icon: <TrendingUp className="w-6 h-6 text-warning" />,
     incomeChange: 0,
     requiredActions: [
-      { categoryId: "dining", direction: "decrease", minChange: 150, reason: "Cook at home more during high inflation" },
-      { categoryId: "shopping", direction: "decrease", minChange: 80, reason: "Delay non-essential purchases" },
-      { categoryId: "investing", direction: "maintain", reason: "Keep investing - stocks historically beat inflation" },
+      { categoryId: "dining", direction: "decrease", minChange: 50, reason: "Cook at home more during high inflation" },
+      { categoryId: "shopping", direction: "decrease", minChange: 30, reason: "Delay non-essential purchases" },
+      { categoryId: "investing", direction: "maintain", reason: "Keep investing - it beats inflation long-term" },
     ],
     tips: [
       "Buy store brands instead of name brands",
-      "Cook at home more - restaurants inflate prices faster",
-      "Don't stop investing - it's your inflation hedge",
-      "Look for ways to increase income"
+      "Meal plan to reduce grocery waste",
+      "Don't stop investing - it's your inflation hedge"
+    ],
+    difficulty: "easy"
+  },
+  {
+    id: "bonus",
+    title: "💵 Annual Bonus!",
+    description: "You received a $2,000 bonus! How will you allocate it wisely?",
+    impact: "One-time +$2,000 (spread as +$500/month for 4 months)",
+    icon: <Wallet className="w-6 h-6 text-success" />,
+    incomeChange: 500,
+    requiredActions: [
+      { categoryId: "student-loan", direction: "increase", minChange: 150, reason: "Use bonus to pay down student loans" },
+      { categoryId: "emergency", direction: "increase", minChange: 150, reason: "Boost emergency savings" },
+    ],
+    tips: [
+      "Follow the 50/30/20 rule with bonus money",
+      "Put at least half toward financial goals",
+      "It's okay to treat yourself with a small portion"
+    ],
+    difficulty: "easy"
+  },
+  {
+    id: "rent-increase",
+    title: "🏠 Rent Going Up 10%",
+    description: "Your landlord is raising rent by 10% when your lease renews.",
+    impact: "Housing cost +$120/month",
+    icon: <Home className="w-6 h-6 text-warning" />,
+    incomeChange: 0,
+    requiredActions: [
+      { categoryId: "dining", direction: "decrease", minChange: 50, reason: "Offset rent increase by cutting dining" },
+      { categoryId: "entertainment", direction: "decrease", minChange: 40, reason: "Reduce entertainment spending" },
+      { categoryId: "subscriptions", direction: "decrease", minChange: 30, reason: "Cancel unused subscriptions" },
+    ],
+    tips: [
+      "Negotiate with landlord for a smaller increase",
+      "Calculate if moving costs less than the increase",
+      "Cut wants to absorb fixed cost increases"
+    ],
+    difficulty: "medium"
+  },
+  {
+    id: "side-hustle",
+    title: "🚀 Side Hustle Income",
+    description: "Your side project is earning steady money! Extra $400/month coming in.",
+    impact: "Income increased by $400/month",
+    icon: <Briefcase className="w-6 h-6 text-success" />,
+    incomeChange: 400,
+    requiredActions: [
+      { categoryId: "investing", direction: "increase", minChange: 150, reason: "Invest most of your side income" },
+      { categoryId: "student-loan", direction: "increase", minChange: 100, reason: "Accelerate debt payoff" },
+    ],
+    tips: [
+      "Set aside 25-30% for taxes on side income",
+      "Don't increase lifestyle with variable income",
+      "Build a buffer for months when side income is lower"
+    ],
+    difficulty: "easy"
+  },
+  {
+    id: "job-loss-partial",
+    title: "⚠️ Hours Reduced",
+    description: "Your company cut your hours by 20%. You need to adjust quickly.",
+    impact: "Income reduced by $800/month",
+    icon: <AlertTriangle className="w-6 h-6 text-destructive" />,
+    incomeChange: -800,
+    requiredActions: [
+      { categoryId: "dining", direction: "decrease", minChange: 150, reason: "Cut dining significantly" },
+      { categoryId: "entertainment", direction: "decrease", minChange: 100, reason: "Reduce entertainment" },
+      { categoryId: "shopping", direction: "decrease", minChange: 100, reason: "Pause non-essential purchases" },
+      { categoryId: "subscriptions", direction: "decrease", minChange: 50, reason: "Cancel subscriptions you don't need" },
+    ],
+    tips: [
+      "Cut wants aggressively but protect essentials",
+      "Look for additional income sources",
+      "Use emergency fund only if absolutely necessary"
     ],
     difficulty: "hard"
   },
@@ -275,28 +304,28 @@ const TUTORIAL_STEPS = [
     highlight: null,
   },
   {
-    title: "Needs vs Wants vs Savings",
-    content: "Your budget has three types:\n• Needs (blue) - Essential expenses like rent and groceries\n• Wants (orange) - Nice-to-haves like dining out\n• Savings (green) - Your future wealth",
+    title: "Organized Categories",
+    content: "Your expenses are grouped into 4 categories you can click to expand:\n• 🏠 Essentials - Must-haves\n• 🎯 Lifestyle - Nice-to-haves\n• 💳 Debt - What you owe\n• 💰 Savings - Your future",
     highlight: "categories",
   },
   {
-    title: "Debt Payments Matter",
-    content: "Student loans and credit cards have minimum payments. High-interest debt (like credit cards) should often be prioritized over investing!",
+    title: "Debt Can Change!",
+    content: "Some scenarios will add or remove debt. When unexpected expenses hit, your debt payments may increase. When you pay something off, you'll have more cash flow!",
     highlight: "debt",
   },
   {
-    title: "Essentials Are Hard to Cut",
-    content: "You can't just stop paying rent or eating! Essential expenses (🔒) can only be reduced by 15-25%. Focus on cutting wants first.",
+    title: "Essentials Are Protected",
+    content: "You can't just stop paying rent! Essential expenses (🔒) can only be reduced by 15-25%. Focus on cutting lifestyle spending first.",
     highlight: "essentials",
   },
   {
     title: "Balance Your Budget",
-    content: "After each scenario, adjust your sliders until the Budget Balance shows $0 or positive. Going negative means you're spending more than you earn!",
+    content: "After each scenario, adjust your sliders until the Budget Balance shows $0 or positive. Going negative means trouble!",
     highlight: "balance",
   },
   {
     title: "Ready to Play!",
-    content: "You'll face 10 scenarios. Cut wants first, protect your emergency fund, and remember: every dollar has a job. Good luck!",
+    content: "You'll face 10 scenarios. Cut lifestyle first, manage your debt, and remember: every dollar has a job. Good luck!",
     highlight: null,
   },
 ];
@@ -306,29 +335,54 @@ export const BudgetBalancerGame = ({ onClose }: BudgetBalancerGameProps) => {
   const [tutorialStep, setTutorialStep] = useState(0);
   const [currentScenarioIndex, setCurrentScenarioIndex] = useState(0);
   const [budget, setBudget] = useState<BudgetCategory[]>(INITIAL_BUDGET.map(b => ({ ...b })));
-  const [originalBudget] = useState<BudgetCategory[]>(INITIAL_BUDGET.map(b => ({ ...b })));
+  const [originalBudget, setOriginalBudget] = useState<BudgetCategory[]>(INITIAL_BUDGET.map(b => ({ ...b })));
   const [showResult, setShowResult] = useState(false);
   const [score, setScore] = useState(0);
   const [feedback, setFeedback] = useState<{ correct: string[]; incorrect: string[]; tips: string[] }>({ correct: [], incorrect: [], tips: [] });
   const [gameComplete, setGameComplete] = useState(false);
-  const [baseIncome] = useState(5200);
+  const [baseIncome] = useState(4800);
+  const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({
+    essentials: true,
+    lifestyle: true,
+    debt: true,
+    savings: true,
+  });
 
   const currentScenario = SCENARIOS[currentScenarioIndex];
+  
+  // Apply debt changes from scenario
+  const getAdjustedBudget = () => {
+    if (!currentScenario.debtChange) return budget;
+    return budget.map(cat => {
+      const debtMod = currentScenario.debtChange?.find(d => d.categoryId === cat.id);
+      if (debtMod) {
+        return { ...cat, amount: Math.max(cat.minAmount, cat.amount + debtMod.amount) };
+      }
+      return cat;
+    });
+  };
+
+  const adjustedBudget = getAdjustedBudget();
   const currentIncome = baseIncome + (currentScenario.incomeChange || 0);
-  const totalSpending = budget.reduce((sum, c) => sum + c.amount, 0);
+  const totalSpending = adjustedBudget.reduce((sum, c) => sum + c.amount, 0);
   const remaining = currentIncome - totalSpending;
 
-  const needsTotal = budget.filter(c => c.type === "need").reduce((sum, c) => sum + c.amount, 0);
-  const wantsTotal = budget.filter(c => c.type === "want").reduce((sum, c) => sum + c.amount, 0);
-  const savingsTotal = budget.filter(c => c.type === "savings").reduce((sum, c) => sum + c.amount, 0);
-  const debtTotal = budget.filter(c => c.type === "debt").reduce((sum, c) => sum + c.amount, 0);
+  const groupTotals = {
+    essentials: adjustedBudget.filter(c => c.group === "essentials").reduce((sum, c) => sum + c.amount, 0),
+    lifestyle: adjustedBudget.filter(c => c.group === "lifestyle").reduce((sum, c) => sum + c.amount, 0),
+    debt: adjustedBudget.filter(c => c.group === "debt").reduce((sum, c) => sum + c.amount, 0),
+    savings: adjustedBudget.filter(c => c.group === "savings").reduce((sum, c) => sum + c.amount, 0),
+  };
+
+  const toggleGroup = (group: string) => {
+    setExpandedGroups(prev => ({ ...prev, [group]: !prev[group] }));
+  };
 
   const updateCategory = (id: string, newAmount: number) => {
     setBudget(prev => 
       prev.map(c => {
         if (c.id !== id) return c;
         
-        // For essential items, limit how much they can be reduced
         if (c.isEssential && c.maxReduction) {
           const originalAmount = originalBudget.find(ob => ob.id === id)?.amount || c.amount;
           const minAllowed = Math.round(originalAmount * (1 - c.maxReduction / 100));
@@ -343,7 +397,9 @@ export const BudgetBalancerGame = ({ onClose }: BudgetBalancerGameProps) => {
   const getChange = (categoryId: string): number => {
     const original = originalBudget.find(c => c.id === categoryId)?.amount || 0;
     const current = budget.find(c => c.id === categoryId)?.amount || 0;
-    return current - original;
+    const debtMod = currentScenario.debtChange?.find(d => d.categoryId === categoryId);
+    const debtChange = debtMod ? debtMod.amount : 0;
+    return (current + debtChange) - original;
   };
 
   const submitBudget = () => {
@@ -392,8 +448,18 @@ export const BudgetBalancerGame = ({ onClose }: BudgetBalancerGameProps) => {
 
   const nextScenario = () => {
     if (currentScenarioIndex < SCENARIOS.length - 1) {
+      // Apply permanent debt changes to original budget
+      const newOriginal = originalBudget.map(cat => {
+        const debtMod = currentScenario.debtChange?.find(d => d.categoryId === cat.id);
+        if (debtMod) {
+          return { ...cat, amount: Math.max(cat.minAmount, Math.min(cat.maxAmount, cat.amount + debtMod.amount)) };
+        }
+        return cat;
+      });
+      
+      setOriginalBudget(newOriginal);
+      setBudget(newOriginal.map(b => ({ ...b })));
       setCurrentScenarioIndex(prev => prev + 1);
-      setBudget(INITIAL_BUDGET.map(b => ({ ...b })));
       setShowResult(false);
       setFeedback({ correct: [], incorrect: [], tips: [] });
     } else {
@@ -403,6 +469,7 @@ export const BudgetBalancerGame = ({ onClose }: BudgetBalancerGameProps) => {
 
   const resetGame = () => {
     setCurrentScenarioIndex(0);
+    setOriginalBudget(INITIAL_BUDGET.map(b => ({ ...b })));
     setBudget(INITIAL_BUDGET.map(b => ({ ...b })));
     setScore(0);
     setShowResult(false);
@@ -411,22 +478,22 @@ export const BudgetBalancerGame = ({ onClose }: BudgetBalancerGameProps) => {
     setShowTutorial(false);
   };
 
-  const getCategoryColor = (type: string) => {
-    switch (type) {
-      case "need": return "border-l-primary";
-      case "want": return "border-l-warning";
-      case "savings": return "border-l-success";
-      case "debt": return "border-l-destructive";
-      default: return "";
-    }
-  };
-
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
       case "easy": return "bg-success/20 text-success";
       case "medium": return "bg-warning/20 text-warning";
       case "hard": return "bg-destructive/20 text-destructive";
       default: return "bg-muted text-muted-foreground";
+    }
+  };
+
+  const getGroupColorClass = (color: string) => {
+    switch (color) {
+      case "primary": return "text-primary";
+      case "warning": return "text-warning";
+      case "destructive": return "text-destructive";
+      case "success": return "text-success";
+      default: return "text-foreground";
     }
   };
 
@@ -449,31 +516,36 @@ export const BudgetBalancerGame = ({ onClose }: BudgetBalancerGameProps) => {
           <p className="text-muted-foreground whitespace-pre-line">{step.content}</p>
           
           {step.highlight === "categories" && (
-            <div className="grid grid-cols-3 gap-2 text-center text-sm">
-              <div className="p-3 bg-primary/10 rounded-lg border-l-4 border-l-primary">
-                <span className="font-semibold">Needs</span>
-                <p className="text-xs text-muted-foreground">50%</p>
-              </div>
-              <div className="p-3 bg-warning/10 rounded-lg border-l-4 border-l-warning">
-                <span className="font-semibold">Wants</span>
-                <p className="text-xs text-muted-foreground">30%</p>
-              </div>
-              <div className="p-3 bg-success/10 rounded-lg border-l-4 border-l-success">
-                <span className="font-semibold">Savings</span>
-                <p className="text-xs text-muted-foreground">20%</p>
-              </div>
+            <div className="space-y-2">
+              {Object.entries(CATEGORY_GROUPS).map(([key, group]) => (
+                <div key={key} className={`p-3 rounded-lg border-l-4 ${group.borderColor} ${group.bgColor}`}>
+                  <span className="font-semibold">{group.label}</span>
+                  <p className="text-xs text-muted-foreground">{group.description}</p>
+                </div>
+              ))}
             </div>
           )}
           
           {step.highlight === "debt" && (
-            <div className="p-4 bg-destructive/10 rounded-lg border-l-4 border-l-destructive">
-              <div className="flex items-center gap-2 mb-2">
-                <CreditCard className="w-5 h-5 text-destructive" />
-                <span className="font-semibold">Debt Payments</span>
+            <div className="space-y-2">
+              <div className="p-4 bg-destructive/10 rounded-lg border-l-4 border-l-destructive">
+                <div className="flex items-center gap-2 mb-2">
+                  <TrendingUp className="w-5 h-5 text-destructive" />
+                  <span className="font-semibold">Debt Goes Up</span>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  Unexpected expenses can add to your debt payments
+                </p>
               </div>
-              <p className="text-sm text-muted-foreground">
-                29% credit card APR &gt; 7% investment returns. Pay off high-interest debt first!
-              </p>
+              <div className="p-4 bg-success/10 rounded-lg border-l-4 border-l-success">
+                <div className="flex items-center gap-2 mb-2">
+                  <TrendingUp className="w-5 h-5 text-success rotate-180" />
+                  <span className="font-semibold">Debt Goes Down</span>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  Paying off debt frees up cash for other goals!
+                </p>
+              </div>
             </div>
           )}
           
@@ -548,10 +620,10 @@ export const BudgetBalancerGame = ({ onClose }: BudgetBalancerGameProps) => {
           <div className="p-4 bg-muted rounded-lg text-left">
             <p className="font-semibold mb-2">Key Takeaways:</p>
             <ul className="text-sm text-muted-foreground space-y-1">
-              <li>• Cut wants first, essentials have limits</li>
-              <li>• High-interest debt beats investing returns</li>
+              <li>• Cut lifestyle first, essentials have limits</li>
+              <li>• Debt changes require quick adjustments</li>
               <li>• Emergency fund is for real emergencies</li>
-              <li>• Avoid lifestyle creep when income increases</li>
+              <li>• Use raises and bonuses wisely</li>
             </ul>
           </div>
           <div className="flex gap-4 justify-center">
@@ -598,6 +670,12 @@ export const BudgetBalancerGame = ({ onClose }: BudgetBalancerGameProps) => {
               <Badge variant="secondary" className="text-sm">
                 {currentScenario.impact}
               </Badge>
+              {currentScenario.debtChange && (
+                <Badge variant="outline" className="text-sm ml-2 border-destructive text-destructive">
+                  <Flame className="w-3 h-3 mr-1" />
+                  Debt Change
+                </Badge>
+              )}
             </div>
           </div>
         </Card>
@@ -611,20 +689,20 @@ export const BudgetBalancerGame = ({ onClose }: BudgetBalancerGameProps) => {
             </div>
           </Card>
           <Card className="p-3 text-center border-l-4 border-l-primary">
-            <div className="text-xs text-muted-foreground">Needs</div>
-            <div className="text-xl font-bold text-primary">${needsTotal.toLocaleString()}</div>
+            <div className="text-xs text-muted-foreground">Essentials</div>
+            <div className="text-xl font-bold text-primary">${groupTotals.essentials.toLocaleString()}</div>
           </Card>
           <Card className="p-3 text-center border-l-4 border-l-warning">
-            <div className="text-xs text-muted-foreground">Wants</div>
-            <div className="text-xl font-bold text-warning">${wantsTotal.toLocaleString()}</div>
+            <div className="text-xs text-muted-foreground">Lifestyle</div>
+            <div className="text-xl font-bold text-warning">${groupTotals.lifestyle.toLocaleString()}</div>
           </Card>
           <Card className="p-3 text-center border-l-4 border-l-destructive">
             <div className="text-xs text-muted-foreground">Debt</div>
-            <div className="text-xl font-bold text-destructive">${debtTotal.toLocaleString()}</div>
+            <div className="text-xl font-bold text-destructive">${groupTotals.debt.toLocaleString()}</div>
           </Card>
           <Card className="p-3 text-center border-l-4 border-l-success">
             <div className="text-xs text-muted-foreground">Savings</div>
-            <div className="text-xl font-bold text-success">${savingsTotal.toLocaleString()}</div>
+            <div className="text-xl font-bold text-success">${groupTotals.savings.toLocaleString()}</div>
           </Card>
         </div>
 
@@ -644,45 +722,85 @@ export const BudgetBalancerGame = ({ onClose }: BudgetBalancerGameProps) => {
 
         {!showResult ? (
           <>
-            {/* Budget Categories */}
-            <div className="grid md:grid-cols-2 gap-3">
-              {budget.map(category => {
-                const change = getChange(category.id);
-                const original = originalBudget.find(c => c.id === category.id);
+            {/* Budget Categories - Collapsible Groups */}
+            <div className="space-y-4">
+              {(Object.entries(CATEGORY_GROUPS) as [keyof typeof CATEGORY_GROUPS, typeof CATEGORY_GROUPS[keyof typeof CATEGORY_GROUPS]][]).map(([groupKey, groupInfo]) => {
+                const groupCategories = adjustedBudget.filter(c => c.group === groupKey);
+                const groupTotal = groupCategories.reduce((sum, c) => sum + c.amount, 0);
                 
                 return (
-                  <Card key={category.id} className={`p-4 border-l-4 ${getCategoryColor(category.type)}`}>
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-2">
-                        {category.icon}
-                        <span className="font-semibold">{category.name}</span>
-                        {category.isEssential && (
-                          <span className="text-xs text-muted-foreground" title="Essential - limited reduction">🔒</span>
-                        )}
+                  <Collapsible key={groupKey} open={expandedGroups[groupKey]} onOpenChange={() => toggleGroup(groupKey)}>
+                    <CollapsibleTrigger asChild>
+                      <Card className={`p-4 cursor-pointer hover:bg-accent/50 transition-colors border-l-4 ${groupInfo.borderColor}`}>
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <span className="text-lg font-semibold">{groupInfo.label}</span>
+                            <span className="text-sm text-muted-foreground">({groupCategories.length} items)</span>
+                          </div>
+                          <div className="flex items-center gap-3">
+                            <span className={`text-xl font-bold ${getGroupColorClass(groupInfo.color)}`}>
+                              ${groupTotal.toLocaleString()}
+                            </span>
+                            {expandedGroups[groupKey] ? (
+                              <ChevronUp className="w-5 h-5 text-muted-foreground" />
+                            ) : (
+                              <ChevronDown className="w-5 h-5 text-muted-foreground" />
+                            )}
+                          </div>
+                        </div>
+                      </Card>
+                    </CollapsibleTrigger>
+                    <CollapsibleContent>
+                      <div className="grid md:grid-cols-2 gap-3 mt-3 pl-4">
+                        {groupCategories.map(category => {
+                          const change = getChange(category.id);
+                          const debtMod = currentScenario.debtChange?.find(d => d.categoryId === category.id);
+                          
+                          return (
+                            <Card key={category.id} className={`p-4 border-l-4 ${groupInfo.borderColor}`}>
+                              <div className="flex items-center justify-between mb-2">
+                                <div className="flex items-center gap-2">
+                                  {category.icon}
+                                  <span className="font-semibold">{category.name}</span>
+                                  {category.isEssential && (
+                                    <span className="text-xs text-muted-foreground" title="Essential - limited reduction">🔒</span>
+                                  )}
+                                  {debtMod && (
+                                    <Badge variant="outline" className={debtMod.amount > 0 ? "border-destructive text-destructive" : "border-success text-success"}>
+                                      {debtMod.amount > 0 ? '+' : ''}{debtMod.amount}
+                                    </Badge>
+                                  )}
+                                </div>
+                                {change !== 0 && !debtMod && (
+                                  <Badge variant={change > 0 ? "default" : "secondary"} className={change > 0 ? "bg-success/20 text-success" : "bg-destructive/20 text-destructive"}>
+                                    {change > 0 ? '+' : ''}{change}
+                                  </Badge>
+                                )}
+                              </div>
+                              <div className="flex items-center gap-4">
+                                <span className="text-xl font-bold w-20">
+                                  ${(category.amount + (debtMod?.amount || 0)).toLocaleString()}
+                                </span>
+                                <Slider
+                                  value={[category.amount + (debtMod?.amount || 0)]}
+                                  onValueChange={([val]) => updateCategory(category.id, val - (debtMod?.amount || 0))}
+                                  min={category.minAmount + (debtMod?.amount || 0)}
+                                  max={category.maxAmount}
+                                  step={10}
+                                  className="flex-1"
+                                />
+                              </div>
+                              {category.isEssential && (
+                                <p className="text-xs text-muted-foreground mt-1">
+                                  Min: ${category.minAmount} (can reduce max {category.maxReduction}%)
+                                </p>
+                              )}
+                            </Card>
+                          );
+                        })}
                       </div>
-                      {change !== 0 && (
-                        <Badge variant={change > 0 ? "default" : "secondary"} className={change > 0 ? "bg-success/20 text-success" : "bg-destructive/20 text-destructive"}>
-                          {change > 0 ? '+' : ''}{change}
-                        </Badge>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-4">
-                      <span className="text-xl font-bold w-20">${category.amount}</span>
-                      <Slider
-                        value={[category.amount]}
-                        onValueChange={([val]) => updateCategory(category.id, val)}
-                        min={category.minAmount}
-                        max={category.maxAmount}
-                        step={10}
-                        className="flex-1"
-                      />
-                    </div>
-                    {category.isEssential && (
-                      <p className="text-xs text-muted-foreground mt-1">
-                        Min: ${category.minAmount} (can reduce max {category.maxReduction}%)
-                      </p>
-                    )}
-                  </Card>
+                    </CollapsibleContent>
+                  </Collapsible>
                 );
               })}
             </div>
