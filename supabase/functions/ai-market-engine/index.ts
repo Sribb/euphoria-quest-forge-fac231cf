@@ -80,7 +80,7 @@ async function initializeSession(supabase: any, userId: string) {
     .eq('session_status', 'active')
     .order('created_at', { ascending: false })
     .limit(1)
-    .single();
+    .maybeSingle();
 
   let session = existingSession;
 
@@ -209,18 +209,37 @@ async function updateMarketPrices(supabase: any, sessionId: string, apiKey: stri
     .from('ai_market_sessions')
     .select('*')
     .eq('id', sessionId)
-    .single();
+    .maybeSingle();
+
+  if (!session) {
+    console.warn('No session found for sessionId:', sessionId);
+    return new Response(
+      JSON.stringify({ success: false, error: 'Session not found' }),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    );
+  }
 
   const { data: prices } = await supabase
     .from('ai_stock_prices')
     .select('*')
     .eq('session_id', sessionId);
 
+  if (!prices || prices.length === 0) {
+    console.warn('No prices found for session:', sessionId);
+    return new Response(
+      JSON.stringify({ success: false, error: 'No prices found' }),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    );
+  }
+
   const { data: events } = await supabase
     .from('ai_market_events')
     .select('*')
     .eq('session_id', sessionId)
     .eq('is_active', true);
+
+  const volatility = session.market_volatility || 0.3;
+  const trend = session.market_trend || 'neutral';
 
   // Use AI to determine price movements - with fallback for errors
   let priceUpdates = { updates: [] as { symbol: string; price_change_percent: number }[] };
@@ -237,8 +256,8 @@ async function updateMarketPrices(supabase: any, sessionId: string, apiKey: stri
         messages: [{
           role: 'system',
           content: `You are a market simulation AI. Generate realistic price movements for stocks based on:
-- Market trend: ${session.market_trend}
-- Volatility: ${session.market_volatility}
+- Market trend: ${trend}
+- Volatility: ${volatility}
 - Active events: ${JSON.stringify(events || [])}
 Return JSON with symbol and price_change_percent for each stock.`
         }, {
@@ -275,23 +294,37 @@ Return JSON with symbol and price_change_percent for each stock.`
     if (!aiResponse.ok) {
       console.warn('AI API returned error, using fallback price updates');
       // Generate fallback price updates based on volatility
-      priceUpdates.updates = (prices || []).map((p: any) => ({
+      priceUpdates.updates = prices.map((p: any) => ({
         symbol: p.symbol,
-        price_change_percent: (Math.random() - 0.5) * session.market_volatility * 2
+        price_change_percent: (Math.random() - 0.5) * volatility * 2
       }));
     } else {
       const aiData = await aiResponse.json();
       const toolCall = aiData.choices?.[0]?.message?.tool_calls?.[0];
-      if (toolCall) {
-        priceUpdates = JSON.parse(toolCall.function.arguments);
+      if (toolCall?.function?.arguments) {
+        try {
+          priceUpdates = JSON.parse(toolCall.function.arguments);
+        } catch (parseError) {
+          console.warn('Failed to parse AI response, using fallback');
+          priceUpdates.updates = prices.map((p: any) => ({
+            symbol: p.symbol,
+            price_change_percent: (Math.random() - 0.5) * volatility * 2
+          }));
+        }
+      } else {
+        // No valid tool call, use fallback
+        priceUpdates.updates = prices.map((p: any) => ({
+          symbol: p.symbol,
+          price_change_percent: (Math.random() - 0.5) * volatility * 2
+        }));
       }
     }
   } catch (aiError) {
     console.warn('AI request failed, using fallback:', aiError);
     // Generate fallback price updates
-    priceUpdates.updates = (prices || []).map((p: any) => ({
+    priceUpdates.updates = prices.map((p: any) => ({
       symbol: p.symbol,
-      price_change_percent: (Math.random() - 0.5) * (session?.market_volatility || 0.3) * 2
+      price_change_percent: (Math.random() - 0.5) * volatility * 2
     }));
   }
 
@@ -411,14 +444,14 @@ async function simulateTradeImpact(
     .from('ai_market_sessions')
     .select('*')
     .eq('id', sessionId)
-    .single();
+    .maybeSingle();
 
   const { data: price } = await supabase
     .from('ai_stock_prices')
     .select('*')
     .eq('session_id', sessionId)
     .eq('symbol', symbol)
-    .single();
+    .maybeSingle();
 
   const { data: competitors } = await supabase
     .from('ai_competitors')
@@ -481,8 +514,12 @@ Provide detailed impact prediction.`
     if (aiResponse.ok) {
       const aiData = await aiResponse.json();
       const toolCall = aiData.choices?.[0]?.message?.tool_calls?.[0];
-      if (toolCall) {
-        impact = JSON.parse(toolCall.function.arguments);
+      if (toolCall?.function?.arguments) {
+        try {
+          impact = JSON.parse(toolCall.function.arguments);
+        } catch (parseError) {
+          console.warn('Failed to parse trade impact AI response');
+        }
       }
     } else {
       console.warn('AI failed for trade impact, using fallback');
@@ -564,8 +601,12 @@ Generate a realistic market event (macro or micro) that will affect stock prices
     if (aiResponse.ok) {
       const aiData = await aiResponse.json();
       const toolCall = aiData.choices?.[0]?.message?.tool_calls?.[0];
-      if (toolCall) {
-        event = JSON.parse(toolCall.function.arguments);
+      if (toolCall?.function?.arguments) {
+        try {
+          event = JSON.parse(toolCall.function.arguments);
+        } catch (parseError) {
+          console.warn('Failed to parse market event AI response');
+        }
       }
     } else {
       console.warn('AI failed for market event, using fallback');
