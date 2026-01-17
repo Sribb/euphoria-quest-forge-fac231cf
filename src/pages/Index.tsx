@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { TopNavigation } from "@/components/TopNavigation";
+import { GlobalAIAssistant } from "@/components/GlobalAIAssistant";
 import Dashboard from "./Dashboard";
 import Learn from "./Learn";
 import Trade from "./Trade";
@@ -71,6 +72,7 @@ const Index = () => {
             <StockDetail symbol={selectedStock} onBack={handleBackToStockSearch} />
           </div>
         </div>
+        <GlobalAIAssistant />
       </div>
     );
   }
@@ -89,6 +91,7 @@ const Index = () => {
             />
           </div>
         </div>
+        <GlobalAIAssistant />
       </div>
     );
   }
@@ -124,6 +127,7 @@ const Index = () => {
           {renderContent()}
         </div>
       </div>
+      <GlobalAIAssistant />
     </div>
   );
 };
