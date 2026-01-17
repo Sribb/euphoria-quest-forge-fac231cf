@@ -172,7 +172,7 @@ export const GlobalAIAssistant = () => {
         <img 
           src={euphoriaLogo} 
           alt="Euphoria AI" 
-          className="w-10 h-10 object-contain translate-x-0.5"
+          className="w-10 h-10 object-contain translate-x-2 brightness-110 saturate-150 hue-rotate-[320deg]"
         />
       </motion.button>
 
