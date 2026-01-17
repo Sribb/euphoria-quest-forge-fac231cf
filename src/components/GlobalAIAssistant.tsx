@@ -163,7 +163,7 @@ export const GlobalAIAssistant = () => {
       {/* Floating Logo Button */}
       <motion.button
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed bottom-24 right-4 z-[100] w-14 h-14 rounded-full bg-gradient-primary shadow-glow flex items-center justify-center overflow-hidden border-2 border-primary/30 hover:border-primary/60 transition-all duration-300"
+        className="fixed bottom-24 right-4 z-[100] w-14 h-14 rounded-full bg-card border-2 border-primary/30 shadow-glow flex items-center justify-center overflow-hidden hover:border-primary/60 transition-all duration-300"
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.95 }}
         animate={{ rotate: isOpen ? 180 : 0 }}
@@ -172,7 +172,7 @@ export const GlobalAIAssistant = () => {
         <img 
           src={euphoriaLogo} 
           alt="Euphoria AI" 
-          className="w-10 h-10 object-contain"
+          className="w-10 h-10 object-contain translate-x-0.5"
         />
       </motion.button>
 
