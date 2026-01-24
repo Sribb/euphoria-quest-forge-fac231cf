@@ -188,18 +188,25 @@ export const DailyRewardsModal = ({ isOpen, onClose }: DailyRewardsModalProps) =
           <div className="absolute inset-0 bg-[url('/sparkle-pattern.svg')] opacity-10 animate-pulse" />
           
           {/* Floating sparkles */}
-          {[...Array(6)].map((_, i) => (
+          {[
+            { top: '8%', left: '12%' },
+            { top: '25%', left: '78%' },
+            { top: '45%', left: '6%' },
+            { top: '18%', left: '45%' },
+            { top: '55%', left: '85%' },
+            { top: '35%', left: '25%' },
+          ].map((pos, i) => (
             <Sparkles 
               key={i}
               className={cn(
-                "absolute w-4 h-4 text-primary animate-bounce",
-                i % 2 === 0 ? "animate-pulse" : ""
+                "absolute w-4 h-4 text-primary",
+                i % 2 === 0 ? "animate-pulse" : "animate-bounce"
               )}
               style={{
-                top: `${10 + (i * 15)}%`,
-                left: `${5 + (i * 15)}%`,
-                animationDelay: `${i * 0.2}s`,
-                animationDuration: `${2 + (i * 0.3)}s`
+                top: pos.top,
+                left: pos.left,
+                animationDelay: `${i * 0.3}s`,
+                animationDuration: `${1.5 + (i * 0.4)}s`
               }}
             />
           ))}
