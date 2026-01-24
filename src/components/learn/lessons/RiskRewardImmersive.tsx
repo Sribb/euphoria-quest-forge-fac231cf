@@ -8,6 +8,7 @@ import { AlertTriangle, TrendingUp, TrendingDown, Zap, Brain, Target, Trophy, Cl
 import { useToast } from "@/hooks/use-toast";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, ReferenceLine } from "recharts";
 import { cn } from "@/lib/utils";
+import { AIContextualHelp } from "@/components/learn/AIContextualHelp";
 
 type Phase = "hook" | "volatility" | "simulation" | "results";
 type HookDecision = "panic_sell" | "hold_buy" | "wait" | null;
@@ -361,9 +362,9 @@ export const RiskRewardImmersive = () => {
       <div className="min-h-[600px] rounded-xl p-6 bg-gradient-to-br from-primary/10 to-background">
         <div className="max-w-3xl mx-auto space-y-8">
           <div className="text-center space-y-2">
-            <h2 className="text-2xl font-bold">Set Your Risk Tolerance</h2>
+            <h2 className="text-2xl font-bold">Set Your <AIContextualHelp term="Risk Tolerance" lessonId="2" lessonTitle="Risk & Reward">Risk Tolerance</AIContextualHelp></h2>
             <p className="text-muted-foreground">
-              Drag the slider to define your acceptable volatility threshold
+              Drag the slider to define your acceptable <AIContextualHelp term="volatility" lessonId="2" lessonTitle="Risk & Reward">volatility</AIContextualHelp> threshold
             </p>
           </div>
 

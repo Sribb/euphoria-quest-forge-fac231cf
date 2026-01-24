@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
 import { Building, DollarSign, Percent, TrendingUp } from "lucide-react";
+import { AIContextualHelp } from "@/components/learn/AIContextualHelp";
 
 const reitTypes = [
   { name: "Residential", yield: 3.8, growth: 4.5 },
@@ -81,7 +82,7 @@ export const REITCalculator = () => {
         </div>
 
         <div className="p-3 bg-primary/10 rounded-lg">
-          <p className="text-sm"><strong>💡 Key Insight:</strong> REITs must distribute at least 90% of taxable income as dividends, making them excellent for income-focused portfolios. Consider diversifying across REIT types to balance yield and growth.</p>
+          <p className="text-sm"><strong>💡 Key Insight:</strong> <AIContextualHelp term="REITs" lessonId="22" lessonTitle="REITs">REITs</AIContextualHelp> must distribute at least 90% of taxable income as <AIContextualHelp term="dividends" lessonId="22" lessonTitle="REITs">dividends</AIContextualHelp>, making them excellent for income-focused portfolios. Consider diversifying across REIT types to balance <AIContextualHelp term="yield" lessonId="22" lessonTitle="REITs">yield</AIContextualHelp> and growth.</p>
         </div>
       </CardContent>
     </Card>

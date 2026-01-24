@@ -7,6 +7,7 @@ import {
   Building, Cpu, Droplet, ShoppingCart,
   Plane, Heart, Factory, Coins, Wheat, Globe
 } from "lucide-react";
+import { AIContextualHelp } from "@/components/learn/AIContextualHelp";
 
 type Phase = "hook" | "building" | "simulation" | "results";
 
@@ -407,9 +408,9 @@ export const DiversificationImmersive = () => {
 
         <div className="p-4 bg-primary/10 rounded-lg">
           <p className="text-sm">
-            <strong>💡 Key Insight:</strong> Diversification across sectors protected your portfolio from 
-            company-specific risk. When {bankruptAssetData?.name} went bankrupt, your other holdings 
-            preserved {percentageSaved.toFixed(0)}% of your wealth. This is unsystematic risk elimination in action!
+            <strong>💡 Key Insight:</strong> <AIContextualHelp term="Diversification" lessonId="5" lessonTitle="Diversification">Diversification</AIContextualHelp> across sectors protected your <AIContextualHelp term="portfolio" lessonId="5" lessonTitle="Diversification">portfolio</AIContextualHelp> from 
+            <AIContextualHelp term="company-specific risk" lessonId="5" lessonTitle="Diversification">company-specific risk</AIContextualHelp>. When {bankruptAssetData?.name} went bankrupt, your other holdings 
+            preserved {percentageSaved.toFixed(0)}% of your wealth. This is <AIContextualHelp term="unsystematic risk" lessonId="5" lessonTitle="Diversification">unsystematic risk</AIContextualHelp> elimination in action!
           </p>
         </div>
 

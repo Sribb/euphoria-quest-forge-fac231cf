@@ -3,6 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Shield, Check, X } from "lucide-react";
 import { toast } from "sonner";
+import { AIContextualHelp } from "@/components/learn/AIContextualHelp";
 
 interface Company {
   name: string;
@@ -138,7 +139,7 @@ export const MoatIdentifier = () => {
           Economic Moat Identifier
         </h3>
         <p className="text-sm text-muted-foreground">
-          Identify sustainable competitive advantages that protect company profits
+          Identify sustainable <AIContextualHelp term="competitive advantages" lessonId="9" lessonTitle="Economic Moats">competitive advantages</AIContextualHelp> that protect company profits
         </p>
       </div>
 

@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Slider } from "@/components/ui/slider";
 import { Banknote, TrendingUp, Calendar, Percent, Shield } from "lucide-react";
+import { AIContextualHelp } from "@/components/learn/AIContextualHelp";
 
 const bondTypes = [
   { name: "Treasury Bond", risk: "Very Low", yield: 4.5, rating: "AAA", description: "US Government backed, safest option" },
@@ -154,8 +155,8 @@ export const BondCalculator = () => {
               <span className="font-semibold text-sm">Key Insight</span>
             </div>
             <p className="text-xs text-muted-foreground">
-              <strong>Inverse Relationship:</strong> When interest rates rise, existing bond prices fall (and vice versa). 
-              Longer-duration bonds are more sensitive to rate changes. If you hold to maturity, you receive face value regardless of interim price changes.
+              <strong>Inverse Relationship:</strong> When <AIContextualHelp term="interest rates" lessonId="17" lessonTitle="Bonds">interest rates</AIContextualHelp> rise, existing <AIContextualHelp term="bond prices" lessonId="17" lessonTitle="Bonds">bond prices</AIContextualHelp> fall (and vice versa). 
+              Longer-<AIContextualHelp term="duration" lessonId="17" lessonTitle="Bonds">duration</AIContextualHelp> bonds are more sensitive to rate changes. If you hold to <AIContextualHelp term="maturity" lessonId="17" lessonTitle="Bonds">maturity</AIContextualHelp>, you receive <AIContextualHelp term="face value" lessonId="17" lessonTitle="Bonds">face value</AIContextualHelp> regardless of interim price changes.
             </p>
           </div>
         </div>

@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Calculator, TrendingUp, CheckCircle2, XCircle } from "lucide-react";
 import { toast } from "sonner";
+import { AIContextualHelp } from "@/components/learn/AIContextualHelp";
 
 interface Stock {
   name: string;
@@ -166,13 +167,13 @@ export const StockValuationCalculator = () => {
                 <strong>Your Estimate:</strong> ${parseFloat(userFairValue).toFixed(2)}
               </p>
               <p>
-                <strong>Graham Fair Value:</strong> ${fairValue.toFixed(2)}
+                <strong><AIContextualHelp term="Graham Fair Value" lessonId="7" lessonTitle="Value Investing">Graham Fair Value</AIContextualHelp>:</strong> ${fairValue.toFixed(2)}
               </p>
               <p>
                 <strong>Market Price:</strong> ${stock.marketPrice}
               </p>
               <p>
-                <strong>Margin of Safety:</strong>{" "}
+                <strong><AIContextualHelp term="Margin of Safety" lessonId="7" lessonTitle="Value Investing">Margin of Safety</AIContextualHelp>:</strong>{" "}
                 <span className={parseFloat(marginOfSafety) > 0 ? "text-success" : "text-destructive"}>
                   {marginOfSafety}%
                 </span>

@@ -3,6 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Brain, AlertTriangle, CheckCircle2, X } from "lucide-react";
 import { toast } from "sonner";
+import { AIContextualHelp } from "@/components/learn/AIContextualHelp";
 
 interface Scenario {
   id: number;
@@ -249,8 +250,8 @@ export const BiasDetector = () => {
             <p className="text-xs font-semibold mb-1">Key Lessons:</p>
             <ul className="text-xs text-muted-foreground space-y-1">
               <li>• Be aware of your emotional state when making decisions</li>
-              <li>• Use a systematic investment process to reduce bias</li>
-              <li>• Seek contrary opinions to challenge your thinking</li>
+              <li>• Use a systematic <AIContextualHelp term="investment process" lessonId="14" lessonTitle="Bias Detection">investment process</AIContextualHelp> to reduce bias</li>
+              <li>• Seek <AIContextualHelp term="contrary opinions" lessonId="14" lessonTitle="Bias Detection">contrary opinions</AIContextualHelp> to challenge your thinking</li>
               <li>• Track and learn from past mistakes</li>
             </ul>
           </div>

@@ -8,6 +8,7 @@ import {
   TrendingUp, Zap, Trophy, Target, 
   DollarSign, Calendar, AlertTriangle, Rocket
 } from "lucide-react";
+import { AIContextualHelp } from "@/components/learn/AIContextualHelp";
 
 type Phase = "hook" | "strategy" | "simulation" | "recession" | "raise" | "results";
 type Strategy = "dca" | "lumpsum";
@@ -174,7 +175,7 @@ export const CompoundInterestImmersive = () => {
         <div className="text-5xl font-mono font-bold text-green-500">
           $1 → ${Math.round(Math.pow(1.07, 40)).toLocaleString()}
         </div>
-        <p className="text-sm text-muted-foreground mt-2">$1 at 7% for 40 years</p>
+        <p className="text-sm text-muted-foreground mt-2">$1 at 7% <AIContextualHelp term="compound interest" lessonId="3" lessonTitle="Compound Interest">compounded</AIContextualHelp> for 40 years</p>
       </div>
 
       <Card className="border-primary/30">
@@ -190,9 +191,9 @@ export const CompoundInterestImmersive = () => {
               onClick={() => setStrategy("dca")}
             >
               <Calendar className="h-10 w-10 text-blue-500" />
-              <span className="font-semibold">Dollar-Cost Averaging</span>
+              <span className="font-semibold"><AIContextualHelp term="Dollar-Cost Averaging" lessonId="3" lessonTitle="Compound Interest">Dollar-Cost Averaging</AIContextualHelp></span>
               <span className="text-xs text-muted-foreground text-center">
-                Invest monthly, ride out volatility
+                Invest monthly, ride out <AIContextualHelp term="volatility" lessonId="3" lessonTitle="Compound Interest">volatility</AIContextualHelp>
               </span>
             </Button>
             <Button
@@ -203,7 +204,7 @@ export const CompoundInterestImmersive = () => {
               onClick={() => setStrategy("lumpsum")}
             >
               <DollarSign className="h-10 w-10 text-green-500" />
-              <span className="font-semibold">Lump Sum</span>
+              <span className="font-semibold"><AIContextualHelp term="Lump Sum investing" lessonId="3" lessonTitle="Compound Interest">Lump Sum</AIContextualHelp></span>
               <span className="text-xs text-muted-foreground text-center">
                 Invest everything upfront
               </span>
