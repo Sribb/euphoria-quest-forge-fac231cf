@@ -5,6 +5,7 @@ import { Slider } from "@/components/ui/slider";
 import { Calendar, DollarSign, TrendingUp } from "lucide-react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { toast } from "sonner";
+import { AIContextualHelp } from "@/components/learn/AIContextualHelp";
 
 export const DCASimulator = () => {
   const [monthlyInvestment, setMonthlyInvestment] = useState(500);
@@ -226,10 +227,10 @@ export const DCASimulator = () => {
           <Card className="p-4 bg-muted/50">
             <h4 className="font-semibold mb-2 text-sm">Key Insights</h4>
             <ul className="text-xs space-y-1 text-muted-foreground">
-              <li>• <strong>DCA reduces timing risk</strong> by spreading purchases over time</li>
-              <li>• <strong>Lump sum often wins</strong> in rising markets due to more time invested</li>
-              <li>• <strong>DCA provides peace of mind</strong> during volatile markets</li>
-              <li>• <strong>Best strategy depends</strong> on your risk tolerance and market conditions</li>
+              <li>• <strong><AIContextualHelp term="Dollar-Cost Averaging" lessonId="3" lessonTitle="DCA Strategy">DCA</AIContextualHelp> reduces timing risk</strong> by spreading purchases over time</li>
+              <li>• <strong><AIContextualHelp term="Lump Sum investing" lessonId="3" lessonTitle="DCA Strategy">Lump sum</AIContextualHelp> often wins</strong> in rising markets due to more time invested</li>
+              <li>• <strong>DCA provides peace of mind</strong> during <AIContextualHelp term="volatile markets" lessonId="3" lessonTitle="DCA Strategy">volatile markets</AIContextualHelp></li>
+              <li>• <strong>Best strategy depends</strong> on your <AIContextualHelp term="risk tolerance" lessonId="3" lessonTitle="DCA Strategy">risk tolerance</AIContextualHelp> and market conditions</li>
               <li>• <strong>Both are better than not investing</strong> - the key is to start!</li>
             </ul>
           </Card>

@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Slider } from "@/components/ui/slider";
 import { Calculator, TrendingUp, BarChart3, Target } from "lucide-react";
+import { AIContextualHelp } from "@/components/learn/AIContextualHelp";
 
 const metrics = [
   { name: "Sharpe Ratio", formula: "(Return - Rf) / StdDev", interpretation: "> 1.0 is good, > 2.0 is excellent" },
@@ -98,7 +99,7 @@ export const QuantitativeAnalysis = () => {
         </div>
 
         <div className="p-3 bg-primary/10 rounded-lg">
-          <p className="text-sm"><strong>💡 Key Insight:</strong> The Sharpe ratio measures risk-adjusted returns. A higher ratio means better return per unit of risk. Compare funds using Sharpe ratio, not just raw returns.</p>
+          <p className="text-sm"><strong>💡 Key Insight:</strong> The <AIContextualHelp term="Sharpe ratio" lessonId="16" lessonTitle="Quantitative Analysis">Sharpe ratio</AIContextualHelp> measures <AIContextualHelp term="risk-adjusted returns" lessonId="16" lessonTitle="Quantitative Analysis">risk-adjusted returns</AIContextualHelp>. A higher ratio means better return per unit of risk. Compare funds using Sharpe ratio, not just raw returns.</p>
         </div>
       </CardContent>
     </Card>

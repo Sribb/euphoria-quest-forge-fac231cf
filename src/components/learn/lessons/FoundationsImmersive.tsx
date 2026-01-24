@@ -8,6 +8,7 @@ import {
   Building, BarChart3, AlertTriangle, Trophy,
   Zap, Target, Timer
 } from "lucide-react";
+import { AIContextualHelp } from "@/components/learn/AIContextualHelp";
 
 type Phase = "hook" | "selection" | "simulation" | "crisis" | "results";
 type AssetChoice = "cash" | "gold" | "index";
@@ -150,7 +151,7 @@ export const FoundationsImmersive = () => {
           Your money is losing value every second you read this.
         </p>
         <div className="mt-4 text-4xl font-mono font-bold text-red-500">
-          -{((3 / 365 / 24 / 60 / 60) * (15 - hookTimer) * 100000).toFixed(2)} purchasing power
+          -{((3 / 365 / 24 / 60 / 60) * (15 - hookTimer) * 100000).toFixed(2)} <AIContextualHelp term="purchasing power" lessonId="1" lessonTitle="Foundations">purchasing power</AIContextualHelp>
         </div>
       </div>
 
@@ -228,7 +229,7 @@ export const FoundationsImmersive = () => {
 
           <div className="p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-lg">
             <p className="text-sm text-yellow-600 dark:text-yellow-400">
-              ⚠️ Remember: Inflation averages 3% per year. Your money loses purchasing power even when "safe."
+              ⚠️ Remember: <AIContextualHelp term="Inflation" lessonId="1" lessonTitle="Foundations">Inflation</AIContextualHelp> averages 3% per year. Your money loses <AIContextualHelp term="purchasing power" lessonId="1" lessonTitle="Foundations">purchasing power</AIContextualHelp> even when "safe."
             </p>
           </div>
 
@@ -428,10 +429,10 @@ export const FoundationsImmersive = () => {
         <div className="p-4 bg-primary/10 rounded-lg">
           <p className="text-sm">
             <strong>💡 Key Insight:</strong> {selectedAsset === "cash" 
-              ? "Holding 100% cash felt 'safe,' but inflation silently eroded your purchasing power. The cost of inaction is real."
+              ? <>Holding 100% cash felt 'safe,' but <AIContextualHelp term="inflation" lessonId="1" lessonTitle="Foundations">inflation</AIContextualHelp> silently eroded your <AIContextualHelp term="purchasing power" lessonId="1" lessonTitle="Foundations">purchasing power</AIContextualHelp>. The cost of inaction is real.</>
               : panicSold 
-                ? "Panic selling locked in your losses. Markets recovered within 5 years, but you missed the rebound."
-                : "Staying invested through the crash paid off. The market recovered and your patience was rewarded."
+                ? <><AIContextualHelp term="Panic selling" lessonId="1" lessonTitle="Foundations">Panic selling</AIContextualHelp> locked in your losses. Markets recovered within 5 years, but you missed the rebound.</>
+                : <>Staying invested through the crash paid off. The <AIContextualHelp term="market recovery" lessonId="1" lessonTitle="Foundations">market recovered</AIContextualHelp> and your patience was rewarded.</>
             }
           </p>
         </div>

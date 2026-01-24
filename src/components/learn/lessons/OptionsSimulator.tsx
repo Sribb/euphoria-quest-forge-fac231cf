@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Badge } from "@/components/ui/badge";
 import { TrendingUp, TrendingDown, DollarSign, AlertTriangle } from "lucide-react";
+import { AIContextualHelp } from "@/components/learn/AIContextualHelp";
 
 export const OptionsSimulator = () => {
   const [stockPrice, setStockPrice] = useState(100);
@@ -167,10 +168,10 @@ export const OptionsSimulator = () => {
           )}
 
           <div className="text-xs text-muted-foreground p-3 bg-muted/20 rounded-lg">
-            <strong>Key Insight:</strong> Options have limited downside (premium paid) but can offer significant upside. 
+            <strong>Key Insight:</strong> <AIContextualHelp term="Options" lessonId="15" lessonTitle="Options Basics">Options</AIContextualHelp> have limited downside (<AIContextualHelp term="premium" lessonId="15" lessonTitle="Options Basics">premium</AIContextualHelp> paid) but can offer significant upside. 
             {optionType === 'call' 
-              ? ' Call buyers profit when stocks rise above the breakeven price.'
-              : ' Put buyers profit when stocks fall below the breakeven price.'
+              ? <> <AIContextualHelp term="Call option" lessonId="15" lessonTitle="Options Basics">Call</AIContextualHelp> buyers profit when stocks rise above the <AIContextualHelp term="breakeven price" lessonId="15" lessonTitle="Options Basics">breakeven price</AIContextualHelp>.</>
+              : <> <AIContextualHelp term="Put option" lessonId="15" lessonTitle="Options Basics">Put</AIContextualHelp> buyers profit when stocks fall below the <AIContextualHelp term="breakeven price" lessonId="15" lessonTitle="Options Basics">breakeven price</AIContextualHelp>.</>
             }
           </div>
         </div>
