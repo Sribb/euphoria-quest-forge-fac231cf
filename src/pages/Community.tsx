@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { Users, TrendingUp, Clock, Filter, ArrowLeft } from "lucide-react";
+import { Users, TrendingUp, Clock, Filter, ArrowLeft, Play } from "lucide-react";
+import StoryFeed from "@/components/stories/StoryFeed";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -31,6 +32,7 @@ const Community = ({ onNavigate }: CommunityProps) => {
   const queryClient = useQueryClient();
   const [sortBy, setSortBy] = useState<"recent" | "popular">("recent");
   const [categoryFilter, setCategoryFilter] = useState("all");
+  const [showStoryFeed, setShowStoryFeed] = useState(false);
 
   const { data: posts, isLoading, refetch } = useQuery({
     queryKey: ["posts", sortBy, categoryFilter],
@@ -191,30 +193,43 @@ const Community = ({ onNavigate }: CommunityProps) => {
   });
 
   return (
-    <div className="space-y-6 pb-24 pt-4">
-      {/* Header */}
-      <div className="flex items-center justify-between animate-fade-in">
-        <div className="flex items-center gap-3">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => onNavigate('dashboard')}
-            className="hover-scale"
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </Button>
-          <div className="w-12 h-12 rounded-xl bg-gradient-accent flex items-center justify-center shadow-glow">
-            <Users className="w-6 h-6 text-white" />
+    <>
+      {/* Story Feed Modal */}
+      <StoryFeed isOpen={showStoryFeed} onClose={() => setShowStoryFeed(false)} />
+      
+      <div className="space-y-6 pb-24 pt-4">
+        {/* Header */}
+        <div className="flex items-center justify-between animate-fade-in">
+          <div className="flex items-center gap-3">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => onNavigate('dashboard')}
+              className="hover-scale"
+            >
+              <ArrowLeft className="w-5 h-5" />
+            </Button>
+            <div className="w-12 h-12 rounded-xl bg-gradient-accent flex items-center justify-center shadow-glow">
+              <Users className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold">Community</h1>
+              <p className="text-sm text-muted-foreground">Share strategies, wins, and insights</p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-2xl font-bold">Community</h1>
-            <p className="text-sm text-muted-foreground">Share strategies, wins, and insights</p>
+          <div className="flex gap-2">
+            <Button
+              onClick={() => setShowStoryFeed(true)}
+              className="bg-gradient-primary text-primary-foreground border-0"
+            >
+              <Play className="w-4 h-4 mr-2" />
+              Stories
+            </Button>
+            <CreatePostDialog />
           </div>
         </div>
-        <CreatePostDialog />
-      </div>
 
-      {/* Stats Cards */}
+        {/* Stats Cards */}
       <div className="grid grid-cols-3 gap-3 animate-fade-in">
         <Card className="p-4 bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20">
           <p className="text-xs text-muted-foreground mb-1">Total Posts</p>
@@ -337,6 +352,7 @@ const Community = ({ onNavigate }: CommunityProps) => {
         )}
       </div>
     </div>
+    </>
   );
 };
 
