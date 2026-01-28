@@ -1,4 +1,4 @@
-import { Target, BookOpen, Lightbulb } from "lucide-react";
+import { Target, BookOpen, Lightbulb, TrendingUp, TrendingDown } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { usePortfolioValue } from "@/hooks/usePortfolioValue";
@@ -7,7 +7,6 @@ import { useAuth } from "@/hooks/useAuth";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useState } from "react";
-import { MarketOverview } from "./MarketOverview";
 
 interface QuickOverviewGridProps {
   onNavigate?: (tab: string) => void;
@@ -131,8 +130,22 @@ export const QuickOverviewGrid = ({ onNavigate }: QuickOverviewGridProps) => {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-      {/* Market Overview */}
-      <MarketOverview />
+      {/* Portfolio Overview Card */}
+      <Card className="p-6 bg-gradient-surface border-border shadow-glow-soft hover:shadow-glow transition-all duration-300 hover-lift cursor-pointer"
+        onClick={() => onNavigate?.('trade')}>
+        <div className="flex items-center gap-3 mb-4">
+          <div className="p-2 bg-primary/10 rounded-lg">
+            {portfolioChange >= 0 ? <TrendingUp className="w-5 h-5 text-success" /> : <TrendingDown className="w-5 h-5 text-destructive" />}
+          </div>
+          <h4 className="font-bold text-foreground">Portfolio</h4>
+        </div>
+        <div className="space-y-2">
+          <p className="text-2xl font-bold text-foreground">{formatDollar(totalValue, 0)}</p>
+          <p className={`text-sm font-medium ${portfolioChange >= 0 ? 'text-success' : 'text-destructive'}`}>
+            {portfolioChange >= 0 ? '+' : ''}{portfolioChange.toFixed(2)}% all time
+          </p>
+        </div>
+      </Card>
 
       {/* User Progress */}
       <Card 

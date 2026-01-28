@@ -8,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { ScenarioCard } from './ScenarioCard';
-import { ActionPanel } from './ActionPanel';
+import { ActionControlPanel } from './ActionControlPanel';
 import { OutcomeVisualizer } from './OutcomeVisualizer';
 import { DecisionFeedback } from './DecisionFeedback';
 
@@ -172,9 +172,10 @@ export const InteractiveScenarioSimulator = ({ sessionId, userId }: InteractiveS
               </div>
             </Card>
 
-            <ActionPanel
+            <ActionControlPanel
               scenario={selectedScenario}
               onExecute={executeAction}
+              isExecuting={false}
               disabled={!!executedAction}
             />
 

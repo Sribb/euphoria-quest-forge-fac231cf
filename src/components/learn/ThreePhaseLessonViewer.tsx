@@ -12,7 +12,6 @@ import { AILessonChatbot } from "./AILessonChatbot";
 import { AdaptiveLessonChallenge } from "./AdaptiveLessonChallenge";
 import { LessonMasteryDashboard } from "./LessonMasteryDashboard";
 import { InteractiveLessonSimulation } from "./InteractiveLessonSimulation";
-import { TradingViewChart } from "./TradingViewChart";
 import { InteractiveLessonRouter } from "./InteractiveLessonRouter";
 import { Lesson1ReflectionSlide } from "./lessons/Lesson1ReflectionSlide";
 import { Lesson1InsightSlide } from "./lessons/Lesson1InsightSlide";
@@ -602,8 +601,8 @@ export const ThreePhaseLessonViewer = ({ lessonId, onClose }: ThreePhaseLessonVi
                     )}
 
                     {lesson.order_index >= 7 && lesson.order_index <= 9 && (
-                      <div className="my-6">
-                        <TradingViewChart />
+                      <div className="my-6 p-4 bg-muted/30 rounded-lg text-center text-muted-foreground">
+                        <p className="text-sm">📈 Check the Trade tab for live market charts</p>
                       </div>
                     )}
 
