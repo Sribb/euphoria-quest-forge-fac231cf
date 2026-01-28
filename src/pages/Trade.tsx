@@ -1,9 +1,9 @@
 import { TrendingUp, ArrowLeft, Brain, BarChart3, Zap } from "lucide-react";
-import { InteractiveAIMarket } from "@/components/trade/InteractiveAIMarket";
-import { PortfolioOverview } from "@/components/trade/PortfolioOverview";
-import { AssetAllocation } from "@/components/trade/AssetAllocation";
-import { TransactionHistory } from "@/components/trade/TransactionHistory";
-import { StockTrading } from "@/components/trade/StockTrading";
+import { InteractiveAIMarket } from "@/features/trading/components/InteractiveAIMarket";
+import { PortfolioOverview } from "@/features/trading/components/PortfolioOverview";
+import { AssetAllocation } from "@/features/trading/components/AssetAllocation";
+import { TransactionHistory } from "@/features/trading/components/TransactionHistory";
+import { StockTrading } from "@/features/trading/components/StockTrading";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";

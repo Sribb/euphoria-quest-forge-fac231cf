@@ -1,10 +1,10 @@
 import { Trophy, Brain, Users, Coins, TrendingUp, Globe, Wallet, Gamepad2, Zap, Play } from "lucide-react";
 import { useState } from "react";
-import { LifeSimInvestorGame } from "@/components/games/LifeSimInvestorGame";
-import { TrendMasterGame } from "@/components/games/TrendMasterGame";
-import { AICompetitorGame } from "@/components/games/AICompetitorGame";
-import { MarketReactionGame } from "@/components/games/MarketReactionGame";
-import { BudgetBalancerGame } from "@/components/games/BudgetBalancerGame";
+import { LifeSimInvestorGame } from "@/features/games/components/LifeSimInvestorGame";
+import { TrendMasterGame } from "@/features/games/components/TrendMasterGame";
+import { AICompetitorGame } from "@/features/games/components/AICompetitorGame";
+import { MarketReactionGame } from "@/features/games/components/MarketReactionGame";
+import { BudgetBalancerGame } from "@/features/games/components/BudgetBalancerGame";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";

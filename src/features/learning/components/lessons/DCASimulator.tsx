@@ -5,7 +5,7 @@ import { Slider } from "@/components/ui/slider";
 import { Calendar, DollarSign, TrendingUp } from "lucide-react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { toast } from "sonner";
-import { AIContextualHelp } from "@/components/learn/AIContextualHelp";
+import { AIContextualHelp } from "../AIContextualHelp";
 
 export const DCASimulator = () => {
   const [monthlyInvestment, setMonthlyInvestment] = useState(500);

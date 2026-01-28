@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Search, TrendingUp, TrendingDown, ShoppingCart, RefreshCw, Zap } from "lucide-react";
-import { OrderDialog } from "@/components/trade/OrderDialog";
+import { OrderDialog } from "./OrderDialog";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -14,7 +14,7 @@ import { alphaVantageService } from "@/lib/alphaVantageService";
 import { usePortfolioValue } from "@/hooks/usePortfolioValue";
 import { placeOrder } from "@/lib/orderService";
 import { orderSchema, type OrderInput } from "@/lib/orderValidation";
-import { OrderManagement } from "@/components/trade/OrderManagement";
+import { OrderManagement } from "./OrderManagement";
 
 const popularStocks = [
   { symbol: "AAPL", name: "Apple Inc.", price: 185.92, change: 2.34, changePercent: 1.27, sector: "Technology" },

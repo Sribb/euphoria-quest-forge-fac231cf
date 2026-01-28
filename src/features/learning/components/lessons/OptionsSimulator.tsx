@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Badge } from "@/components/ui/badge";
 import { TrendingUp, TrendingDown, DollarSign, AlertTriangle } from "lucide-react";
-import { AIContextualHelp } from "@/components/learn/AIContextualHelp";
+import { AIContextualHelp } from "../AIContextualHelp";
 
 export const OptionsSimulator = () => {
   const [stockPrice, setStockPrice] = useState(100);

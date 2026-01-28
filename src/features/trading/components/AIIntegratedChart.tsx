@@ -1,7 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { TrendingUp, TrendingDown, Activity, Brain } from "lucide-react";
-import TradingViewWidget from "@/components/TradingViewWidget";
+import TradingViewWidget from "@/shared/components/TradingViewWidget";
 import { useAIMarket } from "@/hooks/useAIMarket";
 import { useAuth } from "@/hooks/useAuth";
 

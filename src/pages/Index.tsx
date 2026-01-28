@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { TopNavigation } from "@/components/TopNavigation";
-import { GlobalAIAssistant } from "@/components/GlobalAIAssistant";
+import { TopNavigation } from "@/shared/components/TopNavigation";
+import { GlobalAIAssistant } from "@/shared/components/GlobalAIAssistant";
 import Dashboard from "./Dashboard";
 import Learn from "./Learn";
 import Trade from "./Trade";

@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Calculator, TrendingUp, CheckCircle2, XCircle } from "lucide-react";
 import { toast } from "sonner";
-import { AIContextualHelp } from "@/components/learn/AIContextualHelp";
+import { AIContextualHelp } from "../AIContextualHelp";
 
 interface Stock {
   name: string;

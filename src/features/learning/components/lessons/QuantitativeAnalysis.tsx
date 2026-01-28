@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Slider } from "@/components/ui/slider";
 import { Calculator, TrendingUp, BarChart3, Target } from "lucide-react";
-import { AIContextualHelp } from "@/components/learn/AIContextualHelp";
+import { AIContextualHelp } from "../AIContextualHelp";
 
 const metrics = [
   { name: "Sharpe Ratio", formula: "(Return - Rf) / StdDev", interpretation: "> 1.0 is good, > 2.0 is excellent" },

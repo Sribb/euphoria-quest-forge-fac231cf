@@ -3,7 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Brain, AlertTriangle, CheckCircle2, X } from "lucide-react";
 import { toast } from "sonner";
-import { AIContextualHelp } from "@/components/learn/AIContextualHelp";
+import { AIContextualHelp } from "../AIContextualHelp";
 
 interface Scenario {
   id: number;

@@ -5,8 +5,8 @@ import { Badge } from "@/components/ui/badge";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import { CertificateCard, Certificate } from "@/components/certificates/CertificateCard";
-import { CertificateDetailDialog } from "@/components/certificates/CertificateDetailDialog";
+import { CertificateCard, Certificate } from "@/features/certificates/components/CertificateCard";
+import { CertificateDetailDialog } from "@/features/certificates/components/CertificateDetailDialog";
 
 interface CertificatesProps {
   onNavigate: (tab: string) => void;
