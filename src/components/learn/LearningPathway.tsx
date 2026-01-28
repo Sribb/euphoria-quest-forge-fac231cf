@@ -1,7 +1,6 @@
 import { useState } from "react";
-import { PathwayNode } from "./PathwayNode";
 import { ChallengeModal } from "./ChallengeModal";
-import { Trophy, Award, Map, Sparkles, Flag, Mountain, Castle, Scroll } from "lucide-react";
+import { Trophy, Award, Map, Sparkles, Flag, Mountain, Castle, Scroll, Lock, Star, Clock, Zap, Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -230,20 +229,67 @@ export const LearningPathway = ({
                   )}
                 />
 
-                {/* The Node */}
-                <PathwayNode
-                  title={lesson.title}
-                  orderIndex={lesson.order_index}
-                  isLocked={lesson.is_locked}
-                  isCompleted={lesson.completed}
-                  isSkippedByPlacement={lesson.skippedByPlacement}
-                  stars={lesson.completed ? (lesson.stars || 3) : 0}
+                {/* The Node - Inline Implementation */}
+                <div
                   onClick={() => handleNodeClick(lesson)}
-                  isNext={isNextLesson}
-                  duration={lesson.duration}
-                  difficulty={lesson.difficulty}
-                  isMilestone={isMilestone}
-                />
+                  className={cn(
+                    "relative w-[220px] cursor-pointer transition-all duration-300",
+                    lesson.is_locked && "opacity-60 cursor-not-allowed",
+                    isNextLesson && "animate-pulse"
+                  )}
+                >
+                  <div className={cn(
+                    "relative p-4 rounded-2xl border-2 transition-all",
+                    lesson.completed 
+                      ? "bg-gradient-to-br from-primary/20 to-primary/10 border-primary/50" 
+                      : lesson.is_locked 
+                        ? "bg-muted/50 border-border" 
+                        : "bg-card border-border hover:border-primary/50 hover:shadow-lg"
+                  )}>
+                    {/* Status Icon */}
+                    <div className={cn(
+                      "absolute -top-3 -right-3 w-8 h-8 rounded-full flex items-center justify-center",
+                      lesson.completed ? "bg-primary text-primary-foreground" : lesson.is_locked ? "bg-muted" : "bg-card border border-border"
+                    )}>
+                      {lesson.completed ? (
+                        <Star className="w-4 h-4" />
+                      ) : lesson.is_locked ? (
+                        <Lock className="w-4 h-4 text-muted-foreground" />
+                      ) : isNextLesson ? (
+                        <Play className="w-4 h-4 text-primary" />
+                      ) : (
+                        <span className="text-xs font-bold">{lesson.order_index}</span>
+                      )}
+                    </div>
+                    
+                    {/* Content */}
+                    <div className="space-y-2">
+                      <h4 className="font-bold text-foreground text-sm line-clamp-2">{lesson.title}</h4>
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                        <Clock className="w-3 h-3" />
+                        <span>{lesson.duration}</span>
+                        <span>•</span>
+                        <Zap className="w-3 h-3" />
+                        <span>{lesson.difficulty}</span>
+                      </div>
+                      
+                      {/* Stars for completed */}
+                      {lesson.completed && (
+                        <div className="flex gap-1 pt-1">
+                          {[...Array(3)].map((_, i) => (
+                            <Star 
+                              key={i} 
+                              className={cn(
+                                "w-4 h-4",
+                                i < (lesson.stars || 3) ? "text-yellow-500 fill-yellow-500" : "text-muted"
+                              )} 
+                            />
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
               </div>
 
               {/* Curved connector to next node */}
