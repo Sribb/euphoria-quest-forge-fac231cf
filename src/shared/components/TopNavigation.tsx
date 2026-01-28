@@ -15,8 +15,6 @@ const navItems = [
   { id: "learn", label: "Learn" },
   { id: "trade", label: "Trade" },
   { id: "games", label: "Games" },
-  { id: "analytics", label: "Analytics" },
-  { id: "community", label: "Community" },
   { id: "certificates", label: "Certificates" },
   { id: "profile", label: "Profile" },
 ];
