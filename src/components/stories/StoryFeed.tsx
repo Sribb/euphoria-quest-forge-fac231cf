@@ -1,149 +1,176 @@
-import { useState, useRef, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { ChevronUp, ChevronDown, X } from "lucide-react";
-import StoryCard from "./StoryCard";
+import { useState, useRef, useEffect, useCallback } from "react";
+import { motion, AnimatePresence, PanInfo } from "framer-motion";
+import { X } from "lucide-react";
+import StoryCard, { StoryData } from "./StoryCard";
 import PortfolioOverlay from "./PortfolioOverlay";
 
-interface StoryData {
-  id: string;
-  title: string;
-  subtitle?: string;
-  content: string;
-  backgroundGradient: string;
-  interaction?: {
-    type: "poll" | "quiz";
-    question: string;
-    options: Array<{
-      id: string;
-      text: string;
-      isCorrect?: boolean;
-      votes?: number;
-    }>;
-  };
-  simulation?: {
-    symbol: string;
-    action: "buy" | "sell";
-    shares: number;
-    price: number;
-  };
-}
-
-// Sample stories data
+// Sample stories data with multi-segment support
 const SAMPLE_STORIES: StoryData[] = [
   {
     id: "1",
-    title: "The Fed Just Dropped a Bomb",
-    subtitle: "Rate Cuts Incoming? 📉",
-    content: "Interest rates are about to change everything. Smart money is already moving. Are you positioned correctly?",
-    backgroundGradient: "bg-gradient-to-br from-violet-900 via-purple-900 to-black",
-    interaction: {
-      type: "quiz",
-      question: "When rates drop, what typically happens to growth stocks?",
-      options: [
-        { id: "a", text: "They moon 🚀", isCorrect: true },
-        { id: "b", text: "They crash 📉", isCorrect: false },
-        { id: "c", text: "Nothing changes", isCorrect: false },
-        { id: "d", text: "Depends on the sector", isCorrect: false },
-      ],
-    },
-    simulation: {
-      symbol: "QQQ",
-      action: "buy",
-      shares: 10,
-      price: 450.25,
-    },
+    author: { name: "MarketMaster", verified: true },
+    createdAt: new Date(Date.now() - 2 * 3600000),
+    segments: [
+      {
+        id: "1-1",
+        title: "The Fed Just Dropped a Bomb",
+        subtitle: "Rate Cuts Incoming? 📉",
+        content: "Interest rates are about to change everything. Smart money is already moving.",
+        backgroundGradient: "bg-gradient-to-br from-violet-900 via-purple-900 to-black",
+        interaction: {
+          type: "quiz",
+          question: "When rates drop, what happens to growth stocks?",
+          options: [
+            { id: "a", text: "They moon 🚀", isCorrect: true },
+            { id: "b", text: "They crash 📉", isCorrect: false },
+            { id: "c", text: "Nothing changes", isCorrect: false },
+          ],
+        },
+      },
+      {
+        id: "1-2",
+        title: "Position Yourself NOW",
+        subtitle: "Before the crowd catches on 💡",
+        content: "Growth ETFs are the play. QQQ specifically has the best risk/reward.",
+        backgroundGradient: "bg-gradient-to-br from-purple-900 via-violet-900 to-black",
+        simulation: {
+          symbol: "QQQ",
+          action: "buy",
+          shares: 10,
+          price: 450.25,
+        },
+      },
+    ],
   },
   {
     id: "2",
-    title: "NVIDIA's Secret Weapon",
-    subtitle: "AI Domination Continues 🤖",
-    content: "Everyone's talking about chips, but the real alpha is in the software moat they're building.",
-    backgroundGradient: "bg-gradient-to-br from-emerald-900 via-teal-900 to-black",
-    interaction: {
-      type: "poll",
-      question: "Where do you think NVDA goes by end of year?",
-      options: [
-        { id: "a", text: "$1,500+", votes: 847 },
-        { id: "b", text: "$1,200-$1,500", votes: 1203 },
-        { id: "c", text: "$1,000-$1,200", votes: 456 },
-        { id: "d", text: "Under $1,000", votes: 234 },
-      ],
-    },
-    simulation: {
-      symbol: "NVDA",
-      action: "buy",
-      shares: 5,
-      price: 1150.00,
-    },
+    author: { name: "CryptoKing", verified: true },
+    createdAt: new Date(Date.now() - 5 * 3600000),
+    segments: [
+      {
+        id: "2-1",
+        title: "Bitcoin ETF Changed Everything",
+        subtitle: "Institutional money is flooding in 🔥",
+        content: "The halving just happened. You know what comes next.",
+        backgroundGradient: "bg-gradient-to-br from-orange-900 via-red-900 to-black",
+        interaction: {
+          type: "slider",
+          question: "How bullish are you on BTC?",
+          emoji: "🚀",
+        },
+      },
+      {
+        id: "2-2",
+        title: "The Setup is Perfect",
+        content: "Every cycle, same pattern. Don't miss this one.",
+        backgroundGradient: "bg-gradient-to-br from-red-900 via-orange-900 to-black",
+        interaction: {
+          type: "poll",
+          question: "BTC price by end of year?",
+          options: [
+            { id: "a", text: "$150K+", votes: 2341 },
+            { id: "b", text: "$100K-$150K", votes: 1567 },
+            { id: "c", text: "$80K-$100K", votes: 423 },
+            { id: "d", text: "Under $80K", votes: 189 },
+          ],
+        },
+      },
+      {
+        id: "2-3",
+        title: "My Move",
+        subtitle: "DCA into spot BTC 📊",
+        content: "Not financial advice, but this is exactly what I'm doing.",
+        backgroundGradient: "bg-gradient-to-br from-amber-900 via-orange-900 to-black",
+        simulation: {
+          symbol: "BTC",
+          action: "buy",
+          shares: 0.1,
+          price: 68500.0,
+        },
+      },
+    ],
   },
   {
     id: "3",
-    title: "The Dividend Play Nobody Sees",
-    subtitle: "Passive Income Unlocked 💰",
-    content: "While everyone chases meme stocks, this boring dividend aristocrat is printing money.",
-    backgroundGradient: "bg-gradient-to-br from-amber-900 via-orange-900 to-black",
-    interaction: {
-      type: "quiz",
-      question: "What's the 'Rule of 72'?",
-      options: [
-        { id: "a", text: "Max stocks in a portfolio", isCorrect: false },
-        { id: "b", text: "Years to double money at given rate", isCorrect: true },
-        { id: "c", text: "Minimum retirement age", isCorrect: false },
-        { id: "d", text: "Tax bracket threshold", isCorrect: false },
-      ],
-    },
-    simulation: {
-      symbol: "JNJ",
-      action: "buy",
-      shares: 15,
-      price: 155.50,
-    },
+    author: { name: "DividendQueen" },
+    createdAt: new Date(Date.now() - 8 * 3600000),
+    segments: [
+      {
+        id: "3-1",
+        title: "The Dividend Play Nobody Sees",
+        subtitle: "Passive Income Unlocked 💰",
+        content: "While everyone chases meme stocks, this boring dividend aristocrat is printing money.",
+        backgroundGradient: "bg-gradient-to-br from-emerald-900 via-teal-900 to-black",
+        interaction: {
+          type: "quiz",
+          question: "What's the 'Rule of 72'?",
+          options: [
+            { id: "a", text: "Max stocks in a portfolio", isCorrect: false },
+            { id: "b", text: "Years to double money", isCorrect: true },
+            { id: "c", text: "Minimum retirement age", isCorrect: false },
+          ],
+        },
+      },
+      {
+        id: "3-2",
+        title: "JNJ: 62 Years of Dividend Growth",
+        content: "Through wars, recessions, and pandemics. Still paying. Still growing.",
+        backgroundGradient: "bg-gradient-to-br from-teal-900 via-emerald-900 to-black",
+        simulation: {
+          symbol: "JNJ",
+          action: "buy",
+          shares: 15,
+          price: 155.5,
+        },
+      },
+    ],
   },
   {
     id: "4",
-    title: "Crypto Winter is Over?",
-    subtitle: "Bitcoin ETF Changed Everything 🔥",
-    content: "Institutional money is flooding in. The halving just happened. You know what comes next.",
-    backgroundGradient: "bg-gradient-to-br from-orange-900 via-red-900 to-black",
-    interaction: {
-      type: "poll",
-      question: "Are you bullish on Bitcoin for 2024?",
-      options: [
-        { id: "a", text: "EXTREMELY bullish 🐂", votes: 2341 },
-        { id: "b", text: "Cautiously optimistic", votes: 1567 },
-        { id: "c", text: "Neutral", votes: 423 },
-        { id: "d", text: "Still bearish 🐻", votes: 189 },
-      ],
-    },
-    simulation: {
-      symbol: "BTC",
-      action: "buy",
-      shares: 0.1,
-      price: 68500.00,
-    },
-  },
-  {
-    id: "5",
-    title: "The Short Squeeze Setup",
-    subtitle: "High Risk, Higher Reward ⚡",
-    content: "Short interest is through the roof. One catalyst and this thing explodes. Are you brave enough?",
-    backgroundGradient: "bg-gradient-to-br from-red-900 via-pink-900 to-black",
-    interaction: {
-      type: "quiz",
-      question: "What triggers a short squeeze?",
-      options: [
-        { id: "a", text: "Low trading volume", isCorrect: false },
-        { id: "b", text: "Shorts forced to cover at higher prices", isCorrect: true },
-        { id: "c", text: "Company announces layoffs", isCorrect: false },
-        { id: "d", text: "Interest rates rise", isCorrect: false },
-      ],
-    },
-    simulation: {
-      symbol: "GME",
-      action: "buy",
-      shares: 50,
-      price: 25.75,
-    },
+    author: { name: "TechTrader", verified: true },
+    createdAt: new Date(Date.now() - 1 * 3600000),
+    segments: [
+      {
+        id: "4-1",
+        title: "NVIDIA's Secret Weapon",
+        subtitle: "AI Domination Continues 🤖",
+        content: "Everyone's talking about chips, but the real alpha is in the software moat.",
+        backgroundGradient: "bg-gradient-to-br from-cyan-900 via-blue-900 to-black",
+        interaction: {
+          type: "slider",
+          question: "How confident in NVDA?",
+          emoji: "🎯",
+        },
+      },
+      {
+        id: "4-2",
+        title: "The Moat Gets Wider",
+        content: "CUDA ecosystem, enterprise partnerships, data center dominance.",
+        backgroundGradient: "bg-gradient-to-br from-blue-900 via-cyan-900 to-black",
+        interaction: {
+          type: "poll",
+          question: "NVDA by EOY?",
+          options: [
+            { id: "a", text: "$200+", votes: 847 },
+            { id: "b", text: "$150-$200", votes: 1203 },
+            { id: "c", text: "$120-$150", votes: 456 },
+          ],
+        },
+      },
+      {
+        id: "4-3",
+        title: "Adding to my position",
+        subtitle: "Long-term conviction play",
+        content: "This is a 10-year hold for me. The AI revolution is just starting.",
+        backgroundGradient: "bg-gradient-to-br from-indigo-900 via-blue-900 to-black",
+        simulation: {
+          symbol: "NVDA",
+          action: "buy",
+          shares: 5,
+          price: 145.0,
+        },
+      },
+    ],
   },
 ];
 
@@ -153,7 +180,7 @@ interface StoryFeedProps {
 }
 
 const StoryFeed = ({ isOpen, onClose }: StoryFeedProps) => {
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [currentStoryIndex, setCurrentStoryIndex] = useState(0);
   const [xp, setXp] = useState(0);
   const [showPortfolio, setShowPortfolio] = useState(false);
   const [portfolioData, setPortfolioData] = useState({
@@ -161,97 +188,77 @@ const StoryFeed = ({ isOpen, onClose }: StoryFeedProps) => {
     positions: [] as Array<{ symbol: string; shares: number; value: number; change: number }>,
     xpGained: 0,
   });
+  const [direction, setDirection] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const handleScroll = (direction: "up" | "down") => {
-    if (direction === "up" && currentIndex > 0) {
-      setCurrentIndex(currentIndex - 1);
-    } else if (direction === "down" && currentIndex < SAMPLE_STORIES.length - 1) {
-      setCurrentIndex(currentIndex + 1);
+  const currentStory = SAMPLE_STORIES[currentStoryIndex];
+
+  // Navigate to next/previous story
+  const goToNextStory = useCallback(() => {
+    if (currentStoryIndex < SAMPLE_STORIES.length - 1) {
+      setDirection(1);
+      setCurrentStoryIndex((i) => i + 1);
+    } else {
+      onClose();
     }
-  };
+  }, [currentStoryIndex, onClose]);
 
-  // Handle touch/wheel scrolling
-  useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
-
-    let startY = 0;
-    let isScrolling = false;
-
-    const handleTouchStart = (e: TouchEvent) => {
-      startY = e.touches[0].clientY;
-    };
-
-    const handleTouchEnd = (e: TouchEvent) => {
-      if (isScrolling) return;
-      const endY = e.changedTouches[0].clientY;
-      const diff = startY - endY;
-
-      if (Math.abs(diff) > 50) {
-        isScrolling = true;
-        if (diff > 0) {
-          handleScroll("down");
-        } else {
-          handleScroll("up");
-        }
-        setTimeout(() => {
-          isScrolling = false;
-        }, 500);
-      }
-    };
-
-    const handleWheel = (e: WheelEvent) => {
-      if (isScrolling) return;
-      isScrolling = true;
-      
-      if (e.deltaY > 0) {
-        handleScroll("down");
-      } else {
-        handleScroll("up");
-      }
-      
-      setTimeout(() => {
-        isScrolling = false;
-      }, 500);
-    };
-
-    container.addEventListener("touchstart", handleTouchStart);
-    container.addEventListener("touchend", handleTouchEnd);
-    container.addEventListener("wheel", handleWheel);
-
-    return () => {
-      container.removeEventListener("touchstart", handleTouchStart);
-      container.removeEventListener("touchend", handleTouchEnd);
-      container.removeEventListener("wheel", handleWheel);
-    };
-  }, [currentIndex]);
+  const goToPrevStory = useCallback(() => {
+    if (currentStoryIndex > 0) {
+      setDirection(-1);
+      setCurrentStoryIndex((i) => i - 1);
+    }
+  }, [currentStoryIndex]);
 
   // Keyboard navigation
   useEffect(() => {
+    if (!isOpen) return;
+
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (!isOpen) return;
-      if (e.key === "ArrowUp") handleScroll("up");
-      if (e.key === "ArrowDown") handleScroll("down");
+      if (e.key === "ArrowRight") goToNextStory();
+      if (e.key === "ArrowLeft") goToPrevStory();
       if (e.key === "Escape") onClose();
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen, currentIndex, onClose]);
+  }, [isOpen, goToNextStory, goToPrevStory, onClose]);
+
+  // Swipe handling
+  const handleDragEnd = useCallback(
+    (event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
+      const swipeThreshold = 50;
+      const swipeVelocity = 500;
+
+      // Horizontal swipe for story navigation
+      if (Math.abs(info.velocity.x) > swipeVelocity || Math.abs(info.offset.x) > swipeThreshold) {
+        if (info.offset.x > 0) {
+          goToPrevStory();
+        } else {
+          goToNextStory();
+        }
+      }
+
+      // Vertical swipe up for portfolio
+      if (info.offset.y < -swipeThreshold && info.velocity.y < -swipeVelocity) {
+        setShowPortfolio(true);
+      }
+    },
+    [goToNextStory, goToPrevStory]
+  );
 
   const handleXPGain = (amount: number) => {
     setXp((prev) => prev + amount);
   };
 
-  const handleSimulate = (simulation: StoryData["simulation"]) => {
+  const handleSimulate = (simulation: { symbol: string; action: string; shares: number; price: number } | undefined) => {
     if (!simulation) return;
 
     const newPosition = {
       symbol: simulation.symbol,
       shares: simulation.shares,
       value: simulation.shares * simulation.price,
-      change: (Math.random() * 10 - 2).toFixed(2) as unknown as number,
+      change: Number((Math.random() * 10 - 2).toFixed(2)),
     };
 
     setPortfolioData((prev) => ({
@@ -261,6 +268,24 @@ const StoryFeed = ({ isOpen, onClose }: StoryFeedProps) => {
     }));
 
     setShowPortfolio(true);
+  };
+
+  const slideVariants = {
+    enter: (direction: number) => ({
+      x: direction > 0 ? "100%" : "-100%",
+      scale: 0.95,
+      opacity: 0,
+    }),
+    center: {
+      x: 0,
+      scale: 1,
+      opacity: 1,
+    },
+    exit: (direction: number) => ({
+      x: direction < 0 ? "100%" : "-100%",
+      scale: 0.95,
+      opacity: 0,
+    }),
   };
 
   return (
@@ -275,88 +300,97 @@ const StoryFeed = ({ isOpen, onClose }: StoryFeedProps) => {
           {/* Close button */}
           <motion.button
             onClick={onClose}
-            className="absolute top-4 right-4 z-50 w-12 h-12 rounded-full bg-black/40 backdrop-blur-sm border border-white/10 flex items-center justify-center text-white hover:bg-white/10 transition-colors"
+            className="absolute top-14 right-4 z-50 w-10 h-10 rounded-full bg-black/40 backdrop-blur-sm border border-white/10 flex items-center justify-center text-white hover:bg-white/10 transition-colors"
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.2 }}
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
           >
-            <X className="w-6 h-6" />
+            <X className="w-5 h-5" />
           </motion.button>
 
-          {/* Story indicator dots */}
-          <div className="absolute right-4 top-1/2 -translate-y-1/2 z-40 flex flex-col gap-2">
+          {/* Story indicator pills (horizontal for story groups) */}
+          <div className="absolute top-3 left-1/2 -translate-x-1/2 z-50 flex gap-1.5">
             {SAMPLE_STORIES.map((_, index) => (
-              <motion.button
+              <button
                 key={index}
-                onClick={() => setCurrentIndex(index)}
-                className={`w-2 h-2 rounded-full transition-all ${
-                  index === currentIndex
-                    ? "bg-white w-2 h-6"
-                    : "bg-white/30 hover:bg-white/50"
+                onClick={() => {
+                  setDirection(index > currentStoryIndex ? 1 : -1);
+                  setCurrentStoryIndex(index);
+                }}
+                className={`h-1 rounded-full transition-all duration-300 ${
+                  index === currentStoryIndex
+                    ? "w-6 bg-white"
+                    : index < currentStoryIndex
+                    ? "w-2 bg-white/70"
+                    : "w-2 bg-white/30"
                 }`}
-                whileHover={{ scale: 1.2 }}
               />
             ))}
           </div>
 
-          {/* Navigation arrows */}
-          <div className="absolute left-1/2 -translate-x-1/2 top-20 z-40">
-            <motion.button
-              onClick={() => handleScroll("up")}
-              className={`p-2 rounded-full bg-white/10 backdrop-blur-sm ${
-                currentIndex === 0 ? "opacity-30 cursor-not-allowed" : "hover:bg-white/20"
-              }`}
-              disabled={currentIndex === 0}
-              whileHover={currentIndex > 0 ? { scale: 1.1 } : {}}
-              whileTap={currentIndex > 0 ? { scale: 0.9 } : {}}
-            >
-              <ChevronUp className="w-6 h-6 text-white" />
-            </motion.button>
-          </div>
-
-          <div className="absolute left-1/2 -translate-x-1/2 bottom-8 z-40">
-            <motion.button
-              onClick={() => handleScroll("down")}
-              className={`p-2 rounded-full bg-white/10 backdrop-blur-sm ${
-                currentIndex === SAMPLE_STORIES.length - 1
-                  ? "opacity-30 cursor-not-allowed"
-                  : "hover:bg-white/20"
-              }`}
-              disabled={currentIndex === SAMPLE_STORIES.length - 1}
-              whileHover={currentIndex < SAMPLE_STORIES.length - 1 ? { scale: 1.1 } : {}}
-              whileTap={currentIndex < SAMPLE_STORIES.length - 1 ? { scale: 0.9 } : {}}
-              animate={{ y: [0, 5, 0] }}
-              transition={{ repeat: Infinity, duration: 1.5 }}
-            >
-              <ChevronDown className="w-6 h-6 text-white" />
-            </motion.button>
-          </div>
-
-          {/* Stories container */}
-          <div
+          {/* Stories container with swipe */}
+          <motion.div
             ref={containerRef}
             className="relative w-full h-full overflow-hidden"
+            drag="x"
+            dragConstraints={{ left: 0, right: 0 }}
+            dragElastic={0.2}
+            onDragEnd={handleDragEnd}
           >
-            <AnimatePresence mode="wait">
+            <AnimatePresence mode="wait" custom={direction}>
               <motion.div
-                key={currentIndex}
+                key={currentStoryIndex}
+                custom={direction}
+                variants={slideVariants}
+                initial="enter"
+                animate="center"
+                exit="exit"
+                transition={{ type: "spring", stiffness: 300, damping: 30 }}
                 className="absolute inset-0"
-                initial={{ y: "100%", opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                exit={{ y: "-100%", opacity: 0 }}
-                transition={{ type: "spring", damping: 25, stiffness: 200 }}
               >
                 <StoryCard
-                  story={SAMPLE_STORIES[currentIndex]}
+                  story={currentStory}
                   isActive={true}
+                  onComplete={goToNextStory}
                   onSimulate={handleSimulate}
                   xp={xp}
                   onXPGain={handleXPGain}
                 />
               </motion.div>
             </AnimatePresence>
+          </motion.div>
+
+          {/* Side navigation hints */}
+          <div className="absolute inset-y-0 left-0 w-12 z-40 opacity-0 hover:opacity-100 transition-opacity">
+            {currentStoryIndex > 0 && (
+              <button
+                onClick={goToPrevStory}
+                className="absolute inset-0 flex items-center justify-center"
+              >
+                <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center">
+                  <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                  </svg>
+                </div>
+              </button>
+            )}
+          </div>
+
+          <div className="absolute inset-y-0 right-0 w-12 z-40 opacity-0 hover:opacity-100 transition-opacity">
+            {currentStoryIndex < SAMPLE_STORIES.length - 1 && (
+              <button
+                onClick={goToNextStory}
+                className="absolute inset-0 flex items-center justify-center"
+              >
+                <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center">
+                  <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </div>
+              </button>
+            )}
           </div>
 
           {/* Portfolio Overlay */}
