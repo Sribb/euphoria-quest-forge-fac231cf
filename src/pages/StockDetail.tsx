@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import TradingViewWidget from "@/components/TradingViewWidget";
+import TradingViewWidget from "@/shared/components/TradingViewWidget";
 
 interface StockDetailProps {
   symbol: string;

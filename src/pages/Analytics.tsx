@@ -9,7 +9,7 @@ import { alphaVantageService } from "@/lib/alphaVantageService";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 
-import { ScenarioPlayground } from "@/components/analytics/ScenarioPlayground";
+import { ScenarioPlayground } from "@/features/analytics/components/ScenarioPlayground";
 
 interface AnalyticsProps {
   onNavigate: (tab: string) => void;

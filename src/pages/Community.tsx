@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Users, TrendingUp, Clock, Filter, ArrowLeft, Play } from "lucide-react";
-import StoryFeed from "@/components/stories/StoryFeed";
+import StoryFeed from "@/features/community/stories/StoryFeed";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -10,8 +10,8 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
-import { PostCard } from "@/components/community/PostCard";
-import { CreatePostDialog } from "@/components/community/CreatePostDialog";
+import { PostCard } from "@/features/community/components/PostCard";
+import { CreatePostDialog } from "@/features/community/components/CreatePostDialog";
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface CommunityProps {

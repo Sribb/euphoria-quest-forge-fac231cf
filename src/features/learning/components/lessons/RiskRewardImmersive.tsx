@@ -8,7 +8,7 @@ import { AlertTriangle, TrendingUp, TrendingDown, Zap, Brain, Target, Trophy, Cl
 import { useToast } from "@/hooks/use-toast";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, ReferenceLine } from "recharts";
 import { cn } from "@/lib/utils";
-import { AIContextualHelp } from "@/components/learn/AIContextualHelp";
+import { AIContextualHelp } from "../AIContextualHelp";
 
 type Phase = "hook" | "volatility" | "simulation" | "results";
 type HookDecision = "panic_sell" | "hold_buy" | "wait" | null;

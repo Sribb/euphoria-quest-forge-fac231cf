@@ -1,5 +1,5 @@
-import { LearningPathway } from "@/components/learn/LearningPathway";
-import { ThreePhaseLessonViewer } from "@/components/learn/ThreePhaseLessonViewer";
+import { LearningPathway } from "@/features/learning/components/LearningPathway";
+import { ThreePhaseLessonViewer } from "@/features/learning/components/ThreePhaseLessonViewer";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";

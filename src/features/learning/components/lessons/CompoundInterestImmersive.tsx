@@ -8,7 +8,7 @@ import {
   TrendingUp, Zap, Trophy, Target, 
   DollarSign, Calendar, AlertTriangle, Rocket
 } from "lucide-react";
-import { AIContextualHelp } from "@/components/learn/AIContextualHelp";
+import { AIContextualHelp } from "../AIContextualHelp";
 
 type Phase = "hook" | "strategy" | "simulation" | "recession" | "raise" | "results";
 type Strategy = "dca" | "lumpsum";

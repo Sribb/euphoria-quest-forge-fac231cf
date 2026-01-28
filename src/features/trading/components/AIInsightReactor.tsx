@@ -16,7 +16,7 @@ import {
   Activity,
   Sparkles
 } from "lucide-react";
-import TradingViewWidget from "@/components/TradingViewWidget";
+import TradingViewWidget from "@/shared/components/TradingViewWidget";
 
 type OrderType = "market" | "limit" | "stop" | "stop-limit";
 

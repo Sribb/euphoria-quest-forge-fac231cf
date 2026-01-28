@@ -8,7 +8,7 @@ import {
   Building, BarChart3, AlertTriangle, Trophy,
   Zap, Target, Timer
 } from "lucide-react";
-import { AIContextualHelp } from "@/components/learn/AIContextualHelp";
+import { AIContextualHelp } from "../AIContextualHelp";
 
 type Phase = "hook" | "selection" | "simulation" | "crisis" | "results";
 type AssetChoice = "cash" | "gold" | "index";

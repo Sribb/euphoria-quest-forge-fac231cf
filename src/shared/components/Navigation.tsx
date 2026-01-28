@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { GlobalStockSearch } from "./GlobalStockSearch";
-import { Button } from "./ui/button";
+import { Button } from "@/components/ui/button";
 
 interface NavigationProps {
   activeTab: string;

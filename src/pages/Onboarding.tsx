@@ -1,4 +1,4 @@
-import { PlacementQuiz } from "@/components/quiz/PlacementQuiz";
+import { PlacementQuiz } from "@/features/onboarding/components/PlacementQuiz";
 import { useOnboarding } from "@/hooks/useOnboarding";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";

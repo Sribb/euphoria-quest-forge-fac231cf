@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Slider } from "@/components/ui/slider";
 import { Banknote, TrendingUp, Calendar, Percent, Shield } from "lucide-react";
-import { AIContextualHelp } from "@/components/learn/AIContextualHelp";
+import { AIContextualHelp } from "../AIContextualHelp";
 
 const bondTypes = [
   { name: "Treasury Bond", risk: "Very Low", yield: 4.5, rating: "AAA", description: "US Government backed, safest option" },

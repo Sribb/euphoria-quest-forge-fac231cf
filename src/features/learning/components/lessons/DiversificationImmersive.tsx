@@ -7,7 +7,7 @@ import {
   Building, Cpu, Droplet, ShoppingCart,
   Plane, Heart, Factory, Coins, Wheat, Globe
 } from "lucide-react";
-import { AIContextualHelp } from "@/components/learn/AIContextualHelp";
+import { AIContextualHelp } from "../AIContextualHelp";
 
 type Phase = "hook" | "building" | "simulation" | "results";
 
