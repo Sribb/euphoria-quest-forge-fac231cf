@@ -267,22 +267,22 @@ const Profile = ({
       toast.error("Failed to reset personalization settings");
     }
   };
-  return <div className="space-y-6 pt-4">
-      <div className="flex items-center gap-3 animate-fade-in">
-        <div className="w-12 h-12 rounded-xl bg-gradient-primary flex items-center justify-center shadow-glow">
-          <User className="w-6 h-6 text-white" />
+  return <div className="space-y-4 md:space-y-6 pt-2 md:pt-4 pb-20">
+      <div className="flex items-center gap-2 md:gap-3 animate-fade-in">
+        <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-gradient-primary flex items-center justify-center shadow-glow">
+          <User className="w-5 h-5 md:w-6 md:h-6 text-white" />
         </div>
         <div>
-          <h1 className="text-2xl font-bold">Profile & Settings</h1>
-          <p className="text-muted-foreground">Manage your account and preferences</p>
+          <h1 className="text-xl md:text-2xl font-bold">Profile & Settings</h1>
+          <p className="text-sm text-muted-foreground">Manage your account</p>
         </div>
       </div>
 
       <Tabs defaultValue="profile" className="w-full">
-        <TabsList className="grid w-full grid-cols-3 mb-6">
-          <TabsTrigger value="profile">Profile</TabsTrigger>
-          <TabsTrigger value="settings">Settings</TabsTrigger>
-          <TabsTrigger value="achievements">Achievements</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-3 mb-4 md:mb-6">
+          <TabsTrigger value="profile" className="text-xs md:text-sm">Profile</TabsTrigger>
+          <TabsTrigger value="settings" className="text-xs md:text-sm">Settings</TabsTrigger>
+          <TabsTrigger value="achievements" className="text-xs md:text-sm">Achievements</TabsTrigger>
         </TabsList>
 
         {/* Profile Tab */}
@@ -363,27 +363,27 @@ const Profile = ({
             </div>
           </Card>
 
-          <div className="grid grid-cols-2 gap-4">
-            <Card className="p-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
+            <Card className="p-3 md:p-4">
               <div className="flex items-center gap-2 mb-2">
-                <TrendingUp className="w-5 h-5 text-primary" />
-                <span className="text-sm text-muted-foreground">Portfolio Value</span>
+                <TrendingUp className="w-4 h-4 md:w-5 md:h-5 text-primary" />
+                <span className="text-xs md:text-sm text-muted-foreground">Portfolio Value</span>
               </div>
-              <p className="text-2xl font-bold">
+              <p className="text-xl md:text-2xl font-bold">
                 {formatDollar(Number(portfolio?.total_value) || 0, 2)}
               </p>
-              <p className="text-sm text-muted-foreground mt-1">
+              <p className="text-xs md:text-sm text-muted-foreground mt-1">
                 {portfolioReturn >= 0 ? "+" : ""}{portfolioReturn.toFixed(2)}% return
               </p>
             </Card>
 
-            <Card className="p-4">
+            <Card className="p-3 md:p-4">
               <div className="flex items-center gap-2 mb-2">
-                <Target className="w-5 h-5 text-primary" />
-                <span className="text-sm text-muted-foreground">Current Streak</span>
+                <Target className="w-4 h-4 md:w-5 md:h-5 text-primary" />
+                <span className="text-xs md:text-sm text-muted-foreground">Current Streak</span>
               </div>
-              <p className="text-2xl font-bold">{streak?.current_streak || 0} days</p>
-              <p className="text-sm text-muted-foreground mt-1">
+              <p className="text-xl md:text-2xl font-bold">{streak?.current_streak || 0} days</p>
+              <p className="text-xs md:text-sm text-muted-foreground mt-1">
                 Longest: {streak?.longest_streak || 0} days
               </p>
             </Card>

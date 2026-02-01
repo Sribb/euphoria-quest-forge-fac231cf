@@ -339,21 +339,21 @@ const Certificates = ({ onNavigate }: CertificatesProps) => {
   };
 
   return (
-    <div className="min-h-screen space-y-8 pb-24 pt-4">
+    <div className="min-h-screen space-y-6 md:space-y-8 pb-24 pt-4">
       {/* Header */}
-      <div className="flex items-center justify-between animate-fade-in">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 animate-fade-in">
         <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center shadow-glow animate-pulse">
-            <Award className="w-6 h-6 text-white" />
+          <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center shadow-glow animate-pulse">
+            <Award className="w-5 h-5 md:w-6 md:h-6 text-white" />
           </div>
           <div>
-            <h1 className="text-3xl font-bold">Certificates & Achievements</h1>
-            <p className="text-muted-foreground">Your journey to mastery across Euphoria</p>
+            <h1 className="text-2xl md:text-3xl font-bold">Certificates</h1>
+            <p className="text-sm text-muted-foreground">Your journey to mastery</p>
           </div>
         </div>
-        <div className="flex items-center gap-2 px-4 py-2 bg-gradient-primary/10 border border-primary/20 rounded-full">
-          <Trophy className="w-5 h-5 text-primary" />
-          <span className="text-sm font-semibold">{totalEarned}/{totalCertificates} Earned</span>
+        <div className="flex items-center gap-2 px-3 md:px-4 py-1.5 md:py-2 bg-gradient-primary/10 border border-primary/20 rounded-full">
+          <Trophy className="w-4 h-4 md:w-5 md:h-5 text-primary" />
+          <span className="text-xs md:text-sm font-semibold">{totalEarned}/{totalCertificates} Earned</span>
         </div>
       </div>
 

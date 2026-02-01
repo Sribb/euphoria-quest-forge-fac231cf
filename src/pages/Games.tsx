@@ -45,20 +45,20 @@ const Games = ({ onNavigate }: GamesProps) => {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 md:space-y-8 pb-20">
       {/* Header Section */}
-      <div className="flex items-center gap-4 animate-fade-in">
-        <div className="w-14 h-14 rounded-2xl bg-gradient-primary flex items-center justify-center shadow-glow-soft">
-          <Gamepad2 className="w-7 h-7 text-white" />
+      <div className="flex items-center gap-3 md:gap-4 animate-fade-in">
+        <div className="w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-gradient-primary flex items-center justify-center shadow-glow-soft">
+          <Gamepad2 className="w-6 h-6 md:w-7 md:h-7 text-white" />
         </div>
-        <div className="flex-1">
-          <h1 className="text-3xl font-bold">Investment Games</h1>
-          <p className="text-muted-foreground">Learn investing through interactive challenges</p>
+        <div className="flex-1 min-w-0">
+          <h1 className="text-2xl md:text-3xl font-bold truncate">Investment Games</h1>
+          <p className="text-sm md:text-base text-muted-foreground truncate">Learn investing through interactive challenges</p>
         </div>
       </div>
 
       {/* Featured Games Grid */}
-      <div className="grid lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
         {/* Trend Master - Featured */}
         <Card className="lg:col-span-2 p-6 bg-gradient-primary text-white border-0 shadow-glow-soft animate-fade-in overflow-hidden relative">
           <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2" />

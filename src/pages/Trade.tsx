@@ -22,8 +22,8 @@ const Trade = ({ onNavigate, onStockSearch }: TradeProps) => {
   return (
     <div className="min-h-screen bg-background pb-24 pt-4">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6 px-6">
-        <div className="flex items-center gap-3">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 md:mb-6 px-4 md:px-6 gap-3">
+        <div className="flex items-center gap-2 md:gap-3">
           <Button
             variant="ghost"
             size="icon"
@@ -32,17 +32,17 @@ const Trade = ({ onNavigate, onStockSearch }: TradeProps) => {
           >
             <ArrowLeft className="w-5 h-5" />
           </Button>
-          <div className="w-12 h-12 rounded-xl bg-gradient-success flex items-center justify-center shadow-glow animate-scale-in">
-            <TrendingUp className="w-6 h-6 text-white" />
+          <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-gradient-success flex items-center justify-center shadow-glow animate-scale-in">
+            <TrendingUp className="w-5 h-5 md:w-6 md:h-6 text-white" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold">Trade Terminal</h1>
-            <p className="text-sm text-muted-foreground">Intelligent market simulation & execution</p>
+            <h1 className="text-xl md:text-2xl font-bold">Trade Terminal</h1>
+            <p className="text-xs md:text-sm text-muted-foreground">Intelligent market simulation</p>
           </div>
         </div>
         
         {session && (
-          <Badge variant="outline" className="bg-success/10 text-success border-success/50 px-4 py-2">
+          <Badge variant="outline" className="bg-success/10 text-success border-success/50 px-3 md:px-4 py-1.5 md:py-2 text-xs md:text-sm">
             <div className="w-2 h-2 rounded-full bg-success mr-2 animate-pulse" />
             AI Market Active
           </Badge>
@@ -50,7 +50,7 @@ const Trade = ({ onNavigate, onStockSearch }: TradeProps) => {
       </div>
 
       {/* Tabbed Interface */}
-      <div className="px-6">
+      <div className="px-4 md:px-6">
         <Tabs defaultValue="overview" className="w-full">
           <TabsList className="grid w-full grid-cols-3 mb-6">
             <TabsTrigger value="overview" className="flex items-center gap-2">
