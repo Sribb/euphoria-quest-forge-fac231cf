@@ -116,7 +116,7 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <TopNavigation activeTab={activeTab} onTabChange={handleNavigate} />
-      <div className="pt-20 px-6">
+      <div className="pt-16 md:pt-20 pb-20 md:pb-6 px-4 md:px-6">
         <div className="max-w-7xl mx-auto animate-fade-in" key={activeTab}>
           {renderContent()}
         </div>

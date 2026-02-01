@@ -60,9 +60,9 @@ const Dashboard = ({ onNavigate, onStockSearch }: DashboardProps) => {
       <DashboardHeader />
       
       {/* Main Content - Full Width Grid Layout */}
-      <div className="px-8 py-8 space-y-8">
+      <div className="px-4 md:px-8 py-4 md:py-8 space-y-4 md:space-y-8">
         {/* Top Bar with XP Orb and Realtime Indicator */}
-        <div className="flex items-center justify-between animate-fade-in">
+        <div className="flex items-center justify-between animate-fade-in gap-2">
           <XPOrb />
           <RealtimeIndicator />
         </div>
@@ -81,7 +81,7 @@ const Dashboard = ({ onNavigate, onStockSearch }: DashboardProps) => {
         </div>
         
         {/* Economic Data Section - Full Width Grid */}
-        <div className="grid lg:grid-cols-2 gap-8 animate-fade-in" style={{ animationDelay: "200ms" }}>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-8 animate-fade-in" style={{ animationDelay: "200ms" }}>
           <EconomicCalendarNative />
           <LiveEconomicHeadlines />
         </div>
