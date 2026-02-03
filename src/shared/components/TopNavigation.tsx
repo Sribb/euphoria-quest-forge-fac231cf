@@ -13,16 +13,15 @@ interface TopNavigationProps {
   onTabChange: (tab: string) => void;
 }
 
-const baseNavItems = [
+const navItems = [
   { id: "dashboard", label: "Dashboard", icon: Home },
   { id: "learn", label: "Learn", icon: BookOpen },
   { id: "trade", label: "Trade", icon: TrendingUp },
   { id: "games", label: "Games", icon: Gamepad2 },
   { id: "certificates", label: "Certificates", icon: Award },
+  { id: "educator", label: "Educator", icon: GraduationCap },
   { id: "profile", label: "Profile", icon: User },
 ];
-
-const educatorNavItem = { id: "educator", label: "Educator", icon: GraduationCap };
 
 export const TopNavigation = ({ activeTab, onTabChange }: TopNavigationProps) => {
   const { user } = useAuth();
@@ -44,22 +43,6 @@ export const TopNavigation = ({ activeTab, onTabChange }: TopNavigationProps) =>
     enabled: !!user?.id,
   });
 
-  // Check if user has educator/admin/mentor role
-  const { data: hasEducatorAccess } = useQuery({
-    queryKey: ["educator-access-nav", user?.id],
-    queryFn: async () => {
-      if (!user?.id) return false;
-      const { data, error } = await supabase
-        .from("user_roles")
-        .select("role")
-        .eq("user_id", user.id)
-        .in("role", ["educator", "admin", "mentor"]);
-
-      if (error) return false;
-      return data && data.length > 0;
-    },
-    enabled: !!user?.id,
-  });
 
   const displayName = profile?.display_name || "Euphoria";
 
@@ -90,7 +73,7 @@ export const TopNavigation = ({ activeTab, onTabChange }: TopNavigationProps) =>
           {/* Desktop Navigation */}
           {!isMobile && (
             <div className="flex items-center gap-2">
-              {[...baseNavItems, ...(hasEducatorAccess ? [educatorNavItem] : [])].map((item) => (
+              {navItems.map((item) => (
                 <button
                   key={item.id}
                   onClick={() => handleNavClick(item.id)}
@@ -127,7 +110,7 @@ export const TopNavigation = ({ activeTab, onTabChange }: TopNavigationProps) =>
         {isMobile && mobileMenuOpen && (
           <div className="absolute top-full left-0 right-0 bg-card/95 backdrop-blur-xl border-b border-border shadow-lg animate-fade-in">
             <div className="px-4 py-3 space-y-1">
-              {[...baseNavItems, ...(hasEducatorAccess ? [educatorNavItem] : [])].map((item) => {
+              {navItems.map((item) => {
                 const Icon = item.icon;
                 return (
                   <button
@@ -154,7 +137,7 @@ export const TopNavigation = ({ activeTab, onTabChange }: TopNavigationProps) =>
       {isMobile && (
         <nav className="fixed bottom-0 left-0 right-0 bg-card/95 backdrop-blur-xl border-t border-border z-navigation safe-area-bottom">
           <div className="flex items-center justify-around px-2 py-2">
-            {baseNavItems.slice(0, 5).map((item) => {
+            {navItems.slice(0, 5).map((item) => {
               const Icon = item.icon;
               const isActive = activeTab === item.id;
               return (
