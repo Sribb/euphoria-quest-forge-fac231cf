@@ -62,24 +62,6 @@ export const EducatorDashboard = ({ onBack }: EducatorDashboardProps) => {
     );
   }
 
-  if (!hasEducatorAccess) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center p-4">
-        <Shield className="h-16 w-16 text-muted-foreground mb-4" />
-        <h1 className="text-2xl font-bold mb-2">Access Denied</h1>
-        <p className="text-muted-foreground text-center mb-6">
-          You don't have permission to access the Educator Dashboard.
-          <br />
-          Contact an administrator to request educator access.
-        </p>
-        <Button onClick={onBack}>
-          <ChevronLeft className="h-4 w-4 mr-2" />
-          Go Back
-        </Button>
-      </div>
-    );
-  }
-
   const tabs = [
     { id: "overview", label: "Overview", icon: LayoutDashboard },
     { id: "users", label: "Users", icon: Users },
