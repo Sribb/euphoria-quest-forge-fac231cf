@@ -9,6 +9,7 @@ import Certificates from "./Certificates";
 import Profile from "./Profile";
 import StockSearch from "./StockSearch";
 import StockDetail from "./StockDetail";
+import { EducatorDashboard } from "@/features/educator";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
@@ -108,6 +109,8 @@ const Index = () => {
         return <Certificates onNavigate={handleNavigate} />;
       case "profile":
         return <Profile onNavigate={handleNavigate} />;
+      case "educator":
+        return <EducatorDashboard onBack={() => handleNavigate("dashboard")} />;
       default:
         return <Dashboard onNavigate={handleNavigate} onStockSearch={() => setShowStockSearch(true)} />;
     }

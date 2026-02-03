@@ -4,7 +4,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { Menu, X, Home, BookOpen, TrendingUp, Gamepad2, Award, User } from "lucide-react";
+import { Menu, X, Home, BookOpen, TrendingUp, Gamepad2, Award, User, GraduationCap } from "lucide-react";
 import { useState } from "react";
 import logo from "@/assets/euphoria-logo-button.png";
 
@@ -38,6 +38,23 @@ export const TopNavigation = ({ activeTab, onTabChange }: TopNavigationProps) =>
       
       if (error) throw error;
       return data;
+    },
+    enabled: !!user?.id,
+  });
+
+  // Check if user has educator/admin/mentor role
+  const { data: hasEducatorAccess } = useQuery({
+    queryKey: ["educator-access-nav", user?.id],
+    queryFn: async () => {
+      if (!user?.id) return false;
+      const { data, error } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", user.id)
+        .in("role", ["educator", "admin", "mentor"]);
+
+      if (error) return false;
+      return data && data.length > 0;
     },
     enabled: !!user?.id,
   });
@@ -85,6 +102,20 @@ export const TopNavigation = ({ activeTab, onTabChange }: TopNavigationProps) =>
                   {item.label}
                 </button>
               ))}
+              {hasEducatorAccess && (
+                <button
+                  onClick={() => handleNavClick("educator")}
+                  className={cn(
+                    "px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 flex items-center gap-1.5",
+                    activeTab === "educator"
+                      ? "bg-gradient-primary text-white shadow-glow"
+                      : "text-primary hover:text-foreground hover:bg-primary/10 border border-primary/30"
+                  )}
+                >
+                  <GraduationCap className="w-4 h-4" />
+                  Educator
+                </button>
+              )}
             </div>
           )}
 
@@ -126,6 +157,20 @@ export const TopNavigation = ({ activeTab, onTabChange }: TopNavigationProps) =>
                   </button>
                 );
               })}
+              {hasEducatorAccess && (
+                <button
+                  onClick={() => handleNavClick("educator")}
+                  className={cn(
+                    "w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left font-medium transition-all duration-300 border border-primary/30",
+                    activeTab === "educator"
+                      ? "bg-gradient-primary text-white shadow-glow"
+                      : "text-primary hover:text-foreground hover:bg-primary/10"
+                  )}
+                >
+                  <GraduationCap className="w-5 h-5" />
+                  Educator Dashboard
+                </button>
+              )}
             </div>
           </div>
         )}
