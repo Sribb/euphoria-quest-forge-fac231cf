@@ -450,6 +450,90 @@ export type Database = {
           },
         ]
       }
+      announcements: {
+        Row: {
+          author_id: string
+          content: string
+          created_at: string
+          expires_at: string | null
+          id: string
+          is_published: boolean
+          priority: string
+          published_at: string | null
+          target_role: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          author_id: string
+          content: string
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          is_published?: boolean
+          priority?: string
+          published_at?: string | null
+          target_role?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          author_id?: string
+          content?: string
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          is_published?: boolean
+          priority?: string
+          published_at?: string | null
+          target_role?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      automated_reminders: {
+        Row: {
+          created_at: string
+          created_by: string
+          id: string
+          is_active: boolean
+          last_triggered_at: string | null
+          message: string
+          target_users: string
+          title: string
+          trigger_config: Json
+          trigger_type: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          id?: string
+          is_active?: boolean
+          last_triggered_at?: string | null
+          message: string
+          target_users?: string
+          title: string
+          trigger_config?: Json
+          trigger_type: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          id?: string
+          is_active?: boolean
+          last_triggered_at?: string | null
+          message?: string
+          target_users?: string
+          title?: string
+          trigger_config?: Json
+          trigger_type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       comments: {
         Row: {
           content: string
@@ -491,6 +575,72 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      educator_messages: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          is_read: boolean
+          read_at: string | null
+          recipient_id: string
+          sender_id: string
+          subject: string | null
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          read_at?: string | null
+          recipient_id: string
+          sender_id: string
+          subject?: string | null
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          read_at?: string | null
+          recipient_id?: string
+          sender_id?: string
+          subject?: string | null
+        }
+        Relationships: []
+      }
+      educator_notes: {
+        Row: {
+          created_at: string
+          educator_id: string
+          id: string
+          is_private: boolean
+          note: string
+          note_type: string
+          student_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          educator_id: string
+          id?: string
+          is_private?: boolean
+          note: string
+          note_type?: string
+          student_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          educator_id?: string
+          id?: string
+          is_private?: boolean
+          note?: string
+          note_type?: string
+          student_id?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       game_sessions: {
         Row: {
@@ -675,6 +825,51 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      live_sessions: {
+        Row: {
+          created_at: string
+          description: string | null
+          duration_minutes: number
+          host_id: string
+          id: string
+          max_participants: number | null
+          recording_url: string | null
+          scheduled_at: string
+          session_type: string
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          duration_minutes?: number
+          host_id: string
+          id?: string
+          max_participants?: number | null
+          recording_url?: string | null
+          scheduled_at: string
+          session_type?: string
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          duration_minutes?: number
+          host_id?: string
+          id?: string
+          max_participants?: number | null
+          recording_url?: string | null
+          scheduled_at?: string
+          session_type?: string
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       news_cache: {
         Row: {
@@ -997,6 +1192,44 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      session_attendance: {
+        Row: {
+          duration_minutes: number | null
+          id: string
+          joined_at: string
+          left_at: string | null
+          participation_score: number | null
+          session_id: string
+          user_id: string
+        }
+        Insert: {
+          duration_minutes?: number | null
+          id?: string
+          joined_at?: string
+          left_at?: string | null
+          participation_score?: number | null
+          session_id: string
+          user_id: string
+        }
+        Update: {
+          duration_minutes?: number | null
+          id?: string
+          joined_at?: string
+          left_at?: string | null
+          participation_score?: number | null
+          session_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "session_attendance_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "live_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       settlements: {
         Row: {
@@ -1377,6 +1610,28 @@ export type Database = {
         Returns: Json
       }
       calculate_level_from_xp: { Args: { xp: number }; Returns: number }
+      get_educator_user_stats: {
+        Args: never
+        Returns: {
+          active_users_7d: number
+          avg_lesson_completion: number
+          avg_quiz_score: number
+          total_lessons_completed: number
+          total_users: number
+        }[]
+      }
+      get_struggling_users: {
+        Args: never
+        Returns: {
+          avg_progress: number
+          display_name: string
+          email: string
+          last_active: string
+          lessons_completed: number
+          lessons_started: number
+          user_id: string
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
