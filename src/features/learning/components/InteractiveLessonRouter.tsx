@@ -43,6 +43,27 @@ import { BehavioralEconomics } from "./lessons/BehavioralEconomics";
 import { HedgeFundStrategies } from "./lessons/HedgeFundStrategies";
 import { PrivateEquityBasics } from "./lessons/PrivateEquityBasics";
 import { VentureCapital101 } from "./lessons/VentureCapital101";
+// Corporate Finance lessons (51-70)
+import { CashFlowAnalysis } from "./lessons/CashFlowAnalysis";
+import { BalanceSheetExplorer } from "./lessons/BalanceSheetExplorer";
+import { IncomeStatementLab } from "./lessons/IncomeStatementLab";
+import { FinancialRatiosToolkit } from "./lessons/FinancialRatiosToolkit";
+import { CapitalStructureLab } from "./lessons/CapitalStructureLab";
+import { WorkingCapitalSim } from "./lessons/WorkingCapitalSim";
+import { CorporateGovernanceQuiz } from "./lessons/CorporateGovernanceQuiz";
+import { MergersAcquisitionsSim } from "./lessons/MergersAcquisitionsSim";
+import { DividendPolicyLab } from "./lessons/DividendPolicyLab";
+import { WACCCalculator } from "./lessons/WACCCalculator";
+import { CapitalBudgetingLab } from "./lessons/CapitalBudgetingLab";
+import { CorporateRestructuringSim } from "./lessons/CorporateRestructuringSim";
+import { SECFilingsExplorer } from "./lessons/SECFilingsExplorer";
+import { ForensicAccountingLab } from "./lessons/ForensicAccountingLab";
+import { IndustryAnalysisLab } from "./lessons/IndustryAnalysisLab";
+import { RevenueRecognitionLab } from "./lessons/RevenueRecognitionLab";
+import { CreditAnalysisLab } from "./lessons/CreditAnalysisLab";
+import { CorporateRiskLab } from "./lessons/CorporateRiskLab";
+import { ExecCompAnalysis } from "./lessons/ExecCompAnalysis";
+import { CorpFinanceCapstone } from "./lessons/CorpFinanceCapstone";
 
 interface InteractiveLessonRouterProps {
   lessonId: string;
@@ -100,8 +121,28 @@ export const InteractiveLessonRouter = ({ lessonId }: InteractiveLessonRouterPro
     "48": <RetirementCalculator />,
     "49": <ChartPatternQuiz />,
     "50": <AllocationBuilder />,
+    // Corporate Finance (51-70)
+    "51": <CashFlowAnalysis />,
+    "52": <BalanceSheetExplorer />,
+    "53": <IncomeStatementLab />,
+    "54": <FinancialRatiosToolkit />,
+    "55": <CapitalStructureLab />,
+    "56": <WorkingCapitalSim />,
+    "57": <CorporateGovernanceQuiz />,
+    "58": <MergersAcquisitionsSim />,
+    "59": <DividendPolicyLab />,
+    "60": <WACCCalculator />,
+    "61": <CapitalBudgetingLab />,
+    "62": <CorporateRestructuringSim />,
+    "63": <SECFilingsExplorer />,
+    "64": <ForensicAccountingLab />,
+    "65": <IndustryAnalysisLab />,
+    "66": <RevenueRecognitionLab />,
+    "67": <CreditAnalysisLab />,
+    "68": <CorporateRiskLab />,
+    "69": <ExecCompAnalysis />,
+    "70": <CorpFinanceCapstone />,
   };
-
   return (
     <div className="space-y-6">
       {lessonComponents[lessonId] || null}
