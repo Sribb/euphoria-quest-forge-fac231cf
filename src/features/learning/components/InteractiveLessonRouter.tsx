@@ -64,6 +64,26 @@ import { CreditAnalysisLab } from "./lessons/CreditAnalysisLab";
 import { CorporateRiskLab } from "./lessons/CorporateRiskLab";
 import { ExecCompAnalysis } from "./lessons/ExecCompAnalysis";
 import { CorpFinanceCapstone } from "./lessons/CorpFinanceCapstone";
+// Personal Finance lessons (71-89)
+import { EmergencyFundBuilder } from "./lessons/EmergencyFundBuilder";
+import { DebtPayoffLab } from "./lessons/DebtPayoffLab";
+import { CreditScoreSimulator } from "./lessons/CreditScoreSimulator";
+import { BudgetMethodsLab } from "./lessons/BudgetMethodsLab";
+import { InsurancePlanner } from "./lessons/InsurancePlanner";
+import { MortgageCalculatorLab } from "./lessons/MortgageCalculatorLab";
+import { TaxBracketNavigator } from "./lessons/TaxBracketNavigator";
+import { CollegeSavingsPlanner } from "./lessons/CollegeSavingsPlanner";
+import { NetWorthTracker } from "./lessons/NetWorthTracker";
+import { LifestyleInflationDetector } from "./lessons/LifestyleInflationDetector";
+import { SideIncomeAnalyzer } from "./lessons/SideIncomeAnalyzer";
+import { HSAStrategyLab } from "./lessons/HSAStrategyLab";
+import { SocialSecurityOptimizer } from "./lessons/SocialSecurityOptimizer";
+import { CharitableGivingStrategy } from "./lessons/CharitableGivingStrategy";
+import { CarBuyVsLease } from "./lessons/CarBuyVsLease";
+import { PaycheckOptimizer } from "./lessons/PaycheckOptimizer";
+import { FinancialGoalPrioritizer } from "./lessons/FinancialGoalPrioritizer";
+import { RecessionPlaybook } from "./lessons/RecessionPlaybook";
+import { PersonalFinanceCapstone } from "./lessons/PersonalFinanceCapstone";
 
 interface InteractiveLessonRouterProps {
   lessonId: string;
@@ -142,6 +162,26 @@ export const InteractiveLessonRouter = ({ lessonId }: InteractiveLessonRouterPro
     "68": <CorporateRiskLab />,
     "69": <ExecCompAnalysis />,
     "70": <CorpFinanceCapstone />,
+    // Personal Finance (71-89)
+    "71": <EmergencyFundBuilder />,
+    "72": <DebtPayoffLab />,
+    "73": <CreditScoreSimulator />,
+    "74": <BudgetMethodsLab />,
+    "75": <InsurancePlanner />,
+    "76": <MortgageCalculatorLab />,
+    "77": <TaxBracketNavigator />,
+    "78": <CollegeSavingsPlanner />,
+    "79": <NetWorthTracker />,
+    "80": <LifestyleInflationDetector />,
+    "81": <SideIncomeAnalyzer />,
+    "82": <HSAStrategyLab />,
+    "83": <SocialSecurityOptimizer />,
+    "84": <CharitableGivingStrategy />,
+    "85": <CarBuyVsLease />,
+    "86": <PaycheckOptimizer />,
+    "87": <FinancialGoalPrioritizer />,
+    "88": <RecessionPlaybook />,
+    "89": <PersonalFinanceCapstone />,
   };
   return (
     <div className="space-y-6">
