@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { ChallengeModal } from "./ChallengeModal";
-import { Trophy, Award, Map, Sparkles, Flag, Mountain, Castle, Scroll, Lock, Star, Clock, Zap, Play } from "lucide-react";
+import { Trophy, Award, Map, Sparkles, Flag, Mountain, Castle, Scroll, Lock, Star, Clock, Zap, Play, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -23,6 +23,9 @@ interface LearningPathwayProps {
   onLessonSelect: (lessonId: string) => void;
   completedCount: number;
   totalCount: number;
+  pathwayTitle?: string;
+  pathwayColor?: string;
+  onBack?: () => void;
 }
 
 export const LearningPathway = ({
@@ -30,6 +33,9 @@ export const LearningPathway = ({
   onLessonSelect,
   completedCount,
   totalCount,
+  pathwayTitle,
+  pathwayColor,
+  onBack,
 }: LearningPathwayProps) => {
   const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
 
@@ -97,8 +103,13 @@ export const LearningPathway = ({
                 </div>
               </div>
               <div>
+                {onBack && (
+                  <Button variant="ghost" size="icon" onClick={onBack} className="mr-2 -ml-2">
+                    <ArrowLeft className="w-5 h-5" />
+                  </Button>
+                )}
                 <h1 className="text-2xl font-black text-foreground tracking-tight">
-                  The Investor's Saga
+                  {pathwayTitle || "The Investor's Saga"}
                 </h1>
                 <p className="text-sm text-muted-foreground flex items-center gap-2">
                   <Scroll className="w-4 h-4" />
