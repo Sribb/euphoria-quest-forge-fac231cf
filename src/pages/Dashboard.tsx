@@ -5,12 +5,12 @@ import { EconomicCalendarNative } from "@/features/dashboard/components/Economic
 import { LiveEconomicHeadlines } from "@/features/dashboard/components/LiveEconomicHeadlines";
 import { DailyRewardsModal } from "@/features/learning/components/DailyRewardsModal";
 import { SeasonalBanner } from "@/features/dashboard/components/SeasonalBanner";
-import { XPOrb } from "@/features/dashboard/components/XPOrb";
-import { RealtimeIndicator } from "@/features/dashboard/components/RealtimeIndicator";
 import { useAuth } from "@/hooks/useAuth";
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { motion } from "framer-motion";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface DashboardProps {
   onNavigate: (tab: string) => void;
@@ -21,7 +21,6 @@ const Dashboard = ({ onNavigate, onStockSearch }: DashboardProps) => {
   const { user } = useAuth();
   const [showDailyRewards, setShowDailyRewards] = useState(false);
 
-  // Check if user has claimed today's reward
   const { data: streakData } = useQuery({
     queryKey: ["streak", user?.id],
     queryFn: async () => {
@@ -36,15 +35,11 @@ const Dashboard = ({ onNavigate, onStockSearch }: DashboardProps) => {
     enabled: !!user?.id,
   });
 
-  // Auto-show daily rewards modal once per day
   useEffect(() => {
     if (!streakData || !user?.id) return;
-    
     const lastLogin = streakData.last_login_date;
     const today = new Date().toDateString();
     const storageKey = `daily_rewards_shown_${user.id}_${today}`;
-    
-    // Check if user hasn't logged in today AND hasn't seen the modal today
     if (!lastLogin || new Date(lastLogin).toDateString() !== today) {
       const alreadyShown = localStorage.getItem(storageKey);
       if (!alreadyShown) {
@@ -54,40 +49,54 @@ const Dashboard = ({ onNavigate, onStockSearch }: DashboardProps) => {
     }
   }, [streakData, user?.id]);
 
+  const stagger = {
+    hidden: {},
+    show: { transition: { staggerChildren: 0.1 } },
+  };
+  const fadeUp = {
+    hidden: { opacity: 0, y: 16 },
+    show: { opacity: 1, y: 0, transition: { duration: 0.4 } },
+  };
+
   return (
     <div className="min-h-screen w-full bg-background">
-      {/* Custom Header with Username */}
       <DashboardHeader />
-      
-      {/* Main Content - Full Width Grid Layout */}
-      <div className="px-4 md:px-8 py-4 md:py-8 space-y-4 md:space-y-8">
-        {/* Top Bar with XP Orb and Realtime Indicator */}
-        <div className="flex items-center justify-between animate-fade-in gap-2">
-          <XPOrb />
-          <RealtimeIndicator />
-        </div>
 
-        {/* Seasonal Event Banner */}
-        <SeasonalBanner />
+      <motion.div
+        className="px-4 md:px-8 py-5 md:py-8 space-y-6"
+        variants={stagger}
+        initial="hidden"
+        animate="show"
+      >
+        <motion.div variants={fadeUp}>
+          <SeasonalBanner />
+        </motion.div>
 
-        {/* Quick Overview Grid - 4 Compact Modules */}
-        <div className="animate-fade-in">
+        <motion.div variants={fadeUp}>
           <QuickOverviewGrid onNavigate={onNavigate} />
-        </div>
-        
-        {/* AI Insights Panel - Replaces Old Widgets */}
-        <div className="animate-fade-in" style={{ animationDelay: "100ms" }}>
-          <AIInsightsPanel onNavigate={onNavigate} />
-        </div>
-        
-        {/* Economic Data Section - Full Width Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-8 animate-fade-in" style={{ animationDelay: "200ms" }}>
-          <EconomicCalendarNative />
-          <LiveEconomicHeadlines />
-        </div>
-      </div>
+        </motion.div>
 
-      {/* Daily Rewards Modal - Auto-popup */}
+        <motion.div variants={fadeUp}>
+          <AIInsightsPanel onNavigate={onNavigate} />
+        </motion.div>
+
+        {/* Combined Economic Section */}
+        <motion.div variants={fadeUp}>
+          <Tabs defaultValue="calendar" className="w-full">
+            <TabsList className="mb-4">
+              <TabsTrigger value="calendar">Economic Calendar</TabsTrigger>
+              <TabsTrigger value="headlines">Live Headlines</TabsTrigger>
+            </TabsList>
+            <TabsContent value="calendar">
+              <EconomicCalendarNative />
+            </TabsContent>
+            <TabsContent value="headlines">
+              <LiveEconomicHeadlines />
+            </TabsContent>
+          </Tabs>
+        </motion.div>
+      </motion.div>
+
       <DailyRewardsModal 
         isOpen={showDailyRewards} 
         onClose={() => setShowDailyRewards(false)} 

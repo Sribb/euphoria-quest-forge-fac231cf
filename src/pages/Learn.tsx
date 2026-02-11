@@ -1,9 +1,19 @@
+import { useState } from "react";
 import { LearningPathway } from "@/features/learning/components/LearningPathway";
+import { PathwaySelector } from "@/features/learning/components/PathwaySelector";
 import { ThreePhaseLessonViewer } from "@/features/learning/components/ThreePhaseLessonViewer";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useOnboarding } from "@/hooks/useOnboarding";
+
+const PATHWAY_META: Record<string, { title: string; color: string }> = {
+  investing: { title: "Investing Fundamentals", color: "from-emerald-500 to-teal-600" },
+  corporate_finance: { title: "Corporate Finance", color: "from-blue-500 to-indigo-600" },
+  personal_finance: { title: "Personal Finance", color: "from-violet-500 to-purple-600" },
+  trading: { title: "Trading & Technical Analysis", color: "from-orange-500 to-amber-600" },
+  alternatives: { title: "Alternative Assets", color: "from-rose-500 to-pink-600" },
+};
 
 interface LearnProps {
   onNavigate: (tab: string) => void;
@@ -14,11 +24,11 @@ interface LearnProps {
 const Learn = ({ onNavigate, selectedLesson, onLessonSelect }: LearnProps) => {
   const { user } = useAuth();
   const { placementLesson } = useOnboarding();
+  const [selectedPathway, setSelectedPathway] = useState<string | null>(null);
 
   const { data: lessons = [], isLoading, refetch } = useQuery({
     queryKey: ["lessons", user?.id, placementLesson],
     queryFn: async () => {
-      // Fetch all lessons
       const { data: lessonsData, error: lessonsError } = await supabase
         .from("lessons")
         .select("*")
@@ -26,14 +36,13 @@ const Learn = ({ onNavigate, selectedLesson, onLessonSelect }: LearnProps) => {
       
       if (lessonsError) throw lessonsError;
 
-      // Fetch user's progress if user is logged in
       if (!user?.id) {
         return lessonsData.map((lesson, index) => ({
           ...lesson,
           progress: 0,
           completed: false,
           duration: `${lesson.duration_minutes} min`,
-          is_locked: index !== 0, // Only first lesson unlocked
+          is_locked: index !== 0,
         }));
       }
 
@@ -44,22 +53,12 @@ const Learn = ({ onNavigate, selectedLesson, onLessonSelect }: LearnProps) => {
       
       if (progressError) throw progressError;
 
-      // Merge lesson data with progress
-      // A lesson is unlocked based on placement OR if previous lesson is completed
       return lessonsData.map((lesson, index) => {
         const progress = progressData?.find((p) => p.lesson_id === lesson.id);
         const isActuallyCompleted = progress?.completed || false;
-        
-        // A lesson is "skipped" if it's below placement level and user hasn't actually completed it
         const isSkippedByPlacement = lesson.order_index < placementLesson && !isActuallyCompleted;
-        
-        // For display purposes, skipped lessons show as completed
         const isCompleted = isActuallyCompleted || isSkippedByPlacement;
         
-        // A lesson is unlocked if:
-        // 1. Its order_index is <= placementLesson, OR
-        // 2. The previous lesson is completed, OR
-        // 3. It's already completed
         const previousLesson = index > 0 ? lessonsData[index - 1] : null;
         const previousProgress = previousLesson 
           ? progressData?.find((p) => p.lesson_id === previousLesson.id)
@@ -69,7 +68,6 @@ const Learn = ({ onNavigate, selectedLesson, onLessonSelect }: LearnProps) => {
         const isUnlockedByProgress = previousProgress?.completed || false;
         const isUnlocked = index === 0 || isUnlockedByPlacement || isUnlockedByProgress || isCompleted;
         
-        // Generate random star rating (1-3) for completed lessons
         const stars = isCompleted ? Math.floor(Math.random() * 3) + 1 : 0;
         
         return {
@@ -87,10 +85,6 @@ const Learn = ({ onNavigate, selectedLesson, onLessonSelect }: LearnProps) => {
     staleTime: 30000,
   });
 
-  // Calculate overall progress
-  const completedLessons = lessons.filter(l => l.completed).length;
-  const totalLessons = lessons.length;
-
   if (selectedLesson) {
     return (
       <ThreePhaseLessonViewer 
@@ -103,27 +97,44 @@ const Learn = ({ onNavigate, selectedLesson, onLessonSelect }: LearnProps) => {
     );
   }
 
-  return (
-    <div className="min-h-screen w-full bg-background">
-      {/* Learning Pathway - Full Vertical Scroll */}
-      {isLoading ? (
-        <div className="flex items-center justify-center min-h-[600px]">
-          <div className="space-y-6 text-center">
-            <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
-            <p className="text-muted-foreground">Loading your learning pathway...</p>
-          </div>
-        </div>
-      ) : (
+  if (selectedPathway) {
+    const filtered = lessons.filter(l => (l as any).pathway === selectedPathway);
+    const completedCount = filtered.filter(l => l.completed).length;
+    const meta = PATHWAY_META[selectedPathway] || { title: selectedPathway, color: "" };
+
+    return (
+      <div className="min-h-screen w-full bg-background">
         <div className="max-w-7xl mx-auto">
           <LearningPathway
-            lessons={lessons}
+            lessons={filtered}
             onLessonSelect={onLessonSelect}
-            completedCount={completedLessons}
-            totalCount={totalLessons}
+            completedCount={completedCount}
+            totalCount={filtered.length}
+            pathwayTitle={meta.title}
+            pathwayColor={meta.color}
+            onBack={() => setSelectedPathway(null)}
           />
         </div>
-      )}
-    </div>
+      </div>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[600px]">
+        <div className="space-y-6 text-center">
+          <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
+          <p className="text-muted-foreground">Loading your learning pathways...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <PathwaySelector
+      lessons={lessons}
+      onSelectPathway={setSelectedPathway}
+    />
   );
 };
 
