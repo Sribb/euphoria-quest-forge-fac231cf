@@ -1,6 +1,8 @@
-import { TrendingUp, Building2, Wallet, BarChart3, Globe, BookOpen, ChevronRight } from "lucide-react";
+import { useState } from "react";
+import { TrendingUp, Building2, Wallet, BarChart3, Globe, BookOpen, ChevronRight, Search } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { Input } from "@/components/ui/input";
 
 interface PathwayInfo {
   id: string;
@@ -66,11 +68,18 @@ interface PathwaySelectorProps {
 }
 
 export const PathwaySelector = ({ lessons, onSelectPathway }: PathwaySelectorProps) => {
+  const [search, setSearch] = useState("");
+
   const getPathwayStats = (pathwayId: string) => {
     const pathwayLessons = lessons.filter(l => (l as any).pathway === pathwayId);
     const completed = pathwayLessons.filter(l => l.completed).length;
     return { total: pathwayLessons.length, completed };
   };
+
+  const filteredPathways = PATHWAYS.filter(p =>
+    p.title.toLowerCase().includes(search.toLowerCase()) ||
+    p.description.toLowerCase().includes(search.toLowerCase())
+  );
 
   return (
     <div className="min-h-screen bg-background">
@@ -85,11 +94,22 @@ export const PathwaySelector = ({ lessons, onSelectPathway }: PathwaySelectorPro
         <p className="text-muted-foreground text-sm ml-[52px]">
           Choose a track to begin your journey
         </p>
+
+        {/* Search Bar */}
+        <div className="relative mt-4 ml-[52px]">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <Input
+            placeholder="Search pathways..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="pl-9 bg-card/60 border-border/50"
+          />
+        </div>
       </div>
 
       {/* Pathway Cards */}
       <div className="px-6 pb-12 max-w-4xl mx-auto grid gap-4">
-        {PATHWAYS.map((pathway, index) => {
+        {filteredPathways.map((pathway, index) => {
           const stats = getPathwayStats(pathway.id);
           const progress = stats.total > 0 ? Math.round((stats.completed / stats.total) * 100) : 0;
 
