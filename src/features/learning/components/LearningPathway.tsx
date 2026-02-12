@@ -111,7 +111,7 @@ export const LearningPathway = ({
             // Section divider every 5 lessons (but not on challenge levels)
             const showDivider = index > 0 && index % 5 === 0 && !isChallengeLevel;
             const sectionNumber = Math.floor(index / 5) + 1;
-            const sectionLabels = ["Foundations", "Building Blocks", "Core Skills", "Advanced", "Mastery", "Expert"];
+            const sectionLabels = ["The Intro", "Building Blocks", "Core Skills", "Advanced", "Mastery", "Expert"];
 
             return (
               <div key={lesson.id} className="flex flex-col items-center w-full">
