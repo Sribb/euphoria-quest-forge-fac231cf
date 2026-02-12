@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { TopNavigation } from "@/shared/components/TopNavigation";
 import { GlobalAIAssistant } from "@/shared/components/GlobalAIAssistant";
+import { useEducatorRole } from "@/features/educator/hooks/useEducatorRole";
 import Dashboard from "./Dashboard";
 import Learn from "./Learn";
 import Trade from "./Trade";
@@ -10,9 +11,12 @@ import Certificates from "./Certificates";
 import Profile from "./Profile";
 import StockSearch from "./StockSearch";
 import StockDetail from "./StockDetail";
+import { EducatorHome } from "@/features/educator/pages/EducatorHome";
+import { EducatorDashboard } from "@/features/educator/pages/EducatorDashboard";
 
 const Index = () => {
-  const [activeTab, setActiveTab] = useState("dashboard");
+  const { hasEducatorAccess } = useEducatorRole();
+  const [activeTab, setActiveTab] = useState(hasEducatorAccess ? "educator" : "dashboard");
   const [selectedLesson, setSelectedLesson] = useState<string | null>(null);
   const [selectedStock, setSelectedStock] = useState<string | null>(null);
   const [showStockSearch, setShowStockSearch] = useState(false);
@@ -41,25 +45,6 @@ const Index = () => {
   const handleBackFromLesson = () => {
     setSelectedLesson(null);
   };
-
-  const getBackButtonProps = () => {
-    if (selectedStock) {
-      return { show: true, onBack: handleBackToStockSearch, label: "Back to Search" };
-    }
-    if (showStockSearch) {
-      return { show: true, onBack: handleBackFromStockSearch, label: "Back to Trade" };
-    }
-    if (selectedLesson) {
-      return { show: true, onBack: handleBackFromLesson, label: "Back to Lessons" };
-    }
-    if (activeTab !== "dashboard") {
-      return { show: true, onBack: () => handleNavigate("dashboard"), label: "Home" };
-    }
-    return { show: false };
-  };
-
-  const backProps = getBackButtonProps();
-
 
   // Show stock detail page
   if (selectedStock) {
@@ -97,6 +82,10 @@ const Index = () => {
 
   const renderContent = () => {
     switch (activeTab) {
+      case "educator":
+        return <EducatorHome onNavigate={handleNavigate} />;
+      case "educator-analytics":
+        return <EducatorDashboard onBack={() => handleNavigate("educator")} />;
       case "dashboard":
         return <Dashboard onNavigate={handleNavigate} onStockSearch={() => setShowStockSearch(true)} />;
       case "learn":
@@ -112,7 +101,9 @@ const Index = () => {
       case "profile":
         return <Profile onNavigate={handleNavigate} />;
       default:
-        return <Dashboard onNavigate={handleNavigate} onStockSearch={() => setShowStockSearch(true)} />;
+        return hasEducatorAccess 
+          ? <EducatorHome onNavigate={handleNavigate} />
+          : <Dashboard onNavigate={handleNavigate} onStockSearch={() => setShowStockSearch(true)} />;
     }
   };
 

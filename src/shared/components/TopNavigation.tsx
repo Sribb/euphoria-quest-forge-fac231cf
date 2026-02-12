@@ -1,10 +1,10 @@
-import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { Menu, X, Home, BookOpen, TrendingUp, Gamepad2, Award, User, Users } from "lucide-react";
+import { useEducatorRole } from "@/features/educator/hooks/useEducatorRole";
+import { Menu, X, Home, BookOpen, TrendingUp, Gamepad2, Award, User, Users, GraduationCap, BarChart3 } from "lucide-react";
 import { useState } from "react";
 import logo from "@/assets/euphoria-logo-button.png";
 
@@ -13,7 +13,7 @@ interface TopNavigationProps {
   onTabChange: (tab: string) => void;
 }
 
-const navItems = [
+const studentNavItems = [
   { id: "dashboard", label: "Dashboard", icon: Home },
   { id: "learn", label: "Learn", icon: BookOpen },
   { id: "trade", label: "Trade", icon: TrendingUp },
@@ -23,10 +23,20 @@ const navItems = [
   { id: "profile", label: "Profile", icon: User },
 ];
 
+const educatorNavItems = [
+  { id: "educator", label: "Classes", icon: GraduationCap },
+  { id: "educator-analytics", label: "Analytics", icon: BarChart3 },
+  { id: "community", label: "Community", icon: Users },
+  { id: "profile", label: "Profile", icon: User },
+];
+
 export const TopNavigation = ({ activeTab, onTabChange }: TopNavigationProps) => {
   const { user } = useAuth();
   const isMobile = useIsMobile();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { hasEducatorAccess } = useEducatorRole();
+
+  const navItems = hasEducatorAccess ? educatorNavItems : studentNavItems;
 
   const { data: profile } = useQuery({
     queryKey: ["profile", user?.id],
@@ -42,7 +52,6 @@ export const TopNavigation = ({ activeTab, onTabChange }: TopNavigationProps) =>
     },
     enabled: !!user?.id,
   });
-
 
   const displayName = profile?.display_name || "Euphoria";
 
@@ -68,6 +77,11 @@ export const TopNavigation = ({ activeTab, onTabChange }: TopNavigationProps) =>
             >
               {displayName}
             </h1>
+            {hasEducatorAccess && (
+              <span className="hidden md:inline-flex text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full font-medium">
+                Educator
+              </span>
+            )}
           </div>
           
           {/* Desktop Navigation */}

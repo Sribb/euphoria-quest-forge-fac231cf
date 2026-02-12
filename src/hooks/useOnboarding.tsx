@@ -39,7 +39,7 @@ export const useOnboarding = () => {
       // Determine investment level based on placement
       let investmentLevel = "beginner";
       if (placementLesson >= 20) investmentLevel = "advanced";
-      else if (placementLesson >= 12) investmentLevel = "intermediate";
+      else if (placementLesson >= 10) investmentLevel = "intermediate";
 
       // Check if onboarding record exists
       const { data: existing } = await supabase
