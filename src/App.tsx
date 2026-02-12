@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { ProtectedRoute } from "@/shared/components/ProtectedRoute";
+import Landing from "./pages/Landing";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Onboarding from "./pages/Onboarding";
@@ -16,7 +17,7 @@ const RootRedirect = () => {
   const { user, loading } = useAuth();
   
   if (loading) return null;
-  return <Navigate to={user ? "/app" : "/auth"} replace />;
+  return user ? <Navigate to="/app" replace /> : <Landing />;
 };
 
 const OnboardingCheck = ({ children }: { children: React.ReactNode }) => {
