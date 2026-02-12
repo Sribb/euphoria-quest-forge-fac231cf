@@ -14,7 +14,7 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ['"SF Pro Rounded"', '"Nunito"', '"Inter"', "system-ui", "sans-serif"],
+        sans: ['"Nunito"', "system-ui", "sans-serif"],
       },
       colors: {
         border: "hsl(var(--border))",

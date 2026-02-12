@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { TopNavigation } from "@/shared/components/TopNavigation";
+import { DuoSidebar } from "@/shared/components/DuoSidebar";
 import { GlobalAIAssistant } from "@/shared/components/GlobalAIAssistant";
 import { useEducatorRole } from "@/features/educator/hooks/useEducatorRole";
+import { useIsMobile } from "@/hooks/use-mobile";
 import Dashboard from "./Dashboard";
 import Learn from "./Learn";
 import Trade from "./Trade";
@@ -16,6 +17,7 @@ import { EducatorDashboard } from "@/features/educator/pages/EducatorDashboard";
 
 const Index = () => {
   const { hasEducatorAccess } = useEducatorRole();
+  const isMobile = useIsMobile();
   const [activeTab, setActiveTab] = useState(hasEducatorAccess ? "educator" : "dashboard");
   const [selectedLesson, setSelectedLesson] = useState<string | null>(null);
   const [selectedStock, setSelectedStock] = useState<string | null>(null);
@@ -42,45 +44,20 @@ const Index = () => {
     setActiveTab("trade");
   };
 
-  const handleBackFromLesson = () => {
-    setSelectedLesson(null);
-  };
-
-  // Show stock detail page
-  if (selectedStock) {
-    return (
-      <div className="min-h-screen bg-background">
-        <TopNavigation activeTab={activeTab} onTabChange={handleNavigate} />
-        <div className="pt-20 px-6">
-          <div className="max-w-7xl mx-auto animate-fade-in">
-            <StockDetail symbol={selectedStock} onBack={handleBackToStockSearch} />
-          </div>
-        </div>
-        <GlobalAIAssistant />
-      </div>
-    );
-  }
-
-  // Show stock search page
-  if (showStockSearch) {
-    return (
-      <div className="min-h-screen bg-background">
-        <TopNavigation activeTab={activeTab} onTabChange={handleNavigate} />
-        <div className="pt-20 px-6">
-          <div className="max-w-7xl mx-auto animate-fade-in">
-            <StockSearch 
-              onNavigate={handleNavigate}
-              onSelectStock={handleStockSelect}
-              onBack={handleBackFromStockSearch}
-            />
-          </div>
-        </div>
-        <GlobalAIAssistant />
-      </div>
-    );
-  }
-
   const renderContent = () => {
+    if (selectedStock) {
+      return <StockDetail symbol={selectedStock} onBack={handleBackToStockSearch} />;
+    }
+    if (showStockSearch) {
+      return (
+        <StockSearch
+          onNavigate={handleNavigate}
+          onSelectStock={handleStockSelect}
+          onBack={handleBackFromStockSearch}
+        />
+      );
+    }
+
     switch (activeTab) {
       case "educator":
         return <EducatorHome onNavigate={handleNavigate} />;
@@ -101,20 +78,20 @@ const Index = () => {
       case "profile":
         return <Profile onNavigate={handleNavigate} />;
       default:
-        return hasEducatorAccess 
+        return hasEducatorAccess
           ? <EducatorHome onNavigate={handleNavigate} />
           : <Dashboard onNavigate={handleNavigate} onStockSearch={() => setShowStockSearch(true)} />;
     }
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <TopNavigation activeTab={activeTab} onTabChange={handleNavigate} />
-      <div className="pt-16 md:pt-20 pb-20 md:pb-6 px-4 md:px-6">
-        <div className="max-w-7xl mx-auto animate-fade-in" key={activeTab}>
+    <div className="min-h-screen bg-background flex">
+      <DuoSidebar activeTab={activeTab} onTabChange={handleNavigate} />
+      <main className={`flex-1 ${isMobile ? 'pt-16 pb-20 px-4' : 'ml-[220px] px-6 py-6'}`}>
+        <div className="max-w-6xl mx-auto animate-fade-in" key={activeTab}>
           {renderContent()}
         </div>
-      </div>
+      </main>
       <GlobalAIAssistant />
     </div>
   );
