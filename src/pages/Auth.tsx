@@ -88,14 +88,14 @@ const Auth = () => {
             emailRedirectTo: `${window.location.origin}/app`,
             data: {
               display_name: signupRole === "educator" ? `Prof. ${email.split("@")[0]}` : undefined,
+              signup_role: signupRole || "student",
             },
           },
         });
         if (error) throw error;
 
-        // If educator, create educator profile and set role
+        // If educator, create educator profile
         if (signupRole === "educator" && data.user) {
-          // Insert educator profile
           await supabase.from("educator_profiles").insert({
             user_id: data.user.id,
             school_name: schoolName,
@@ -103,9 +103,6 @@ const Auth = () => {
             grade_level: gradeLevel || null,
             estimated_class_size: parseInt(classSize) || 30,
           });
-
-          // Update role to educator
-          await supabase.from("user_roles").update({ role: "educator" }).eq("user_id", data.user.id);
         }
 
         toast({
