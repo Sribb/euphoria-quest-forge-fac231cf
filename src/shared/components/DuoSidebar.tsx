@@ -177,8 +177,8 @@ export const DuoSidebar = ({ activeTab, onTabChange }: DuoSidebarProps) => {
               className={cn(
                 "w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-left font-bold text-[15px] transition-all duration-200",
                 isActive
-                  ? "bg-primary/15 text-primary shadow-sm"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted/60"
+                  ? "bg-primary/15 text-primary shadow-md shadow-primary/10 -translate-y-0.5"
+                  : "text-foreground bg-muted/40 shadow-sm hover:bg-muted/70 hover:-translate-y-0.5 hover:shadow-md"
               )}
             >
               <Icon className="w-5 h-5 flex-shrink-0" strokeWidth={isActive ? 2.5 : 2} />
