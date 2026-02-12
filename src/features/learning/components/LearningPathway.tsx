@@ -100,6 +100,7 @@ export const LearningPathway = ({
       <div className="max-w-2xl mx-auto px-8 py-10 pb-40">
         <div className="flex flex-col items-center gap-5">
           {lessons.map((lesson, index) => {
+            const showFirstDivider = index === 0;
             const isNextLesson =
               !lesson.is_locked &&
               !lesson.completed &&
@@ -115,6 +116,21 @@ export const LearningPathway = ({
 
             return (
               <div key={lesson.id} className="flex flex-col items-center w-full">
+                {showFirstDivider && (
+                  <motion.div
+                    initial={{ opacity: 0, scaleX: 0 }}
+                    animate={{ opacity: 1, scaleX: 1 }}
+                    transition={{ duration: 0.4 }}
+                    className="flex items-center gap-4 w-full max-w-xs mb-6"
+                  >
+                    <div className="flex-1 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
+                    <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-[0.2em]">
+                      The Intro
+                    </span>
+                    <div className="flex-1 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
+                  </motion.div>
+                )}
+
                 {showDivider && (
                   <motion.div
                     initial={{ opacity: 0, scaleX: 0 }}
