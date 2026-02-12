@@ -1875,6 +1875,14 @@ export type Database = {
         Args: { amount: number; user_id_param: string }
         Returns: number
       }
+      is_class_educator: {
+        Args: { _class_id: string; _user_id: string }
+        Returns: boolean
+      }
+      is_class_member: {
+        Args: { _class_id: string; _user_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
       app_role: "admin" | "user" | "educator" | "mentor"
