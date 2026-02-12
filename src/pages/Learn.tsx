@@ -9,10 +9,10 @@ import { useOnboarding } from "@/hooks/useOnboarding";
 
 const PATHWAY_META: Record<string, { title: string; color: string }> = {
   investing: { title: "Investing Fundamentals", color: "from-emerald-500 to-teal-600" },
-  corporate_finance: { title: "Corporate Finance", color: "from-blue-500 to-indigo-600" },
-  personal_finance: { title: "Personal Finance", color: "from-violet-500 to-purple-600" },
+  "corporate-finance": { title: "Corporate Finance", color: "from-blue-500 to-indigo-600" },
+  "personal-finance": { title: "Personal Finance", color: "from-violet-500 to-purple-600" },
   trading: { title: "Trading & Technical Analysis", color: "from-orange-500 to-amber-600" },
-  alternatives: { title: "Alternative Assets", color: "from-rose-500 to-pink-600" },
+  "alternative-assets": { title: "Alternative Assets", color: "from-rose-500 to-pink-600" },
 };
 
 interface LearnProps {

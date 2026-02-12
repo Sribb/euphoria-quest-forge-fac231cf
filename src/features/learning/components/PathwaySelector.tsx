@@ -23,7 +23,7 @@ const PATHWAYS: PathwayInfo[] = [
     iconBg: "bg-emerald-500",
   },
   {
-    id: "corporate_finance",
+    id: "corporate-finance",
     title: "Corporate Finance",
     description: "Learn to read financial statements, evaluate companies, and understand corporate strategy.",
     icon: Building2,
@@ -31,7 +31,7 @@ const PATHWAYS: PathwayInfo[] = [
     iconBg: "bg-blue-500",
   },
   {
-    id: "personal_finance",
+    id: "personal-finance",
     title: "Personal Finance",
     description: "Build wealth with retirement planning, tax strategies, and passive income streams.",
     icon: Wallet,
@@ -47,7 +47,7 @@ const PATHWAYS: PathwayInfo[] = [
     iconBg: "bg-orange-500",
   },
   {
-    id: "alternatives",
+    id: "alternative-assets",
     title: "Alternative Assets",
     description: "Explore crypto, REITs, international markets, ESG investing, and beyond.",
     icon: Globe,
