@@ -14,6 +14,7 @@ import {
   Users,
   GraduationCap,
   BarChart3,
+  Gift,
   Menu,
   X,
 } from "lucide-react";
@@ -30,6 +31,7 @@ const studentNavItems = [
   { id: "learn", label: "Learn", icon: BookOpen },
   { id: "trade", label: "Practice", icon: Dumbbell },
   { id: "games", label: "Games", icon: Gamepad2 },
+  { id: "rewards", label: "Rewards", icon: Gift },
   { id: "community", label: "Social", icon: Users },
   { id: "certificates", label: "Awards", icon: Award },
   { id: "profile", label: "Profile", icon: User },

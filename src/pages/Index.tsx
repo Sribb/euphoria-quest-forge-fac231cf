@@ -9,6 +9,7 @@ import Trade from "./Trade";
 import Games from "./Games";
 import Community from "./Community";
 import Certificates from "./Certificates";
+import Rewards from "./Rewards";
 import Profile from "./Profile";
 import StockSearch from "./StockSearch";
 import StockDetail from "./StockDetail";
@@ -71,6 +72,8 @@ const Index = () => {
         return <Trade onNavigate={handleNavigate} onStockSearch={() => setShowStockSearch(true)} />;
       case "games":
         return <Games onNavigate={handleNavigate} />;
+      case "rewards":
+        return <Rewards onNavigate={handleNavigate} />;
       case "community":
         return <Community onNavigate={handleNavigate} />;
       case "certificates":
