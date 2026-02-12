@@ -131,7 +131,7 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground font-semibold;
+    @apply bg-background text-foreground font-bold;
     font-feature-settings: "rlig" 1, "calt" 1;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
