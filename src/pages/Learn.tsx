@@ -53,22 +53,38 @@ const Learn = ({ onNavigate, selectedLesson, onLessonSelect }: LearnProps) => {
       
       if (progressError) throw progressError;
 
-      return lessonsData.map((lesson, index) => {
+      // Group lessons by pathway for proper unlock logic
+      const lessonsByPathway: Record<string, typeof lessonsData> = {};
+      lessonsData.forEach(l => {
+        const pw = (l as any).pathway || 'default';
+        if (!lessonsByPathway[pw]) lessonsByPathway[pw] = [];
+        lessonsByPathway[pw].push(l);
+      });
+
+      // Sort each pathway group by order_index
+      Object.values(lessonsByPathway).forEach(group => 
+        group.sort((a, b) => a.order_index - b.order_index)
+      );
+
+      return lessonsData.map((lesson) => {
         const progress = progressData?.find((p) => p.lesson_id === lesson.id);
         const isActuallyCompleted = progress?.completed || false;
         const isSkippedByPlacement = lesson.order_index < placementLesson && !isActuallyCompleted;
         const isCompleted = isActuallyCompleted || isSkippedByPlacement;
         
-        const previousLesson = index > 0 ? lessonsData[index - 1] : null;
-        const previousProgress = previousLesson 
-          ? progressData?.find((p) => p.lesson_id === previousLesson.id)
+        // Find previous lesson within the same pathway
+        const pw = (lesson as any).pathway || 'default';
+        const pathwayGroup = lessonsByPathway[pw] || [];
+        const indexInPathway = pathwayGroup.findIndex(l => l.id === lesson.id);
+        const previousInPathway = indexInPathway > 0 ? pathwayGroup[indexInPathway - 1] : null;
+        const previousProgress = previousInPathway 
+          ? progressData?.find((p) => p.lesson_id === previousInPathway.id)
           : null;
         
         const isUnlockedByPlacement = lesson.order_index <= placementLesson;
         const isUnlockedByProgress = previousProgress?.completed || false;
-        const isUnlocked = index === 0 || isUnlockedByPlacement || isUnlockedByProgress || isCompleted;
-        
-        
+        const isFirstInPathway = indexInPathway === 0;
+        const isUnlocked = isFirstInPathway || isUnlockedByPlacement || isUnlockedByProgress || isCompleted;
         
         return {
           ...lesson,
