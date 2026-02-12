@@ -1,21 +1,50 @@
-import { Target, BookOpen, Lightbulb, TrendingUp, TrendingDown } from "lucide-react";
-import { Progress } from "@/components/ui/progress";
+import { BookOpen, TrendingUp, TrendingDown, Flame } from "lucide-react";
 import { usePortfolioValue } from "@/hooks/usePortfolioValue";
 import { formatDollar } from "@/lib/formatters";
 import { useAuth } from "@/hooks/useAuth";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 
 interface QuickOverviewGridProps {
   onNavigate?: (tab: string) => void;
 }
 
+// Donut chart component
+const DonutChart = ({ percentage, size = 80, strokeWidth = 8, color = "hsl(var(--primary))" }: { percentage: number; size?: number; strokeWidth?: number; color?: string }) => {
+  const radius = (size - strokeWidth) / 2;
+  const circumference = 2 * Math.PI * radius;
+  const offset = circumference * (1 - Math.min(percentage, 100) / 100);
+
+  return (
+    <svg width={size} height={size} className="-rotate-90">
+      <circle
+        cx={size / 2}
+        cy={size / 2}
+        r={radius}
+        fill="none"
+        stroke="hsl(var(--muted))"
+        strokeWidth={strokeWidth}
+      />
+      <circle
+        cx={size / 2}
+        cy={size / 2}
+        r={radius}
+        fill="none"
+        stroke={color}
+        strokeWidth={strokeWidth}
+        strokeDasharray={circumference}
+        strokeDashoffset={offset}
+        strokeLinecap="round"
+        className="transition-all duration-700 ease-out"
+      />
+    </svg>
+  );
+};
+
 export const QuickOverviewGrid = ({ onNavigate }: QuickOverviewGridProps) => {
   const { totalValue } = usePortfolioValue();
   const { user } = useAuth();
-  const [dailyTip, setDailyTip] = useState<string>("");
 
   const { data: profile } = useQuery({
     queryKey: ['profile', user?.id],
@@ -64,90 +93,89 @@ export const QuickOverviewGrid = ({ onNavigate }: QuickOverviewGridProps) => {
     enabled: !!user?.id,
   });
 
-  useEffect(() => {
-    const fetchDailyTip = async () => {
-      const today = new Date().toDateString();
-      const seed = today.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-      const { data: tips } = await supabase.from('ai_tips').select('tip_text');
-      if (tips && tips.length > 0) {
-        setDailyTip(tips[seed % tips.length].tip_text);
-      }
-    };
-    fetchDailyTip();
-  }, []);
-
   const userLevel = profile?.level || 1;
   const userXP = profile?.coins || 0;
   const nextLevelXP = userLevel * 1000;
-  const xpProgress = (userXP / nextLevelXP) * 100;
+  const xpProgress = Math.min((userXP / nextLevelXP) * 100, 100);
   const portfolioChange = ((totalValue - 10000) / 10000) * 100;
+  const lessonProgress = lessonStats ? Math.min((lessonStats.completed / Math.max(lessonStats.total, 1)) * 100, 100) : 0;
 
-  const cardBase = "p-5 rounded-2xl border border-border/50 bg-card/60 backdrop-blur-sm hover:border-primary/30 hover:shadow-md transition-all duration-300 cursor-pointer";
+  const cardBase = "p-5 rounded-3xl border border-border/30 bg-card hover:shadow-md transition-all duration-300 cursor-pointer";
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-      {/* Portfolio */}
+      {/* Portfolio — large card */}
       <div
-        className={cn(cardBase, "md:col-span-2")}
+        className={cn(cardBase, "md:col-span-2 bg-gradient-to-br from-primary/5 to-accent/5")}
         onClick={() => onNavigate?.('trade')}
       >
-        <div className="flex items-center gap-2 mb-3">
-          {portfolioChange >= 0 ? <TrendingUp className="w-4 h-4 text-emerald-500" /> : <TrendingDown className="w-4 h-4 text-destructive" />}
-          <span className="text-sm font-medium text-muted-foreground">Portfolio</span>
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-sm font-medium text-muted-foreground mb-1">Portfolio Value</p>
+            <p className="text-4xl font-bold text-foreground tracking-tight">{formatDollar(totalValue, 0)}</p>
+            <div className={cn("flex items-center gap-1.5 mt-2 text-sm font-semibold", portfolioChange >= 0 ? 'text-success' : 'text-destructive')}>
+              {portfolioChange >= 0 ? <TrendingUp className="w-4 h-4" /> : <TrendingDown className="w-4 h-4" />}
+              {portfolioChange >= 0 ? '+' : ''}{portfolioChange.toFixed(2)}% all time
+            </div>
+          </div>
+          {/* Mini donut for portfolio allocation */}
+          <div className="relative">
+            <DonutChart percentage={100} size={72} color="hsl(var(--primary))" />
+            <div className="absolute inset-0 flex items-center justify-center">
+              <TrendingUp className="w-5 h-5 text-primary" />
+            </div>
+          </div>
         </div>
-        <p className="text-3xl font-bold text-foreground">{formatDollar(totalValue, 0)}</p>
-        <p className={cn("text-sm mt-1 font-medium", portfolioChange >= 0 ? 'text-emerald-500' : 'text-destructive')}>
-          {portfolioChange >= 0 ? '+' : ''}{portfolioChange.toFixed(2)}% all time
-        </p>
       </div>
 
-      {/* Progress */}
-      <div className={cardBase} onClick={() => onNavigate?.('analytics')}>
-        <div className="flex items-center gap-2 mb-3">
-          <Target className="w-4 h-4 text-primary" />
-          <span className="text-sm font-medium text-muted-foreground">Progress</span>
-        </div>
-        <div className="space-y-3">
-          <div>
-            <div className="flex justify-between text-xs text-muted-foreground mb-1.5">
-              <span>Level {userLevel}</span>
-              <span>{userXP}/{nextLevelXP} XP</span>
-            </div>
-            <Progress value={xpProgress} className="h-1.5" />
+      {/* Progress — donut chart */}
+      <div className={cn(cardBase, "flex flex-col items-center justify-center text-center")} onClick={() => onNavigate?.('analytics')}>
+        <div className="relative mb-3">
+          <DonutChart percentage={xpProgress} size={88} strokeWidth={7} color="hsl(var(--primary))" />
+          <div className="absolute inset-0 flex flex-col items-center justify-center">
+            <span className="text-xl font-bold text-foreground">Lv.{userLevel}</span>
           </div>
-          <div className="flex gap-3 text-center">
-            <div className="flex-1 p-2 bg-muted/30 rounded-lg">
-              <div className="text-xs text-muted-foreground">Lessons</div>
-              <div className="text-base font-bold text-foreground">{lessonStats?.completed || 0}/{lessonStats?.total || 0}</div>
+        </div>
+        <p className="text-xs font-medium text-muted-foreground">{userXP}/{nextLevelXP} XP</p>
+        <div className="flex items-center gap-3 mt-3 w-full">
+          <div className="flex-1 bg-muted/50 rounded-2xl py-2 px-3 text-center">
+            <p className="text-lg font-bold text-foreground">{lessonStats?.completed || 0}</p>
+            <p className="text-[10px] text-muted-foreground font-medium">Lessons</p>
+          </div>
+          <div className="flex-1 bg-muted/50 rounded-2xl py-2 px-3 text-center">
+            <div className="flex items-center justify-center gap-1">
+              <Flame className="w-3.5 h-3.5 text-warning" />
+              <p className="text-lg font-bold text-foreground">{streak?.current_streak || 0}</p>
             </div>
-            <div className="flex-1 p-2 bg-muted/30 rounded-lg">
-              <div className="text-xs text-muted-foreground">Streak</div>
-              <div className="text-base font-bold text-primary">{streak?.current_streak || 0}d</div>
-            </div>
+            <p className="text-[10px] text-muted-foreground font-medium">Streak</p>
           </div>
         </div>
       </div>
 
       {/* Next Lesson */}
-      <div className={cn(cardBase, "group")} onClick={() => onNavigate?.('learn')}>
+      <div className={cn(cardBase, "group bg-gradient-to-br from-success/5 to-primary/5")} onClick={() => onNavigate?.('learn')}>
         <div className="flex items-center gap-2 mb-3">
-          <BookOpen className="w-4 h-4 text-primary" />
-          <span className="text-sm font-medium text-muted-foreground">Next Lesson</span>
+          <div className="w-8 h-8 rounded-2xl bg-success/10 flex items-center justify-center">
+            <BookOpen className="w-4 h-4 text-success" />
+          </div>
+          <span className="text-sm font-semibold text-muted-foreground">Up Next</span>
         </div>
         {nextLesson ? (
           <div className="space-y-2">
-            <h5 className="font-semibold text-foreground text-sm line-clamp-2 group-hover:text-primary transition-colors">
+            <h5 className="font-bold text-foreground text-sm leading-snug line-clamp-2 group-hover:text-primary transition-colors">
               {nextLesson.title}
             </h5>
-            <p className="text-xs text-muted-foreground line-clamp-2">{nextLesson.description}</p>
-            <div className="flex items-center gap-2 text-xs text-muted-foreground">
-              <span>⏱ {nextLesson.duration_minutes}m</span>
-              <span>•</span>
-              <span>{nextLesson.difficulty}</span>
+            <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">{nextLesson.description}</p>
+            <div className="flex items-center gap-2 text-[11px] text-muted-foreground font-medium mt-2">
+              <span className="bg-muted/50 px-2 py-0.5 rounded-full">{nextLesson.duration_minutes}m</span>
+              <span className="bg-muted/50 px-2 py-0.5 rounded-full capitalize">{nextLesson.difficulty}</span>
             </div>
           </div>
         ) : (
-          <p className="text-sm text-muted-foreground">All caught up! 🎉</p>
+          <div className="flex flex-col items-center justify-center py-4">
+            <p className="text-2xl mb-1">🎉</p>
+            <p className="text-sm font-medium text-muted-foreground">All caught up!</p>
+          </div>
         )}
       </div>
     </div>

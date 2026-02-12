@@ -24,23 +24,26 @@ export const DashboardHeader = () => {
 
   const displayName = profile?.display_name || user?.email?.split("@")[0] || "Investor";
 
+  const hour = new Date().getHours();
+  const greeting = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
+
   return (
-    <div className="px-4 md:px-8 py-5 border-b border-border/40 bg-background/80 backdrop-blur-sm">
+    <div className="px-4 md:px-8 py-6">
       <div className="flex items-center justify-between">
         <motion.div
           initial={{ opacity: 0, x: -12 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.4 }}
         >
-          <h1 className="text-xl md:text-2xl font-bold text-foreground">
-            Welcome back, <span className="text-primary">{displayName}</span>
+          <p className="text-sm text-muted-foreground font-medium">{greeting} 👋</p>
+          <h1 className="text-2xl md:text-3xl font-bold text-foreground tracking-tight">
+            {displayName}
           </h1>
-          <p className="text-sm text-muted-foreground mt-0.5">Here's your overview</p>
         </motion.div>
 
         <div className="flex items-center gap-3">
-          <XPOrb />
           <RealtimeIndicator />
+          <XPOrb />
         </div>
       </div>
     </div>
