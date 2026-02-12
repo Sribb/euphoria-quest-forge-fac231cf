@@ -68,7 +68,7 @@ const Learn = ({ onNavigate, selectedLesson, onLessonSelect }: LearnProps) => {
         const isUnlockedByProgress = previousProgress?.completed || false;
         const isUnlocked = index === 0 || isUnlockedByPlacement || isUnlockedByProgress || isCompleted;
         
-        const stars = isCompleted ? Math.floor(Math.random() * 3) + 1 : 0;
+        
         
         return {
           ...lesson,
@@ -77,7 +77,6 @@ const Learn = ({ onNavigate, selectedLesson, onLessonSelect }: LearnProps) => {
           skippedByPlacement: isSkippedByPlacement,
           duration: `${lesson.duration_minutes} min`,
           is_locked: !isUnlocked,
-          stars,
         };
       });
     },

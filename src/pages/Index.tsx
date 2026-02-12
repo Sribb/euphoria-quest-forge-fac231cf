@@ -1,5 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { DuoSidebar } from "@/shared/components/DuoSidebar";
+import { OnboardingTutorial } from "@/shared/components/OnboardingTutorial";
+import { AnimatePresence } from "framer-motion";
 import { GlobalAIAssistant } from "@/shared/components/GlobalAIAssistant";
 import { useEducatorRole } from "@/features/educator/hooks/useEducatorRole";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -23,6 +25,17 @@ const Index = () => {
   const [selectedLesson, setSelectedLesson] = useState<string | null>(null);
   const [selectedStock, setSelectedStock] = useState<string | null>(null);
   const [showStockSearch, setShowStockSearch] = useState(false);
+  const [showTutorial, setShowTutorial] = useState(false);
+
+  useEffect(() => {
+    const seen = localStorage.getItem("euphoria_tutorial_seen");
+    if (!seen) setShowTutorial(true);
+  }, []);
+
+  const handleTutorialComplete = () => {
+    localStorage.setItem("euphoria_tutorial_seen", "true");
+    setShowTutorial(false);
+  };
 
   const handleNavigate = (tab: string) => {
     setActiveTab(tab);
@@ -89,6 +102,9 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background flex">
+      <AnimatePresence>
+        {showTutorial && <OnboardingTutorial onComplete={handleTutorialComplete} />}
+      </AnimatePresence>
       <DuoSidebar activeTab={activeTab} onTabChange={handleNavigate} />
       <main className={`flex-1 ${isMobile ? 'pt-16 pb-20 px-4' : 'ml-[220px] px-6 py-6'}`}>
         <div className="max-w-6xl mx-auto animate-fade-in" key={activeTab}>
