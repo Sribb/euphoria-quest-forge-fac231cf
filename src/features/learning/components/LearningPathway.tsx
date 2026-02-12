@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { ChallengeModal } from "./ChallengeModal";
-import { Trophy, Lock, ArrowLeft, CheckCircle2, Zap } from "lucide-react";
+import { Trophy, Lock, ArrowLeft, CheckCircle2, Zap, GraduationCap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
@@ -108,6 +108,7 @@ export const LearningPathway = ({
             const x = getX(index);
             const isHovered = hovered === lesson.id;
             const isChallengeLevel = (index + 1) % 10 === 0;
+            const isCapstone = index === lessons.length - 1;
 
             // Section divider every 5 lessons (but not on challenge levels)
             const showDivider = index > 0 && index % 5 === 0 && !isChallengeLevel;
@@ -121,7 +122,7 @@ export const LearningPathway = ({
                     initial={{ opacity: 0, scaleX: 0 }}
                     animate={{ opacity: 1, scaleX: 1 }}
                     transition={{ duration: 0.4 }}
-                    className="flex items-center gap-4 w-full max-w-xs mb-6"
+                    className="flex items-center justify-center gap-4 w-full max-w-xs mx-auto mb-6"
                   >
                     <div className="flex-1 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
                     <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-[0.2em]">
@@ -136,7 +137,7 @@ export const LearningPathway = ({
                     initial={{ opacity: 0, scaleX: 0 }}
                     animate={{ opacity: 1, scaleX: 1 }}
                     transition={{ delay: index * 0.03, duration: 0.4 }}
-                    className="flex items-center gap-4 w-full max-w-xs mb-6 mt-2"
+                    className="flex items-center justify-center gap-4 w-full max-w-xs mx-auto mb-6 mt-2"
                   >
                     <div className="flex-1 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
                     <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-[0.2em]">
@@ -146,8 +147,74 @@ export const LearningPathway = ({
                   </motion.div>
                 )}
 
+                {/* Capstone (final lesson) */}
+                {isCapstone && !isChallengeLevel ? (
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.03, duration: 0.3 }}
+                    className="relative flex flex-col items-center my-6"
+                  >
+                    {/* Capstone divider */}
+                    <motion.div
+                      initial={{ opacity: 0, scaleX: 0 }}
+                      animate={{ opacity: 1, scaleX: 1 }}
+                      transition={{ delay: index * 0.03, duration: 0.4 }}
+                      className="flex items-center justify-center gap-4 w-full max-w-xs mx-auto mb-5"
+                    >
+                      <div className="flex-1 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
+                      <span className="text-[11px] font-bold text-primary uppercase tracking-[0.2em]">
+                        Capstone
+                      </span>
+                      <div className="flex-1 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
+                    </motion.div>
+
+                    {isHovered && !lesson.is_locked && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 6, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        className="absolute -top-[100px] bg-card border border-primary/30 rounded-2xl px-5 py-3 shadow-lg shadow-primary/10 z-20 min-w-[220px] text-center pointer-events-none"
+                      >
+                        <p className="text-sm font-black text-foreground">🎓 {lesson.title}</p>
+                        <p className="text-xs text-muted-foreground mt-0.5">Final Project · 10-15 min</p>
+                        <div className="absolute left-1/2 -translate-x-1/2 -bottom-1.5 w-3 h-3 bg-card border-b border-r border-primary/30 rotate-45" />
+                      </motion.div>
+                    )}
+
+                    <button
+                      onClick={() => handleNodeClick(lesson)}
+                      onMouseEnter={() => setHovered(lesson.id)}
+                      onMouseLeave={() => setHovered(null)}
+                      disabled={lesson.is_locked}
+                      className={cn(
+                        "relative w-28 h-28 rounded-full flex items-center justify-center transition-all duration-200 z-10",
+                        lesson.completed
+                          ? "bg-gradient-to-br from-primary via-accent to-primary shadow-lg shadow-primary/30 hover:scale-110 hover:-translate-y-1 cursor-pointer border-4 border-primary/50"
+                          : lesson.is_locked
+                          ? "bg-muted border-4 border-border cursor-not-allowed opacity-40"
+                          : isNextLesson
+                          ? "bg-primary/20 border-4 border-primary cursor-pointer hover:scale-110 hover:-translate-y-1 ring-4 ring-primary/20 shadow-lg shadow-primary/15"
+                          : "bg-card border-4 border-primary/30 hover:border-primary/60 hover:scale-110 hover:-translate-y-1 cursor-pointer shadow-md"
+                      )}
+                    >
+                      {lesson.completed ? (
+                        <GraduationCap className="w-12 h-12 text-primary-foreground" />
+                      ) : lesson.is_locked ? (
+                        <Lock className="w-8 h-8 text-muted-foreground" />
+                      ) : (
+                        <GraduationCap className="w-12 h-12 text-primary" />
+                      )}
+                    </button>
+
+                    <span className="mt-2.5 text-xs font-black text-primary uppercase tracking-widest">
+                      Final Project
+                    </span>
+                    <span className="text-[10px] text-muted-foreground mt-0.5">10-15 min</span>
+                  </motion.div>
+                ) : null}
+
                 {/* Challenge level node */}
-                {isChallengeLevel ? (
+                {isCapstone ? null : isChallengeLevel ? (
                   <motion.div
                     initial={{ opacity: 0, y: 20, x }}
                     animate={{ opacity: 1, y: 0, x }}
