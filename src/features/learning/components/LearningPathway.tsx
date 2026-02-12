@@ -4,7 +4,6 @@ import { Trophy, Award, Lock, Star, ArrowLeft, CheckCircle2 } from "lucide-react
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
-import mascot from "@/assets/mascot.png";
 
 interface Lesson {
   id: string;
@@ -30,6 +29,13 @@ interface LearningPathwayProps {
   onBack?: () => void;
 }
 
+const getNodePosition = (index: number) => {
+  // Snake pattern: goes right, then left, then right...
+  const row = Math.floor(index / 1);
+  const xOffset = Math.sin((index / 2.5) * Math.PI) * 70;
+  return { x: xOffset, y: row * 110 };
+};
+
 const DuoButton = ({
   lesson,
   index,
@@ -43,9 +49,7 @@ const DuoButton = ({
 }) => {
   const [hovered, setHovered] = useState(false);
   const stars = lesson.stars || (lesson.completed ? 3 : 0);
-
-  // Zigzag pattern: alternate left and right
-  const xOffset = Math.sin((index / 2) * Math.PI) * 50;
+  const { x } = getNodePosition(index);
 
   return (
     <motion.div
@@ -53,7 +57,7 @@ const DuoButton = ({
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.04, duration: 0.3 }}
       className="relative flex flex-col items-center"
-      style={{ transform: `translateX(${xOffset}px)` }}
+      style={{ transform: `translateX(${x}px)` }}
     >
       {/* Tooltip on hover */}
       {hovered && !lesson.is_locked && (
@@ -68,24 +72,19 @@ const DuoButton = ({
         </motion.div>
       )}
 
-      {/* The button */}
       <button
         onClick={onClick}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
         disabled={lesson.is_locked}
         className={cn(
-          "relative w-16 h-16 rounded-full flex items-center justify-center transition-all duration-200",
-          // Completed
+          "relative w-16 h-16 rounded-full flex items-center justify-center transition-all duration-200 z-10",
           lesson.completed &&
             "bg-primary shadow-glow-soft hover:scale-110 cursor-pointer border-[3px] border-primary/60",
-          // Locked
           lesson.is_locked &&
             "bg-muted border-[3px] border-border cursor-not-allowed opacity-40",
-          // Current / next
           isNext &&
             "bg-primary/20 border-[3px] border-primary cursor-pointer hover:scale-110 ring-4 ring-primary/20 animate-bounce-subtle",
-          // Available but not started
           !lesson.completed && !lesson.is_locked && !isNext &&
             "bg-card border-[3px] border-border hover:border-primary/50 hover:scale-110 cursor-pointer"
         )}
@@ -99,7 +98,6 @@ const DuoButton = ({
         )}
       </button>
 
-      {/* Stars under completed */}
       <div className="flex gap-0.5 mt-1.5 h-4">
         {lesson.completed ? (
           [...Array(3)].map((_, i) => (
@@ -119,26 +117,37 @@ const DuoButton = ({
   );
 };
 
-/** Dotted SVG connector between two nodes */
+/** Dotted curved SVG connector between nodes */
 const DottedConnector = ({ fromIndex, toIndex }: { fromIndex: number; toIndex: number }) => {
-  const gap = 96; // vertical gap between nodes
-  const fromX = 50 + Math.sin((fromIndex / 2) * Math.PI) * 50;
-  const toX = 50 + Math.sin((toIndex / 2) * Math.PI) * 50;
+  const from = getNodePosition(fromIndex);
+  const to = getNodePosition(toIndex);
+
+  // Center positions (relative to the container center)
+  const containerCenter = 150;
+  const fromCx = containerCenter + from.x;
+  const toCx = containerCenter + to.x;
+
+  // Vertical: start below the "from" circle, end above the "to" circle
+  const startY = 0;
+  const endY = 110; // gap between nodes
+  const circleR = 32; // radius of circle
+  const padTop = circleR + 12; // start below from-circle + stars
+  const padBottom = circleR + 4; // end above to-circle
+
+  // Control point for curve
+  const cpX = (fromCx + toCx) / 2;
+  const cpY = (startY + endY) / 2;
 
   return (
     <svg
-      className="absolute pointer-events-none"
-      width="200"
-      height={gap}
-      style={{
-        left: "50%",
-        transform: "translateX(-50%)",
-        top: `${fromIndex * gap + 64}px`,
-      }}
-      viewBox={`0 0 200 ${gap}`}
+      className="absolute left-1/2 -translate-x-1/2 pointer-events-none"
+      width="300"
+      height={endY}
+      style={{ top: 0 }}
+      viewBox={`0 0 300 ${endY}`}
     >
       <path
-        d={`M ${fromX + 50} 0 Q ${(fromX + toX) / 2 + 50} ${gap / 2} ${toX + 50} ${gap}`}
+        d={`M ${fromCx} ${padTop} Q ${cpX} ${cpY} ${toCx} ${endY - padBottom}`}
         fill="none"
         stroke="hsl(var(--border))"
         strokeWidth="3"
@@ -177,16 +186,10 @@ export const LearningPathway = ({
   const progressPercentage =
     lessons.length > 0 ? Math.round((completedLessons / lessons.length) * 100) : 0;
 
-  // Find the next lesson index for mascot positioning
-  const nextLessonIndex = lessons.findIndex((l) => !l.is_locked && !l.completed);
-
   return (
     <div className="relative min-h-screen">
-      {/* Soft background blobs */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10">
         <div className="absolute inset-0 bg-gradient-to-b from-background via-background to-primary/5" />
-        <div className="absolute top-20 left-10 w-64 h-64 bg-primary/8 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 right-20 w-80 h-80 bg-accent/5 rounded-full blur-3xl" />
       </div>
 
       {/* Sticky header */}
@@ -208,14 +211,11 @@ export const LearningPathway = ({
                 </p>
               </div>
             </div>
-
             <div className="flex items-center gap-2 bg-primary/10 px-3.5 py-1.5 rounded-full">
               <Trophy className="w-4 h-4 text-primary" />
               <span className="text-base font-black text-primary">{progressPercentage}%</span>
             </div>
           </div>
-
-          {/* Progress bar */}
           <div className="relative h-2.5 bg-muted rounded-full overflow-hidden">
             <div
               className="absolute inset-y-0 left-0 bg-gradient-to-r from-primary to-accent rounded-full transition-all duration-1000 ease-out"
@@ -225,42 +225,9 @@ export const LearningPathway = ({
         </div>
       </div>
 
-      {/* Pathway content */}
-      <div className="max-w-2xl mx-auto px-8 py-10 pb-40 relative">
-        {/* Mascot character - floats near the current lesson */}
-        <motion.div
-          className="hidden md:block absolute right-0 z-10"
-          style={{ top: nextLessonIndex >= 0 ? `${nextLessonIndex * 96 + 20}px` : "20px" }}
-          animate={{ y: [0, -8, 0] }}
-          transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-        >
-          <div className="relative">
-            <img
-              src={mascot}
-              alt="Euphoria mascot"
-              className="w-20 h-20 object-contain drop-shadow-lg"
-            />
-            {/* Speech bubble */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.5 }}
-              className="absolute -top-10 -left-16 bg-card border border-border rounded-xl px-3 py-1.5 shadow-md whitespace-nowrap"
-            >
-              <span className="text-xs font-black text-foreground">
-                {completedLessons === 0
-                  ? "Let's go! 🚀"
-                  : completedLessons < lessons.length
-                  ? "Keep it up! 💪"
-                  : "Amazing! 🎉"}
-              </span>
-              <div className="absolute right-2 -bottom-1 w-2 h-2 bg-card border-b border-r border-border rotate-45" />
-            </motion.div>
-          </div>
-        </motion.div>
-
-        {/* Node list with dotted connectors */}
-        <div className="relative flex flex-col items-center gap-8">
+      {/* Pathway nodes */}
+      <div className="max-w-2xl mx-auto px-8 py-10 pb-40">
+        <div className="flex flex-col items-center">
           {lessons.map((lesson, index) => {
             const isNextLesson =
               !lesson.is_locked &&
@@ -268,10 +235,14 @@ export const LearningPathway = ({
               index === lessons.findIndex((l) => !l.is_locked && !l.completed);
 
             return (
-              <div key={lesson.id} className="relative">
+              <div
+                key={lesson.id}
+                className="relative"
+                style={{ height: index < lessons.length - 1 ? "110px" : "auto" }}
+              >
                 {/* Chapter divider */}
                 {index > 0 && index % 5 === 0 && (
-                  <div className="mb-4 flex justify-center">
+                  <div className="absolute -top-6 left-1/2 -translate-x-1/2 z-20">
                     <div className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20">
                       <Award className="w-3.5 h-3.5 text-primary" />
                       <span className="text-[10px] font-black text-primary uppercase tracking-widest">
@@ -281,22 +252,9 @@ export const LearningPathway = ({
                   </div>
                 )}
 
-                {/* Dotted line to next node */}
+                {/* Dotted connector to next node */}
                 {index < lessons.length - 1 && (
-                  <div className="absolute left-1/2 -translate-x-1/2 top-[72px] w-0 h-8">
-                    <svg width="4" height="32" className="absolute left-1/2 -translate-x-1/2">
-                      <line
-                        x1="2"
-                        y1="0"
-                        x2="2"
-                        y2="32"
-                        stroke="hsl(var(--border))"
-                        strokeWidth="3"
-                        strokeDasharray="4 4"
-                        strokeLinecap="round"
-                      />
-                    </svg>
-                  </div>
+                  <DottedConnector fromIndex={index} toIndex={index + 1} />
                 )}
 
                 <DuoButton
@@ -309,7 +267,6 @@ export const LearningPathway = ({
             );
           })}
 
-          {/* End trophy */}
           {progressPercentage === 100 && (
             <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="mt-6 text-center">
               <div className="w-20 h-20 mx-auto rounded-full bg-gradient-to-br from-warning to-warning/80 flex items-center justify-center shadow-lg">
@@ -322,7 +279,6 @@ export const LearningPathway = ({
         </div>
       </div>
 
-      {/* Challenge Modal */}
       {selectedLesson && (
         <ChallengeModal
           isOpen={!!selectedLesson}
