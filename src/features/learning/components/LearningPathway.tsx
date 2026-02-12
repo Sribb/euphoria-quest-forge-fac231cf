@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { ChallengeModal } from "./ChallengeModal";
-import { Trophy, Award, Lock, Star, ArrowLeft, CheckCircle2 } from "lucide-react";
+import { Trophy, Lock, Star, ArrowLeft, CheckCircle2, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
@@ -29,133 +29,8 @@ interface LearningPathwayProps {
   onBack?: () => void;
 }
 
-const getNodePosition = (index: number) => {
-  // True zigzag: groups of 3 go center → right → center → left → center → right...
-  const positions = [0, 80, 40, -40, -80, 0];
-  const xOffset = positions[index % positions.length];
-  return { x: xOffset, y: index * 110 };
-};
-
-const DuoButton = ({
-  lesson,
-  index,
-  isNext,
-  onClick,
-}: {
-  lesson: Lesson;
-  index: number;
-  isNext: boolean;
-  onClick: () => void;
-}) => {
-  const [hovered, setHovered] = useState(false);
-  const stars = lesson.stars || (lesson.completed ? 3 : 0);
-  const { x } = getNodePosition(index);
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20, x }}
-      animate={{ opacity: 1, y: 0, x }}
-      transition={{ delay: index * 0.04, duration: 0.3 }}
-      className="relative flex flex-col items-center"
-    >
-      {/* Tooltip on hover */}
-      {hovered && !lesson.is_locked && (
-        <motion.div
-          initial={{ opacity: 0, y: 6, scale: 0.95 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          className="absolute -top-[72px] bg-card border border-border rounded-2xl px-4 py-2.5 shadow-lg z-20 min-w-[180px] text-center pointer-events-none"
-        >
-          <p className="text-sm font-black text-foreground line-clamp-2">{lesson.title}</p>
-          <p className="text-xs text-muted-foreground mt-0.5">{lesson.duration} · {lesson.difficulty}</p>
-          <div className="absolute left-1/2 -translate-x-1/2 -bottom-1.5 w-3 h-3 bg-card border-b border-r border-border rotate-45" />
-        </motion.div>
-      )}
-
-      <button
-        onClick={onClick}
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
-        disabled={lesson.is_locked}
-        className={cn(
-          "relative w-16 h-16 rounded-full flex items-center justify-center transition-all duration-200 z-10",
-          lesson.completed &&
-            "bg-primary shadow-glow-soft hover:scale-110 cursor-pointer border-[3px] border-primary/60",
-          lesson.is_locked &&
-            "bg-muted border-[3px] border-border cursor-not-allowed opacity-40",
-          isNext &&
-            "bg-primary/20 border-[3px] border-primary cursor-pointer hover:scale-110 ring-4 ring-primary/20",
-          !lesson.completed && !lesson.is_locked && !isNext &&
-            "bg-card border-[3px] border-border hover:border-primary/50 hover:scale-110 cursor-pointer"
-        )}
-      >
-        {lesson.completed ? (
-          <CheckCircle2 className="w-7 h-7 text-primary-foreground" strokeWidth={2.5} />
-        ) : lesson.is_locked ? (
-          <Lock className="w-5 h-5 text-muted-foreground" />
-        ) : (
-          <span className="text-lg font-black text-foreground">{lesson.order_index}</span>
-        )}
-      </button>
-
-      <div className="flex gap-0.5 mt-1.5 h-4">
-        {lesson.completed ? (
-          [...Array(3)].map((_, i) => (
-            <Star
-              key={i}
-              className={cn(
-                "w-3.5 h-3.5",
-                i < stars ? "text-warning fill-warning" : "text-muted-foreground/20"
-              )}
-            />
-          ))
-        ) : isNext ? (
-          <span className="text-[10px] text-primary font-black uppercase tracking-widest">Start</span>
-        ) : null}
-      </div>
-    </motion.div>
-  );
-};
-
-/** Dotted curved SVG connector between nodes */
-const DottedConnector = ({ fromIndex, toIndex }: { fromIndex: number; toIndex: number }) => {
-  const from = getNodePosition(fromIndex);
-  const to = getNodePosition(toIndex);
-
-  // Center positions (relative to the container center)
-  const containerCenter = 150;
-  const fromCx = containerCenter + from.x;
-  const toCx = containerCenter + to.x;
-
-  // Vertical: start below the "from" circle, end above the "to" circle
-  const startY = 0;
-  const endY = 110; // gap between nodes
-  const circleR = 32; // radius of circle
-  const padTop = circleR + 12; // start below from-circle + stars
-  const padBottom = circleR + 4; // end above to-circle
-
-  // Control point for curve
-  const cpX = (fromCx + toCx) / 2;
-  const cpY = (startY + endY) / 2;
-
-  return (
-    <svg
-      className="absolute left-1/2 -translate-x-1/2 pointer-events-none"
-      width="300"
-      height={endY}
-      style={{ top: 0 }}
-      viewBox={`0 0 300 ${endY}`}
-    >
-      <path
-        d={`M ${fromCx} ${padTop} Q ${cpX} ${cpY} ${toCx} ${endY - padBottom}`}
-        fill="none"
-        stroke="hsl(var(--border))"
-        strokeWidth="3"
-        strokeDasharray="6 6"
-        strokeLinecap="round"
-      />
-    </svg>
-  );
-};
+// Smooth sine-wave curve
+const getX = (index: number) => Math.sin((index / 3) * Math.PI) * 90;
 
 export const LearningPathway = ({
   lessons,
@@ -167,11 +42,10 @@ export const LearningPathway = ({
   onBack,
 }: LearningPathwayProps) => {
   const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
+  const [hovered, setHovered] = useState<string | null>(null);
 
   const handleNodeClick = (lesson: Lesson) => {
-    if (!lesson.is_locked) {
-      setSelectedLesson(lesson);
-    }
+    if (!lesson.is_locked) setSelectedLesson(lesson);
   };
 
   const handleStartChallenge = () => {
@@ -182,8 +56,7 @@ export const LearningPathway = ({
   };
 
   const completedLessons = lessons.filter((l) => l.completed).length;
-  const progressPercentage =
-    lessons.length > 0 ? Math.round((completedLessons / lessons.length) * 100) : 0;
+  const progressPercentage = lessons.length > 0 ? Math.round((completedLessons / lessons.length) * 100) : 0;
 
   return (
     <div className="relative min-h-screen">
@@ -224,52 +97,144 @@ export const LearningPathway = ({
         </div>
       </div>
 
-      {/* Pathway nodes */}
+      {/* Pathway */}
       <div className="max-w-2xl mx-auto px-8 py-10 pb-40">
-        <div className="flex flex-col items-center">
+        <div className="flex flex-col items-center gap-5">
           {lessons.map((lesson, index) => {
             const isNextLesson =
               !lesson.is_locked &&
               !lesson.completed &&
               index === lessons.findIndex((l) => !l.is_locked && !l.completed);
+            const x = getX(index);
+            const isHovered = hovered === lesson.id;
+            const stars = lesson.stars || (lesson.completed ? 3 : 0);
+            const isChallengeLevel = (index + 1) % 10 === 0;
 
-            return (
-              <div
-                key={lesson.id}
-                className="relative"
-                style={{ height: index < lessons.length - 1 ? "110px" : "auto" }}
-              >
-                {/* Chapter divider */}
-                {index > 0 && index % 5 === 0 && (
-                  <div className="absolute -top-6 left-1/2 -translate-x-1/2 z-20">
-                    <div className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20">
-                      <Award className="w-3.5 h-3.5 text-primary" />
-                      <span className="text-[10px] font-black text-primary uppercase tracking-widest">
-                        Chapter {Math.floor(index / 5) + 1}
-                      </span>
+            // Challenge level node
+            if (isChallengeLevel) {
+              return (
+                <motion.div
+                  key={lesson.id}
+                  initial={{ opacity: 0, y: 20, x }}
+                  animate={{ opacity: 1, y: 0, x }}
+                  transition={{ delay: index * 0.03, duration: 0.3 }}
+                  className="relative flex flex-col items-center my-4"
+                >
+                  {isHovered && !lesson.is_locked && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 6, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      className="absolute -top-[76px] bg-card border border-border rounded-2xl px-4 py-2.5 shadow-lg z-20 min-w-[200px] text-center pointer-events-none"
+                    >
+                      <p className="text-sm font-black text-foreground">⚡ {lesson.title}</p>
+                      <p className="text-xs text-muted-foreground mt-0.5">Challenge Level</p>
+                      <div className="absolute left-1/2 -translate-x-1/2 -bottom-1.5 w-3 h-3 bg-card border-b border-r border-border rotate-45" />
+                    </motion.div>
+                  )}
+
+                  <button
+                    onClick={() => handleNodeClick(lesson)}
+                    onMouseEnter={() => setHovered(lesson.id)}
+                    onMouseLeave={() => setHovered(null)}
+                    disabled={lesson.is_locked}
+                    className={cn(
+                      "relative w-24 h-24 rounded-full flex items-center justify-center transition-all duration-200 z-10",
+                      lesson.completed
+                        ? "bg-gradient-to-br from-warning to-warning/70 shadow-lg hover:scale-110 cursor-pointer border-4 border-warning/50"
+                        : lesson.is_locked
+                        ? "bg-muted border-4 border-border cursor-not-allowed opacity-40"
+                        : isNextLesson
+                        ? "bg-warning/20 border-4 border-warning cursor-pointer hover:scale-110 ring-4 ring-warning/20"
+                        : "bg-card border-4 border-warning/30 hover:border-warning/60 hover:scale-110 cursor-pointer"
+                    )}
+                  >
+                    {lesson.completed ? (
+                      <Trophy className="w-10 h-10 text-warning-foreground" />
+                    ) : lesson.is_locked ? (
+                      <Lock className="w-8 h-8 text-muted-foreground" />
+                    ) : (
+                      <Zap className="w-10 h-10 text-warning" />
+                    )}
+                  </button>
+
+                  <span className="mt-2 text-xs font-black text-warning uppercase tracking-widest">
+                    Challenge
+                  </span>
+                  {lesson.completed && (
+                    <div className="flex gap-0.5 mt-1">
+                      {[...Array(3)].map((_, i) => (
+                        <Star key={i} className={cn("w-4 h-4", i < stars ? "text-warning fill-warning" : "text-muted-foreground/20")} />
+                      ))}
                     </div>
-                  </div>
+                  )}
+                </motion.div>
+              );
+            }
+
+            // Regular lesson node
+            return (
+              <motion.div
+                key={lesson.id}
+                initial={{ opacity: 0, y: 20, x }}
+                animate={{ opacity: 1, y: 0, x }}
+                transition={{ delay: index * 0.03, duration: 0.3 }}
+                className="relative flex flex-col items-center"
+              >
+                {isHovered && !lesson.is_locked && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 6, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    className="absolute -top-[72px] bg-card border border-border rounded-2xl px-4 py-2.5 shadow-lg z-20 min-w-[180px] text-center pointer-events-none"
+                  >
+                    <p className="text-sm font-black text-foreground line-clamp-2">{lesson.title}</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">{lesson.duration} · {lesson.difficulty}</p>
+                    <div className="absolute left-1/2 -translate-x-1/2 -bottom-1.5 w-3 h-3 bg-card border-b border-r border-border rotate-45" />
+                  </motion.div>
                 )}
 
-                {/* Dotted connector to next node */}
-                {index < lessons.length - 1 && (
-                  <DottedConnector fromIndex={index} toIndex={index + 1} />
-                )}
-
-                <DuoButton
-                  lesson={lesson}
-                  index={index}
-                  isNext={isNextLesson}
+                <button
                   onClick={() => handleNodeClick(lesson)}
-                />
-              </div>
+                  onMouseEnter={() => setHovered(lesson.id)}
+                  onMouseLeave={() => setHovered(null)}
+                  disabled={lesson.is_locked}
+                  className={cn(
+                    "relative w-[72px] h-[72px] rounded-full flex items-center justify-center transition-all duration-200 z-10",
+                    lesson.completed &&
+                      "bg-primary shadow-glow-soft hover:scale-110 cursor-pointer border-[3px] border-primary/60",
+                    lesson.is_locked &&
+                      "bg-muted border-[3px] border-border cursor-not-allowed opacity-40",
+                    isNextLesson &&
+                      "bg-primary/20 border-[3px] border-primary cursor-pointer hover:scale-110 ring-4 ring-primary/20",
+                    !lesson.completed && !lesson.is_locked && !isNextLesson &&
+                      "bg-card border-[3px] border-border hover:border-primary/50 hover:scale-110 cursor-pointer"
+                  )}
+                >
+                  {lesson.completed ? (
+                    <CheckCircle2 className="w-8 h-8 text-primary-foreground" strokeWidth={2.5} />
+                  ) : lesson.is_locked ? (
+                    <Lock className="w-6 h-6 text-muted-foreground" />
+                  ) : (
+                    <span className="text-xl font-black text-foreground">{lesson.order_index}</span>
+                  )}
+                </button>
+
+                <div className="flex gap-0.5 mt-1.5 h-4">
+                  {lesson.completed ? (
+                    [...Array(3)].map((_, i) => (
+                      <Star key={i} className={cn("w-4 h-4", i < stars ? "text-warning fill-warning" : "text-muted-foreground/20")} />
+                    ))
+                  ) : isNextLesson ? (
+                    <span className="text-[10px] text-primary font-black uppercase tracking-widest">Start</span>
+                  ) : null}
+                </div>
+              </motion.div>
             );
           })}
 
           {progressPercentage === 100 && (
             <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="mt-6 text-center">
-              <div className="w-20 h-20 mx-auto rounded-full bg-gradient-to-br from-warning to-warning/80 flex items-center justify-center shadow-lg">
-                <Trophy className="w-10 h-10 text-warning-foreground" />
+              <div className="w-24 h-24 mx-auto rounded-full bg-gradient-to-br from-warning to-warning/80 flex items-center justify-center shadow-lg">
+                <Trophy className="w-12 h-12 text-warning-foreground" />
               </div>
               <h3 className="text-xl font-black text-foreground mt-3">Path Complete! 🎉</h3>
               <p className="text-sm text-muted-foreground mt-1">You've mastered every lesson</p>
