@@ -30,10 +30,10 @@ interface LearningPathwayProps {
 }
 
 const getNodePosition = (index: number) => {
-  // Snake pattern: goes right, then left, then right...
-  const row = Math.floor(index / 1);
-  const xOffset = Math.sin((index / 2.5) * Math.PI) * 70;
-  return { x: xOffset, y: row * 110 };
+  // True zigzag: groups of 3 go center → right → center → left → center → right...
+  const positions = [0, 80, 40, -40, -80, 0];
+  const xOffset = positions[index % positions.length];
+  return { x: xOffset, y: index * 110 };
 };
 
 const DuoButton = ({
@@ -53,11 +53,10 @@ const DuoButton = ({
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
+      initial={{ opacity: 0, y: 20, x }}
+      animate={{ opacity: 1, y: 0, x }}
       transition={{ delay: index * 0.04, duration: 0.3 }}
       className="relative flex flex-col items-center"
-      style={{ transform: `translateX(${x}px)` }}
     >
       {/* Tooltip on hover */}
       {hovered && !lesson.is_locked && (
@@ -84,7 +83,7 @@ const DuoButton = ({
           lesson.is_locked &&
             "bg-muted border-[3px] border-border cursor-not-allowed opacity-40",
           isNext &&
-            "bg-primary/20 border-[3px] border-primary cursor-pointer hover:scale-110 ring-4 ring-primary/20 animate-bounce-subtle",
+            "bg-primary/20 border-[3px] border-primary cursor-pointer hover:scale-110 ring-4 ring-primary/20",
           !lesson.completed && !lesson.is_locked && !isNext &&
             "bg-card border-[3px] border-border hover:border-primary/50 hover:scale-110 cursor-pointer"
         )}
