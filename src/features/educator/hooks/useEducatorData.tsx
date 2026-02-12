@@ -31,18 +31,44 @@ export const useEducatorData = () => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
-  // Fetch all users with their progress
+  // Helper: get student IDs from educator's classes
+  const getClassStudentIds = async (): Promise<string[]> => {
+    if (!user?.id) return [];
+
+    // Get educator's classes
+    const { data: classes } = await supabase
+      .from("classes")
+      .select("id")
+      .eq("educator_id", user.id);
+
+    if (!classes?.length) return [];
+
+    const classIds = classes.map((c) => c.id);
+
+    // Get members of those classes
+    const { data: members } = await supabase
+      .from("class_members")
+      .select("student_id")
+      .in("class_id", classIds);
+
+    return [...new Set((members || []).map((m) => m.student_id))];
+  };
+
+  // Fetch users that are in this educator's classes
   const { data: users, isLoading: usersLoading } = useQuery({
-    queryKey: ["educator-users"],
+    queryKey: ["educator-users", user?.id],
     queryFn: async () => {
-      const { data: profiles, error: profilesError } = await supabase
+      const studentIds = await getClassStudentIds();
+      if (studentIds.length === 0) return [];
+
+      const { data: profiles, error } = await supabase
         .from("profiles")
         .select("*")
+        .in("id", studentIds)
         .order("created_at", { ascending: false });
 
-      if (profilesError) throw profilesError;
+      if (error) throw error;
 
-      // Get lesson progress for each user
       const usersWithProgress: UserWithProgress[] = await Promise.all(
         (profiles || []).map(async (profile) => {
           const { data: lessonProgress } = await supabase
@@ -77,19 +103,34 @@ export const useEducatorData = () => {
 
       return usersWithProgress;
     },
+    enabled: !!user?.id,
   });
 
-  // Fetch educator stats
+  // Fetch educator stats scoped to class students only
   const { data: stats, isLoading: statsLoading } = useQuery({
-    queryKey: ["educator-stats"],
+    queryKey: ["educator-stats", user?.id],
     queryFn: async () => {
+      const studentIds = await getClassStudentIds();
+
+      if (studentIds.length === 0) {
+        return {
+          total_users: 0,
+          active_users_7d: 0,
+          avg_lesson_completion: 0,
+          total_lessons_completed: 0,
+          avg_quiz_score: 0,
+        } as EducatorStats;
+      }
+
       const { data: profiles } = await supabase
         .from("profiles")
-        .select("id, updated_at");
+        .select("id, updated_at")
+        .in("id", studentIds);
 
       const { data: lessonProgress } = await supabase
         .from("user_lesson_progress")
-        .select("progress, completed, quiz_score");
+        .select("progress, completed, quiz_score, user_id")
+        .in("user_id", studentIds);
 
       const totalUsers = profiles?.length || 0;
       const activeUsers7d = profiles?.filter(
@@ -110,6 +151,7 @@ export const useEducatorData = () => {
         avg_quiz_score: Math.round(avgQuiz),
       } as EducatorStats;
     },
+    enabled: !!user?.id,
   });
 
   // Fetch announcements
@@ -167,15 +209,11 @@ export const useEducatorData = () => {
   // Update user role mutation
   const updateUserRoleMutation = useMutation({
     mutationFn: async ({ userId, role }: { userId: string; role: string }) => {
-      // First, delete existing role
       await supabase.from("user_roles").delete().eq("user_id", userId);
-
-      // Then insert new role
       const { error } = await supabase.from("user_roles").insert({
         user_id: userId,
         role: role as "admin" | "user" | "educator" | "mentor",
       });
-
       if (error) throw error;
     },
     onSuccess: () => {
