@@ -534,6 +534,71 @@ export type Database = {
         }
         Relationships: []
       }
+      class_members: {
+        Row: {
+          class_id: string
+          id: string
+          joined_at: string
+          student_id: string
+        }
+        Insert: {
+          class_id: string
+          id?: string
+          joined_at?: string
+          student_id: string
+        }
+        Update: {
+          class_id?: string
+          id?: string
+          joined_at?: string
+          student_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "class_members_class_id_fkey"
+            columns: ["class_id"]
+            isOneToOne: false
+            referencedRelation: "classes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      classes: {
+        Row: {
+          class_code: string
+          class_name: string
+          created_at: string
+          description: string | null
+          educator_id: string
+          id: string
+          is_active: boolean | null
+          max_students: number | null
+          updated_at: string
+        }
+        Insert: {
+          class_code: string
+          class_name: string
+          created_at?: string
+          description?: string | null
+          educator_id: string
+          id?: string
+          is_active?: boolean | null
+          max_students?: number | null
+          updated_at?: string
+        }
+        Update: {
+          class_code?: string
+          class_name?: string
+          created_at?: string
+          description?: string | null
+          educator_id?: string
+          id?: string
+          is_active?: boolean | null
+          max_students?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       comments: {
         Row: {
           content: string
@@ -575,6 +640,33 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      direct_messages: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          is_read: boolean | null
+          receiver_id: string
+          sender_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          is_read?: boolean | null
+          receiver_id: string
+          sender_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          is_read?: boolean | null
+          receiver_id?: string
+          sender_id?: string
+        }
+        Relationships: []
       }
       educator_messages: {
         Row: {
@@ -642,6 +734,48 @@ export type Database = {
         }
         Relationships: []
       }
+      educator_profiles: {
+        Row: {
+          created_at: string
+          estimated_class_size: number | null
+          grade_level: string | null
+          id: string
+          is_premium: boolean | null
+          premium_since: string | null
+          school_name: string
+          stripe_customer_id: string | null
+          subject: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          estimated_class_size?: number | null
+          grade_level?: string | null
+          id?: string
+          is_premium?: boolean | null
+          premium_since?: string | null
+          school_name: string
+          stripe_customer_id?: string | null
+          subject?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          estimated_class_size?: number | null
+          grade_level?: string | null
+          id?: string
+          is_premium?: boolean | null
+          premium_since?: string | null
+          school_name?: string
+          stripe_customer_id?: string | null
+          subject?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       game_sessions: {
         Row: {
           coins_earned: number
@@ -706,6 +840,70 @@ export type Database = {
           title?: string
         }
         Relationships: []
+      }
+      group_members: {
+        Row: {
+          group_id: string
+          id: string
+          joined_at: string
+          role: string | null
+          user_id: string
+        }
+        Insert: {
+          group_id: string
+          id?: string
+          joined_at?: string
+          role?: string | null
+          user_id: string
+        }
+        Update: {
+          group_id?: string
+          id?: string
+          joined_at?: string
+          role?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "group_members_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "message_groups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      group_messages: {
+        Row: {
+          content: string
+          created_at: string
+          group_id: string
+          id: string
+          sender_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          group_id: string
+          id?: string
+          sender_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          group_id?: string
+          id?: string
+          sender_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "group_messages_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "message_groups"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       lesson_question_performance: {
         Row: {
@@ -870,6 +1068,36 @@ export type Database = {
           session_type?: string
           status?: string
           title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      message_groups: {
+        Row: {
+          avatar_color: string | null
+          created_at: string
+          creator_id: string
+          description: string | null
+          id: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          avatar_color?: string | null
+          created_at?: string
+          creator_id: string
+          description?: string | null
+          id?: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          avatar_color?: string | null
+          created_at?: string
+          creator_id?: string
+          description?: string | null
+          id?: string
+          name?: string
           updated_at?: string
         }
         Relationships: []
@@ -1613,6 +1841,7 @@ export type Database = {
         Returns: Json
       }
       calculate_level_from_xp: { Args: { xp: number }; Returns: number }
+      generate_class_code: { Args: never; Returns: string }
       get_educator_user_stats: {
         Args: never
         Returns: {

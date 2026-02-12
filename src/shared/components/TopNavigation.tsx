@@ -4,7 +4,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { Menu, X, Home, BookOpen, TrendingUp, Gamepad2, Award, User, GraduationCap } from "lucide-react";
+import { Menu, X, Home, BookOpen, TrendingUp, Gamepad2, Award, User, Users } from "lucide-react";
 import { useState } from "react";
 import logo from "@/assets/euphoria-logo-button.png";
 
@@ -18,8 +18,8 @@ const navItems = [
   { id: "learn", label: "Learn", icon: BookOpen },
   { id: "trade", label: "Trade", icon: TrendingUp },
   { id: "games", label: "Games", icon: Gamepad2 },
+  { id: "community", label: "Community", icon: Users },
   { id: "certificates", label: "Certificates", icon: Award },
-  { id: "educator", label: "Educator", icon: GraduationCap },
   { id: "profile", label: "Profile", icon: User },
 ];
 

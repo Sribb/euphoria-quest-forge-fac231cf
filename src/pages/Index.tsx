@@ -5,11 +5,11 @@ import Dashboard from "./Dashboard";
 import Learn from "./Learn";
 import Trade from "./Trade";
 import Games from "./Games";
+import Community from "./Community";
 import Certificates from "./Certificates";
 import Profile from "./Profile";
 import StockSearch from "./StockSearch";
 import StockDetail from "./StockDetail";
-import { EducatorDashboard } from "@/features/educator";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
@@ -105,12 +105,12 @@ const Index = () => {
         return <Trade onNavigate={handleNavigate} onStockSearch={() => setShowStockSearch(true)} />;
       case "games":
         return <Games onNavigate={handleNavigate} />;
+      case "community":
+        return <Community onNavigate={handleNavigate} />;
       case "certificates":
         return <Certificates onNavigate={handleNavigate} />;
       case "profile":
         return <Profile onNavigate={handleNavigate} />;
-      case "educator":
-        return <EducatorDashboard onBack={() => handleNavigate("dashboard")} />;
       default:
         return <Dashboard onNavigate={handleNavigate} onStockSearch={() => setShowStockSearch(true)} />;
     }
