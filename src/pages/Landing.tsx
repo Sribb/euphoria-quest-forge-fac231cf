@@ -13,6 +13,14 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import logo from "@/assets/euphoria-logo-button.png";
 import dashboardPreview from "@/assets/dashboard-preview.png";
 
+const Annotation = ({ label, className }: { label: string; className: string }) => (
+  <div className={`absolute z-20 flex items-center gap-1.5 ${className}`}>
+    <div className="bg-primary/90 backdrop-blur-sm text-primary-foreground text-[10px] sm:text-xs font-semibold px-2.5 py-1 rounded-full whitespace-nowrap shadow-lg shadow-primary/20 border border-primary/50">
+      {label}
+    </div>
+  </div>
+);
+
 const HeroImage = () => {
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
@@ -44,12 +52,24 @@ const HeroImage = () => {
               </div>
             </div>
           </div>
-          <img 
-            src={dashboardPreview} 
-            alt="Euphoria Dashboard — portfolio charts, lesson progress, and trading simulation" 
-            className="w-full h-auto block"
-            loading="eager"
-          />
+          
+          {/* Dashboard image with annotations */}
+          <div className="relative">
+            <img 
+              src={dashboardPreview} 
+              alt="Euphoria Dashboard — portfolio tracking, AI insights, lessons, and market intel" 
+              className="w-full h-auto block"
+              loading="eager"
+            />
+            
+            {/* Annotation arrows */}
+            <Annotation label="📊 Portfolio Tracker" className="top-[22%] left-[2%]" />
+            <Annotation label="🎯 XP & Level Progress" className="top-[18%] right-[28%]" />
+            <Annotation label="📖 Next Lesson" className="top-[18%] right-[2%]" />
+            <Annotation label="🤖 AI Insights" className="top-[52%] left-[2%]" />
+            <Annotation label="📅 Live Market Intel" className="top-[65%] left-[2%]" />
+            <Annotation label="🔴 Live Indicator" className="top-[6%] right-[2%]" />
+          </div>
         </div>
       </motion.div>
     </div>
