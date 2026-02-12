@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -9,9 +9,52 @@ import {
   Trophy, Target
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
-import { motion } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
 import logo from "@/assets/euphoria-logo-button.png";
 import dashboardPreview from "@/assets/dashboard-preview.png";
+
+const HeroImage = () => {
+  const ref = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
+  const rotateX = useTransform(scrollYProgress, [0, 0.5, 1], [25, 0, -5]);
+  const scale = useTransform(scrollYProgress, [0, 0.5], [0.9, 1]);
+  const opacity = useTransform(scrollYProgress, [0, 0.3], [0.4, 1]);
+  const y = useTransform(scrollYProgress, [0, 0.5], [60, 0]);
+
+  return (
+    <div ref={ref} className="max-w-5xl mx-auto" style={{ perspective: "1200px" }}>
+      <motion.div
+        style={{ rotateX, scale, opacity, y }}
+        className="relative"
+      >
+        {/* Glow behind */}
+        <div className="absolute -inset-4 bg-[radial-gradient(ellipse_at_center,hsl(262_83%_58%/0.15),transparent_70%)] rounded-3xl blur-2xl" />
+        
+        <div className="relative rounded-xl border border-border/50 bg-card/80 shadow-2xl overflow-hidden">
+          {/* Browser chrome */}
+          <div className="flex items-center gap-2 px-4 py-3 bg-muted/50 border-b border-border/30">
+            <div className="flex gap-1.5">
+              <div className="w-2.5 h-2.5 rounded-full bg-[hsl(0_60%_50%)]" />
+              <div className="w-2.5 h-2.5 rounded-full bg-[hsl(45_70%_55%)]" />
+              <div className="w-2.5 h-2.5 rounded-full bg-[hsl(142_60%_45%)]" />
+            </div>
+            <div className="flex-1 flex justify-center">
+              <div className="bg-background/60 rounded-md px-4 py-1 text-[11px] text-muted-foreground font-mono">
+                app.euphoria.finance
+              </div>
+            </div>
+          </div>
+          <img 
+            src={dashboardPreview} 
+            alt="Euphoria Dashboard — portfolio charts, lesson progress, and trading simulation" 
+            className="w-full h-auto block"
+            loading="eager"
+          />
+        </div>
+      </motion.div>
+    </div>
+  );
+};
 
 const Landing = () => {
   const navigate = useNavigate();
@@ -87,11 +130,11 @@ const Landing = () => {
       </nav>
 
       {/* Hero */}
-      <section className="relative pt-32 pb-20 md:pt-40 md:pb-28 overflow-hidden">
+      <section className="relative pt-32 pb-8 md:pt-40 md:pb-16 overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,hsl(262_83%_58%/0.08),transparent_60%)]" />
         
         <div className="max-w-6xl mx-auto px-6 relative z-10">
-          <div className="text-center max-w-3xl mx-auto mb-16">
+          <div className="text-center max-w-3xl mx-auto mb-20">
             <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
               <div className="inline-flex items-center gap-2 bg-primary/8 border border-primary/15 rounded-full px-4 py-1.5 mb-6">
                 <span className="text-xs font-medium text-primary">The #1 investing simulator for students</span>
@@ -106,7 +149,7 @@ const Landing = () => {
             >
               Learn investing by
               <br />
-              <span className="bg-gradient-primary bg-clip-text text-transparent">actually investing.</span>
+              <span className="bg-gradient-to-r from-purple-400 via-violet-400 to-fuchsia-400 bg-clip-text text-transparent">actually investing.</span>
             </motion.h1>
 
             <motion.p 
@@ -153,36 +196,8 @@ const Landing = () => {
             </motion.div>
           </div>
 
-          {/* Dashboard Preview in Browser Frame */}
-          <motion.div 
-            className="max-w-5xl mx-auto"
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.5 }}
-          >
-            <div className="rounded-xl border border-border/60 bg-card/80 shadow-2xl overflow-hidden">
-              {/* Browser chrome */}
-              <div className="flex items-center gap-2 px-4 py-3 bg-muted/60 border-b border-border/40">
-                <div className="flex gap-1.5">
-                  <div className="w-3 h-3 rounded-full bg-destructive/60" />
-                  <div className="w-3 h-3 rounded-full bg-warning/60" />
-                  <div className="w-3 h-3 rounded-full bg-success/60" />
-                </div>
-                <div className="flex-1 flex justify-center">
-                  <div className="bg-background/80 rounded-md px-4 py-1 text-xs text-muted-foreground font-mono w-64 text-center truncate">
-                    app.euphoria.finance/dashboard
-                  </div>
-                </div>
-              </div>
-              {/* Screenshot */}
-              <img 
-                src={dashboardPreview} 
-                alt="Euphoria Dashboard — portfolio charts, lesson progress, and trading simulation" 
-                className="w-full h-auto block"
-                loading="lazy"
-              />
-            </div>
-          </motion.div>
+          {/* Dashboard Preview with 3D Perspective Scroll */}
+          <HeroImage />
         </div>
       </section>
 
