@@ -6,7 +6,8 @@ import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
-import { Sparkles, Loader2, GraduationCap, BookOpen, ArrowLeft, School, Users, BookMarked } from "lucide-react";
+import { Loader2, GraduationCap, BookOpen, ArrowLeft, School, Users, BookMarked } from "lucide-react";
+import euphoriaLogo from "@/assets/euphoria-logo-button.png";
 import { z } from "zod";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -157,10 +158,8 @@ const Auth = () => {
           >
             <Card className="p-8 shadow-glow border-border backdrop-blur-sm bg-card/90">
               <div className="flex items-center justify-center gap-2 mb-8">
-                <div className="w-12 h-12 rounded-xl bg-gradient-primary flex items-center justify-center shadow-glow">
-                  <Sparkles className="w-6 h-6 text-white" />
-                </div>
-                <h1 className="text-3xl font-bold">Euphoria</h1>
+                <img src={euphoriaLogo} alt="Euphoria" className="w-12 h-12 object-contain" />
+                 <h1 className="text-3xl font-bold">Euphoria</h1>
               </div>
 
               <h2 className="text-2xl font-bold mb-2 text-center">Join as...</h2>
@@ -305,10 +304,8 @@ const Auth = () => {
               )}
 
               <div className="flex items-center justify-center gap-2 mb-8">
-                <div className="w-12 h-12 rounded-xl bg-gradient-primary flex items-center justify-center shadow-glow">
-                  <Sparkles className="w-6 h-6 text-white" />
-                </div>
-                <h1 className="text-3xl font-bold">Euphoria</h1>
+                <img src={euphoriaLogo} alt="Euphoria" className="w-12 h-12 object-contain" />
+                 <h1 className="text-3xl font-bold">Euphoria</h1>
               </div>
 
               <div className="mb-6">
