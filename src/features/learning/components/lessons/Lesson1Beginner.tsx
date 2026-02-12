@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { PiggyBank, TrendingUp, Clock, DollarSign, Sparkles, ArrowRight } from "lucide-react";
+import { PiggyBank, TrendingUp, Clock, DollarSign, Sparkles, CheckCircle2, XCircle } from "lucide-react";
 import { BeginnerLessonTemplate, LessonSlide } from "./BeginnerLessonTemplate";
+import { useXPSystem } from "@/hooks/useXPSystem";
 
 // Slide 1: What is Investing?
 const WhatIsInvesting = () => (
@@ -161,7 +162,98 @@ const MagicOfTime = () => {
   );
 };
 
-// Slide 4: Key Takeaways
+// Slide 4: Quiz
+const QuizSlide = () => {
+  const [selected, setSelected] = useState<number | null>(null);
+  const [answered, setAnswered] = useState(false);
+  const { addXP } = useXPSystem();
+  const correctIndex = 2;
+
+  const options = [
+    "Your money doubles every year automatically",
+    "You need thousands of dollars to start investing",
+    "Your investment returns earn their own returns over time",
+    "Inflation makes investments worthless",
+  ];
+
+  const handleSelect = (index: number) => {
+    if (answered) return;
+    setSelected(index);
+    setAnswered(true);
+    if (index === correctIndex) {
+      addXP(10);
+    }
+  };
+
+  return (
+    <div className="space-y-6">
+      <p className="text-lg text-muted-foreground leading-relaxed">
+        Let's check what you've learned! Choose the best answer:
+      </p>
+
+      <div className="p-5 rounded-2xl bg-muted/30 border border-border">
+        <p className="font-bold text-foreground text-base mb-4">
+          What does "compound growth" mean?
+        </p>
+
+        <div className="space-y-3">
+          {options.map((option, i) => {
+            const isCorrect = i === correctIndex;
+            const isSelected = i === selected;
+            let borderClass = "border-border";
+            let bgClass = "bg-background hover:bg-muted/50";
+
+            if (answered && isSelected && isCorrect) {
+              borderClass = "border-primary";
+              bgClass = "bg-primary/10";
+            } else if (answered && isSelected && !isCorrect) {
+              borderClass = "border-destructive";
+              bgClass = "bg-destructive/10";
+            } else if (answered && isCorrect) {
+              borderClass = "border-primary/40";
+              bgClass = "bg-primary/5";
+            }
+
+            return (
+              <motion.button
+                key={i}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.1 }}
+                onClick={() => handleSelect(i)}
+                disabled={answered}
+                className={`w-full text-left p-4 rounded-xl border ${borderClass} ${bgClass} transition-all duration-200 flex items-center gap-3`}
+              >
+                <span className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center text-sm font-bold text-muted-foreground flex-shrink-0">
+                  {String.fromCharCode(65 + i)}
+                </span>
+                <span className="text-sm font-medium text-foreground flex-1">{option}</span>
+                {answered && isSelected && isCorrect && <CheckCircle2 className="w-5 h-5 text-primary flex-shrink-0" />}
+                {answered && isSelected && !isCorrect && <XCircle className="w-5 h-5 text-destructive flex-shrink-0" />}
+              </motion.button>
+            );
+          })}
+        </div>
+      </div>
+
+      {answered && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className={`p-4 rounded-xl border ${selected === correctIndex ? "bg-primary/5 border-primary/20" : "bg-destructive/5 border-destructive/20"}`}
+        >
+          <p className="text-sm text-muted-foreground">
+            {selected === correctIndex
+              ? "🎯 Correct! +10 XP — Compound growth is when your returns generate their own returns, creating exponential growth over time."
+              : "❌ Not quite — Compound growth means your returns earn their own returns, creating a snowball effect over time."}
+          </p>
+        </motion.div>
+      )}
+    </div>
+  );
+};
+
+// Slide 5: Key Takeaways
 const KeyTakeaways = () => {
   const takeaways = [
     { icon: <DollarSign className="w-5 h-5" />, text: "Investing means putting money into things that can grow over time" },
@@ -215,6 +307,7 @@ export const Lesson1Beginner = ({ onComplete }: Lesson1BeginnerProps) => {
     { id: "what-is-investing", title: "What is Investing?", content: <WhatIsInvesting /> },
     { id: "inflation", title: "Why Does Money Lose Value?", content: <WhyMoneyLosesValue /> },
     { id: "compound-growth", title: "The Magic of Compound Growth", content: <MagicOfTime /> },
+    { id: "quiz", title: "Quick Check ✍️", content: <QuizSlide /> },
     { id: "takeaways", title: "Key Takeaways", content: <KeyTakeaways /> },
   ];
 
