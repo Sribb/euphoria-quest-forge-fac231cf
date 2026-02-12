@@ -72,24 +72,9 @@ const quizQuestions: Question[] = [
     ],
     explanation: "Compound interest means you earn returns on both your original investment AND on previous returns, creating a snowball effect over time.",
   },
-  // Lesson 4: Stocks vs Bonds
-  {
-    id: 4,
-    type: "decision",
-    category: "Asset Classes",
-    lessonTopic: "Stocks vs. Bonds",
-    question: "A 30-year-old with stable income is saving for retirement at 65. Their financial advisor suggests a portfolio of 80% stocks and 20% bonds. What is the reasoning behind this allocation?",
-    options: [
-      { id: "a", text: "With 35 years until retirement, stocks' higher long-term returns outweigh short-term volatility risks", isCorrect: true },
-      { id: "b", text: "Bonds always perform better than stocks over any time period", isCorrect: false },
-      { id: "c", text: "This ratio is legally required for retirement accounts", isCorrect: false },
-      { id: "d", text: "Stocks are safer than bonds for all investors", isCorrect: false },
-    ],
-    explanation: "Younger investors can take more risk with stocks because they have time to recover from market downturns, while bonds add stability.",
-  },
   // Lesson 5: Diversification
   {
-    id: 5,
+    id: 4,
     type: "scenario",
     category: "Portfolio Strategy",
     lessonTopic: "Diversification",
@@ -104,7 +89,7 @@ const quizQuestions: Question[] = [
   },
   // Lesson 6: Market Psychology
   {
-    id: 6,
+    id: 5,
     type: "scenario",
     category: "Behavioral Finance",
     lessonTopic: "Market Psychology: Fear and Greed",
@@ -117,24 +102,9 @@ const quizQuestions: Question[] = [
     ],
     explanation: "Fear drives investors to sell at the worst time. Historically, markets recover, and those who sell during crashes often miss the rebound.",
   },
-  // Lesson 7: Value Investing
-  {
-    id: 7,
-    type: "multiple-choice",
-    category: "Investment Styles",
-    lessonTopic: "Value Investing",
-    question: "Warren Buffett's value investing philosophy focuses on:",
-    options: [
-      { id: "a", text: "Buying stocks that have risen the most in the past month", isCorrect: false },
-      { id: "b", text: "Finding companies trading below their intrinsic worth based on fundamentals", isCorrect: true },
-      { id: "c", text: "Only investing in technology companies", isCorrect: false },
-      { id: "d", text: "Timing the market by analyzing charts and patterns", isCorrect: false },
-    ],
-    explanation: "Value investors seek stocks priced below their true worth, buying 'a dollar for fifty cents' as Buffett describes.",
-  },
   // Lesson 8: Fundamental Analysis
   {
-    id: 8,
+    id: 6,
     type: "decision",
     category: "Analysis",
     lessonTopic: "Fundamental Analysis",
@@ -147,24 +117,9 @@ const quizQuestions: Question[] = [
     ],
     explanation: "Fundamental analysis examines a company's financial statements, profitability, debt levels, and cash generation to determine its true value.",
   },
-  // Lesson 9: Economic Moats
-  {
-    id: 9,
-    type: "multiple-choice",
-    category: "Competitive Analysis",
-    lessonTopic: "Economic Moats",
-    question: "What is an 'economic moat' in investing terminology?",
-    options: [
-      { id: "a", text: "A sustainable competitive advantage that protects a company from competitors", isCorrect: true },
-      { id: "b", text: "A physical barrier around a company's headquarters", isCorrect: false },
-      { id: "c", text: "A type of municipal bond investment", isCorrect: false },
-      { id: "d", text: "A government regulation that limits stock trading", isCorrect: false },
-    ],
-    explanation: "An economic moat (like strong brands, patents, or network effects) protects a company's profits from competition, like a castle's moat protects from invaders.",
-  },
   // Lesson 10: Portfolio Management
   {
-    id: 10,
+    id: 7,
     type: "scenario",
     category: "Portfolio Strategy",
     lessonTopic: "Portfolio Management",
@@ -177,39 +132,9 @@ const quizQuestions: Question[] = [
     ],
     explanation: "Rebalancing maintains your desired risk level and forces a 'sell high, buy low' discipline by trimming winners and adding to underweighted positions.",
   },
-  // Lesson 13: Technical Analysis
-  {
-    id: 11,
-    type: "multiple-choice",
-    category: "Technical Analysis",
-    lessonTopic: "Technical Analysis Fundamentals",
-    question: "Technical analysis primarily uses what type of data to make investment decisions?",
-    options: [
-      { id: "a", text: "Company earnings reports and balance sheets", isCorrect: false },
-      { id: "b", text: "Historical price movements, volume, and chart patterns", isCorrect: true },
-      { id: "c", text: "Economic reports and Federal Reserve statements only", isCorrect: false },
-      { id: "d", text: "Interviews with company management", isCorrect: false },
-    ],
-    explanation: "Technical analysts study price charts, trading volume, and patterns to predict future price movements, regardless of fundamental factors.",
-  },
-  // Lesson 14: Investment Psychology
-  {
-    id: 12,
-    type: "scenario",
-    category: "Behavioral Finance",
-    lessonTopic: "Investment Psychology",
-    question: "You bought a stock at $100. It dropped to $60, but you refuse to sell because you 'haven't lost money until you sell.' This thinking demonstrates which cognitive bias?",
-    options: [
-      { id: "a", text: "Loss aversion - the pain of losses feels stronger than equivalent gains", isCorrect: true },
-      { id: "b", text: "Confirmation bias - seeking information that supports your view", isCorrect: false },
-      { id: "c", text: "Recency bias - overweighting recent events", isCorrect: false },
-      { id: "d", text: "Optimism bias - believing good things will happen", isCorrect: false },
-    ],
-    explanation: "Loss aversion makes us hold losing positions too long, hoping to 'break even,' while the money could be better deployed elsewhere.",
-  },
   // Lesson 15: Options Trading
   {
-    id: 13,
+    id: 8,
     type: "multiple-choice",
     category: "Derivatives",
     lessonTopic: "Options Trading Fundamentals",
@@ -222,24 +147,9 @@ const quizQuestions: Question[] = [
     ],
     explanation: "A call option gives you the right (not obligation) to purchase shares at the strike price, which is profitable if the stock rises above that price.",
   },
-  // Lesson 16: ETFs and Index Funds
-  {
-    id: 14,
-    type: "decision",
-    category: "Investment Vehicles",
-    lessonTopic: "ETFs and Index Funds",
-    question: "An S&P 500 index fund offers exposure to 500 large US companies with an expense ratio of 0.03%. Why might this be preferable to picking individual stocks?",
-    options: [
-      { id: "a", text: "Index funds are guaranteed to never lose money", isCorrect: false },
-      { id: "b", text: "They pay higher dividends than any individual stock", isCorrect: false },
-      { id: "c", text: "Index funds are only available to professional investors", isCorrect: false },
-      { id: "d", text: "Instant diversification, low costs, and studies show most active managers underperform indexes", isCorrect: true },
-    ],
-    explanation: "Index funds provide broad diversification at minimal cost, and historically, most actively managed funds fail to beat their benchmark index.",
-  },
   // Lesson 17: Bonds and Fixed Income
   {
-    id: 15,
+    id: 9,
     type: "multiple-choice",
     category: "Fixed Income",
     lessonTopic: "Bonds and Fixed Income",
@@ -252,54 +162,9 @@ const quizQuestions: Question[] = [
     ],
     explanation: "Existing bonds with lower rates become less attractive when new bonds offer higher yields, so their prices must drop to be competitive.",
   },
-  // Lesson 18: Market Cycles
-  {
-    id: 16,
-    type: "multiple-choice",
-    category: "Market Dynamics",
-    lessonTopic: "Market Cycles and Timing",
-    question: "A 'bear market' is typically defined as:",
-    options: [
-      { id: "a", text: "Any single day the market goes down", isCorrect: false },
-      { id: "b", text: "When more people are buying than selling", isCorrect: false },
-      { id: "c", text: "A decline of 20% or more from recent highs", isCorrect: true },
-      { id: "d", text: "A market that only contains energy stocks", isCorrect: false },
-    ],
-    explanation: "A bear market represents a 20%+ decline, typically accompanied by widespread pessimism and economic concerns.",
-  },
-  // Lesson 20: Dividend Investing
-  {
-    id: 17,
-    type: "scenario",
-    category: "Income Investing",
-    lessonTopic: "Dividend Investing",
-    question: "A company has paid and increased its dividend every year for 25 years. It currently yields 3%. What is the main appeal for dividend growth investors?",
-    options: [
-      { id: "a", text: "The 3% yield is higher than any other investment can offer", isCorrect: false },
-      { id: "b", text: "Dividend stocks never decline in price", isCorrect: false },
-      { id: "c", text: "Growing dividends provide increasing income and often indicate company health", isCorrect: true },
-      { id: "d", text: "Dividends are tax-free in all countries", isCorrect: false },
-    ],
-    explanation: "Dividend growth investors value the rising income stream and the discipline/stability that long dividend histories often represent.",
-  },
-  // Lesson 21: Technical Indicators
-  {
-    id: 18,
-    type: "multiple-choice",
-    category: "Technical Analysis",
-    lessonTopic: "Technical Indicators",
-    question: "The RSI (Relative Strength Index) measures what aspect of a stock?",
-    options: [
-      { id: "a", text: "The company's revenue relative to competitors", isCorrect: false },
-      { id: "b", text: "The total market capitalization of a company", isCorrect: false },
-      { id: "c", text: "How strong the company's management team is", isCorrect: false },
-      { id: "d", text: "Whether a stock may be overbought or oversold based on recent price movements", isCorrect: true },
-    ],
-    explanation: "RSI ranges from 0-100, with readings above 70 suggesting overbought conditions and below 30 suggesting oversold conditions.",
-  },
   // Lesson 23: Margin and Leverage
   {
-    id: 19,
+    id: 10,
     type: "scenario",
     category: "Risk Management",
     lessonTopic: "Margin Trading and Leverage",
@@ -311,21 +176,6 @@ const quizQuestions: Question[] = [
       { id: "d", text: "0% - you can only lose what you borrowed", isCorrect: false },
     ],
     explanation: "With 2:1 leverage, a 25% stock decline ($5,000 loss on $20,000) wipes out 50% of your $10,000 invested capital. Leverage amplifies risk.",
-  },
-  // Lesson 25: Short Selling
-  {
-    id: 20,
-    type: "decision",
-    category: "Advanced Strategies",
-    lessonTopic: "Short Selling",
-    question: "When you 'short sell' a stock, you profit when:",
-    options: [
-      { id: "a", text: "The stock price increases above your entry point", isCorrect: false },
-      { id: "b", text: "The company pays a dividend", isCorrect: false },
-      { id: "c", text: "The stock price decreases below your entry point", isCorrect: true },
-      { id: "d", text: "You hold the stock for more than one year", isCorrect: false },
-    ],
-    explanation: "Short selling involves borrowing shares to sell them, hoping to buy them back cheaper later. You profit when the price falls.",
   },
 ];
 
@@ -348,11 +198,10 @@ export const PlacementQuiz = ({ onComplete, isRetake = false }: PlacementQuizPro
   const progress = ((currentQuestion + 1) / quizQuestions.length) * 100;
 
   const calculatePlacement = (finalScore: number): number => {
-    // Score out of 20, placement from 1-25
-    // Perfect score (20) = Lesson 25
-    // Score mapping: each point roughly equals 1.25 lessons
-    // 0 = Lesson 1, 20 = Lesson 25
-    const placement = Math.max(1, Math.min(25, Math.ceil((finalScore / 20) * 24) + 1));
+    // Score out of 10, placement from 1-25
+    // Perfect score (10) = Lesson 25
+    // 0 = Lesson 1, 10 = Lesson 25
+    const placement = Math.max(1, Math.min(25, Math.ceil((finalScore / 10) * 24) + 1));
     return placement;
   };
 
@@ -426,13 +275,13 @@ export const PlacementQuiz = ({ onComplete, isRetake = false }: PlacementQuizPro
               <div className="grid grid-cols-2 gap-4 text-left">
                 <div className="p-4 rounded-lg bg-muted/50">
                   <Target className="w-5 h-5 text-primary mb-2" />
-                  <p className="font-semibold">20 Questions</p>
+                  <p className="font-semibold">10 Questions</p>
                   <p className="text-sm text-muted-foreground">Covering key investment topics</p>
                 </div>
                 <div className="p-4 rounded-lg bg-muted/50">
                   <Trophy className="w-5 h-5 text-amber-500 mb-2" />
                   <p className="font-semibold">Earn Your Placement</p>
-                  <p className="text-sm text-muted-foreground">Score 20/20 for Lesson 25</p>
+                  <p className="text-sm text-muted-foreground">Score 10/10 for Lesson 25</p>
                 </div>
               </div>
 
@@ -464,7 +313,7 @@ export const PlacementQuiz = ({ onComplete, isRetake = false }: PlacementQuizPro
 
   if (quizComplete) {
     const placement = calculatePlacement(score);
-    const percentage = (score / 20) * 100;
+    const percentage = (score / 10) * 100;
 
     return (
       <div className="min-h-screen bg-gradient-to-b from-background via-background to-primary/5 flex items-center justify-center p-6">
@@ -491,7 +340,7 @@ export const PlacementQuiz = ({ onComplete, isRetake = false }: PlacementQuizPro
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="p-6 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 border border-primary/20">
-                  <p className="text-4xl font-bold text-primary">{score}/20</p>
+                  <p className="text-4xl font-bold text-primary">{score}/10</p>
                   <p className="text-sm text-muted-foreground">Questions Correct</p>
                 </div>
                 <div className="p-6 rounded-xl bg-gradient-to-br from-amber-500/20 to-amber-500/5 border border-amber-500/20">
@@ -508,7 +357,7 @@ export const PlacementQuiz = ({ onComplete, isRetake = false }: PlacementQuizPro
                 <Progress value={percentage} className="h-3" />
               </div>
 
-              {score === 20 && (
+              {score === 10 && (
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}

@@ -10,6 +10,7 @@ import Onboarding from "./pages/Onboarding";
 import NotFound from "./pages/NotFound";
 import { AuthProvider, useAuth } from "@/hooks/useAuth";
 import { useOnboarding } from "@/hooks/useOnboarding";
+import { useEducatorRole } from "@/features/educator/hooks/useEducatorRole";
 
 const RootRedirect = () => {
   const { user, loading } = useAuth();
@@ -20,13 +21,19 @@ const RootRedirect = () => {
 
 const OnboardingCheck = ({ children }: { children: React.ReactNode }) => {
   const { hasCompletedOnboarding, isLoading } = useOnboarding();
+  const { hasEducatorAccess, isLoading: roleLoading } = useEducatorRole();
   
-  if (isLoading) {
+  if (isLoading || roleLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin" />
       </div>
     );
+  }
+  
+  // Educators skip the placement quiz entirely
+  if (hasEducatorAccess) {
+    return <>{children}</>;
   }
   
   if (!hasCompletedOnboarding) {
@@ -39,13 +46,19 @@ const OnboardingCheck = ({ children }: { children: React.ReactNode }) => {
 // Redirect away from onboarding if already completed
 const OnboardingRedirect = ({ children }: { children: React.ReactNode }) => {
   const { hasCompletedOnboarding, isLoading } = useOnboarding();
+  const { hasEducatorAccess, isLoading: roleLoading } = useEducatorRole();
   
-  if (isLoading) {
+  if (isLoading || roleLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin" />
       </div>
     );
+  }
+  
+  // Educators should never see the quiz
+  if (hasEducatorAccess) {
+    return <Navigate to="/app" replace />;
   }
   
   if (hasCompletedOnboarding) {
