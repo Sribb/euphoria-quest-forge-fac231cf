@@ -96,6 +96,13 @@ export const AdaptiveLessonChallenge = ({ lessonId, onComplete, onBack }: Adapti
       },
     ]);
 
+    // Award XP immediately for correct answer
+    if (isCorrect) {
+      const questionXP = currentQuestion.difficulty === 'hard' ? 25 : currentQuestion.difficulty === 'medium' ? 15 : 10;
+      addXP(questionXP);
+      toast.success(`+${questionXP} XP! 🎯`);
+    }
+
     // Store performance in database
     try {
       await supabase.from('lesson_question_performance').insert({
