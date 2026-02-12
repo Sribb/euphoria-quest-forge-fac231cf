@@ -10,6 +10,7 @@ interface AIInsight {
   title: string;
   description: string;
   navigateTo: string;
+  gradient: string;
 }
 
 interface AIInsightsPanelProps {
@@ -38,7 +39,8 @@ export const AIInsightsPanel = ({ onNavigate }: AIInsightsPanelProps) => {
           icon: <Award className="w-5 h-5" />,
           title: "Learning",
           description: `${completedCount}/${totalCount} lessons (${completionRate.toFixed(0)}%)`,
-          navigateTo: "learn"
+          navigateTo: "learn",
+          gradient: "from-primary/10 to-accent/10"
         });
       }
 
@@ -50,7 +52,8 @@ export const AIInsightsPanel = ({ onNavigate }: AIInsightsPanelProps) => {
           icon: <TrendingUp className="w-5 h-5" />,
           title: "Portfolio",
           description: `${portfolioReturn >= 0 ? '+' : ''}${portfolioReturn.toFixed(2)}% return`,
-          navigateTo: "trade"
+          navigateTo: "trade",
+          gradient: "from-success/10 to-primary/5"
         });
       }
 
@@ -61,7 +64,8 @@ export const AIInsightsPanel = ({ onNavigate }: AIInsightsPanelProps) => {
           icon: <Zap className="w-5 h-5" />,
           title: "Streak",
           description: `${streak.current_streak} day${streak.current_streak > 1 ? 's' : ''} active`,
-          navigateTo: "learn"
+          navigateTo: "learn",
+          gradient: "from-warning/10 to-warning/5"
         });
       }
 
@@ -73,7 +77,8 @@ export const AIInsightsPanel = ({ onNavigate }: AIInsightsPanelProps) => {
           icon: <Sparkles className="w-5 h-5" />,
           title: "Games",
           description: `Avg score: ${avgScore.toFixed(0)}`,
-          navigateTo: "games"
+          navigateTo: "games",
+          gradient: "from-accent/10 to-primary/5"
         });
       }
 
@@ -85,7 +90,8 @@ export const AIInsightsPanel = ({ onNavigate }: AIInsightsPanelProps) => {
           icon: <Target className="w-5 h-5" />,
           title: "Trades",
           description: `${filledTrades}/${recentTrades.length} executed`,
-          navigateTo: "trade"
+          navigateTo: "trade",
+          gradient: "from-primary/10 to-success/5"
         });
       }
 
@@ -95,7 +101,8 @@ export const AIInsightsPanel = ({ onNavigate }: AIInsightsPanelProps) => {
           icon: <Sparkles className="w-5 h-5" />,
           title: "Welcome",
           description: "Start exploring to see insights!",
-          navigateTo: "learn"
+          navigateTo: "learn",
+          gradient: "from-primary/10 to-accent/10"
         });
       }
 
@@ -106,9 +113,11 @@ export const AIInsightsPanel = ({ onNavigate }: AIInsightsPanelProps) => {
 
   return (
     <div>
-      <div className="flex items-center gap-2 mb-3">
-        <Brain className="w-5 h-5 text-primary" />
-        <h3 className="font-semibold text-foreground">AI Insights</h3>
+      <div className="flex items-center gap-2 mb-4">
+        <div className="w-8 h-8 rounded-2xl bg-primary/10 flex items-center justify-center">
+          <Brain className="w-4 h-4 text-primary" />
+        </div>
+        <h3 className="font-bold text-foreground">Insights</h3>
       </div>
       <div className="flex gap-3 overflow-x-auto pb-2 -mx-1 px-1 scrollbar-hide">
         {insights.map((insight) => (
@@ -116,15 +125,16 @@ export const AIInsightsPanel = ({ onNavigate }: AIInsightsPanelProps) => {
             key={insight.id}
             onClick={() => onNavigate(insight.navigateTo)}
             className={cn(
-              "flex items-center gap-3 px-4 py-3 rounded-xl border border-border/50",
-              "bg-card/60 backdrop-blur-sm hover:border-primary/30 hover:shadow-sm",
+              "flex items-center gap-3 px-5 py-3.5 rounded-2xl border border-border/30",
+              "bg-gradient-to-br", insight.gradient,
+              "hover:shadow-sm hover:scale-[1.02]",
               "transition-all duration-200 whitespace-nowrap shrink-0"
             )}
           >
             <div className="text-primary">{insight.icon}</div>
             <div className="text-left">
-              <div className="text-xs font-medium text-muted-foreground">{insight.title}</div>
-              <div className="text-sm font-semibold text-foreground">{insight.description}</div>
+              <div className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide">{insight.title}</div>
+              <div className="text-sm font-bold text-foreground">{insight.description}</div>
             </div>
           </button>
         ))}

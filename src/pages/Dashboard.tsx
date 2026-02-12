@@ -52,10 +52,10 @@ const Dashboard = ({ onNavigate, onStockSearch }: DashboardProps) => {
 
   const stagger = {
     hidden: {},
-    show: { transition: { staggerChildren: 0.08 } },
+    show: { transition: { staggerChildren: 0.1 } },
   };
   const fadeUp = {
-    hidden: { opacity: 0, y: 16 },
+    hidden: { opacity: 0, y: 20 },
     show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] as const } },
   };
 
@@ -64,7 +64,7 @@ const Dashboard = ({ onNavigate, onStockSearch }: DashboardProps) => {
       <DashboardHeader />
 
       <motion.div
-        className="px-4 md:px-8 py-6 md:py-8 space-y-6"
+        className="px-4 md:px-8 pb-8 space-y-6"
         variants={stagger}
         initial="hidden"
         animate="show"
@@ -81,17 +81,17 @@ const Dashboard = ({ onNavigate, onStockSearch }: DashboardProps) => {
           <AIInsightsPanel onNavigate={onNavigate} />
         </motion.div>
 
-        {/* Economic Section with better tab styling */}
+        {/* Market Intel */}
         <motion.div variants={fadeUp}>
           <Tabs defaultValue="calendar" className="w-full">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-foreground">Market Intel</h3>
-              <TabsList className="bg-muted/50 backdrop-blur-sm">
-                <TabsTrigger value="calendar" className="gap-2 text-xs">
+              <h3 className="text-lg font-bold text-foreground">Market Intel</h3>
+              <TabsList className="bg-muted/50 rounded-2xl p-1">
+                <TabsTrigger value="calendar" className="gap-2 text-xs rounded-xl">
                   <CalendarDays className="w-3.5 h-3.5" />
                   Calendar
                 </TabsTrigger>
-                <TabsTrigger value="headlines" className="gap-2 text-xs">
+                <TabsTrigger value="headlines" className="gap-2 text-xs rounded-xl">
                   <Newspaper className="w-3.5 h-3.5" />
                   Headlines
                 </TabsTrigger>
