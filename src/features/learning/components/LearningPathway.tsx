@@ -108,113 +108,131 @@ export const LearningPathway = ({
             const isHovered = hovered === lesson.id;
             const isChallengeLevel = (index + 1) % 10 === 0;
 
-            // Challenge level node
-            if (isChallengeLevel) {
-              return (
-                <motion.div
-                  key={lesson.id}
-                  initial={{ opacity: 0, y: 20, x }}
-                  animate={{ opacity: 1, y: 0, x }}
-                  transition={{ delay: index * 0.03, duration: 0.3 }}
-                  className="relative flex flex-col items-center my-4"
-                >
-                  {isHovered && !lesson.is_locked && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 6, scale: 0.95 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      className="absolute -top-[76px] bg-card border border-border rounded-2xl px-4 py-2.5 shadow-lg z-20 min-w-[200px] text-center pointer-events-none"
-                    >
-                      <p className="text-sm font-black text-foreground">⚡ {lesson.title}</p>
-                      <p className="text-xs text-muted-foreground mt-0.5">Challenge Level</p>
-                      <div className="absolute left-1/2 -translate-x-1/2 -bottom-1.5 w-3 h-3 bg-card border-b border-r border-border rotate-45" />
-                    </motion.div>
-                  )}
+            // Section divider every 5 lessons (but not on challenge levels)
+            const showDivider = index > 0 && index % 5 === 0 && !isChallengeLevel;
+            const sectionNumber = Math.floor(index / 5) + 1;
+            const sectionLabels = ["Foundations", "Building Blocks", "Core Skills", "Advanced", "Mastery", "Expert"];
 
-                  <button
-                    onClick={() => handleNodeClick(lesson)}
-                    onMouseEnter={() => setHovered(lesson.id)}
-                    onMouseLeave={() => setHovered(null)}
-                    disabled={lesson.is_locked}
-                    className={cn(
-                      "relative w-24 h-24 rounded-full flex items-center justify-center transition-all duration-200 z-10",
-                      lesson.completed
-                        ? "bg-gradient-to-br from-warning to-warning/70 shadow-lg hover:scale-110 cursor-pointer border-4 border-warning/50"
-                        : lesson.is_locked
-                        ? "bg-muted border-4 border-border cursor-not-allowed opacity-40"
-                        : isNextLesson
-                        ? "bg-warning/20 border-4 border-warning cursor-pointer hover:scale-110 ring-4 ring-warning/20"
-                        : "bg-card border-4 border-warning/30 hover:border-warning/60 hover:scale-110 cursor-pointer"
-                    )}
-                  >
-                    {lesson.completed ? (
-                      <Trophy className="w-10 h-10 text-warning-foreground" />
-                    ) : lesson.is_locked ? (
-                      <Lock className="w-8 h-8 text-muted-foreground" />
-                    ) : (
-                      <Zap className="w-10 h-10 text-warning" />
-                    )}
-                  </button>
-
-                  <span className="mt-2 text-xs font-black text-warning uppercase tracking-widest">
-                    Challenge
-                  </span>
-                </motion.div>
-              );
-            }
-
-            // Regular lesson node
             return (
-              <motion.div
-                key={lesson.id}
-                initial={{ opacity: 0, y: 20, x }}
-                animate={{ opacity: 1, y: 0, x }}
-                transition={{ delay: index * 0.03, duration: 0.3 }}
-                className="relative flex flex-col items-center"
-              >
-                {isHovered && !lesson.is_locked && (
+              <div key={lesson.id} className="flex flex-col items-center w-full">
+                {showDivider && (
                   <motion.div
-                    initial={{ opacity: 0, y: 6, scale: 0.95 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    className="absolute -top-[72px] bg-card border border-border rounded-2xl px-4 py-2.5 shadow-lg z-20 min-w-[180px] text-center pointer-events-none"
+                    initial={{ opacity: 0, scaleX: 0 }}
+                    animate={{ opacity: 1, scaleX: 1 }}
+                    transition={{ delay: index * 0.03, duration: 0.4 }}
+                    className="flex items-center gap-4 w-full max-w-xs mb-6 mt-2"
                   >
-                    <p className="text-sm font-black text-foreground line-clamp-2">{lesson.title}</p>
-                    <p className="text-xs text-muted-foreground mt-0.5">{lesson.duration} · {lesson.difficulty}</p>
-                    <div className="absolute left-1/2 -translate-x-1/2 -bottom-1.5 w-3 h-3 bg-card border-b border-r border-border rotate-45" />
+                    <div className="flex-1 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
+                    <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-[0.2em]">
+                      {sectionLabels[sectionNumber - 1] || `Section ${sectionNumber}`}
+                    </span>
+                    <div className="flex-1 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
                   </motion.div>
                 )}
 
-                <button
-                  onClick={() => handleNodeClick(lesson)}
-                  onMouseEnter={() => setHovered(lesson.id)}
-                  onMouseLeave={() => setHovered(null)}
-                  disabled={lesson.is_locked}
-                  className={cn(
-                    "relative w-[72px] h-[72px] rounded-full flex items-center justify-center transition-all duration-200 z-10",
-                    lesson.completed &&
-                      "bg-primary shadow-glow-soft hover:scale-110 cursor-pointer border-[3px] border-primary/60",
-                    lesson.is_locked &&
-                      "bg-muted border-[3px] border-border cursor-not-allowed opacity-40",
-                    isNextLesson &&
-                      "bg-primary/20 border-[3px] border-primary cursor-pointer hover:scale-110 ring-4 ring-primary/20",
-                    !lesson.completed && !lesson.is_locked && !isNextLesson &&
-                      "bg-card border-[3px] border-border hover:border-primary/50 hover:scale-110 cursor-pointer"
-                  )}
-                >
-                  {lesson.completed ? (
-                    <CheckCircle2 className="w-8 h-8 text-primary-foreground" strokeWidth={2.5} />
-                  ) : lesson.is_locked ? (
-                    <Lock className="w-6 h-6 text-muted-foreground" />
-                  ) : (
-                    <span className="text-xl font-black text-foreground">{lesson.order_index}</span>
-                  )}
-                </button>
+                {/* Challenge level node */}
+                {isChallengeLevel ? (
+                  <motion.div
+                    initial={{ opacity: 0, y: 20, x }}
+                    animate={{ opacity: 1, y: 0, x }}
+                    transition={{ delay: index * 0.03, duration: 0.3 }}
+                    className="relative flex flex-col items-center my-4"
+                  >
+                    {isHovered && !lesson.is_locked && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 6, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        className="absolute -top-[76px] bg-card border border-border rounded-2xl px-4 py-2.5 shadow-lg z-20 min-w-[200px] text-center pointer-events-none"
+                      >
+                        <p className="text-sm font-black text-foreground">⚡ {lesson.title}</p>
+                        <p className="text-xs text-muted-foreground mt-0.5">Challenge Level</p>
+                        <div className="absolute left-1/2 -translate-x-1/2 -bottom-1.5 w-3 h-3 bg-card border-b border-r border-border rotate-45" />
+                      </motion.div>
+                    )}
 
-                <div className="flex gap-0.5 mt-1.5 h-4">
-                  {isNextLesson ? (
-                    <span className="text-[10px] text-primary font-black uppercase tracking-widest">Start</span>
-                  ) : null}
-                </div>
-              </motion.div>
+                    <button
+                      onClick={() => handleNodeClick(lesson)}
+                      onMouseEnter={() => setHovered(lesson.id)}
+                      onMouseLeave={() => setHovered(null)}
+                      disabled={lesson.is_locked}
+                      className={cn(
+                        "relative w-24 h-24 rounded-full flex items-center justify-center transition-all duration-200 z-10",
+                        lesson.completed
+                          ? "bg-gradient-to-br from-warning to-warning/70 shadow-lg shadow-warning/20 hover:scale-110 hover:-translate-y-1 cursor-pointer border-4 border-warning/50"
+                          : lesson.is_locked
+                          ? "bg-muted border-4 border-border cursor-not-allowed opacity-40"
+                          : isNextLesson
+                          ? "bg-warning/20 border-4 border-warning cursor-pointer hover:scale-110 hover:-translate-y-1 ring-4 ring-warning/20"
+                          : "bg-card border-4 border-warning/30 hover:border-warning/60 hover:scale-110 hover:-translate-y-1 cursor-pointer"
+                      )}
+                    >
+                      {lesson.completed ? (
+                        <Trophy className="w-10 h-10 text-warning-foreground" />
+                      ) : lesson.is_locked ? (
+                        <Lock className="w-8 h-8 text-muted-foreground" />
+                      ) : (
+                        <Zap className="w-10 h-10 text-warning" />
+                      )}
+                    </button>
+
+                    <span className="mt-2 text-xs font-black text-warning uppercase tracking-widest">
+                      Challenge
+                    </span>
+                  </motion.div>
+                ) : (
+                  /* Regular lesson node */
+                  <motion.div
+                    initial={{ opacity: 0, y: 20, x }}
+                    animate={{ opacity: 1, y: 0, x }}
+                    transition={{ delay: index * 0.03, duration: 0.3 }}
+                    className="relative flex flex-col items-center"
+                  >
+                    {isHovered && !lesson.is_locked && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 6, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        className="absolute -top-[72px] bg-card border border-border rounded-2xl px-4 py-2.5 shadow-lg z-20 min-w-[180px] text-center pointer-events-none"
+                      >
+                        <p className="text-sm font-black text-foreground line-clamp-2">{lesson.title}</p>
+                        <p className="text-xs text-muted-foreground mt-0.5">{lesson.duration} · {lesson.difficulty}</p>
+                        <div className="absolute left-1/2 -translate-x-1/2 -bottom-1.5 w-3 h-3 bg-card border-b border-r border-border rotate-45" />
+                      </motion.div>
+                    )}
+
+                    <button
+                      onClick={() => handleNodeClick(lesson)}
+                      onMouseEnter={() => setHovered(lesson.id)}
+                      onMouseLeave={() => setHovered(null)}
+                      disabled={lesson.is_locked}
+                      className={cn(
+                        "relative w-[72px] h-[72px] rounded-full flex items-center justify-center transition-all duration-200 z-10",
+                        lesson.completed &&
+                          "bg-primary shadow-lg shadow-primary/25 hover:scale-110 hover:-translate-y-1 cursor-pointer border-[3px] border-primary/60",
+                        lesson.is_locked &&
+                          "bg-muted border-[3px] border-border cursor-not-allowed opacity-40",
+                        isNextLesson &&
+                          "bg-primary/20 border-[3px] border-primary cursor-pointer hover:scale-110 hover:-translate-y-1 ring-4 ring-primary/20 shadow-md shadow-primary/15",
+                        !lesson.completed && !lesson.is_locked && !isNextLesson &&
+                          "bg-card border-[3px] border-border/80 shadow-md hover:border-primary/50 hover:scale-110 hover:-translate-y-1 cursor-pointer"
+                      )}
+                    >
+                      {lesson.completed ? (
+                        <CheckCircle2 className="w-8 h-8 text-primary-foreground" strokeWidth={2.5} />
+                      ) : lesson.is_locked ? (
+                        <Lock className="w-6 h-6 text-muted-foreground" />
+                      ) : (
+                        <span className="text-xl font-black text-foreground">{lesson.order_index}</span>
+                      )}
+                    </button>
+
+                    <div className="flex gap-0.5 mt-1.5 h-4">
+                      {isNextLesson ? (
+                        <span className="text-[10px] text-primary font-black uppercase tracking-widest">Start</span>
+                      ) : null}
+                    </div>
+                  </motion.div>
+                )}
+              </div>
             );
           })}
 
