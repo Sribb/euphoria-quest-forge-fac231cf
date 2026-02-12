@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { ChallengeModal } from "./ChallengeModal";
-import { Trophy, Lock, Star, ArrowLeft, CheckCircle2, Zap } from "lucide-react";
+import { Trophy, Lock, ArrowLeft, CheckCircle2, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
@@ -15,7 +15,6 @@ interface Lesson {
   is_locked: boolean;
   completed: boolean;
   progress: number;
-  stars?: number;
   skippedByPlacement?: boolean;
 }
 
@@ -107,7 +106,6 @@ export const LearningPathway = ({
               index === lessons.findIndex((l) => !l.is_locked && !l.completed);
             const x = getX(index);
             const isHovered = hovered === lesson.id;
-            const stars = lesson.stars || (lesson.completed ? 3 : 0);
             const isChallengeLevel = (index + 1) % 10 === 0;
 
             // Challenge level node
@@ -160,13 +158,6 @@ export const LearningPathway = ({
                   <span className="mt-2 text-xs font-black text-warning uppercase tracking-widest">
                     Challenge
                   </span>
-                  {lesson.completed && (
-                    <div className="flex gap-0.5 mt-1">
-                      {[...Array(3)].map((_, i) => (
-                        <Star key={i} className={cn("w-4 h-4", i < stars ? "text-warning fill-warning" : "text-muted-foreground/20")} />
-                      ))}
-                    </div>
-                  )}
                 </motion.div>
               );
             }
@@ -219,11 +210,7 @@ export const LearningPathway = ({
                 </button>
 
                 <div className="flex gap-0.5 mt-1.5 h-4">
-                  {lesson.completed ? (
-                    [...Array(3)].map((_, i) => (
-                      <Star key={i} className={cn("w-4 h-4", i < stars ? "text-warning fill-warning" : "text-muted-foreground/20")} />
-                    ))
-                  ) : isNextLesson ? (
+                  {isNextLesson ? (
                     <span className="text-[10px] text-primary font-black uppercase tracking-widest">Start</span>
                   ) : null}
                 </div>
@@ -254,7 +241,7 @@ export const LearningPathway = ({
           difficulty={selectedLesson.difficulty}
           orderIndex={selectedLesson.order_index}
           isCompleted={selectedLesson.completed}
-          stars={selectedLesson.stars || 0}
+          stars={0}
         />
       )}
     </div>

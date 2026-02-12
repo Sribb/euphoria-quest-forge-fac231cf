@@ -1,4 +1,4 @@
-import { X, Play, Star, Clock, BarChart } from "lucide-react";
+import { X, Play, Clock, BarChart, CheckCircle2 } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -76,17 +76,10 @@ export const ChallengeModal = ({
                   {duration}
                 </Badge>
                 {isCompleted && (
-                  <div className="flex items-center gap-1 bg-yellow-500/10 px-2 py-1 rounded-full border border-yellow-500/20">
-                    {[1, 2, 3].map((i) => (
-                      <Star
-                        key={i}
-                        className={cn(
-                          "w-3 h-3",
-                          i <= stars ? "text-yellow-500 fill-yellow-500" : "text-muted"
-                        )}
-                      />
-                    ))}
-                  </div>
+                  <Badge variant="outline" className="text-xs text-primary border-primary/20 bg-primary/10">
+                    <CheckCircle2 className="w-3 h-3 mr-1" />
+                    Completed
+                  </Badge>
                 )}
               </div>
             </div>
@@ -140,7 +133,7 @@ export const ChallengeModal = ({
 
           {isCompleted && (
             <p className="text-xs text-center text-muted-foreground mt-4">
-              💡 Replay this challenge to improve your star rating and master the concepts
+              💡 Replay to reinforce your understanding
             </p>
           )}
         </div>

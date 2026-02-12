@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { X, BookOpen, MessageCircle, Lightbulb, Trophy, LineChart } from "lucide-react";
+import { X, BookOpen, Trophy, LineChart } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
@@ -13,8 +13,7 @@ import { AdaptiveLessonChallenge } from "./AdaptiveLessonChallenge";
 import { LessonMasteryDashboard } from "./LessonMasteryDashboard";
 import { InteractiveLessonSimulation } from "./InteractiveLessonSimulation";
 import { InteractiveLessonRouter } from "./InteractiveLessonRouter";
-import { Lesson1ReflectionSlide } from "./lessons/Lesson1ReflectionSlide";
-import { Lesson1InsightSlide } from "./lessons/Lesson1InsightSlide";
+import { Lesson1Beginner } from "./lessons/Lesson1Beginner";
 import { Lesson2RiskRewardSlides } from "./lessons/Lesson2RiskRewardSlides";
 import { Lesson3CompoundInterestSlides } from "./lessons/Lesson3CompoundInterestSlides";
 import { Lesson4AssetMixSlides } from "./lessons/Lesson4AssetMixSlides";
@@ -45,16 +44,14 @@ interface ThreePhaseLessonViewerProps {
   onClose: () => void;
 }
 
-// Lesson 1 uses special phases: experience → reflection → insight
-// Lesson 2 uses its own 4-slide structure internally
+// Lesson 1 now uses the beginner-friendly template
 type Phase = 'learn' | 'challenge' | 'feedback';
-type Lesson1Phase = 'experience' | 'reflection' | 'insight';
 
 export const ThreePhaseLessonViewer = ({ lessonId, onClose }: ThreePhaseLessonViewerProps) => {
   const { user } = useAuth();
   const [lesson, setLesson] = useState<any>(null);
   const [phase, setPhase] = useState<Phase>('learn');
-  const [lesson1Phase, setLesson1Phase] = useState<Lesson1Phase>('experience');
+  
   const [currentSection, setCurrentSection] = useState(0);
   const [learnProgress, setLearnProgress] = useState(0);
   
@@ -228,31 +225,8 @@ export const ThreePhaseLessonViewer = ({ lessonId, onClose }: ThreePhaseLessonVi
         </div>
 
         {/* Phase Indicator - Different for Lesson 1, hidden for Lesson 2 (has internal nav) */}
-        {lesson.order_index === 1 ? (
-          <div className="flex items-center gap-4 mb-6">
-            <PhaseTab 
-              icon={<BookOpen className="w-4 h-4" />}
-              label="Experience"
-              active={lesson1Phase === 'experience'}
-              completed={lesson1Phase !== 'experience'}
-            />
-            <div className="flex-1 h-px bg-border" />
-            <PhaseTab 
-              icon={<MessageCircle className="w-4 h-4" />}
-              label="Reflection"
-              active={lesson1Phase === 'reflection'}
-              completed={lesson1Phase === 'insight'}
-            />
-            <div className="flex-1 h-px bg-border" />
-            <PhaseTab 
-              icon={<Lightbulb className="w-4 h-4" />}
-              label="Insight"
-              active={lesson1Phase === 'insight'}
-              completed={false}
-            />
-          </div>
-        ) : lesson.order_index >= 2 && lesson.order_index <= 25 ? (
-          // Lessons 2-25 have internal slide navigation, no external phase tabs needed
+        {lesson.order_index >= 1 && lesson.order_index <= 25 ? (
+          // Lessons 1-25 have internal slide navigation, no external phase tabs needed
           null
         ) : (
           <div className="flex items-center gap-4 mb-6">
@@ -281,49 +255,17 @@ export const ThreePhaseLessonViewer = ({ lessonId, onClose }: ThreePhaseLessonVi
 
         {/* Content */}
         <div className="max-w-7xl mx-auto">
-          {/* Special 3-phase flow for Lesson 1 */}
+          {/* Lesson 1: Beginner-friendly slide-based lesson */}
           {lesson.order_index === 1 ? (
-            <>
-              {/* Phase 1: Experience */}
-              {lesson1Phase === 'experience' && (
-                <div className="animate-fade-in">
-                  <InteractiveLessonRouter lessonId="1" />
-                  <div className="flex justify-center mt-8">
-                    <Button
-                      onClick={() => {
-                        setLesson1Phase('reflection');
-                      }}
-                      className="bg-gradient-primary"
-                      size="lg"
-                    >
-                      Continue to Reflection
-                    </Button>
-                  </div>
-                </div>
-              )}
-
-              {/* Phase 2: Reflection (Animated) */}
-              {lesson1Phase === 'reflection' && (
-                <div className="animate-fade-in">
-                  <Lesson1ReflectionSlide 
-                    onComplete={() => setLesson1Phase('insight')} 
-                  />
-                </div>
-              )}
-
-              {/* Phase 3: Insight (Animated) */}
-              {lesson1Phase === 'insight' && (
-                <div className="animate-fade-in">
-                  <Lesson1InsightSlide 
-                    onComplete={() => {
-                      updateProgress(100, true);
-                      onClose();
-                      toast.success("Lesson 1 complete!");
-                    }} 
-                  />
-                </div>
-              )}
-            </>
+            <div className="animate-fade-in">
+              <Lesson1Beginner
+                onComplete={() => {
+                  updateProgress(100, true);
+                  onClose();
+                  toast.success("Lesson 1 complete! 🎉");
+                }}
+              />
+            </div>
           ) : lesson.order_index === 2 ? (
             // Special 4-slide flow for Lesson 2 (Risk vs Reward)
             <div className="animate-fade-in">
