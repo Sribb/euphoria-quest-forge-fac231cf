@@ -11,6 +11,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { motion } from "framer-motion";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { CalendarDays, Newspaper } from "lucide-react";
 
 interface DashboardProps {
   onNavigate: (tab: string) => void;
@@ -51,11 +52,11 @@ const Dashboard = ({ onNavigate, onStockSearch }: DashboardProps) => {
 
   const stagger = {
     hidden: {},
-    show: { transition: { staggerChildren: 0.1 } },
+    show: { transition: { staggerChildren: 0.08 } },
   };
   const fadeUp = {
     hidden: { opacity: 0, y: 16 },
-    show: { opacity: 1, y: 0, transition: { duration: 0.4 } },
+    show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] as const } },
   };
 
   return (
@@ -63,7 +64,7 @@ const Dashboard = ({ onNavigate, onStockSearch }: DashboardProps) => {
       <DashboardHeader />
 
       <motion.div
-        className="px-4 md:px-8 py-5 md:py-8 space-y-6"
+        className="px-4 md:px-8 py-6 md:py-8 space-y-6"
         variants={stagger}
         initial="hidden"
         animate="show"
@@ -80,13 +81,22 @@ const Dashboard = ({ onNavigate, onStockSearch }: DashboardProps) => {
           <AIInsightsPanel onNavigate={onNavigate} />
         </motion.div>
 
-        {/* Combined Economic Section */}
+        {/* Economic Section with better tab styling */}
         <motion.div variants={fadeUp}>
           <Tabs defaultValue="calendar" className="w-full">
-            <TabsList className="mb-4">
-              <TabsTrigger value="calendar">Economic Calendar</TabsTrigger>
-              <TabsTrigger value="headlines">Live Headlines</TabsTrigger>
-            </TabsList>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-foreground">Market Intel</h3>
+              <TabsList className="bg-muted/50 backdrop-blur-sm">
+                <TabsTrigger value="calendar" className="gap-2 text-xs">
+                  <CalendarDays className="w-3.5 h-3.5" />
+                  Calendar
+                </TabsTrigger>
+                <TabsTrigger value="headlines" className="gap-2 text-xs">
+                  <Newspaper className="w-3.5 h-3.5" />
+                  Headlines
+                </TabsTrigger>
+              </TabsList>
+            </div>
             <TabsContent value="calendar">
               <EconomicCalendarNative />
             </TabsContent>
