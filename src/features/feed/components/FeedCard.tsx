@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  Lightbulb, HelpCircle, BookOpen, Zap, CheckCircle, 
-  XCircle, ChevronRight, Star, Trophy, Clock
+import {
+  Lightbulb, HelpCircle, BookOpen, Zap, CheckCircle,
+  XCircle, Trophy, Clock, TrendingUp, Sparkles, Heart,
+  Share2, MessageCircle, ChevronUp
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -28,33 +29,55 @@ interface FeedCardProps {
   isActive: boolean;
 }
 
-const typeConfig: Record<CardType, { icon: typeof Lightbulb; label: string; accent: string }> = {
-  concept: { icon: Lightbulb, label: "Concept", accent: "from-primary to-accent" },
-  quiz: { icon: HelpCircle, label: "Quick Quiz", accent: "from-emerald-500 to-teal-500" },
-  "case-study": { icon: BookOpen, label: "Case Study", accent: "from-blue-500 to-indigo-500" },
-  simulation: { icon: Zap, label: "Simulation", accent: "from-orange-500 to-amber-500" },
-  challenge: { icon: Trophy, label: "Challenge", accent: "from-yellow-500 to-orange-500" },
+const visualThemes: Record<CardType, { emoji: string; bg: string; overlay: string }> = {
+  concept: {
+    emoji: "💡",
+    bg: "from-violet-600 via-purple-700 to-indigo-900",
+    overlay: "from-black/70 via-black/30 to-transparent",
+  },
+  quiz: {
+    emoji: "🧠",
+    bg: "from-emerald-600 via-teal-700 to-cyan-900",
+    overlay: "from-black/70 via-black/30 to-transparent",
+  },
+  "case-study": {
+    emoji: "📊",
+    bg: "from-blue-600 via-indigo-700 to-purple-900",
+    overlay: "from-black/70 via-black/30 to-transparent",
+  },
+  simulation: {
+    emoji: "⚡",
+    bg: "from-orange-500 via-red-600 to-pink-800",
+    overlay: "from-black/70 via-black/30 to-transparent",
+  },
+  challenge: {
+    emoji: "🏆",
+    bg: "from-amber-500 via-yellow-600 to-orange-800",
+    overlay: "from-black/70 via-black/30 to-transparent",
+  },
 };
 
-const difficultyColors = {
-  beginner: "bg-success/20 text-success",
-  intermediate: "bg-warning/20 text-warning",
-  advanced: "bg-destructive/20 text-destructive",
+const typeLabels: Record<CardType, string> = {
+  concept: "LEARN",
+  quiz: "QUIZ",
+  "case-study": "CASE STUDY",
+  simulation: "SCENARIO",
+  challenge: "CHALLENGE",
 };
 
 export const FeedCard = ({ card, onComplete, isActive }: FeedCardProps) => {
   const [selected, setSelected] = useState<number | null>(null);
   const [revealed, setRevealed] = useState(false);
   const [tapped, setTapped] = useState(false);
+  const [liked, setLiked] = useState(false);
 
-  const config = typeConfig[card.type];
-  const Icon = config.icon;
+  const theme = visualThemes[card.type];
 
   const handleOptionSelect = (idx: number) => {
     if (selected !== null) return;
     setSelected(idx);
     const correct = card.options?.[idx]?.correct ?? false;
-    setTimeout(() => onComplete(correct), 1200);
+    setTimeout(() => onComplete(correct), 1000);
   };
 
   const handleReveal = () => {
@@ -63,274 +86,200 @@ export const FeedCard = ({ card, onComplete, isActive }: FeedCardProps) => {
       setTimeout(() => {
         setRevealed(true);
         onComplete(true);
-      }, 600);
+      }, 500);
     }
   };
 
   return (
-    <div className="h-full w-full flex items-center justify-center p-4 snap-start">
+    <div className="h-full w-full relative overflow-hidden bg-black">
+      {/* Full-screen gradient background */}
+      <div className={cn("absolute inset-0 bg-gradient-to-br", theme.bg)} />
+
+      {/* Animated pattern overlay */}
+      <div className="absolute inset-0 opacity-[0.07]" style={{
+        backgroundImage: `radial-gradient(circle at 20% 50%, white 1px, transparent 1px), radial-gradient(circle at 80% 20%, white 1px, transparent 1px), radial-gradient(circle at 60% 80%, white 1px, transparent 1px)`,
+        backgroundSize: "60px 60px, 80px 80px, 40px 40px",
+      }} />
+
+      {/* Large emoji visual */}
       <motion.div
-        initial={{ opacity: 0, scale: 0.95, y: 30 }}
-        animate={isActive ? { opacity: 1, scale: 1, y: 0 } : { opacity: 0.5, scale: 0.95, y: 30 }}
-        transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
-        className="w-full max-w-lg h-full max-h-[85vh] flex flex-col rounded-3xl border border-border bg-card overflow-hidden shadow-lg"
+        initial={{ scale: 0, rotate: -20 }}
+        animate={isActive ? { scale: 1, rotate: 0 } : { scale: 0.5, rotate: -20 }}
+        transition={{ duration: 0.5, type: "spring" }}
+        className="absolute top-[15%] left-1/2 -translate-x-1/2 text-[120px] md:text-[160px] opacity-20 select-none pointer-events-none"
       >
-        {/* Header bar */}
-        <div className={cn("p-4 bg-gradient-to-r text-white", config.accent)}>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Icon className="w-5 h-5" />
-              <span className="text-sm font-bold uppercase tracking-wide">{config.label}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className={cn("text-xs font-bold px-2 py-0.5 rounded-full bg-white/20")}>
-                +{card.xpReward} XP
-              </span>
-            </div>
+        {theme.emoji}
+      </motion.div>
+
+      {/* Bottom gradient for text readability */}
+      <div className={cn("absolute inset-0 bg-gradient-to-t", theme.overlay)} />
+
+      {/* Top bar - type label + XP */}
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={isActive ? { opacity: 1, y: 0 } : { opacity: 0, y: -20 }}
+        transition={{ delay: 0.2 }}
+        className="absolute top-0 left-0 right-0 p-4 flex items-center justify-between z-10"
+      >
+        <span className="px-3 py-1 rounded-full bg-white/15 backdrop-blur-md text-white text-[11px] font-black tracking-widest uppercase">
+          {typeLabels[card.type]}
+        </span>
+        <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/15 backdrop-blur-md">
+          <Zap className="w-3.5 h-3.5 text-yellow-400" />
+          <span className="text-white text-xs font-bold">+{card.xpReward} XP</span>
+        </div>
+      </motion.div>
+
+      {/* Right side social actions */}
+      <motion.div
+        initial={{ opacity: 0, x: 20 }}
+        animate={isActive ? { opacity: 1, x: 0 } : { opacity: 0, x: 20 }}
+        transition={{ delay: 0.4 }}
+        className="absolute right-3 bottom-[30%] flex flex-col items-center gap-5 z-10"
+      >
+        <button onClick={() => setLiked(!liked)} className="flex flex-col items-center gap-1">
+          <div className={cn(
+            "w-11 h-11 rounded-full flex items-center justify-center backdrop-blur-md transition-colors",
+            liked ? "bg-red-500/80" : "bg-white/15"
+          )}>
+            <Heart className={cn("w-5 h-5", liked ? "text-white fill-white" : "text-white")} />
           </div>
-          <div className="mt-2 flex items-center gap-2">
-            <span className={cn("text-[10px] font-bold px-2 py-0.5 rounded-full", "bg-white/20")}>
-              {card.difficulty}
-            </span>
-            <span className="text-xs opacity-80 truncate">{card.lessonTitle}</span>
+          <span className="text-white text-[10px] font-bold">{liked ? "Liked" : "Like"}</span>
+        </button>
+        <button className="flex flex-col items-center gap-1">
+          <div className="w-11 h-11 rounded-full bg-white/15 backdrop-blur-md flex items-center justify-center">
+            <Share2 className="w-5 h-5 text-white" />
           </div>
+          <span className="text-white text-[10px] font-bold">Share</span>
+        </button>
+        <button className="flex flex-col items-center gap-1">
+          <div className="w-11 h-11 rounded-full bg-white/15 backdrop-blur-md flex items-center justify-center">
+            <Sparkles className="w-5 h-5 text-white" />
+          </div>
+          <span className="text-white text-[10px] font-bold">Save</span>
+        </button>
+      </motion.div>
+
+      {/* Main content area - bottom aligned like TikTok */}
+      <motion.div
+        initial={{ opacity: 0, y: 40 }}
+        animate={isActive ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
+        transition={{ delay: 0.15, duration: 0.4 }}
+        className="absolute bottom-0 left-0 right-16 p-5 pb-6 z-10 flex flex-col gap-3"
+      >
+        {/* Pathway tag */}
+        <div className="flex items-center gap-2">
+          <span className="text-white/60 text-xs font-semibold">#{card.pathway.replace(/\s+/g, "")}</span>
+          <span className="text-white/40">•</span>
+          <span className="text-white/60 text-xs font-semibold capitalize">#{card.difficulty}</span>
         </div>
 
-        {/* Card body */}
-        <div className="flex-1 p-5 flex flex-col overflow-y-auto">
-          <h2 className="text-xl font-bold text-foreground mb-4 leading-tight">{card.title}</h2>
+        {/* Title */}
+        <h2 className="text-white text-2xl md:text-3xl font-black leading-tight drop-shadow-lg">
+          {card.title}
+        </h2>
 
-          {/* Concept card - tap to reveal */}
-          {card.type === "concept" && (
-            <div className="flex-1 flex flex-col">
-              <p className="text-muted-foreground text-sm leading-relaxed mb-4">{card.content}</p>
-              {card.insight && (
+        {/* Content varies by type */}
+        {card.type === "concept" && (
+          <div className="space-y-3">
+            <p className="text-white/80 text-sm leading-relaxed line-clamp-3">{card.content}</p>
+            {card.insight && (
+              <motion.button
+                onClick={handleReveal}
+                whileTap={{ scale: 0.95 }}
+                className={cn(
+                  "w-full p-3.5 rounded-2xl backdrop-blur-md transition-all text-left",
+                  tapped ? "bg-white/25" : "bg-white/10 active:bg-white/20"
+                )}
+              >
+                <AnimatePresence mode="wait">
+                  {!tapped ? (
+                    <motion.div key="prompt" exit={{ opacity: 0 }} className="flex items-center gap-3">
+                      <Lightbulb className="w-5 h-5 text-yellow-400" />
+                      <span className="text-white text-sm font-bold">Tap to reveal insight ✨</span>
+                    </motion.div>
+                  ) : (
+                    <motion.p
+                      key="insight"
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="text-white text-sm font-medium leading-relaxed"
+                    >
+                      💡 {card.insight}
+                    </motion.p>
+                  )}
+                </AnimatePresence>
+              </motion.button>
+            )}
+          </div>
+        )}
+
+        {(card.type === "quiz" || card.type === "case-study" || card.type === "simulation" || card.type === "challenge") && card.options && (
+          <div className="space-y-2.5">
+            <p className="text-white/80 text-sm leading-relaxed">{card.content}</p>
+            {card.options.map((opt, idx) => {
+              const isSelected = selected === idx;
+              const showResult = selected !== null;
+              const isCorrect = opt.correct;
+              return (
                 <motion.button
-                  onClick={handleReveal}
-                  whileTap={{ scale: 0.97 }}
+                  key={idx}
+                  onClick={() => handleOptionSelect(idx)}
+                  whileTap={selected === null ? { scale: 0.97 } : {}}
                   className={cn(
-                    "mt-auto p-4 rounded-2xl border-2 border-dashed transition-all duration-300 text-left",
-                    tapped
-                      ? "border-primary bg-primary/10"
-                      : "border-border hover:border-primary/50 hover:bg-muted/50"
+                    "w-full text-left p-3.5 rounded-2xl backdrop-blur-md transition-all duration-300 border",
+                    showResult && isCorrect && "bg-emerald-500/30 border-emerald-400/60",
+                    showResult && isSelected && !isCorrect && "bg-red-500/30 border-red-400/60",
+                    showResult && !isSelected && !isCorrect && "opacity-30 border-transparent bg-white/5",
+                    !showResult && "bg-white/10 border-white/10 active:bg-white/20"
                   )}
                 >
-                  <AnimatePresence mode="wait">
-                    {!tapped ? (
-                      <motion.div
-                        key="prompt"
-                        exit={{ opacity: 0 }}
-                        className="flex items-center gap-3 text-muted-foreground"
-                      >
-                        <Star className="w-5 h-5 text-primary" />
-                        <span className="text-sm font-medium">Tap to reveal key insight</span>
-                        <ChevronRight className="w-4 h-4 ml-auto" />
-                      </motion.div>
-                    ) : (
-                      <motion.div
-                        key="insight"
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="text-sm text-foreground font-medium"
-                      >
-                        <div className="flex items-center gap-2 mb-2 text-primary">
-                          <Lightbulb className="w-4 h-4" />
-                          <span className="text-xs font-bold uppercase">Key Insight</span>
-                        </div>
-                        {card.insight}
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </motion.button>
-              )}
-            </div>
-          )}
-
-          {/* Quiz card */}
-          {card.type === "quiz" && card.options && (
-            <div className="flex-1 flex flex-col">
-              <p className="text-muted-foreground text-sm mb-5">{card.content}</p>
-              <div className="space-y-3">
-                {card.options.map((opt, idx) => {
-                  const isSelected = selected === idx;
-                  const showResult = selected !== null;
-                  const isCorrect = opt.correct;
-                  return (
-                    <motion.button
-                      key={idx}
-                      onClick={() => handleOptionSelect(idx)}
-                      whileTap={selected === null ? { scale: 0.97 } : {}}
-                      className={cn(
-                        "w-full text-left p-4 rounded-2xl border-2 transition-all duration-300",
-                        showResult && isCorrect && "border-success bg-success/10",
-                        showResult && isSelected && !isCorrect && "border-destructive bg-destructive/10",
-                        !showResult && "border-border hover:border-primary/50 hover:bg-muted/30",
-                        showResult && !isSelected && !isCorrect && "opacity-50"
+                  <div className="flex items-center gap-3">
+                    <div className={cn(
+                      "w-7 h-7 rounded-full flex items-center justify-center text-xs font-black flex-shrink-0 border",
+                      showResult && isCorrect && "border-emerald-400 text-emerald-400",
+                      showResult && isSelected && !isCorrect && "border-red-400 text-red-400",
+                      !showResult && "border-white/40 text-white/70"
+                    )}>
+                      {showResult && isCorrect ? (
+                        <CheckCircle className="w-4 h-4" />
+                      ) : showResult && isSelected ? (
+                        <XCircle className="w-4 h-4" />
+                      ) : (
+                        String.fromCharCode(65 + idx)
                       )}
+                    </div>
+                    <span className="text-white text-sm font-semibold">{opt.text}</span>
+                  </div>
+                  {showResult && isSelected && opt.explanation && (
+                    <motion.p
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      className="text-white/60 text-xs mt-2 ml-10"
                     >
-                      <div className="flex items-center gap-3">
-                        <div className={cn(
-                          "w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold border-2 flex-shrink-0",
-                          showResult && isCorrect && "border-success text-success bg-success/10",
-                          showResult && isSelected && !isCorrect && "border-destructive text-destructive bg-destructive/10",
-                          !showResult && "border-muted-foreground/30 text-muted-foreground"
-                        )}>
-                          {showResult && isCorrect ? (
-                            <CheckCircle className="w-5 h-5" />
-                          ) : showResult && isSelected ? (
-                            <XCircle className="w-5 h-5" />
-                          ) : (
-                            String.fromCharCode(65 + idx)
-                          )}
-                        </div>
-                        <span className={cn(
-                          "text-sm font-medium",
-                          showResult && isCorrect ? "text-success" : 
-                          showResult && isSelected && !isCorrect ? "text-destructive" : 
-                          "text-foreground"
-                        )}>
-                          {opt.text}
-                        </span>
-                      </div>
-                      {showResult && isSelected && opt.explanation && (
-                        <motion.p
-                          initial={{ opacity: 0, height: 0 }}
-                          animate={{ opacity: 1, height: "auto" }}
-                          className="text-xs text-muted-foreground mt-2 ml-11"
-                        >
-                          {opt.explanation}
-                        </motion.p>
-                      )}
-                    </motion.button>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-
-          {/* Case study */}
-          {card.type === "case-study" && (
-            <div className="flex-1 flex flex-col">
-              <div className="bg-muted/50 rounded-2xl p-4 mb-4 border border-border">
-                <p className="text-sm text-foreground leading-relaxed">{card.content}</p>
-              </div>
-              {card.options && (
-                <div className="space-y-2">
-                  <p className="text-xs font-bold text-muted-foreground uppercase mb-2">What would you do?</p>
-                  {card.options.map((opt, idx) => {
-                    const isSelected = selected === idx;
-                    const showResult = selected !== null;
-                    return (
-                      <motion.button
-                        key={idx}
-                        onClick={() => handleOptionSelect(idx)}
-                        whileTap={selected === null ? { scale: 0.97 } : {}}
-                        className={cn(
-                          "w-full text-left p-3 rounded-xl border transition-all duration-300 text-sm",
-                          showResult && opt.correct && "border-success bg-success/10 text-success",
-                          showResult && isSelected && !opt.correct && "border-destructive bg-destructive/10 text-destructive",
-                          !showResult && "border-border hover:border-primary/50 text-foreground"
-                        )}
-                      >
-                        {opt.text}
-                      </motion.button>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Simulation */}
-          {card.type === "simulation" && (
-            <div className="flex-1 flex flex-col">
-              <div className="bg-gradient-to-br from-muted/80 to-muted/30 rounded-2xl p-4 mb-4 border border-border">
-                <div className="flex items-center gap-2 mb-2">
-                  <Clock className="w-4 h-4 text-warning" />
-                  <span className="text-xs font-bold text-warning uppercase">Live Scenario</span>
-                </div>
-                <p className="text-sm text-foreground leading-relaxed">{card.content}</p>
-              </div>
-              {card.options && (
-                <div className="space-y-2 mt-auto">
-                  {card.options.map((opt, idx) => {
-                    const isSelected = selected === idx;
-                    const showResult = selected !== null;
-                    return (
-                      <motion.button
-                        key={idx}
-                        onClick={() => handleOptionSelect(idx)}
-                        whileTap={selected === null ? { scale: 0.97 } : {}}
-                        className={cn(
-                          "w-full text-left p-3 rounded-xl border transition-all text-sm font-medium",
-                          showResult && opt.correct && "border-success bg-success/10",
-                          showResult && isSelected && !opt.correct && "border-destructive bg-destructive/10",
-                          !showResult && "border-border hover:border-primary/50"
-                        )}
-                      >
-                        {opt.text}
-                      </motion.button>
-                    );
-                  })}
-                  {selected !== null && card.scenarioOutcome && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="p-3 bg-primary/10 rounded-xl border border-primary/20 text-xs text-foreground"
-                    >
-                      <span className="font-bold text-primary">Outcome: </span>
-                      {card.scenarioOutcome}
-                    </motion.div>
+                      {opt.explanation}
+                    </motion.p>
                   )}
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Challenge */}
-          {card.type === "challenge" && (
-            <div className="flex-1 flex flex-col">
-              <div className="flex items-center gap-2 mb-3">
-                <Trophy className="w-5 h-5 text-warning" />
-                <span className="text-xs font-bold text-warning uppercase">Mastery Challenge</span>
-              </div>
-              <p className="text-muted-foreground text-sm mb-5">{card.content}</p>
-              {card.options && (
-                <div className="space-y-2 mt-auto">
-                  {card.options.map((opt, idx) => {
-                    const isSelected = selected === idx;
-                    const showResult = selected !== null;
-                    return (
-                      <motion.button
-                        key={idx}
-                        onClick={() => handleOptionSelect(idx)}
-                        whileTap={selected === null ? { scale: 0.97 } : {}}
-                        className={cn(
-                          "w-full text-left p-3 rounded-xl border-2 transition-all text-sm font-medium",
-                          showResult && opt.correct && "border-warning bg-warning/10 text-warning",
-                          showResult && isSelected && !opt.correct && "border-destructive bg-destructive/10",
-                          !showResult && "border-border hover:border-warning/50"
-                        )}
-                      >
-                        {opt.text}
-                      </motion.button>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-
-        {/* Bottom progress indicator */}
-        <div className="px-5 pb-4 pt-2 border-t border-border/50">
-          <div className="flex items-center justify-between text-xs text-muted-foreground">
-            <span className="font-medium">{card.pathway}</span>
-            <span className="flex items-center gap-1">
-              <Zap className="w-3 h-3 text-primary" />
-              Swipe for next
-            </span>
+                </motion.button>
+              );
+            })}
+            {selected !== null && card.scenarioOutcome && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="p-3 rounded-2xl bg-white/10 backdrop-blur-md text-white text-xs"
+              >
+                <span className="font-bold text-yellow-400">📈 Outcome: </span>
+                {card.scenarioOutcome}
+              </motion.div>
+            )}
           </div>
+        )}
+
+        {/* Scroll hint */}
+        <div className="flex items-center gap-1.5 text-white/30 mt-1">
+          <ChevronUp className="w-3.5 h-3.5 animate-bounce" />
+          <span className="text-[10px] font-medium">Scroll for more</span>
         </div>
       </motion.div>
     </div>
