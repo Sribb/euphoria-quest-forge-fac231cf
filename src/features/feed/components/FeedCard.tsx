@@ -43,7 +43,7 @@ const typeLabels: Record<CardType, string> = {
 export const FeedCard = ({ card, isActive }: FeedCardProps) => {
   const [liked, setLiked] = useState(false);
   const [saved, setSaved] = useState(false);
-  const theme = visualThemes[card.type];
+  const theme = visualThemes[card.type] || visualThemes.fact;
 
   return (
     <div className="h-full w-full relative overflow-hidden bg-black select-none">
