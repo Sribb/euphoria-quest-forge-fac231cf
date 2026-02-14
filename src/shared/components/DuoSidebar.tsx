@@ -17,6 +17,7 @@ import {
   Gift,
   Menu,
   X,
+  PlayCircle,
 } from "lucide-react";
 import { useState } from "react";
 import logo from "@/assets/euphoria-logo-button.png";
@@ -28,6 +29,7 @@ interface DuoSidebarProps {
 
 const studentNavItems = [
   { id: "dashboard", label: "Home", icon: Home },
+  { id: "feed", label: "Feed", icon: PlayCircle },
   { id: "learn", label: "Learn", icon: BookOpen },
   { id: "trade", label: "Practice", icon: Dumbbell },
   { id: "games", label: "Games", icon: Gamepad2 },

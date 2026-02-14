@@ -6,6 +6,7 @@ import { GlobalAIAssistant } from "@/shared/components/GlobalAIAssistant";
 import { useEducatorRole } from "@/features/educator/hooks/useEducatorRole";
 import { useIsMobile } from "@/hooks/use-mobile";
 import Dashboard from "./Dashboard";
+import Feed from "./Feed";
 import Learn from "./Learn";
 import Trade from "./Trade";
 import Games from "./Games";
@@ -79,6 +80,8 @@ const Index = () => {
         return <EducatorDashboard onBack={() => handleNavigate("educator")} />;
       case "dashboard":
         return <Dashboard onNavigate={handleNavigate} onStockSearch={() => setShowStockSearch(true)} />;
+      case "feed":
+        return <Feed onNavigate={handleNavigate} />;
       case "learn":
         return <Learn onNavigate={handleNavigate} selectedLesson={selectedLesson} onLessonSelect={setSelectedLesson} />;
       case "trade":
