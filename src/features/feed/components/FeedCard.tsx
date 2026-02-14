@@ -71,7 +71,7 @@ export const FeedCard = ({ card, onComplete, isActive }: FeedCardProps) => {
   const [tapped, setTapped] = useState(false);
   const [liked, setLiked] = useState(false);
 
-  const theme = visualThemes[card.type];
+  const theme = visualThemes[card.type] || visualThemes.concept;
 
   const handleOptionSelect = (idx: number) => {
     if (selected !== null) return;
