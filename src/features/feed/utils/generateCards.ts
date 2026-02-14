@@ -17,125 +17,93 @@ const PATHWAY_LABELS: Record<string, string> = {
   "alternative-assets": "Alternative Assets",
 };
 
-const cardTemplates: {
+// Rich visual factoids/hooks per card type
+const factTemplates: {
   type: CardType;
   weight: number;
-  generate: (lesson: LessonData, idx: number) => Partial<FeedCardData>;
+  generate: (lesson: LessonData) => Omit<FeedCardData, "id" | "type" | "lessonTitle" | "pathway" | "difficulty" | "xpReward">;
 }[] = [
   {
-    type: "concept",
-    weight: 3,
-    generate: (lesson) => ({
-      title: lesson.title,
-      content: lesson.description,
-      insight: `Understanding ${lesson.title.toLowerCase()} is essential for building a strong foundation in ${PATHWAY_LABELS[lesson.pathway || "investing"]?.toLowerCase() || "finance"}.`,
-    }),
-  },
-  {
-    type: "quiz",
-    weight: 4,
+    type: "fact",
+    weight: 5,
     generate: (lesson) => {
-      const quizSets = getQuizForLesson(lesson);
-      return quizSets;
+      const facts = [
+        { hook: "Most people don't know this…", body: `${lesson.title} is one of the most misunderstood concepts in finance. Here's the truth that Wall Street doesn't advertise.`, stat: lesson.title, statLabel: "Key Concept" },
+        { hook: "This changes everything 🤯", body: `Understanding ${lesson.title.toLowerCase()} could be the difference between retiring at 50 vs 70. The math is wild.`, stat: "10x", statLabel: "Potential Impact" },
+        { hook: "The 1% know this secret", body: `${lesson.title} isn't just theory — it's how the ultra-wealthy actually build and protect their money.`, stat: "$$$", statLabel: "Wealth Builder" },
+        { hook: "Stop scrolling. Read this.", body: `If you don't understand ${lesson.title.toLowerCase()}, you're literally leaving money on the table every single day.`, stat: "24/7", statLabel: "Always Matters" },
+        { hook: "Your future self will thank you", body: `${lesson.description} Master this and you're ahead of 90% of people your age.`, stat: "90%", statLabel: "Ahead of" },
+      ];
+      const f = facts[Math.floor(Math.random() * facts.length)];
+      return { title: f.hook, content: f.body, stat: f.stat, statLabel: f.statLabel };
     },
   },
   {
-    type: "case-study",
-    weight: 2,
-    generate: (lesson) => ({
-      title: `Real-World: ${lesson.title}`,
-      content: `Imagine you're advising a client who needs to understand ${lesson.title.toLowerCase()}. They've asked you to explain why this matters for their financial future and what action steps they should take.`,
-      options: [
-        { text: "Start with the fundamentals and build up gradually", correct: true, explanation: "A strong foundation ensures lasting understanding." },
-        { text: "Jump straight to advanced strategies", correct: false, explanation: "Without basics, advanced strategies often backfire." },
-        { text: "Ignore it — it's not important", correct: false, explanation: `${lesson.title} is a critical concept in finance.` },
-      ],
-    }),
+    type: "stat",
+    weight: 4,
+    generate: (lesson) => {
+      const stats = [
+        { title: "Did you know? 📊", content: `Only 33% of adults can correctly explain ${lesson.title.toLowerCase()}. That's your edge.`, stat: "33%", statLabel: "Financial Literacy" },
+        { title: "By the numbers 🔢", content: `People who understand ${lesson.title.toLowerCase()} earn 25% more over their lifetime. Knowledge literally pays.`, stat: "+25%", statLabel: "Lifetime Earnings" },
+        { title: "The data is clear 📈", content: `${lesson.description} Studies show mastering this concept correlates with 3x better financial outcomes.`, stat: "3x", statLabel: "Better Outcomes" },
+        { title: "Real talk 💰", content: `The average person loses $1,000+/year by not understanding ${lesson.title.toLowerCase()}. Don't be average.`, stat: "$1K+", statLabel: "Annual Loss" },
+      ];
+      const s = stats[Math.floor(Math.random() * stats.length)];
+      return { title: s.title, content: s.content, stat: s.stat, statLabel: s.statLabel };
+    },
   },
   {
-    type: "simulation",
-    weight: 2,
-    generate: (lesson) => ({
-      title: `Scenario: ${lesson.title}`,
-      content: `The market just shifted and your knowledge of ${lesson.title.toLowerCase()} is being tested. A sudden change requires you to make a decision quickly.`,
-      options: [
-        { text: "Apply the core principle you learned", correct: true },
-        { text: "Panic and sell everything", correct: false },
-        { text: "Wait and do nothing", correct: false, explanation: "Inaction can sometimes be costly." },
-      ],
-      scenarioOutcome: `Applying ${lesson.title.toLowerCase()} principles would have protected your portfolio and captured the opportunity.`,
-    }),
+    type: "story",
+    weight: 3,
+    generate: (lesson) => {
+      const stories = [
+        { title: "A $10K mistake 😬", content: `Sarah ignored ${lesson.title.toLowerCase()} and lost $10,000 in 6 months. Here's what she should have done differently — and what you can learn from it.`, stat: "-$10K", statLabel: "Her Loss" },
+        { title: "From $500 to $50K 🚀", content: `Jake learned ${lesson.title.toLowerCase()} at 22. By 30, his $500 investment grew to $50,000. The strategy? Exactly what this lesson teaches.`, stat: "100x", statLabel: "His Return" },
+        { title: "The Warren Buffett rule", content: `"${lesson.title} is the most important thing an investor can learn." Here's why the Oracle of Omaha swears by it.`, stat: "Rule #1", statLabel: "Buffett Says" },
+      ];
+      const s = stories[Math.floor(Math.random() * stories.length)];
+      return { title: s.title, content: s.content, stat: s.stat, statLabel: s.statLabel };
+    },
+  },
+  {
+    type: "myth",
+    weight: 3,
+    generate: (lesson) => {
+      const myths = [
+        { title: "MYTH vs FACT ❌✅", content: `"You need to be rich to benefit from ${lesson.title.toLowerCase()}" — WRONG. This applies at every income level. Here's why…`, stat: "BUSTED", statLabel: "Myth Status" },
+        { title: "Everyone gets this wrong", content: `The #1 misconception about ${lesson.title.toLowerCase()} costs beginners thousands. Let's debunk it right now.`, stat: "#1", statLabel: "Top Myth" },
+        { title: "Your teacher lied 🎓", content: `School never taught you ${lesson.title.toLowerCase()} properly. Here's what they missed — and why it matters for your wallet.`, stat: "0%", statLabel: "Taught in School" },
+      ];
+      const m = myths[Math.floor(Math.random() * myths.length)];
+      return { title: m.title, content: m.content, stat: m.stat, statLabel: m.statLabel };
+    },
+  },
+  {
+    type: "tip",
+    weight: 4,
+    generate: (lesson) => {
+      const tips = [
+        { title: "Pro tip you NEED 💎", content: `Apply ${lesson.title.toLowerCase()} like this: start small, stay consistent, and let time do the heavy lifting. That's literally it.`, stat: "💎", statLabel: "Golden Rule" },
+        { title: "1-minute money hack", content: `Here's how to use ${lesson.title.toLowerCase()} starting TODAY with zero extra effort. Save this for later.`, stat: "1 min", statLabel: "Time Needed" },
+        { title: "Save this 📌", content: `${lesson.description} The actionable takeaway? Start applying this concept with your very next financial decision.`, stat: "NOW", statLabel: "Start When" },
+      ];
+      const t = tips[Math.floor(Math.random() * tips.length)];
+      return { title: t.title, content: t.content, stat: t.stat, statLabel: t.statLabel };
+    },
   },
 ];
 
-function getQuizForLesson(lesson: LessonData): Partial<FeedCardData> {
-  const pathway = lesson.pathway || "investing";
-  const quizzes = generateTopicQuiz(lesson.title, pathway);
-  return quizzes[Math.floor(Math.random() * quizzes.length)] || quizzes[0];
-}
-
-function generateTopicQuiz(title: string, pathway: string): Partial<FeedCardData>[] {
-  return [
-    {
-      title: `Test: ${title}`,
-      content: `Which statement best describes ${title.toLowerCase()}?`,
-      options: [
-        { text: `A core concept in ${PATHWAY_LABELS[pathway]?.toLowerCase() || "finance"} that builds wealth over time`, correct: true, explanation: "This captures the essence of the topic." },
-        { text: "Something only professionals need to know", correct: false, explanation: "This applies to everyone, not just professionals." },
-        { text: "An outdated financial concept", correct: false, explanation: "This remains highly relevant today." },
-        { text: "Only useful during bull markets", correct: false, explanation: "It applies in all market conditions." },
-      ],
-    },
-    {
-      title: `Quick Check: ${title}`,
-      content: `Why is ${title.toLowerCase()} important for your financial journey?`,
-      options: [
-        { text: "It helps make informed decisions and manage risk", correct: true, explanation: "Knowledge is the foundation of good financial decisions." },
-        { text: "It guarantees high returns", correct: false, explanation: "Nothing in finance guarantees returns." },
-        { text: "It's only for advanced investors", correct: false, explanation: "Everyone benefits from understanding this concept." },
-      ],
-    },
-  ];
-}
-
 export function generateFeedCards(lessons: LessonData[], count: number = 20): FeedCardData[] {
   const cards: FeedCardData[] = [];
-  const weightedTypes: typeof cardTemplates = [];
-
-  // Build weighted array
-  cardTemplates.forEach((t) => {
+  const weightedTypes: typeof factTemplates = [];
+  factTemplates.forEach((t) => {
     for (let i = 0; i < t.weight; i++) weightedTypes.push(t);
   });
 
-  let challengeCounter = 0;
-
   for (let i = 0; i < count; i++) {
     const lesson = lessons[i % lessons.length];
-    challengeCounter++;
-
-    // Every 7 cards, insert a challenge
-    if (challengeCounter >= 7) {
-      challengeCounter = 0;
-      cards.push({
-        id: `challenge-${i}`,
-        type: "challenge",
-        lessonTitle: lesson.title,
-        pathway: PATHWAY_LABELS[lesson.pathway || "investing"] || "Finance",
-        difficulty: lesson.difficulty as FeedCardData["difficulty"],
-        xpReward: 50,
-        title: `Mastery: ${lesson.title}`,
-        content: `Prove your understanding of ${lesson.title.toLowerCase()}. This challenge tests deeper comprehension.`,
-        options: [
-          { text: "Demonstrate applied understanding", correct: true, explanation: "Excellent — you've mastered this concept!" },
-          { text: "Rely on memorized facts only", correct: false, explanation: "True mastery goes beyond memorization." },
-          { text: "Skip and move on", correct: false, explanation: "Challenges are how you level up!" },
-        ],
-      });
-      continue;
-    }
-
     const template = weightedTypes[Math.floor(Math.random() * weightedTypes.length)];
-    const generated = template.generate(lesson, i);
+    const generated = template.generate(lesson);
 
     cards.push({
       id: `card-${i}-${lesson.id}`,
@@ -143,12 +111,8 @@ export function generateFeedCards(lessons: LessonData[], count: number = 20): Fe
       lessonTitle: lesson.title,
       pathway: PATHWAY_LABELS[lesson.pathway || "investing"] || "Finance",
       difficulty: lesson.difficulty as FeedCardData["difficulty"],
-      xpReward: template.type === "quiz" ? 15 : template.type === "concept" ? 10 : 20,
-      title: generated.title || lesson.title,
-      content: generated.content || lesson.description,
-      options: generated.options,
-      insight: generated.insight,
-      scenarioOutcome: generated.scenarioOutcome,
+      xpReward: 10,
+      ...generated,
     });
   }
 
