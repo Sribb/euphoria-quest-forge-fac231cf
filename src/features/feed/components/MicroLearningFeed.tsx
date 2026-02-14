@@ -153,7 +153,7 @@ export const MicroLearningFeed = ({ onNavigate }: MicroLearningFeedProps) => {
         className="flex-1 overflow-y-auto snap-y snap-mandatory"
         style={{ scrollSnapType: "y mandatory" }}
       >
-      {feedCards.map((card, idx) => (
+        {feedCards.map((card, idx) => (
           <div
             key={card.id}
             className="h-full w-full snap-start snap-always"
@@ -161,7 +161,7 @@ export const MicroLearningFeed = ({ onNavigate }: MicroLearningFeedProps) => {
           >
             <FeedCard
               card={card}
-              onComplete={() => handleCardComplete(true)}
+              onComplete={handleCardComplete}
               isActive={idx === activeCardIndex}
             />
           </div>
