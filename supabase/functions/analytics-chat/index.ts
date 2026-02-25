@@ -35,59 +35,185 @@ serve(async (req) => {
     // Use service role key to bypass RLS and fetch user's data directly
     const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
 
-    // Fetch user analytics data using service role (bypasses RLS)
-    const [profileRes, portfolioRes, lessonsRes, progressRes, gamesRes, transactionsRes] = await Promise.all([
-      supabaseAdmin.from("profiles").select("*").eq("id", user.id).single(),
-      supabaseAdmin.from("portfolios").select("*").eq("user_id", user.id).single(),
-      supabaseAdmin.from("lessons").select("*").order("order_index"),
-      supabaseAdmin.from("user_lesson_progress").select("*").eq("user_id", user.id),
-      supabaseAdmin.from("game_sessions").select("*, games(title)").eq("user_id", user.id).order("created_at", { ascending: false }).limit(20),
-      supabaseAdmin.from("transactions").select("*").eq("user_id", user.id).order("created_at", { ascending: false }).limit(50),
-    ]);
+    // Check if user is an educator
+    const { data: userRoles } = await supabaseAdmin
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", user.id)
+      .in("role", ["educator", "admin", "mentor"]);
 
-    const profile = profileRes.data;
-    const portfolio = portfolioRes.data;
-    const lessons = lessonsRes.data || [];
-    const progress = progressRes.data || [];
-    const gameSessions = gamesRes.data || [];
-    const transactions = transactionsRes.data || [];
+    const isEducator = userRoles && userRoles.length > 0;
 
-    // Build detailed analytics context
-    const completedLessons = progress.filter((p: any) => p.completed).length;
-    const totalLessons = lessons.length;
-    const progressPercentage = totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
-    
-    // Get lesson titles for completed lessons
-    const completedLessonDetails = progress
-      .filter((p: any) => p.completed)
-      .map((p: any) => {
-        const lesson = lessons.find((l: any) => l.id === p.lesson_id);
-        return lesson?.title || "Unknown lesson";
+    let systemPrompt: string;
+
+    if (isEducator) {
+      // ===== EDUCATOR PATH =====
+      // Fetch educator-specific data: classes, students, performance
+      const { data: classes } = await supabaseAdmin
+        .from("classes")
+        .select("*")
+        .eq("educator_id", user.id);
+
+      const classIds = (classes || []).map((c: any) => c.id);
+
+      let studentIds: string[] = [];
+      let studentProfiles: any[] = [];
+      let studentProgress: any[] = [];
+      let studentGameSessions: any[] = [];
+
+      if (classIds.length > 0) {
+        const { data: members } = await supabaseAdmin
+          .from("class_members")
+          .select("student_id, class_id")
+          .in("class_id", classIds);
+
+        studentIds = [...new Set((members || []).map((m: any) => m.student_id))];
+
+        if (studentIds.length > 0) {
+          const [profilesRes, progressRes, gamesRes] = await Promise.all([
+            supabaseAdmin.from("profiles").select("*").in("id", studentIds),
+            supabaseAdmin.from("user_lesson_progress").select("*").in("user_id", studentIds),
+            supabaseAdmin.from("game_sessions").select("*, games(title)").in("user_id", studentIds),
+          ]);
+          studentProfiles = profilesRes.data || [];
+          studentProgress = progressRes.data || [];
+          studentGameSessions = gamesRes.data || [];
+        }
+      }
+
+      // Fetch educator profile
+      const { data: educatorProfile } = await supabaseAdmin
+        .from("educator_profiles")
+        .select("*")
+        .eq("user_id", user.id)
+        .single();
+
+      // Build per-student summaries
+      const studentSummaries = studentProfiles.map((s: any) => {
+        const sp = studentProgress.filter((p: any) => p.user_id === s.id);
+        const completed = sp.filter((p: any) => p.completed).length;
+        const quizScores = sp.filter((p: any) => p.quiz_score).map((p: any) => p.quiz_score);
+        const avgQuiz = quizScores.length > 0 ? (quizScores.reduce((a: number, b: number) => a + b, 0) / quizScores.length).toFixed(0) : "N/A";
+        const games = studentGameSessions.filter((g: any) => g.user_id === s.id).length;
+        const isStruggling = quizScores.length > 0 && Number(avgQuiz) < 50;
+        return `  - ${s.display_name || s.username || s.id}: Level ${s.level}, ${completed} lessons completed, avg quiz ${avgQuiz}%, ${games} games${isStruggling ? " ⚠️ STRUGGLING" : ""}`;
       });
 
-    // Get in-progress lessons
-    const inProgressLessons = progress
-      .filter((p: any) => !p.completed && p.progress > 0)
-      .map((p: any) => {
-        const lesson = lessons.find((l: any) => l.id === p.lesson_id);
-        return { title: lesson?.title || "Unknown", progress: p.progress };
-      });
+      // Aggregate stats
+      const totalStudents = studentIds.length;
+      const activeStudents7d = studentProfiles.filter((s: any) =>
+        new Date(s.updated_at) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+      ).length;
+      const allCompleted = studentProgress.filter((p: any) => p.completed).length;
+      const allQuizScores = studentProgress.filter((p: any) => p.quiz_score).map((p: any) => p.quiz_score);
+      const avgClassQuiz = allQuizScores.length > 0
+        ? (allQuizScores.reduce((a: number, b: number) => a + b, 0) / allQuizScores.length).toFixed(0)
+        : "N/A";
+      const strugglingCount = studentProfiles.filter((s: any) => {
+        const scores = studentProgress.filter((p: any) => p.user_id === s.id && p.quiz_score).map((p: any) => p.quiz_score);
+        return scores.length > 0 && scores.reduce((a: number, b: number) => a + b, 0) / scores.length < 50;
+      }).length;
 
-    const avgGameScore = gameSessions.length > 0 
-      ? gameSessions.reduce((sum: number, g: any) => sum + (g.score || 0), 0) / gameSessions.length 
-      : 0;
-    const totalCoinsFromGames = gameSessions.reduce((sum: number, g: any) => sum + (g.coins_earned || 0), 0);
-    const portfolioReturn = ((Number(portfolio?.total_value || 0) - 10000) / 10000) * 100;
+      const educatorContext = `
+=== EDUCATOR DASHBOARD DATA ===
 
-    // Get recent game details
-    const recentGames = gameSessions.slice(0, 5).map((g: any) => ({
-      game: g.games?.title || g.game_id,
-      score: g.score,
-      coins: g.coins_earned,
-      date: new Date(g.created_at).toLocaleDateString()
-    }));
+YOUR CLASSES:
+${(classes || []).map((c: any) => `- ${c.class_name} (Code: ${c.class_code}, Active: ${c.is_active})`).join("\n") || "- No classes created yet"}
 
-    const analyticsContext = `
+SCHOOL: ${educatorProfile?.school_name || "Not set"}
+GRADE LEVEL: ${educatorProfile?.grade_level || "Not set"}
+SUBJECT: ${educatorProfile?.subject || "Not set"}
+
+CLASS STATISTICS:
+- Total Students Enrolled: ${totalStudents}
+- Active Students (7d): ${activeStudents7d}
+- Total Lessons Completed (all students): ${allCompleted}
+- Average Quiz Score (class-wide): ${avgClassQuiz}%
+- Students Struggling (<50% avg): ${strugglingCount}
+
+STUDENT ROSTER:
+${studentSummaries.length > 0 ? studentSummaries.join("\n") : "  - No students enrolled yet"}
+`;
+
+      systemPrompt = `You are Euphoria AI, an intelligent assistant built into the Euphoria Educator Hub. You assist EDUCATORS — professors, teachers, and instructors — in managing their classes, understanding student performance, and improving their teaching experience.
+
+You are NOT a student-facing assistant. Never give advice as if speaking to a learner.
+
+${educatorContext}
+
+WHAT YOU HELP WITH:
+1. Class Management — creating, organizing, sharing class codes, managing enrollments
+2. Student Performance & Insights — identifying struggling students, trends in quiz scores and completion
+3. Content & Curriculum — structuring lessons, improving quizzes, pacing advice
+4. Analytics & Reporting — explaining dashboard metrics, recommending actions based on trends
+5. Platform How-To — step-by-step help using any Euphoria feature
+6. Engagement & Growth — strategies to increase student participation and motivation
+
+HOW YOU COMMUNICATE:
+- Professional, clear, and concise — educators are busy
+- Data-informed: ALWAYS reference the actual data above when available
+- Proactive: flag issues and suggest next steps without being asked
+- Frame insights from the educator's POV ("Your students are averaging..." not "You scored...")
+- Use bullet points for data summaries; prose for explanations
+- Keep responses SHORT — 3-5 sentences or bullet points max
+- If a student is struggling (⚠️), proactively mention it and suggest intervention
+
+GROUND RULES:
+- Only assist educators — never respond as if speaking to a student
+- When data is available, cite specific numbers and student names
+- Always suggest a clear next step or action
+- If asked something outside scope, redirect to the relevant feature or suggest support`;
+
+    } else {
+      // ===== STUDENT PATH =====
+      const [profileRes, portfolioRes, lessonsRes, progressRes, gamesRes, transactionsRes] = await Promise.all([
+        supabaseAdmin.from("profiles").select("*").eq("id", user.id).single(),
+        supabaseAdmin.from("portfolios").select("*").eq("user_id", user.id).single(),
+        supabaseAdmin.from("lessons").select("*").order("order_index"),
+        supabaseAdmin.from("user_lesson_progress").select("*").eq("user_id", user.id),
+        supabaseAdmin.from("game_sessions").select("*, games(title)").eq("user_id", user.id).order("created_at", { ascending: false }).limit(20),
+        supabaseAdmin.from("transactions").select("*").eq("user_id", user.id).order("created_at", { ascending: false }).limit(50),
+      ]);
+
+      const profile = profileRes.data;
+      const portfolio = portfolioRes.data;
+      const lessons = lessonsRes.data || [];
+      const progress = progressRes.data || [];
+      const gameSessions = gamesRes.data || [];
+      const transactions = transactionsRes.data || [];
+
+      const completedLessons = progress.filter((p: any) => p.completed).length;
+      const totalLessons = lessons.length;
+      const progressPercentage = totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
+
+      const completedLessonDetails = progress
+        .filter((p: any) => p.completed)
+        .map((p: any) => {
+          const lesson = lessons.find((l: any) => l.id === p.lesson_id);
+          return lesson?.title || "Unknown lesson";
+        });
+
+      const inProgressLessons = progress
+        .filter((p: any) => !p.completed && p.progress > 0)
+        .map((p: any) => {
+          const lesson = lessons.find((l: any) => l.id === p.lesson_id);
+          return { title: lesson?.title || "Unknown", progress: p.progress };
+        });
+
+      const avgGameScore = gameSessions.length > 0
+        ? gameSessions.reduce((sum: number, g: any) => sum + (g.score || 0), 0) / gameSessions.length
+        : 0;
+      const totalCoinsFromGames = gameSessions.reduce((sum: number, g: any) => sum + (g.coins_earned || 0), 0);
+      const portfolioReturn = ((Number(portfolio?.total_value || 0) - 10000) / 10000) * 100;
+
+      const recentGames = gameSessions.slice(0, 5).map((g: any) => ({
+        game: g.games?.title || g.game_id,
+        score: g.score,
+        coins: g.coins_earned,
+        date: new Date(g.created_at).toLocaleDateString()
+      }));
+
+      const analyticsContext = `
 === USER PERFORMANCE DATA ===
 
 LEARNING PROGRESS:
@@ -112,7 +238,7 @@ OVERALL STATS:
 - Experience Points: ${profile?.experience_points || 0}
 - Transactions: ${transactions.length} recorded`;
 
-    const systemPrompt = `You are Euphoria AI Assistant, a friendly and knowledgeable guide for investment education and analytics. You have access to the user's ACTUAL performance data shown below.
+      systemPrompt = `You are Euphoria AI Assistant, a friendly and knowledgeable guide for investment education and analytics. You have access to the user's ACTUAL performance data shown below.
 
 ${analyticsContext}
 
@@ -123,12 +249,8 @@ IMPORTANT RULES:
 4. Keep responses SHORT and CONCISE - 2-4 sentences max
 5. Be encouraging and suggest next steps based on their progress
 
-EXAMPLES OF GOOD RESPONSES:
-- "You've completed ${completedLessons} lessons including ${completedLessonDetails[0] || "none yet"}. Great progress! Consider tackling the next lesson in the series."
-- "You've played ${gameSessions.length} games with an average score of ${avgGameScore.toFixed(0)}. Your best recent game was..."
-- "Your portfolio is ${portfolioReturn >= 0 ? "up" : "down"} ${Math.abs(portfolioReturn).toFixed(1)}% - ${portfolioReturn >= 0 ? "nice work!" : "keep learning and it will improve!"}"
-
 Be specific, cite their actual data, and be helpful!`;
+    }
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) {
