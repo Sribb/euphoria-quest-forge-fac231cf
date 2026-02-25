@@ -5,6 +5,7 @@ import { EconomicCalendarNative } from "@/features/dashboard/components/Economic
 import { LiveEconomicHeadlines } from "@/features/dashboard/components/LiveEconomicHeadlines";
 import { DailyRewardsModal } from "@/features/learning/components/DailyRewardsModal";
 import { SeasonalBanner } from "@/features/dashboard/components/SeasonalBanner";
+import { DailyPnLCard } from "@/features/dashboard/components/DailyPnLCard";
 import { useAuth } from "@/hooks/useAuth";
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -12,7 +13,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { motion } from "framer-motion";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CalendarDays, Newspaper } from "lucide-react";
-
 interface DashboardProps {
   onNavigate: (tab: string) => void;
   onStockSearch?: () => void;
@@ -71,6 +71,10 @@ const Dashboard = ({ onNavigate, onStockSearch }: DashboardProps) => {
       >
         <motion.div variants={fadeUp}>
           <SeasonalBanner />
+        </motion.div>
+
+        <motion.div variants={fadeUp}>
+          <DailyPnLCard />
         </motion.div>
 
         <motion.div variants={fadeUp}>
