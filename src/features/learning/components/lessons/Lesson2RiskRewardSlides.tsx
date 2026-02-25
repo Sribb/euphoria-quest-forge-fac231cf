@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { DragSortChallenge } from "../interactive/DragSortChallenge";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -598,6 +599,19 @@ export const Lesson2RiskRewardSlides = ({ onComplete }: Lesson2Props) => {
                   </motion.div>
                 ))}
               </motion.div>
+
+              {/* Interactive Challenge */}
+              <DragSortChallenge
+                title="🧩 Order by Risk Level"
+                description="Drag these investments from LOWEST to HIGHEST risk:"
+                items={[
+                  { id: "savings", label: "💰 High-Yield Savings Account" },
+                  { id: "gov-bonds", label: "📜 Government Bonds" },
+                  { id: "index", label: "📊 S&P 500 Index Fund" },
+                  { id: "penny", label: "🎰 Penny Stocks" },
+                ]}
+                correctOrder={["savings", "gov-bonds", "index", "penny"]}
+              />
 
               {/* Final takeaway */}
               <motion.div 

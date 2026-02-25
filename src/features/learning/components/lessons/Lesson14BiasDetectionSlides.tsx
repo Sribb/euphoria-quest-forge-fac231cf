@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { DragSortChallenge } from "../interactive/DragSortChallenge";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -422,6 +423,19 @@ export const Lesson14BiasDetectionSlides = ({ onComplete }: Lesson14Props) => {
                   </div>
                 </div>
               </Card>
+
+              {/* Interactive Challenge */}
+              <DragSortChallenge
+                title="🧠 Rank Cognitive Biases by Danger"
+                description="Order from MOST to LEAST dangerous for investors:"
+                items={[
+                  { id: "confirmation", label: "🔍 Confirmation Bias" },
+                  { id: "loss", label: "😰 Loss Aversion" },
+                  { id: "anchoring", label: "⚓ Anchoring Bias" },
+                  { id: "recency", label: "📅 Recency Bias" },
+                ]}
+                correctOrder={["confirmation", "loss", "anchoring", "recency"]}
+              />
 
               <div className="flex justify-center">
                 <Button onClick={nextSlide} size="lg" className="gap-2">

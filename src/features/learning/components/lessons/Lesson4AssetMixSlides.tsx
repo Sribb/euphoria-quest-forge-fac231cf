@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { DragSortChallenge } from "../interactive/DragSortChallenge";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -771,7 +772,20 @@ export const Lesson4AssetMixSlides = ({ onComplete }: Lesson4Props) => {
                 </motion.div>
               </div>
 
-              <motion.div 
+              {/* Interactive Challenge */}
+              <DragSortChallenge
+                title="🧩 Order by Expected Return"
+                description="Rank these from LOWEST to HIGHEST expected annual return:"
+                items={[
+                  { id: "savings", label: "💰 Savings Account (~2%)" },
+                  { id: "bonds", label: "📜 Corporate Bonds (~5%)" },
+                  { id: "stocks", label: "📈 Stock Index Fund (~10%)" },
+                  { id: "smallcap", label: "🚀 Small-Cap Stocks (~12%)" },
+                ]}
+                correctOrder={["savings", "bonds", "stocks", "smallcap"]}
+              />
+
+              <motion.div
                 className="flex justify-between mt-8"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}

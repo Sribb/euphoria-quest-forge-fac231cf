@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { DragSortChallenge } from "../interactive/DragSortChallenge";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -435,6 +436,19 @@ export const Lesson12DecisionChecklistSlides = ({ onComplete }: Lesson12Props) =
                   </p>
                 </motion.button>
               </div>
+
+              {/* Interactive Challenge */}
+              <DragSortChallenge
+                title="📋 Investment Decision Process"
+                description="Order these steps from FIRST to LAST when evaluating an investment:"
+                items={[
+                  { id: "research", label: "🔍 Research the company" },
+                  { id: "valuation", label: "💲 Determine fair value" },
+                  { id: "risk", label: "⚠️ Assess downside risk" },
+                  { id: "size", label: "📐 Decide position size" },
+                ]}
+                correctOrder={["research", "valuation", "risk", "size"]}
+              />
 
               <div className="flex justify-center">
                 <Button 

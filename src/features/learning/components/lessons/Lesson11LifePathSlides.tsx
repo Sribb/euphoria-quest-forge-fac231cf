@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { SliderSimulator } from "../interactive/SliderSimulator";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -578,6 +579,24 @@ export const Lesson11LifePathSlides = ({ onComplete }: Lesson11Props) => {
                   </p>
                 </motion.div>
               )}
+
+              {/* Retirement Calculator */}
+              <SliderSimulator
+                title="🎯 Retirement Number Calculator"
+                description="Find out how much you need to retire comfortably:"
+                sliders={[
+                  { id: "annual", label: "Annual Spending in Retirement", min: 20000, max: 150000, step: 5000, defaultValue: 50000, unit: "$" },
+                  { id: "rate", label: "Safe Withdrawal Rate", min: 3, max: 5, step: 0.5, defaultValue: 4, unit: "%" },
+                ]}
+                calculateResult={(vals) => {
+                  const needed = Math.round(vals.annual / (vals.rate / 100));
+                  return {
+                    primary: `$${needed.toLocaleString()}`,
+                    secondary: `You need to save this amount to retire`,
+                    insight: `The ${vals.rate}% rule means you withdraw $${vals.annual.toLocaleString()}/yr from a $${needed.toLocaleString()} portfolio.`,
+                  };
+                }}
+              />
 
               <motion.div className="flex justify-center relative z-10">
                 <Button 

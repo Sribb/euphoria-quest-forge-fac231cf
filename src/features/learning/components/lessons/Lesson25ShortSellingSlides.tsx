@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { SliderSimulator } from "../interactive/SliderSimulator";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -123,6 +124,7 @@ export const Lesson25ShortSellingSlides = ({ onComplete }: Lesson25Props) => {
                     <p className="text-sm text-muted-foreground">Short selling has destroyed professional hedge funds. If experts with billions and research teams blow up shorting, retail investors have even worse odds. When in doubt, simply reduce long exposure instead of going short.</p>
                   </div>
                 </div>
+              <SliderSimulator title="📉 Short Selling P&L" description="Calculate your short position profit/loss:" sliders={[{ id: "entry", label: "Short Entry Price", min: 20, max: 200, step: 5, defaultValue: 100, unit: "$" },{ id: "current", label: "Current Price", min: 20, max: 300, step: 5, defaultValue: 80, unit: "$" },{ id: "shares", label: "Shares Shorted", min: 10, max: 500, step: 10, defaultValue: 100 }]} calculateResult={(vals) => { const pl = (vals.entry - vals.current) * vals.shares; return { primary: `${pl >= 0 ? "+" : ""}$${pl.toLocaleString()}`, secondary: pl >= 0 ? "Profitable short! 📉" : "Loss — stock went against you 📈", insight: vals.current > vals.entry * 1.5 ? "Unlimited loss potential — this is why shorts are risky!" : "Remember: losses are theoretically unlimited when shorting." }; }} />
               </Card>
               <div className="flex justify-center"><Button onClick={nextSlide} size="lg" className="gap-2">Complete Lesson <CheckCircle className="w-4 h-4" /></Button></div>
             </Card>

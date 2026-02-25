@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { SliderSimulator } from "../interactive/SliderSimulator";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -650,7 +651,26 @@ export const Lesson5DiversificationSlides = ({ onComplete }: Lesson5Props) => {
                 </motion.div>
               </div>
 
-              <motion.div 
+              {/* Diversification Simulator */}
+              <SliderSimulator
+                title="🎛️ Diversification Impact"
+                description="See how spreading across sectors reduces risk:"
+                sliders={[
+                  { id: "sectors", label: "Number of Sectors", min: 1, max: 6, step: 1, defaultValue: 1 },
+                  { id: "years", label: "Investment Period", min: 1, max: 30, step: 1, defaultValue: 10, unit: " yrs" },
+                ]}
+                calculateResult={(vals) => {
+                  const riskReduction = Math.round((1 - 1 / Math.sqrt(vals.sectors)) * 100);
+                  const volatility = Math.round(25 / Math.sqrt(vals.sectors));
+                  return {
+                    primary: `${riskReduction}% risk reduction`,
+                    secondary: `Portfolio volatility: ~${volatility}% with ${vals.sectors} sector(s)`,
+                    insight: vals.sectors >= 4 ? "Well diversified! Diminishing returns above 5-6 sectors." : "Adding more sectors can significantly reduce risk.",
+                  };
+                }}
+              />
+
+              <motion.div
                 className="flex justify-between mt-8"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}

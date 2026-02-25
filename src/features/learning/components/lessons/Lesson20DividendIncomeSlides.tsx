@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { SliderSimulator } from "../interactive/SliderSimulator";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -419,6 +420,22 @@ export const Lesson20DividendIncomeSlides = ({ onComplete }: Lesson20Props) => {
                 </div>
               </Card>
 
+              <SliderSimulator
+                title="💰 DRIP Calculator"
+                description="See how reinvesting dividends compounds your wealth:"
+                sliders={[
+                  { id: "shares", label: "Starting Shares", min: 10, max: 500, step: 10, defaultValue: 100 },
+                  { id: "price", label: "Share Price", min: 10, max: 200, step: 5, defaultValue: 50, unit: "$" },
+                  { id: "yield", label: "Dividend Yield", min: 1, max: 8, step: 0.5, defaultValue: 3, unit: "%" },
+                  { id: "years", label: "Years", min: 5, max: 30, step: 5, defaultValue: 20, unit: " yrs" },
+                ]}
+                calculateResult={(vals) => {
+                  const totalShares = vals.shares * Math.pow(1 + vals.yield / 100, vals.years);
+                  const value = Math.round(totalShares * vals.price);
+                  const original = vals.shares * vals.price;
+                  return { primary: `$${value.toLocaleString()}`, secondary: `From $${original.toLocaleString()} original investment`, insight: `DRIP added ${Math.round(totalShares - vals.shares)} free shares!` };
+                }}
+              />
               <div className="flex justify-center">
                 <Button onClick={nextSlide} size="lg" className="gap-2">
                   Complete Lesson <CheckCircle className="w-4 h-4" />

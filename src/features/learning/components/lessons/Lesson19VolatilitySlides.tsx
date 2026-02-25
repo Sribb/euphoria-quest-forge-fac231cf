@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { SliderSimulator } from "../interactive/SliderSimulator";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -418,6 +419,25 @@ export const Lesson19VolatilitySlides = ({ onComplete }: Lesson19Props) => {
                   </div>
                 </div>
               </Card>
+
+              {/* Volatility Impact Simulator */}
+              <SliderSimulator
+                title="📊 Volatility Impact Simulator"
+                description="See how volatility affects your portfolio value range:"
+                sliders={[
+                  { id: "investment", label: "Portfolio Value", min: 10000, max: 500000, step: 10000, defaultValue: 100000, unit: "$" },
+                  { id: "volatility", label: "Annual Volatility", min: 5, max: 40, step: 1, defaultValue: 15, unit: "%" },
+                ]}
+                calculateResult={(vals) => {
+                  const downside = Math.round(vals.investment * (1 - vals.volatility * 2 / 100));
+                  const upside = Math.round(vals.investment * (1 + vals.volatility * 2 / 100));
+                  return {
+                    primary: `$${downside.toLocaleString()} — $${upside.toLocaleString()}`,
+                    secondary: `95% confidence range over 1 year`,
+                    insight: vals.volatility > 20 ? "High volatility — only for long-term investors!" : "Manageable volatility for most investors.",
+                  };
+                }}
+              />
 
               <div className="flex justify-center">
                 <Button onClick={nextSlide} size="lg" className="gap-2">

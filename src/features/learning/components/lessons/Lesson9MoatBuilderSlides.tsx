@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { DragSortChallenge } from "../interactive/DragSortChallenge";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -586,7 +587,20 @@ export const Lesson9MoatBuilderSlides = ({ onComplete }: Lesson9Props) => {
                 </motion.div>
               )}
 
-              <motion.div 
+              {/* Interactive Challenge */}
+              <DragSortChallenge
+                title="🏰 Rank Moat Durability"
+                description="Order these competitive advantages from MOST to LEAST durable:"
+                items={[
+                  { id: "network", label: "🌐 Network Effects" },
+                  { id: "switching", label: "🔒 Switching Costs" },
+                  { id: "brand", label: "👑 Brand Power" },
+                  { id: "cost", label: "💲 Cost Advantage" },
+                ]}
+                correctOrder={["network", "switching", "brand", "cost"]}
+              />
+
+              <motion.div
                 className="flex justify-center relative z-10"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}

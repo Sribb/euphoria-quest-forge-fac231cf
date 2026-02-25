@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { SliderSimulator } from "../interactive/SliderSimulator";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -148,6 +149,7 @@ export const Lesson23MarginRiskSlides = ({ onComplete }: Lesson23Props) => {
                     <p className="text-sm text-muted-foreground">Most retail investors should never use margin. The math is against you: gains are capped, but losses can exceed your investment. If you wouldn't take a loan from a bank to buy stocks, don't use margin.</p>
                   </div>
                 </div>
+              <SliderSimulator title="⚠️ Margin Call Calculator" description="See when you'd get margin called:" sliders={[{ id: "equity", label: "Your Equity", min: 5000, max: 50000, step: 1000, defaultValue: 20000, unit: "$" },{ id: "borrowed", label: "Borrowed Amount", min: 5000, max: 50000, step: 1000, defaultValue: 20000, unit: "$" },{ id: "drop", label: "Stock Drop", min: 0, max: 50, step: 5, defaultValue: 25, unit: "%" }]} calculateResult={(vals) => { const total = vals.equity + vals.borrowed; const afterDrop = total * (1 - vals.drop / 100); const equityLeft = afterDrop - vals.borrowed; const marginRatio = equityLeft / afterDrop * 100; const called = marginRatio < 25; return { primary: called ? "⚠️ MARGIN CALL!" : `${marginRatio.toFixed(0)}% equity`, secondary: `Equity remaining: $${Math.round(equityLeft).toLocaleString()}`, insight: called ? "You must deposit more funds or positions will be liquidated!" : "Above 25% maintenance margin — safe for now." }; }} />
               </Card>
               <div className="flex justify-center"><Button onClick={nextSlide} size="lg" className="gap-2">Complete Lesson <CheckCircle className="w-4 h-4" /></Button></div>
             </Card>

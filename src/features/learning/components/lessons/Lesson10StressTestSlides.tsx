@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { DragSortChallenge } from "../interactive/DragSortChallenge";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -564,7 +565,20 @@ export const Lesson10StressTestSlides = ({ onComplete }: Lesson10Props) => {
                 </motion.div>
               )}
 
-              <motion.div 
+              {/* Interactive Challenge */}
+              <DragSortChallenge
+                title="📋 Crash Response Priority"
+                description="Order these actions from FIRST to LAST during a market crash:"
+                items={[
+                  { id: "assess", label: "🔍 Assess your time horizon" },
+                  { id: "review", label: "📊 Review your allocation" },
+                  { id: "rebalance", label: "⚖️ Rebalance if needed" },
+                  { id: "buy", label: "🛒 Consider buying the dip" },
+                ]}
+                correctOrder={["assess", "review", "rebalance", "buy"]}
+              />
+
+              <motion.div
                 className="flex justify-center relative z-10"
               >
                 <Button 

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { SliderSimulator } from "../interactive/SliderSimulator";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -420,6 +421,26 @@ export const Lesson15OptionsBasicsSlides = ({ onComplete }: Lesson15Props) => {
                   </div>
                 </div>
               </Card>
+
+              {/* Options Payoff Calculator */}
+              <SliderSimulator
+                title="📊 Options Payoff Calculator"
+                description="See how a call option's profit changes with stock price:"
+                sliders={[
+                  { id: "strike", label: "Strike Price", min: 50, max: 150, step: 5, defaultValue: 100, unit: "$" },
+                  { id: "premium", label: "Premium Paid", min: 1, max: 20, step: 1, defaultValue: 5, unit: "$" },
+                  { id: "stockPrice", label: "Stock Price at Expiry", min: 50, max: 200, step: 5, defaultValue: 110, unit: "$" },
+                ]}
+                calculateResult={(vals) => {
+                  const intrinsic = Math.max(0, vals.stockPrice - vals.strike);
+                  const profit = intrinsic - vals.premium;
+                  return {
+                    primary: `${profit >= 0 ? "+" : ""}$${profit.toFixed(0)} per share`,
+                    secondary: profit > 0 ? "In the money! ✅" : profit === -vals.premium ? "Out of the money — max loss is premium" : "Partial loss",
+                    insight: `Breakeven: $${vals.strike + vals.premium}`,
+                  };
+                }}
+              />
 
               <div className="flex justify-center">
                 <Button onClick={nextSlide} size="lg" className="gap-2">

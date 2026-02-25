@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { DragSortChallenge } from "../interactive/DragSortChallenge";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -640,7 +641,20 @@ export const Lesson6MarketPsychologySlides = ({ onComplete }: Lesson6Props) => {
                 </motion.div>
               ) : null}
 
-              <motion.div 
+              {/* Interactive Challenge */}
+              <DragSortChallenge
+                title="🧠 Order the Market Emotion Cycle"
+                description="Drag these emotions in the order they typically occur in a market cycle:"
+                items={[
+                  { id: "optimism", label: "😊 Optimism" },
+                  { id: "euphoria", label: "🔥 Euphoria" },
+                  { id: "fear", label: "😰 Fear" },
+                  { id: "panic", label: "😱 Panic" },
+                ]}
+                correctOrder={["optimism", "euphoria", "fear", "panic"]}
+              />
+
+              <motion.div
                 className="flex justify-between mt-8"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
