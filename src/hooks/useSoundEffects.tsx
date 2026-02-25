@@ -11,6 +11,11 @@ import {
   playNav,
   playError,
   playTradeExecuted,
+  playSlideForward,
+  playSlideBack,
+  playMilestone,
+  playSnap,
+  playUnlock,
   isSoundEnabled,
   setSoundEnabled,
 } from "@/lib/soundEffects";
@@ -28,6 +33,11 @@ export const useSoundEffects = () => {
     nav: useCallback(playNav, []),
     error: useCallback(playError, []),
     tradeExecuted: useCallback(playTradeExecuted, []),
+    slideForward: useCallback(playSlideForward, []),
+    slideBack: useCallback(playSlideBack, []),
+    milestone: useCallback(playMilestone, []),
+    snap: useCallback(playSnap, []),
+    unlock: useCallback(playUnlock, []),
     isEnabled: isSoundEnabled,
     setEnabled: setSoundEnabled,
   };
