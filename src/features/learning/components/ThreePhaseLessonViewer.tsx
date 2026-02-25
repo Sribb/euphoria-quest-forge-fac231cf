@@ -7,6 +7,7 @@ import { X, BookOpen, Trophy, LineChart } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
+import { playLessonComplete, playClick } from "@/lib/soundEffects";
 import { getLessonContent } from "./InteractiveLessonContent";
 import { AILessonChatbot } from "./AILessonChatbot";
 import { AdaptiveLessonChallenge } from "./AdaptiveLessonChallenge";
@@ -158,6 +159,7 @@ export const ThreePhaseLessonViewer = ({ lessonId, onClose }: ThreePhaseLessonVi
     if (challengePassed) {
       onClose();
       toast.success("Lesson completed! Next lesson unlocked!");
+      playLessonComplete();
     } else {
       setPhase('learn');
       setCurrentSection(0);
@@ -175,6 +177,7 @@ export const ThreePhaseLessonViewer = ({ lessonId, onClose }: ThreePhaseLessonVi
     // Set completed_at timestamp when marking as complete
     if (isCompleted) {
       updateData.completed_at = new Date().toISOString();
+      playLessonComplete();
     }
     
     const { error } = await supabase.from("user_lesson_progress").upsert(updateData, {

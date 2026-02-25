@@ -7,6 +7,7 @@ import {
   Timer, Flame, Trophy, Star, Target, Sparkles
 } from "lucide-react";
 import { toast } from "sonner";
+import { playGameWin, playCorrect, playIncorrect } from "@/lib/soundEffects";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface Scenario {
@@ -565,6 +566,7 @@ export const MarketReactionGame = ({ onClose }: MarketReactionGameProps) => {
     } else {
       setGameComplete(true);
       toast.success(`Game Complete! Final Score: ${score}`);
+      playGameWin();
     }
   };
 

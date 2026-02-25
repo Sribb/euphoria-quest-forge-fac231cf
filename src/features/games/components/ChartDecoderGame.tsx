@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, TrendingUp, Target, Brain, Zap, Flame, Sparkles, Star } from "lucide-react";
 import { toast } from "sonner";
+import { playGameWin, playCorrect, playIncorrect } from "@/lib/soundEffects";
 import { motion } from "framer-motion";
 
 // Shuffle array utility
@@ -66,7 +67,7 @@ export const ChartDecoderGame = ({ onClose }: ChartDecoderGameProps) => {
       setShowFeedback(false);
     } else {
       toast.success(`Chart Decoder complete! Score: ${score}`);
-      onClose();
+      playGameWin();
     }
   };
 

@@ -2,6 +2,7 @@ import { Trophy, Coins, Star } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { playClick } from "@/lib/soundEffects";
 
 interface GameCardProps {
   title: string;
@@ -20,7 +21,7 @@ export const GameCard = ({ title, description, icon, reward, difficulty, onClick
   };
 
   return (
-    <Card className="p-5 hover-lift cursor-pointer smooth-transition" onClick={onClick}>
+    <Card className="p-5 hover-lift cursor-pointer smooth-transition" onClick={() => { playClick(); onClick(); }}>
       <div className="flex items-start gap-4">
         <div className="w-14 h-14 rounded-xl bg-gradient-primary flex items-center justify-center shadow-glow">
           {icon}

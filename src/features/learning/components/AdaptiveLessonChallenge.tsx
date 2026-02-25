@@ -9,6 +9,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useXPSystem } from "@/hooks/useXPSystem";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { playCorrect, playIncorrect } from "@/lib/soundEffects";
 
 interface Question {
   question: string;
@@ -101,6 +102,9 @@ export const AdaptiveLessonChallenge = ({ lessonId, onComplete, onBack }: Adapti
       const questionXP = currentQuestion.difficulty === 'hard' ? 25 : currentQuestion.difficulty === 'medium' ? 15 : 10;
       addXP(questionXP);
       toast.success(`+${questionXP} XP! 🎯`);
+      playCorrect();
+    } else {
+      playIncorrect();
     }
 
     // Store performance in database

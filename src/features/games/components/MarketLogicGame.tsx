@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { TrendingUp, TrendingDown, Minus, X, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
+import { playGameWin, playCorrect, playIncorrect } from "@/lib/soundEffects";
 
 const scenarios = [
   {
@@ -66,7 +67,7 @@ export const MarketLogicGame = ({ onClose }: MarketLogicGameProps) => {
       setShowFeedback(false);
     } else {
       toast.success(`Game complete! Final score: ${score}/${scenarios.length * 10}`);
-      onClose();
+      playGameWin();
     }
   };
 

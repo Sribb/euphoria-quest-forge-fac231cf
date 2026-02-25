@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { X, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
+import { playGameWin } from "@/lib/soundEffects";
 
 const tradingScenarios = [
   {
@@ -61,7 +62,7 @@ export const TradeTacticianGame = ({ onClose }: TradeTacticianGameProps) => {
       setFeedback(null);
     } else {
       toast.success(`Trade Tactician complete! Score: ${score}/${tradingScenarios.length * 20}`);
-      onClose();
+      playGameWin();
     }
   };
 

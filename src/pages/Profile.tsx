@@ -1,4 +1,4 @@
-import { User, Award, TrendingUp, Target, Edit, Palette, Bell, Lock, Settings as SettingsIcon, RotateCcw, Brain, BookOpen } from "lucide-react";
+import { User, Award, TrendingUp, Target, Edit, Palette, Bell, Lock, Settings as SettingsIcon, RotateCcw, Brain, BookOpen, Volume2 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -18,6 +18,7 @@ import { toast } from "sonner";
 import { formatDollar } from "@/lib/formatters";
 import { useNavigate } from "react-router-dom";
 import Onboarding from "./Onboarding";
+import { isSoundEnabled, setSoundEnabled, playClick } from "@/lib/soundEffects";
 const PRESET_AVATARS = [{
   id: 1,
   color: "#9b87f5",
@@ -72,6 +73,7 @@ const Profile = ({
   const [primaryColor, setPrimaryColor] = useState("#9b87f5");
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [darkMode, setDarkMode] = useState(true);
+  const [soundOn, setSoundOn] = useState(isSoundEnabled());
   const [selectedAvatar, setSelectedAvatar] = useState<string>("");
   const [showAvatarDialog, setShowAvatarDialog] = useState(false);
   const [showResetDialog, setShowResetDialog] = useState(false);
@@ -452,6 +454,18 @@ const Profile = ({
                 setNotificationsEnabled(checked);
                 toast.success(checked ? "Notifications enabled" : "Notifications disabled");
               }} />
+              </div>
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="font-semibold">Sound Effects</p>
+                  <p className="text-sm text-muted-foreground">Play sounds for interactions, correct answers, and rewards</p>
+                </div>
+                <Switch checked={soundOn} onCheckedChange={checked => {
+                  setSoundOn(checked);
+                  setSoundEnabled(checked);
+                  if (checked) playClick();
+                  toast.success(checked ? "Sound effects enabled" : "Sound effects muted");
+                }} />
               </div>
             </div>
           </Card>

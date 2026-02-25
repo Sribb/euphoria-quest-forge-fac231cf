@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
+import { playLevelUp, playReward } from "@/lib/soundEffects";
 
 interface XPResult {
   old_xp: number;
@@ -77,7 +78,10 @@ export const useXPSystem = () => {
         if (newLevelData) {
           setLevelUpAnimation({ newLevel: result.new_level, title: newLevelData.title });
           toast.success(`🎉 Level Up! You're now a ${newLevelData.title}!`);
+          playLevelUp();
         }
+      } else {
+        playReward();
       }
     },
   });
