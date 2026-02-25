@@ -11,13 +11,30 @@ interface QuickOverviewGridProps {
 }
 
 // Donut chart component
-const DonutChart = ({ percentage, size = 80, strokeWidth = 8, color = "hsl(var(--primary))" }: { percentage: number; size?: number; strokeWidth?: number; color?: string }) => {
+const DonutChart = ({ percentage, size = 80, strokeWidth = 8, color = "hsl(var(--primary))", glow = false }: { percentage: number; size?: number; strokeWidth?: number; color?: string; glow?: boolean }) => {
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
   const offset = circumference * (1 - Math.min(percentage, 100) / 100);
+  const id = `donut-glow-${size}`;
 
   return (
     <svg width={size} height={size} className="-rotate-90">
+      {glow && (
+        <defs>
+          <linearGradient id={`${id}-grad`} x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="hsl(var(--primary))" />
+            <stop offset="50%" stopColor="hsl(var(--accent))" />
+            <stop offset="100%" stopColor="hsl(var(--primary))" />
+          </linearGradient>
+          <filter id={`${id}-filter`}>
+            <feGaussianBlur stdDeviation="2" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+        </defs>
+      )}
       <circle
         cx={size / 2}
         cy={size / 2}
@@ -25,18 +42,20 @@ const DonutChart = ({ percentage, size = 80, strokeWidth = 8, color = "hsl(var(-
         fill="none"
         stroke="hsl(var(--muted))"
         strokeWidth={strokeWidth}
+        opacity={0.3}
       />
       <circle
         cx={size / 2}
         cy={size / 2}
         r={radius}
         fill="none"
-        stroke={color}
+        stroke={glow ? `url(#${id}-grad)` : color}
         strokeWidth={strokeWidth}
         strokeDasharray={circumference}
         strokeDashoffset={offset}
         strokeLinecap="round"
         className="transition-all duration-700 ease-out"
+        filter={glow ? `url(#${id}-filter)` : undefined}
       />
     </svg>
   );
@@ -131,7 +150,7 @@ export const QuickOverviewGrid = ({ onNavigate }: QuickOverviewGridProps) => {
       {/* Progress — donut chart */}
       <div className={cn(cardBase, "flex flex-col items-center justify-center text-center")} onClick={() => onNavigate?.('analytics')}>
         <div className="relative mb-3">
-          <DonutChart percentage={xpProgress} size={88} strokeWidth={7} color="hsl(var(--primary))" />
+          <DonutChart percentage={xpProgress} size={88} strokeWidth={7} color="hsl(var(--primary))" glow />
           <div className="absolute inset-0 flex flex-col items-center justify-center">
             <span className="text-xl font-bold text-foreground">Lv.{userLevel}</span>
           </div>
