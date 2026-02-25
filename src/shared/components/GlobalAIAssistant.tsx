@@ -9,20 +9,29 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { supabase } from "@/integrations/supabase/client";
 import { motion, AnimatePresence } from "framer-motion";
 import euphoriaLogo from "@/assets/euphoria-logo-button.png";
+import { useEducatorRole } from "@/features/educator/hooks/useEducatorRole";
 
 interface Message {
   role: "user" | "assistant";
   content: string;
 }
 
-const presetQuestions = [
+const studentPresets = [
   "How am I doing?",
   "What should I learn next?",
   "Analyze my portfolio",
 ];
 
+const educatorPresets = [
+  "How are my students doing?",
+  "Who needs attention?",
+  "Class performance summary",
+];
+
 export const GlobalAIAssistant = () => {
   const { user } = useAuth();
+  const { hasEducatorAccess } = useEducatorRole();
+  const presetQuestions = hasEducatorAccess ? educatorPresets : studentPresets;
   const [isOpen, setIsOpen] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
