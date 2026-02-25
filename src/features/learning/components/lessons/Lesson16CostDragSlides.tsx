@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { SliderSimulator } from "../interactive/SliderSimulator";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -392,6 +393,27 @@ export const Lesson16CostDragSlides = ({ onComplete }: Lesson16Props) => {
                   </div>
                 </div>
               </Card>
+
+              {/* Fee Impact Calculator */}
+              <SliderSimulator
+                title="💸 Fee Impact Calculator"
+                description="See how fees eat into your returns over time:"
+                sliders={[
+                  { id: "amount", label: "Investment Amount", min: 10000, max: 500000, step: 10000, defaultValue: 100000, unit: "$" },
+                  { id: "fee", label: "Annual Fee", min: 0.03, max: 2, step: 0.01, defaultValue: 1, unit: "%" },
+                  { id: "years", label: "Years", min: 5, max: 40, step: 5, defaultValue: 30, unit: " yrs" },
+                ]}
+                calculateResult={(vals) => {
+                  const withFee = vals.amount * Math.pow(1 + (0.07 - vals.fee / 100), vals.years);
+                  const withoutFee = vals.amount * Math.pow(1.07, vals.years);
+                  const lost = withoutFee - withFee;
+                  return {
+                    primary: `$${Math.round(lost).toLocaleString()} lost to fees`,
+                    secondary: `That's ${Math.round(lost / withoutFee * 100)}% of your potential wealth`,
+                    insight: vals.fee > 0.5 ? "Switch to low-cost index funds to save tens of thousands!" : "Great — low fees preserve your wealth.",
+                  };
+                }}
+              />
 
               <div className="flex justify-center">
                 <Button onClick={nextSlide} size="lg" className="gap-2">

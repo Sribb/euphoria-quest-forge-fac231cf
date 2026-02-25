@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { DragSortChallenge } from "../interactive/DragSortChallenge";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -410,6 +411,19 @@ export const Lesson18EconomicCyclesSlides = ({ onComplete }: Lesson18Props) => {
                   </div>
                 </div>
               </Card>
+
+              {/* Interactive Challenge */}
+              <DragSortChallenge
+                title="🔄 Order the Economic Cycle"
+                description="Drag these phases in the correct order:"
+                items={[
+                  { id: "expansion", label: "📈 Expansion" },
+                  { id: "peak", label: "🏔️ Peak" },
+                  { id: "contraction", label: "📉 Contraction" },
+                  { id: "trough", label: "🕳️ Trough" },
+                ]}
+                correctOrder={["expansion", "peak", "contraction", "trough"]}
+              />
 
               <div className="flex justify-center">
                 <Button onClick={nextSlide} size="lg" className="gap-2">

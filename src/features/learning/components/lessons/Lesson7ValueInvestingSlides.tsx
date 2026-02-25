@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { SliderSimulator } from "../interactive/SliderSimulator";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -646,7 +647,26 @@ export const Lesson7ValueInvestingSlides = ({ onComplete }: Lesson7Props) => {
                 </motion.div>
               ) : null}
 
-              <motion.div 
+              {/* Margin of Safety Calculator */}
+              <SliderSimulator
+                title="🔍 Margin of Safety Calculator"
+                description="Adjust the stock price and intrinsic value to see the margin of safety:"
+                sliders={[
+                  { id: "price", label: "Stock Price", min: 10, max: 200, step: 5, defaultValue: 80, unit: "$" },
+                  { id: "value", label: "Intrinsic Value", min: 10, max: 200, step: 5, defaultValue: 120, unit: "$" },
+                ]}
+                calculateResult={(vals) => {
+                  const margin = ((vals.value - vals.price) / vals.value * 100);
+                  const verdict = margin > 30 ? "Strong buy" : margin > 15 ? "Potential buy" : margin > 0 ? "Fair value" : "Overvalued";
+                  return {
+                    primary: `${margin.toFixed(1)}% margin`,
+                    secondary: verdict,
+                    insight: margin > 25 ? "Warren Buffett looks for at least 25% margin of safety!" : margin < 0 ? "Price exceeds intrinsic value — risk of overpaying." : "Consider waiting for a wider margin.",
+                  };
+                }}
+              />
+
+              <motion.div
                 className="flex justify-between mt-8"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}

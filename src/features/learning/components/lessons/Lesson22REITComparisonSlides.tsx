@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { SliderSimulator } from "../interactive/SliderSimulator";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -134,6 +135,7 @@ export const Lesson22REITComparisonSlides = ({ onComplete }: Lesson22Props) => {
                     <p className="text-sm text-muted-foreground">REITs offer real estate exposure with stock-like liquidity and diversification. Direct property offers control but requires capital, time, and long holding periods. Most investors benefit from starting with REITs.</p>
                   </div>
                 </div>
+              <SliderSimulator title="🏢 REIT Income Calculator" description="Calculate your REIT dividend income:" sliders={[{ id: "investment", label: "Investment", min: 5000, max: 100000, step: 5000, defaultValue: 25000, unit: "$" },{ id: "yield", label: "REIT Yield", min: 2, max: 10, step: 0.5, defaultValue: 5, unit: "%" }]} calculateResult={(vals) => { const annual = Math.round(vals.investment * vals.yield / 100); return { primary: `$${annual.toLocaleString()}/year`, secondary: `$${Math.round(annual / 12)}/month passive income`, insight: "REITs must distribute 90% of taxable income as dividends." }; }} />
               </Card>
               <div className="flex justify-center"><Button onClick={nextSlide} size="lg" className="gap-2">Complete Lesson <CheckCircle className="w-4 h-4" /></Button></div>
             </Card>

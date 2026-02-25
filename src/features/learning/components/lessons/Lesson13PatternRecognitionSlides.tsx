@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { InteractiveChartAnnotation } from "../interactive/InteractiveChartAnnotation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -451,6 +452,21 @@ export const Lesson13PatternRecognitionSlides = ({ onComplete }: Lesson13Props) 
                   </div>
                 </div>
               </Card>
+
+              {/* Chart Annotation Challenge */}
+              <InteractiveChartAnnotation
+                title="📈 Spot the Pattern"
+                description="Tap on the chart points to identify key pattern features:"
+                data={[
+                  { x: 0, y: 30 }, { x: 1, y: 45 }, { x: 2, y: 35 },
+                  { x: 3, y: 60 }, { x: 4, y: 40 }, { x: 5, y: 50 },
+                  { x: 6, y: 25 }, { x: 7, y: 35 }, { x: 8, y: 55 },
+                ]}
+                targets={[
+                  { index: 3, label: "Head (highest point)" },
+                  { index: 6, label: "Neckline support" },
+                ]}
+              />
 
               <div className="flex justify-center">
                 <Button onClick={nextSlide} size="lg" className="gap-2">

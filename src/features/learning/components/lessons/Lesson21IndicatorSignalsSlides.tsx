@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { DragSortChallenge } from "../interactive/DragSortChallenge";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -150,6 +151,7 @@ export const Lesson21IndicatorSignalsSlides = ({ onComplete }: Lesson21Props) =>
                     <p className="text-sm text-muted-foreground">Indicators are tools, not crystal balls. They work best when combined with price action, volume analysis, and sound risk management. No indicator predicts the future.</p>
                   </div>
                 </div>
+              <DragSortChallenge title="📊 Rank Indicator Reliability" description="Order from MOST to LEAST reliable:" items={[{ id: "ma200", label: "📈 200-Day Moving Average" },{ id: "rsi", label: "📉 RSI (Relative Strength)" },{ id: "macd", label: "🔄 MACD Crossover" },{ id: "volume", label: "📊 Volume Spikes" }]} correctOrder={["ma200", "rsi", "macd", "volume"]} />
               </Card>
               <div className="flex justify-center"><Button onClick={nextSlide} size="lg" className="gap-2">Complete Lesson <CheckCircle className="w-4 h-4" /></Button></div>
             </Card>

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { InteractiveChartAnnotation } from "../interactive/InteractiveChartAnnotation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -398,6 +399,21 @@ export const Lesson17YieldCurveSlides = ({ onComplete }: Lesson17Props) => {
                   </div>
                 </div>
               </Card>
+
+              {/* Yield Curve Annotation */}
+              <InteractiveChartAnnotation
+                title="📈 Identify Yield Curve Points"
+                description="Tap the key points on this yield curve:"
+                data={[
+                  { x: 0.25, y: 4.8 }, { x: 0.5, y: 4.7 }, { x: 1, y: 4.5 },
+                  { x: 2, y: 4.3 }, { x: 5, y: 4.0 }, { x: 10, y: 3.8 },
+                  { x: 20, y: 3.9 }, { x: 30, y: 4.1 },
+                ]}
+                targets={[
+                  { index: 0, label: "Short-term rate (highest = inverted!)" },
+                  { index: 5, label: "10-year benchmark rate" },
+                ]}
+              />
 
               <div className="flex justify-center">
                 <Button onClick={nextSlide} size="lg" className="gap-2">

@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { InteractiveChartAnnotation } from "../interactive/InteractiveChartAnnotation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -932,6 +933,21 @@ export const Lesson3CompoundInterestSlides = ({ onComplete }: Lesson3Props) => {
                   </ComposedChart>
                 </ResponsiveContainer>
               </motion.div>
+
+              {/* Interactive Chart Annotation */}
+              <InteractiveChartAnnotation
+                title="📈 Find the Inflection Points"
+                description="Tap the points where compound growth starts to accelerate:"
+                data={[
+                  { x: 0, y: 1000 }, { x: 5, y: 1400 }, { x: 10, y: 1967 },
+                  { x: 15, y: 2759 }, { x: 20, y: 3870 }, { x: 25, y: 5427 },
+                  { x: 30, y: 7612 }, { x: 35, y: 10677 }, { x: 40, y: 14974 },
+                ]}
+                targets={[
+                  { index: 4, label: "Growth doubles original" },
+                  { index: 6, label: "Exponential curve begins" },
+                ]}
+              />
 
               {/* Result display */}
               <motion.div

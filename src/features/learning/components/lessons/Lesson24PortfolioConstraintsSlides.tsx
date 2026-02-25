@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { DragSortChallenge } from "../interactive/DragSortChallenge";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -126,6 +127,7 @@ export const Lesson24PortfolioConstraintsSlides = ({ onComplete }: Lesson24Props
                     <p className="text-sm text-muted-foreground">Rules protect you from yourself. The best investors automate discipline through constraints. Write your rules when calm, follow them when chaos hits.</p>
                   </div>
                 </div>
+              <DragSortChallenge title="📐 Constraint Priority" description="Order portfolio constraints from MOST to LEAST important:" items={[{ id: "risk", label: "⚠️ Risk Tolerance" },{ id: "time", label: "⏰ Time Horizon" },{ id: "liquidity", label: "💧 Liquidity Needs" },{ id: "tax", label: "💰 Tax Considerations" }]} correctOrder={["risk", "time", "liquidity", "tax"]} />
               </Card>
               <div className="flex justify-center"><Button onClick={nextSlide} size="lg" className="gap-2">Complete Lesson <CheckCircle className="w-4 h-4" /></Button></div>
             </Card>
