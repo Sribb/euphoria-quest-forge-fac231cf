@@ -1,6 +1,6 @@
 import { DashboardHeader } from "@/features/dashboard/components/DashboardHeader";
 import { QuickOverviewGrid } from "@/features/dashboard/components/QuickOverviewGrid";
-import { AIInsightsPanel } from "@/features/dashboard/components/AIInsightsPanel";
+
 import { EconomicCalendarNative } from "@/features/dashboard/components/EconomicCalendarNative";
 import { LiveEconomicHeadlines } from "@/features/dashboard/components/LiveEconomicHeadlines";
 import { DailyRewardsModal } from "@/features/learning/components/DailyRewardsModal";
@@ -81,9 +81,6 @@ const Dashboard = ({ onNavigate, onStockSearch }: DashboardProps) => {
           <QuickOverviewGrid onNavigate={onNavigate} />
         </motion.div>
 
-        <motion.div variants={fadeUp}>
-          <AIInsightsPanel onNavigate={onNavigate} />
-        </motion.div>
 
         {/* Market Intel */}
         <motion.div variants={fadeUp}>
