@@ -3,6 +3,10 @@ import { motion } from "framer-motion";
 import { PiggyBank, TrendingUp, Clock, DollarSign, Sparkles, CheckCircle2, XCircle } from "lucide-react";
 import { BeginnerLessonTemplate, LessonSlide } from "./BeginnerLessonTemplate";
 import { useXPSystem } from "@/hooks/useXPSystem";
+import { playCorrect, playIncorrect } from "@/lib/soundEffects";
+import { fireSmallConfetti } from "@/lib/confetti";
+import { DragSortChallenge } from "../interactive/DragSortChallenge";
+import { SliderSimulator } from "../interactive/SliderSimulator";
 
 // Slide 1: What is Investing?
 const WhatIsInvesting = () => (
@@ -13,9 +17,7 @@ const WhatIsInvesting = () => (
     </p>
 
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
-      <motion.div
-        className="p-6 rounded-2xl bg-muted/50 border border-border"
-      >
+      <motion.div className="p-6 rounded-2xl bg-muted/50 border border-border">
         <PiggyBank className="w-10 h-10 text-accent mb-3" />
         <h3 className="font-bold text-foreground mb-2">Saving</h3>
         <p className="text-sm text-muted-foreground">
@@ -44,7 +46,7 @@ const WhatIsInvesting = () => (
   </div>
 );
 
-// Slide 2: Why Does Money Lose Value?
+// Slide 2: Why Does Money Lose Value? (with drag sort)
 const WhyMoneyLosesValue = () => {
   const items = [
     { year: "Today", price: "$5.00", emoji: "☕" },
@@ -78,6 +80,19 @@ const WhyMoneyLosesValue = () => {
         ))}
       </div>
 
+      {/* Drag sort challenge */}
+      <DragSortChallenge
+        title="🧩 Order these by risk level"
+        description="Drag to rank from LOWEST to HIGHEST risk:"
+        items={[
+          { id: "savings", label: "💰 Savings Account" },
+          { id: "bonds", label: "📜 Government Bonds" },
+          { id: "stocks", label: "📈 Large-Cap Stocks" },
+          { id: "crypto", label: "🪙 Cryptocurrency" },
+        ]}
+        correctOrder={["savings", "bonds", "stocks", "crypto"]}
+      />
+
       <div className="p-4 rounded-xl bg-destructive/5 border border-destructive/20 mt-4">
         <p className="text-sm text-muted-foreground">
           💡 If your money isn't growing, it's actually <span className="text-destructive font-semibold">shrinking</span> in value. 
@@ -88,20 +103,8 @@ const WhyMoneyLosesValue = () => {
   );
 };
 
-// Slide 3: The Magic of Time
+// Slide 3: Interactive Compound Growth Simulator
 const MagicOfTime = () => {
-  const [showGrowth, setShowGrowth] = useState(false);
-
-  const bars = [
-    { year: 0, amount: 1000, label: "Year 0" },
-    { year: 5, amount: 1400, label: "Year 5" },
-    { year: 10, amount: 1967, label: "Year 10" },
-    { year: 20, amount: 3870, label: "Year 20" },
-    { year: 30, amount: 7612, label: "Year 30" },
-  ];
-
-  const maxAmount = bars[bars.length - 1].amount;
-
   return (
     <div className="space-y-6">
       <p className="text-lg text-muted-foreground leading-relaxed">
@@ -109,55 +112,53 @@ const MagicOfTime = () => {
         This is called <span className="text-primary font-bold">compound growth</span>.
       </p>
 
-      <p className="text-base text-muted-foreground">
-        Tap the button to see what happens to $1,000 invested at 7% per year:
-      </p>
+      <SliderSimulator
+        title="🎛️ Compound Growth Simulator"
+        description="Move the sliders to see how your money grows:"
+        sliders={[
+          { id: "initial", label: "Starting Amount", min: 100, max: 10000, step: 100, defaultValue: 1000, unit: "$" },
+          { id: "rate", label: "Annual Return", min: 1, max: 15, step: 0.5, defaultValue: 7, unit: "%" },
+          { id: "years", label: "Years Invested", min: 1, max: 40, step: 1, defaultValue: 20, unit: " yrs" },
+        ]}
+        calculateResult={(vals) => {
+          const future = vals.initial * Math.pow(1 + vals.rate / 100, vals.years);
+          const earned = future - vals.initial;
+          return {
+            primary: `$${Math.round(future).toLocaleString()}`,
+            secondary: `You earn $${Math.round(earned).toLocaleString()} in returns`,
+            insight:
+              vals.years >= 20
+                ? "Time is your biggest advantage — most growth happens in the later years!"
+                : vals.rate >= 10
+                ? "Higher returns accelerate growth, but come with more risk."
+                : "Even modest returns create significant wealth over time.",
+          };
+        }}
+        chartRender={(vals) => {
+          const points = Array.from({ length: Math.min(vals.years + 1, 41) }, (_, i) => ({
+            year: i,
+            value: vals.initial * Math.pow(1 + vals.rate / 100, i),
+          }));
+          const maxVal = points[points.length - 1].value;
+          const w = 540;
+          const h = 120;
+          const pad = 10;
+          const pathD = points
+            .map((p, i) => {
+              const x = pad + (i / (points.length - 1)) * (w - pad * 2);
+              const y = h - pad - ((p.value - vals.initial) / (maxVal - vals.initial || 1)) * (h - pad * 2);
+              return `${i === 0 ? "M" : "L"} ${x} ${y}`;
+            })
+            .join(" ");
 
-      <button
-        onClick={() => setShowGrowth(true)}
-        className="w-full p-4 rounded-xl bg-primary/10 border border-primary/20 text-primary font-bold hover:bg-primary/20 transition-colors"
-      >
-        {showGrowth ? "✨ Watch it grow!" : "Show me the growth →"}
-      </button>
-
-      <div className="space-y-3 mt-4">
-        {bars.map((bar, i) => (
-          <motion.div
-            key={i}
-            initial={{ opacity: 0 }}
-            animate={showGrowth ? { opacity: 1 } : { opacity: i === 0 ? 1 : 0.3 }}
-            transition={{ delay: showGrowth ? i * 0.2 : 0 }}
-            className="flex items-center gap-4"
-          >
-            <span className="text-sm text-muted-foreground w-16 text-right font-medium">{bar.label}</span>
-            <div className="flex-1 h-10 bg-muted/30 rounded-lg overflow-hidden">
-              <motion.div
-                initial={{ width: 0 }}
-                animate={showGrowth ? { width: `${(bar.amount / maxAmount) * 100}%` } : { width: i === 0 ? `${(bar.amount / maxAmount) * 100}%` : 0 }}
-                transition={{ delay: showGrowth ? i * 0.2 + 0.1 : 0, duration: 0.6, ease: "easeOut" }}
-                className="h-full bg-gradient-to-r from-primary to-primary/60 rounded-lg flex items-center justify-end pr-3"
-              >
-                <span className="text-xs font-bold text-primary-foreground whitespace-nowrap">
-                  ${bar.amount.toLocaleString()}
-                </span>
-              </motion.div>
-            </div>
-          </motion.div>
-        ))}
-      </div>
-
-      {showGrowth && (
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="p-4 rounded-xl bg-primary/5 border border-primary/20"
-        >
-          <p className="text-sm text-muted-foreground">
-            🎯 Your $1,000 turned into <span className="text-primary font-bold">$7,612</span> — without adding a single extra dollar. 
-            That's the power of time + compound growth.
-          </p>
-        </motion.div>
-      )}
+          return (
+            <svg viewBox={`0 0 ${w} ${h}`} className="w-full" style={{ minHeight: 100 }}>
+              <path d={pathD} fill="none" className="stroke-primary" strokeWidth={2.5} />
+              <line x1={pad} y1={h - pad} x2={w - pad} y2={h - pad} className="stroke-border" strokeWidth={0.5} />
+            </svg>
+          );
+        }}
+      />
     </div>
   );
 };
@@ -181,7 +182,11 @@ const QuizSlide = () => {
     setSelected(index);
     setAnswered(true);
     if (index === correctIndex) {
+      playCorrect();
+      fireSmallConfetti();
       addXP(10);
+    } else {
+      playIncorrect();
     }
   };
 
