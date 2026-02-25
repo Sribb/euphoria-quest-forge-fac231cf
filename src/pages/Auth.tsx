@@ -291,7 +291,14 @@ const Auth = () => {
             exit={{ opacity: 0, y: -20 }}
             className="w-full max-w-md px-4 relative z-10"
           >
-            <Card className="p-8 shadow-glow border-border backdrop-blur-sm bg-card/90">
+            <Card className={`p-8 shadow-glow border-border backdrop-blur-sm bg-card/90 relative overflow-hidden ${
+              !isLogin && signupRole === "educator" ? "border-t-2 border-t-accent" : ""
+            }`}>
+              {/* Educator accent stripe */}
+              {!isLogin && signupRole === "educator" && (
+                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary via-accent to-primary" />
+              )}
+
               {!isLogin && (
                 <button
                   onClick={() => setAuthStep(signupRole === "educator" ? "educator-info" : "choose-role")}
@@ -302,8 +309,14 @@ const Auth = () => {
               )}
 
               <div className="flex items-center justify-center gap-2 mb-8">
-                <img src={euphoriaLogo} alt="Euphoria" className="w-12 h-12 object-contain" />
-                 <h1 className="text-3xl font-bold">Euphoria</h1>
+                {!isLogin && signupRole === "educator" ? (
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center">
+                    <GraduationCap className="w-7 h-7 text-white" />
+                  </div>
+                ) : (
+                  <img src={euphoriaLogo} alt="Euphoria" className="w-12 h-12 object-contain" />
+                )}
+                <h1 className="text-3xl font-bold">Euphoria</h1>
               </div>
 
               {isLogin && (
