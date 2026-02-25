@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Slider } from "@/components/ui/slider";
-import { playClick } from "@/lib/soundEffects";
+import { playSnap } from "@/lib/soundEffects";
 
 interface SliderConfig {
   id: string;
@@ -71,7 +71,7 @@ export const SliderSimulator = ({
               step={slider.step}
               value={[values[slider.id]]}
               onValueChange={(val) => handleChange(slider.id, val)}
-              onValueCommit={() => playClick()}
+              onValueCommit={() => playSnap()}
               className="w-full"
             />
             <div className="flex justify-between text-xs text-muted-foreground">

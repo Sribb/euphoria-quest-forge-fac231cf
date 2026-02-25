@@ -2,7 +2,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronRight, ChevronLeft, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { playClick, playNav, playReward, playLessonComplete } from "@/lib/soundEffects";
+import { playClick, playSlideForward, playSlideBack, playMilestone, playLessonComplete } from "@/lib/soundEffects";
 import { fireConfetti } from "@/lib/confetti";
 
 export interface LessonSlide {
@@ -38,9 +38,9 @@ export const BeginnerLessonTemplate = ({ slides, onComplete }: BeginnerLessonTem
     setCurrent(next);
 
     if (next === halfwayIndex) {
-      playReward();
+      playMilestone();
     } else {
-      playNav();
+      playSlideForward();
     }
   };
 
@@ -48,7 +48,7 @@ export const BeginnerLessonTemplate = ({ slides, onComplete }: BeginnerLessonTem
     if (isFirst) return;
     setDirection(-1);
     setCurrent((p) => p - 1);
-    playClick();
+    playSlideBack();
   };
 
   const slide = slides[current];
