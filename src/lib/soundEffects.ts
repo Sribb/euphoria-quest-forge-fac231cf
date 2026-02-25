@@ -1,14 +1,41 @@
 /**
- * Duolingo / Brilliant-inspired sound effects using Web Audio API.
- * Rich, layered, gamified audio feedback — zero external dependencies.
+ * Premium sound effects inspired by Duolingo & Brilliant.
+ * Uses layered synthesis with proper envelopes, reverb, and harmonics.
  */
 
 let audioCtx: AudioContext | null = null;
+let reverbBuffer: AudioBuffer | null = null;
 
 const getCtx = (): AudioContext => {
-  if (!audioCtx) audioCtx = new AudioContext();
+  if (!audioCtx) {
+    audioCtx = new AudioContext();
+    createReverb(audioCtx);
+  }
   if (audioCtx.state === "suspended") audioCtx.resume();
   return audioCtx;
+};
+
+// Create a convolution reverb impulse response
+const createReverb = async (ctx: AudioContext) => {
+  const length = ctx.sampleRate * 0.6;
+  const buffer = ctx.createBuffer(2, length, ctx.sampleRate);
+  for (let ch = 0; ch < 2; ch++) {
+    const data = buffer.getChannelData(ch);
+    for (let i = 0; i < length; i++) {
+      data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / length, 2.5);
+    }
+  }
+  reverbBuffer = buffer;
+};
+
+const getReverb = (ctx: AudioContext, wetLevel = 0.15): ConvolverNode | null => {
+  if (!reverbBuffer) return null;
+  const convolver = ctx.createConvolver();
+  convolver.buffer = reverbBuffer;
+  const wet = ctx.createGain();
+  wet.gain.value = wetLevel;
+  convolver.connect(wet).connect(ctx.destination);
+  return convolver;
 };
 
 // ── Preference ──────────────────────────────────────────
@@ -28,502 +55,517 @@ export const setSoundEnabled = (v: boolean) => {
   } catch {}
 };
 
-// ── Core Helpers ────────────────────────────────────────
+// ── Synthesis Helpers ───────────────────────────────────
 
-const createOsc = (
+/** Play a bell-like tone with natural decay and harmonics */
+const playBell = (
   ctx: AudioContext,
-  type: OscillatorType,
   freq: number,
   startTime: number,
-  endTime: number,
-  gainNode: GainNode,
+  duration: number,
+  volume: number,
+  dest?: AudioNode,
 ) => {
+  const target = dest || ctx.destination;
+
+  // Fundamental
+  const osc1 = ctx.createOscillator();
+  osc1.type = "sine";
+  osc1.frequency.value = freq;
+
+  // Slight detune for warmth
+  const osc2 = ctx.createOscillator();
+  osc2.type = "sine";
+  osc2.frequency.value = freq * 1.002;
+
+  // 2nd harmonic (octave) for brightness
+  const osc3 = ctx.createOscillator();
+  osc3.type = "sine";
+  osc3.frequency.value = freq * 2;
+
+  // 3rd harmonic (soft) for bell character
+  const osc4 = ctx.createOscillator();
+  osc4.type = "sine";
+  osc4.frequency.value = freq * 3;
+
+  const gain1 = ctx.createGain();
+  const gain2 = ctx.createGain();
+  const gain3 = ctx.createGain();
+  const gain4 = ctx.createGain();
+
+  // ADSR-like envelope: quick attack, natural decay
+  const attack = 0.008;
+  const decayEnd = startTime + duration;
+
+  [gain1, gain2].forEach((g) => {
+    g.gain.setValueAtTime(0.001, startTime);
+    g.gain.linearRampToValueAtTime(volume, startTime + attack);
+    g.gain.exponentialRampToValueAtTime(volume * 0.4, startTime + duration * 0.3);
+    g.gain.exponentialRampToValueAtTime(0.001, decayEnd);
+  });
+
+  // Overtones decay faster
+  gain3.gain.setValueAtTime(0.001, startTime);
+  gain3.gain.linearRampToValueAtTime(volume * 0.25, startTime + attack);
+  gain3.gain.exponentialRampToValueAtTime(0.001, startTime + duration * 0.5);
+
+  gain4.gain.setValueAtTime(0.001, startTime);
+  gain4.gain.linearRampToValueAtTime(volume * 0.08, startTime + attack);
+  gain4.gain.exponentialRampToValueAtTime(0.001, startTime + duration * 0.3);
+
+  osc1.connect(gain1).connect(target);
+  osc2.connect(gain2).connect(target);
+  osc3.connect(gain3).connect(target);
+  osc4.connect(gain4).connect(target);
+
+  [osc1, osc2, osc3, osc4].forEach((o) => {
+    o.start(startTime);
+    o.stop(decayEnd + 0.05);
+  });
+};
+
+/** Soft percussive pop using shaped noise */
+const playPop = (ctx: AudioContext, startTime: number, pitch: number, volume: number) => {
+  // Pitched body
   const osc = ctx.createOscillator();
-  osc.type = type;
-  osc.frequency.value = freq;
-  osc.connect(gainNode);
-  osc.start(startTime);
-  osc.stop(endTime);
-  return osc;
-};
+  osc.type = "sine";
+  osc.frequency.setValueAtTime(pitch, startTime);
+  osc.frequency.exponentialRampToValueAtTime(pitch * 0.4, startTime + 0.08);
 
-const createGain = (ctx: AudioContext, volume: number, destination?: AudioNode) => {
   const gain = ctx.createGain();
-  gain.gain.value = volume;
-  gain.connect(destination || ctx.destination);
-  return gain;
+  gain.gain.setValueAtTime(0.001, startTime);
+  gain.gain.linearRampToValueAtTime(volume, startTime + 0.003);
+  gain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.08);
+
+  osc.connect(gain).connect(ctx.destination);
+  osc.start(startTime);
+  osc.stop(startTime + 0.1);
+
+  // Transient click
+  const clickOsc = ctx.createOscillator();
+  clickOsc.type = "square";
+  clickOsc.frequency.value = pitch * 4;
+  const clickGain = ctx.createGain();
+  clickGain.gain.setValueAtTime(volume * 0.3, startTime);
+  clickGain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.008);
+  clickOsc.connect(clickGain).connect(ctx.destination);
+  clickOsc.start(startTime);
+  clickOsc.stop(startTime + 0.015);
 };
 
-// Noise burst for percussive texture
-const playNoiseBurst = (ctx: AudioContext, startTime: number, duration: number, volume: number) => {
-  const bufferSize = ctx.sampleRate * duration;
-  const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-  const data = buffer.getChannelData(0);
-  for (let i = 0; i < bufferSize; i++) {
-    data[i] = (Math.random() * 2 - 1) * 0.5;
+/** Shimmer — high sparkle texture */
+const playShimmer = (ctx: AudioContext, startTime: number, duration: number, volume: number) => {
+  const bufSize = ctx.sampleRate * duration;
+  const buf = ctx.createBuffer(1, bufSize, ctx.sampleRate);
+  const data = buf.getChannelData(0);
+  for (let i = 0; i < bufSize; i++) {
+    data[i] = (Math.random() * 2 - 1);
   }
-  const noise = ctx.createBufferSource();
-  noise.buffer = buffer;
+  const src = ctx.createBufferSource();
+  src.buffer = buf;
 
-  const bandpass = ctx.createBiquadFilter();
-  bandpass.type = "bandpass";
-  bandpass.frequency.value = 4000;
-  bandpass.Q.value = 2;
+  const hp = ctx.createBiquadFilter();
+  hp.type = "highpass";
+  hp.frequency.value = 6000;
 
-  const gain = createGain(ctx, 0);
-  gain.gain.setValueAtTime(volume, startTime);
+  const bp = ctx.createBiquadFilter();
+  bp.type = "bandpass";
+  bp.frequency.value = 10000;
+  bp.Q.value = 0.5;
+
+  const gain = ctx.createGain();
+  gain.gain.setValueAtTime(0.001, startTime);
+  gain.gain.linearRampToValueAtTime(volume, startTime + 0.01);
   gain.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
 
-  noise.connect(bandpass).connect(gain);
-  noise.start(startTime);
-  noise.stop(startTime + duration);
+  src.connect(hp).connect(bp).connect(gain).connect(ctx.destination);
+  src.start(startTime);
+  src.stop(startTime + duration);
 };
 
 // ── SOUND EFFECTS ───────────────────────────────────────
 
-/** Duolingo-style satisfying tap/pop — short sine pop + filtered noise */
+/** Duolingo tap — crisp pop with body */
 export const playClick = () => {
   if (!isSoundEnabled()) return;
   const ctx = getCtx();
   const t = ctx.currentTime;
-
-  // Main pop — sine that pitches down
-  const gain = createGain(ctx, 0.15);
-  gain.gain.exponentialRampToValueAtTime(0.001, t + 0.06);
-  const osc = ctx.createOscillator();
-  osc.type = "sine";
-  osc.frequency.setValueAtTime(1400, t);
-  osc.frequency.exponentialRampToValueAtTime(600, t + 0.04);
-  osc.connect(gain);
-  osc.start(t);
-  osc.stop(t + 0.06);
-
-  // Subtle click noise
-  playNoiseBurst(ctx, t, 0.025, 0.04);
+  playPop(ctx, t, 1000, 0.2);
 };
 
-/** ✅ Correct answer — Duolingo rising major third chime with shimmer */
+/** ✅ Correct — Duolingo's signature rising major-third chime */
 export const playCorrect = () => {
   if (!isSoundEnabled()) return;
   const ctx = getCtx();
   const t = ctx.currentTime;
 
-  // Two-note rising chime: C5 → E5 (major third = satisfaction)
-  const notes = [
-    { freq: 523.25, time: 0, dur: 0.18 },    // C5
-    { freq: 659.25, time: 0.08, dur: 0.25 },  // E5
-  ];
+  // Two bell tones: C5 → E5 (the Duolingo interval)
+  playBell(ctx, 523.25, t, 0.35, 0.22);          // C5
+  playBell(ctx, 659.25, t + 0.1, 0.4, 0.25);     // E5
 
-  notes.forEach(({ freq, time, dur }) => {
-    const gain = createGain(ctx, 0.18);
-    gain.gain.setValueAtTime(0.18, t + time);
-    gain.gain.exponentialRampToValueAtTime(0.001, t + time + dur);
-    createOsc(ctx, "sine", freq, t + time, t + time + dur, gain);
+  // Sparkle on the second note
+  playShimmer(ctx, t + 0.12, 0.08, 0.025);
 
-    // Harmonic shimmer (octave above, quieter)
-    const shimmer = createGain(ctx, 0.04);
-    shimmer.gain.exponentialRampToValueAtTime(0.001, t + time + dur);
-    createOsc(ctx, "sine", freq * 2, t + time + 0.01, t + time + dur, shimmer);
-  });
-
-  // Subtle sparkle noise
-  playNoiseBurst(ctx, t + 0.06, 0.05, 0.03);
+  // Send to reverb
+  const reverb = getReverb(ctx, 0.1);
+  if (reverb) {
+    playBell(ctx, 659.25, t + 0.1, 0.4, 0.06, reverb);
+  }
 };
 
-/** ❌ Wrong answer — Duolingo gentle two-tone descending buzz */
+/** ❌ Incorrect — gentle, non-punishing two-tone drop */
 export const playIncorrect = () => {
   if (!isSoundEnabled()) return;
   const ctx = getCtx();
   const t = ctx.currentTime;
 
-  // Soft descending minor second
+  // Soft descending minor second with triangle wave
   const notes = [
-    { freq: 370, time: 0, dur: 0.15 },
-    { freq: 330, time: 0.1, dur: 0.2 },
+    { freq: 392, time: 0, dur: 0.18 },    // G4
+    { freq: 349.23, time: 0.12, dur: 0.22 }, // F4
   ];
 
   notes.forEach(({ freq, time, dur }) => {
-    const gain = createGain(ctx, 0.1);
-    gain.gain.exponentialRampToValueAtTime(0.001, t + time + dur);
-    createOsc(ctx, "triangle", freq, t + time, t + time + dur, gain);
-  });
+    const osc = ctx.createOscillator();
+    osc.type = "triangle";
+    osc.frequency.value = freq;
 
-  // Low rumble
-  const rumble = createGain(ctx, 0.06);
-  rumble.gain.exponentialRampToValueAtTime(0.001, t + 0.25);
-  createOsc(ctx, "sine", 110, t, t + 0.25, rumble);
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(0.001, t + time);
+    gain.gain.linearRampToValueAtTime(0.12, t + time + 0.01);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + time + dur);
+
+    osc.connect(gain).connect(ctx.destination);
+    osc.start(t + time);
+    osc.stop(t + time + dur + 0.05);
+  });
 };
 
-/** 🪙 XP/Coin reward — Brilliant-style ascending sparkle arpeggio */
+/** 🪙 XP / Coin — Brilliant-style ascending sparkle cascade */
 export const playReward = () => {
   if (!isSoundEnabled()) return;
   const ctx = getCtx();
   const t = ctx.currentTime;
 
-  // Fast pentatonic sparkle: D5 → E5 → G5 → A5 → D6
-  const notes = [
-    { freq: 587.33, delay: 0 },
-    { freq: 659.25, delay: 0.05 },
-    { freq: 783.99, delay: 0.1 },
-    { freq: 880, delay: 0.15 },
-    { freq: 1174.66, delay: 0.22 },
-  ];
-
-  notes.forEach(({ freq, delay }) => {
-    const dur = 0.15;
-    const gain = createGain(ctx, 0.12);
-    gain.gain.setValueAtTime(0.12, t + delay);
-    gain.gain.exponentialRampToValueAtTime(0.001, t + delay + dur);
-    createOsc(ctx, "sine", freq, t + delay, t + delay + dur, gain);
-
-    // Bell-like overtone
-    const bell = createGain(ctx, 0.03);
-    bell.gain.exponentialRampToValueAtTime(0.001, t + delay + dur * 0.8);
-    createOsc(ctx, "sine", freq * 3, t + delay, t + delay + dur * 0.8, bell);
+  // Pentatonic sparkle: fast ascending bells
+  const notes = [587.33, 698.46, 880, 1046.5, 1318.51]; // D5 F5 A5 C6 E6
+  notes.forEach((freq, i) => {
+    const delay = i * 0.055;
+    playBell(ctx, freq, t + delay, 0.2, 0.12 + i * 0.01);
   });
 
-  playNoiseBurst(ctx, t + 0.08, 0.06, 0.025);
+  // Shimmer at peak
+  playShimmer(ctx, t + 0.2, 0.12, 0.035);
+
+  // Reverb tail
+  const reverb = getReverb(ctx, 0.12);
+  if (reverb) playBell(ctx, 1318.51, t + 0.22, 0.3, 0.04, reverb);
 };
 
-/** 🎉 Level up — Duolingo triumphant fanfare with harmony + bass */
+/** 🎉 Level up — triumphant fanfare with bass and shimmer */
 export const playLevelUp = () => {
   if (!isSoundEnabled()) return;
   const ctx = getCtx();
   const t = ctx.currentTime;
 
-  // Triumphant melody: C5 → E5 → G5 → C6 (major chord arpeggio)
+  // Melody: C5 → E5 → G5 → C6
   const melody = [
-    { freq: 523.25, delay: 0, dur: 0.2 },
-    { freq: 659.25, delay: 0.12, dur: 0.2 },
-    { freq: 783.99, delay: 0.24, dur: 0.2 },
-    { freq: 1046.5, delay: 0.38, dur: 0.35 },
+    { freq: 523.25, delay: 0, dur: 0.25 },
+    { freq: 659.25, delay: 0.14, dur: 0.25 },
+    { freq: 783.99, delay: 0.28, dur: 0.25 },
+    { freq: 1046.5, delay: 0.44, dur: 0.45 },
   ];
 
   melody.forEach(({ freq, delay, dur }) => {
-    const gain = createGain(ctx, 0.16);
-    gain.gain.setValueAtTime(0.16, t + delay);
-    gain.gain.exponentialRampToValueAtTime(0.001, t + delay + dur);
-    createOsc(ctx, "sine", freq, t + delay, t + delay + dur, gain);
+    playBell(ctx, freq, t + delay, dur, 0.2);
   });
 
-  // Harmony pad (third below, soft)
-  const harmony = [
-    { freq: 392, delay: 0.15, dur: 0.4 },
-    { freq: 523.25, delay: 0.3, dur: 0.35 },
-  ];
-  harmony.forEach(({ freq, delay, dur }) => {
-    const gain = createGain(ctx, 0.06);
-    gain.gain.exponentialRampToValueAtTime(0.001, t + delay + dur);
-    createOsc(ctx, "triangle", freq, t + delay, t + delay + dur, gain);
-  });
+  // Warm bass foundation
+  const bass = ctx.createOscillator();
+  bass.type = "sine";
+  bass.frequency.value = 130.81; // C3
+  const bassGain = ctx.createGain();
+  bassGain.gain.setValueAtTime(0.001, t + 0.1);
+  bassGain.gain.linearRampToValueAtTime(0.1, t + 0.2);
+  bassGain.gain.exponentialRampToValueAtTime(0.001, t + 0.8);
+  bass.connect(bassGain).connect(ctx.destination);
+  bass.start(t + 0.1);
+  bass.stop(t + 0.85);
 
-  // Bass foundation
-  const bass = createGain(ctx, 0.08);
-  bass.gain.exponentialRampToValueAtTime(0.001, t + 0.6);
-  createOsc(ctx, "sine", 130.81, t, t + 0.6, bass);
+  // Triumph shimmer
+  playShimmer(ctx, t + 0.4, 0.15, 0.04);
 
-  // Sparkle burst
-  playNoiseBurst(ctx, t + 0.35, 0.08, 0.04);
+  // Reverb on final note
+  const reverb = getReverb(ctx, 0.2);
+  if (reverb) playBell(ctx, 1046.5, t + 0.44, 0.5, 0.06, reverb);
 };
 
-/** 🎓 Lesson complete — Duolingo celebration: full melody + shimmer cascade */
+/** 🎓 Lesson complete — Duolingo celebration melody */
 export const playLessonComplete = () => {
   if (!isSoundEnabled()) return;
   const ctx = getCtx();
   const t = ctx.currentTime;
 
-  // Celebratory ascending melody
+  // Full ascending celebration: C5 E5 G5 C6 E6
   const melody = [
-    { freq: 523.25, delay: 0, dur: 0.12 },     // C5
-    { freq: 659.25, delay: 0.08, dur: 0.12 },   // E5
-    { freq: 783.99, delay: 0.16, dur: 0.12 },   // G5
-    { freq: 1046.5, delay: 0.26, dur: 0.15 },   // C6
-    { freq: 1318.51, delay: 0.38, dur: 0.4 },   // E6 (sustained)
+    { freq: 523.25, delay: 0 },
+    { freq: 659.25, delay: 0.09 },
+    { freq: 783.99, delay: 0.18 },
+    { freq: 1046.5, delay: 0.3 },
+    { freq: 1318.51, delay: 0.44 },
   ];
 
-  melody.forEach(({ freq, delay, dur }) => {
-    const gain = createGain(ctx, 0.15);
-    gain.gain.setValueAtTime(0.15, t + delay);
-    gain.gain.exponentialRampToValueAtTime(0.001, t + delay + dur);
-    createOsc(ctx, "sine", freq, t + delay, t + delay + dur, gain);
-
-    // Octave shimmer on higher notes
-    if (freq > 700) {
-      const shim = createGain(ctx, 0.035);
-      shim.gain.exponentialRampToValueAtTime(0.001, t + delay + dur * 0.7);
-      createOsc(ctx, "sine", freq * 2, t + delay + 0.02, t + delay + dur * 0.7, shim);
-    }
+  melody.forEach(({ freq, delay }, i) => {
+    const dur = i === melody.length - 1 ? 0.6 : 0.22;
+    playBell(ctx, freq, t + delay, dur, 0.18 + i * 0.01);
   });
 
-  // Warm pad underneath
-  const pad = createGain(ctx, 0.05);
-  pad.gain.exponentialRampToValueAtTime(0.001, t + 0.7);
-  createOsc(ctx, "triangle", 261.63, t + 0.1, t + 0.7, pad);
+  // Harmony pad: G4 + C5 underneath
+  [392, 523.25].forEach((freq, i) => {
+    const osc = ctx.createOscillator();
+    osc.type = "triangle";
+    osc.frequency.value = freq;
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(0.001, t + 0.15);
+    gain.gain.linearRampToValueAtTime(0.05, t + 0.25);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.9);
+    osc.connect(gain).connect(ctx.destination);
+    osc.start(t + 0.15);
+    osc.stop(t + 0.95);
+  });
 
-  // Bass drop
-  const bass = createGain(ctx, 0.07);
-  bass.gain.exponentialRampToValueAtTime(0.001, t + 0.5);
-  createOsc(ctx, "sine", 130.81, t + 0.25, t + 0.5, bass);
+  // Bass
+  const bass = ctx.createOscillator();
+  bass.type = "sine";
+  bass.frequency.value = 130.81;
+  const bg = ctx.createGain();
+  bg.gain.setValueAtTime(0.001, t + 0.25);
+  bg.gain.linearRampToValueAtTime(0.08, t + 0.35);
+  bg.gain.exponentialRampToValueAtTime(0.001, t + 0.9);
+  bass.connect(bg).connect(ctx.destination);
+  bass.start(t + 0.25);
+  bass.stop(t + 0.95);
 
-  // Sparkle cascade
-  playNoiseBurst(ctx, t + 0.15, 0.06, 0.03);
-  playNoiseBurst(ctx, t + 0.35, 0.08, 0.04);
+  // Celebration shimmer cascade
+  playShimmer(ctx, t + 0.18, 0.08, 0.03);
+  playShimmer(ctx, t + 0.42, 0.12, 0.04);
+
+  // Reverb
+  const reverb = getReverb(ctx, 0.25);
+  if (reverb) {
+    playBell(ctx, 1318.51, t + 0.44, 0.6, 0.05, reverb);
+  }
 };
 
-/** 🏆 Game win — rich victory fanfare */
+/** 🏆 Game win — victory fanfare */
 export const playGameWin = () => {
   if (!isSoundEnabled()) return;
   const ctx = getCtx();
   const t = ctx.currentTime;
 
-  // Fanfare
-  const notes = [
-    { freq: 392, delay: 0, dur: 0.15 },       // G4
-    { freq: 523.25, delay: 0.1, dur: 0.15 },  // C5
-    { freq: 659.25, delay: 0.2, dur: 0.15 },  // E5
-    { freq: 783.99, delay: 0.3, dur: 0.2 },   // G5
-    { freq: 1046.5, delay: 0.42, dur: 0.35 }, // C6 hold
-  ];
-
-  notes.forEach(({ freq, delay, dur }) => {
-    const gain = createGain(ctx, 0.14);
-    gain.gain.setValueAtTime(0.14, t + delay);
-    gain.gain.exponentialRampToValueAtTime(0.001, t + delay + dur);
-    createOsc(ctx, "sine", freq, t + delay, t + delay + dur, gain);
+  // G4 C5 E5 G5 C6
+  const fanfare = [392, 523.25, 659.25, 783.99, 1046.5];
+  fanfare.forEach((freq, i) => {
+    const delay = i * 0.1;
+    const dur = i === fanfare.length - 1 ? 0.5 : 0.2;
+    playBell(ctx, freq, t + delay, dur, 0.17);
   });
 
-  // Harmony layer
-  [392, 523.25, 659.25].forEach((freq, i) => {
-    const gain = createGain(ctx, 0.04);
-    const delay = 0.15 + i * 0.12;
-    gain.gain.exponentialRampToValueAtTime(0.001, t + delay + 0.3);
-    createOsc(ctx, "triangle", freq, t + delay, t + delay + 0.3, gain);
-  });
+  // Sub bass
+  const bass = ctx.createOscillator();
+  bass.type = "sine";
+  bass.frequency.value = 98; // G2
+  const bg = ctx.createGain();
+  bg.gain.setValueAtTime(0.001, t + 0.2);
+  bg.gain.linearRampToValueAtTime(0.09, t + 0.3);
+  bg.gain.exponentialRampToValueAtTime(0.001, t + 0.8);
+  bass.connect(bg).connect(ctx.destination);
+  bass.start(t + 0.2);
+  bass.stop(t + 0.85);
 
-  // Bass
-  const bass = createGain(ctx, 0.06);
-  bass.gain.exponentialRampToValueAtTime(0.001, t + 0.7);
-  createOsc(ctx, "sine", 130.81, t + 0.2, t + 0.7, bass);
-
-  playNoiseBurst(ctx, t + 0.4, 0.1, 0.04);
+  playShimmer(ctx, t + 0.38, 0.15, 0.04);
 };
 
-/** 🔥 Streak milestone — warm ascending ping trio */
+/** 🔥 Streak — warm ascending ping */
 export const playStreak = () => {
   if (!isSoundEnabled()) return;
   const ctx = getCtx();
   const t = ctx.currentTime;
 
-  const notes = [
-    { freq: 698.46, delay: 0 },    // F5
-    { freq: 880, delay: 0.08 },    // A5
-    { freq: 1174.66, delay: 0.16 }, // D6
-  ];
-
-  notes.forEach(({ freq, delay }) => {
-    const dur = 0.18;
-    const gain = createGain(ctx, 0.13);
-    gain.gain.setValueAtTime(0.13, t + delay);
-    gain.gain.exponentialRampToValueAtTime(0.001, t + delay + dur);
-    createOsc(ctx, "sine", freq, t + delay, t + delay + dur, gain);
+  // F5 A5 D6 — warm rising
+  [698.46, 880, 1174.66].forEach((freq, i) => {
+    playBell(ctx, freq, t + i * 0.09, 0.25, 0.15);
   });
-
-  playNoiseBurst(ctx, t + 0.1, 0.04, 0.02);
+  playShimmer(ctx, t + 0.2, 0.06, 0.02);
 };
 
-/** 📱 Navigation — Brilliant-style subtle glass tap */
+/** 📱 Nav tap — Brilliant-style soft glass tick */
 export const playNav = () => {
   if (!isSoundEnabled()) return;
   const ctx = getCtx();
   const t = ctx.currentTime;
 
-  const gain = createGain(ctx, 0.06);
-  gain.gain.exponentialRampToValueAtTime(0.001, t + 0.05);
   const osc = ctx.createOscillator();
   osc.type = "sine";
-  osc.frequency.setValueAtTime(1800, t);
-  osc.frequency.exponentialRampToValueAtTime(1200, t + 0.03);
-  osc.connect(gain);
+  osc.frequency.setValueAtTime(2400, t);
+  osc.frequency.exponentialRampToValueAtTime(1600, t + 0.025);
+
+  const gain = ctx.createGain();
+  gain.gain.setValueAtTime(0.001, t);
+  gain.gain.linearRampToValueAtTime(0.07, t + 0.003);
+  gain.gain.exponentialRampToValueAtTime(0.001, t + 0.045);
+
+  osc.connect(gain).connect(ctx.destination);
   osc.start(t);
   osc.stop(t + 0.05);
-
-  playNoiseBurst(ctx, t, 0.015, 0.02);
 };
 
-/** ⚠️ Error — soft warning double pulse */
+/** ⚠️ Error — gentle double pulse */
 export const playError = () => {
   if (!isSoundEnabled()) return;
   const ctx = getCtx();
   const t = ctx.currentTime;
 
-  [0, 0.12].forEach((delay) => {
-    const gain = createGain(ctx, 0.08);
-    gain.gain.exponentialRampToValueAtTime(0.001, t + delay + 0.1);
-    createOsc(ctx, "square", 220, t + delay, t + delay + 0.1, gain);
+  [0, 0.13].forEach((d) => {
+    const osc = ctx.createOscillator();
+    osc.type = "triangle";
+    osc.frequency.value = 250;
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(0.001, t + d);
+    gain.gain.linearRampToValueAtTime(0.09, t + d + 0.008);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + d + 0.1);
+    osc.connect(gain).connect(ctx.destination);
+    osc.start(t + d);
+    osc.stop(t + d + 0.12);
   });
 };
 
-/** 💰 Trade executed — cash register ding with resonance */
+/** 💰 Trade executed — bright register ding */
 export const playTradeExecuted = () => {
   if (!isSoundEnabled()) return;
   const ctx = getCtx();
   const t = ctx.currentTime;
 
-  // Bright ding
-  const notes = [
-    { freq: 1318.51, delay: 0 },   // E6
-    { freq: 1567.98, delay: 0.05 }, // G6
-  ];
-  notes.forEach(({ freq, delay }) => {
-    const gain = createGain(ctx, 0.13);
-    gain.gain.setValueAtTime(0.13, t + delay);
-    gain.gain.exponentialRampToValueAtTime(0.001, t + delay + 0.2);
-    createOsc(ctx, "sine", freq, t + delay, t + delay + 0.2, gain);
-  });
+  playBell(ctx, 1318.51, t, 0.3, 0.18);        // E6
+  playBell(ctx, 1567.98, t + 0.06, 0.35, 0.2);  // G6
+  playShimmer(ctx, t + 0.05, 0.06, 0.025);
 
-  // Bell resonance
-  const bell = createGain(ctx, 0.03);
-  bell.gain.exponentialRampToValueAtTime(0.001, t + 0.35);
-  createOsc(ctx, "sine", 2637, t + 0.04, t + 0.35, bell);
-
-  playNoiseBurst(ctx, t + 0.03, 0.03, 0.025);
+  const reverb = getReverb(ctx, 0.12);
+  if (reverb) playBell(ctx, 1567.98, t + 0.06, 0.35, 0.05, reverb);
 };
 
-/** 📖 Slide transition — page-turn whoosh */
+/** 📖 Slide forward — soft page whoosh with tonal accent */
 export const playSlideForward = () => {
   if (!isSoundEnabled()) return;
   const ctx = getCtx();
   const t = ctx.currentTime;
 
-  // Gentle whoosh via filtered noise
-  const bufferSize = ctx.sampleRate * 0.12;
-  const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-  const data = buffer.getChannelData(0);
-  for (let i = 0; i < bufferSize; i++) {
-    data[i] = (Math.random() * 2 - 1);
-  }
-  const noise = ctx.createBufferSource();
-  noise.buffer = buffer;
+  // Tonal accent — quick rising bell
+  playBell(ctx, 880, t, 0.1, 0.08);
 
-  const filter = ctx.createBiquadFilter();
-  filter.type = "bandpass";
-  filter.frequency.setValueAtTime(2000, t);
-  filter.frequency.exponentialRampToValueAtTime(6000, t + 0.06);
-  filter.frequency.exponentialRampToValueAtTime(1000, t + 0.12);
-  filter.Q.value = 1;
+  // Whoosh texture
+  const bufSize = ctx.sampleRate * 0.1;
+  const buf = ctx.createBuffer(1, bufSize, ctx.sampleRate);
+  const data = buf.getChannelData(0);
+  for (let i = 0; i < bufSize; i++) data[i] = (Math.random() * 2 - 1);
+  const src = ctx.createBufferSource();
+  src.buffer = buf;
 
-  const gain = createGain(ctx, 0.05);
-  gain.gain.exponentialRampToValueAtTime(0.001, t + 0.12);
+  const bp = ctx.createBiquadFilter();
+  bp.type = "bandpass";
+  bp.frequency.setValueAtTime(2000, t);
+  bp.frequency.exponentialRampToValueAtTime(5000, t + 0.05);
+  bp.frequency.exponentialRampToValueAtTime(1500, t + 0.1);
+  bp.Q.value = 0.8;
 
-  noise.connect(filter).connect(gain);
-  noise.start(t);
-  noise.stop(t + 0.12);
+  const gain = ctx.createGain();
+  gain.gain.setValueAtTime(0.001, t);
+  gain.gain.linearRampToValueAtTime(0.04, t + 0.02);
+  gain.gain.exponentialRampToValueAtTime(0.001, t + 0.1);
 
-  // Subtle tone accent
-  const tone = createGain(ctx, 0.03);
-  tone.gain.exponentialRampToValueAtTime(0.001, t + 0.06);
-  createOsc(ctx, "sine", 800, t, t + 0.06, tone);
+  src.connect(bp).connect(gain).connect(ctx.destination);
+  src.start(t);
+  src.stop(t + 0.12);
 };
 
-/** 📖 Slide back — reverse page turn */
+/** 📖 Slide back — reverse whoosh */
 export const playSlideBack = () => {
   if (!isSoundEnabled()) return;
   const ctx = getCtx();
   const t = ctx.currentTime;
 
-  const bufferSize = ctx.sampleRate * 0.1;
-  const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-  const data = buffer.getChannelData(0);
-  for (let i = 0; i < bufferSize; i++) {
-    data[i] = (Math.random() * 2 - 1);
-  }
-  const noise = ctx.createBufferSource();
-  noise.buffer = buffer;
+  playBell(ctx, 660, t, 0.08, 0.06);
 
-  const filter = ctx.createBiquadFilter();
-  filter.type = "bandpass";
-  filter.frequency.setValueAtTime(5000, t);
-  filter.frequency.exponentialRampToValueAtTime(1500, t + 0.1);
-  filter.Q.value = 1;
+  const bufSize = ctx.sampleRate * 0.08;
+  const buf = ctx.createBuffer(1, bufSize, ctx.sampleRate);
+  const data = buf.getChannelData(0);
+  for (let i = 0; i < bufSize; i++) data[i] = (Math.random() * 2 - 1);
+  const src = ctx.createBufferSource();
+  src.buffer = buf;
 
-  const gain = createGain(ctx, 0.04);
-  gain.gain.exponentialRampToValueAtTime(0.001, t + 0.1);
+  const bp = ctx.createBiquadFilter();
+  bp.type = "bandpass";
+  bp.frequency.setValueAtTime(5000, t);
+  bp.frequency.exponentialRampToValueAtTime(1500, t + 0.08);
+  bp.Q.value = 0.8;
 
-  noise.connect(filter).connect(gain);
-  noise.start(t);
-  noise.stop(t + 0.1);
+  const gain = ctx.createGain();
+  gain.gain.setValueAtTime(0.001, t);
+  gain.gain.linearRampToValueAtTime(0.035, t + 0.015);
+  gain.gain.exponentialRampToValueAtTime(0.001, t + 0.08);
+
+  src.connect(bp).connect(gain).connect(ctx.destination);
+  src.start(t);
+  src.stop(t + 0.1);
 };
 
-/** ⭐ Milestone / halfway — warm chime ping */
+/** ⭐ Milestone / halfway — warm chord strum */
 export const playMilestone = () => {
   if (!isSoundEnabled()) return;
   const ctx = getCtx();
   const t = ctx.currentTime;
 
-  // Warm major chord strum
-  const notes = [
-    { freq: 523.25, delay: 0 },    // C5
-    { freq: 659.25, delay: 0.04 }, // E5
-    { freq: 783.99, delay: 0.08 }, // G5
-  ];
-
-  notes.forEach(({ freq, delay }) => {
-    const dur = 0.25;
-    const gain = createGain(ctx, 0.11);
-    gain.gain.setValueAtTime(0.11, t + delay);
-    gain.gain.exponentialRampToValueAtTime(0.001, t + delay + dur);
-    createOsc(ctx, "sine", freq, t + delay, t + delay + dur, gain);
-
-    // Soft overtone
-    const shim = createGain(ctx, 0.025);
-    shim.gain.exponentialRampToValueAtTime(0.001, t + delay + dur * 0.6);
-    createOsc(ctx, "sine", freq * 2, t + delay + 0.01, t + delay + dur * 0.6, shim);
+  // Major chord strum: C5 E5 G5
+  [523.25, 659.25, 783.99].forEach((freq, i) => {
+    playBell(ctx, freq, t + i * 0.045, 0.35, 0.15);
   });
+
+  playShimmer(ctx, t + 0.12, 0.08, 0.025);
+
+  const reverb = getReverb(ctx, 0.15);
+  if (reverb) playBell(ctx, 783.99, t + 0.09, 0.35, 0.04, reverb);
 };
 
-/** 🎯 Drag snap — item snapping into place */
+/** 🎯 Snap — item snapping into place */
 export const playSnap = () => {
   if (!isSoundEnabled()) return;
   const ctx = getCtx();
   const t = ctx.currentTime;
-
-  const gain = createGain(ctx, 0.12);
-  gain.gain.exponentialRampToValueAtTime(0.001, t + 0.04);
-  const osc = ctx.createOscillator();
-  osc.type = "sine";
-  osc.frequency.setValueAtTime(1200, t);
-  osc.frequency.exponentialRampToValueAtTime(800, t + 0.03);
-  osc.connect(gain);
-  osc.start(t);
-  osc.stop(t + 0.04);
-
-  playNoiseBurst(ctx, t, 0.02, 0.06);
+  playPop(ctx, 1200, t, 0.18);
 };
 
-/** 🔓 Unlock — new content available */
+/** 🔓 Unlock — rising sweep with sparkle */
 export const playUnlock = () => {
   if (!isSoundEnabled()) return;
   const ctx = getCtx();
   const t = ctx.currentTime;
 
-  // Rising "unlock" sweep
-  const gain = createGain(ctx, 0.1);
-  gain.gain.exponentialRampToValueAtTime(0.001, t + 0.3);
+  // Rising sweep
   const osc = ctx.createOscillator();
   osc.type = "sine";
   osc.frequency.setValueAtTime(400, t);
-  osc.frequency.exponentialRampToValueAtTime(1200, t + 0.15);
-  osc.connect(gain);
-  osc.start(t);
-  osc.stop(t + 0.3);
+  osc.frequency.exponentialRampToValueAtTime(1200, t + 0.18);
 
-  // Sparkle at peak
-  setTimeout(() => {
-    const ctx2 = getCtx();
-    const t2 = ctx2.currentTime;
-    const g = createGain(ctx2, 0.06);
-    g.gain.exponentialRampToValueAtTime(0.001, t2 + 0.15);
-    createOsc(ctx2, "sine", 1567.98, t2, t2 + 0.15, g);
-    playNoiseBurst(ctx2, t2, 0.04, 0.03);
-  }, 120);
+  const gain = ctx.createGain();
+  gain.gain.setValueAtTime(0.001, t);
+  gain.gain.linearRampToValueAtTime(0.12, t + 0.03);
+  gain.gain.exponentialRampToValueAtTime(0.001, t + 0.3);
+
+  osc.connect(gain).connect(ctx.destination);
+  osc.start(t);
+  osc.stop(t + 0.35);
+
+  // Bell at peak
+  playBell(ctx, 1318.51, t + 0.15, 0.25, 0.12);
+  playShimmer(ctx, t + 0.16, 0.06, 0.03);
 };
