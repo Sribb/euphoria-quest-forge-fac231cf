@@ -3,6 +3,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
+import { playTradeExecuted } from "@/lib/soundEffects";
 
 interface RealtimeUpdate {
   table: string;
@@ -78,6 +79,7 @@ export const useRealtimePortfolio = () => {
             const status = newOrder.status as string;
             if (status === "filled") {
               toast.success(`Order for ${newOrder.symbol} has been filled!`);
+              playTradeExecuted();
             } else if (status === "cancelled") {
               toast.info(`Order for ${newOrder.symbol} was cancelled`);
             }

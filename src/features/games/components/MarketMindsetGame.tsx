@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { X, TrendingUp, TrendingDown, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
+import { playGameWin, playCorrect, playIncorrect } from "@/lib/soundEffects";
 
 const macroScenarios = [
   {
@@ -73,7 +74,7 @@ export const MarketMindsetGame = ({ onClose }: MarketMindsetGameProps) => {
       setSubmitted(false);
     } else {
       toast.success(`Market Mindset complete! Score: ${score}`);
-      onClose();
+      playGameWin();
     }
   };
 
