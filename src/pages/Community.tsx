@@ -13,9 +13,13 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
   MessageSquare, Heart, Send, Plus, Users, Hash, Image as ImageIcon,
-  Search, MoreHorizontal, Loader2, Smile
+  Search, MoreHorizontal, Loader2, Smile, GraduationCap, Copy, Trash2, UserMinus
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useEducatorRole } from "@/features/educator/hooks/useEducatorRole";
+import { useClassManagement } from "@/features/educator/hooks/useClassManagement";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 import { formatDistanceToNow } from "date-fns";
 
 interface CommunityProps {
@@ -29,7 +33,14 @@ const Community = ({ onNavigate }: CommunityProps) => {
   const [activeConversation, setActiveConversation] = useState<string | null>(null);
   const [dmMessage, setDmMessage] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
+  const [classCode, setClassCode] = useState("");
+  const [newClassName, setNewClassName] = useState("");
+  const [newClassDesc, setNewClassDesc] = useState("");
+  const [newClassMax, setNewClassMax] = useState("");
+  const [showCreateClass, setShowCreateClass] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const { hasEducatorAccess } = useEducatorRole();
+  const { classes, isLoading: classesLoading, createClass, deleteClass, removeStudent } = useClassManagement();
 
   // Fetch posts
   const { data: posts, isLoading: postsLoading } = useQuery({
@@ -126,18 +137,77 @@ const Community = ({ onNavigate }: CommunityProps) => {
     enabled: !!activeConversation && !!user?.id,
   });
 
-  // Fetch groups
-  const { data: groups } = useQuery({
-    queryKey: ["message-groups", user?.id],
+  // Fetch student's joined classes
+  const { data: studentClasses } = useQuery({
+    queryKey: ["student-classes", user?.id],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("message_groups")
-        .select("*, group_members!inner(user_id)")
-        .eq("group_members.user_id", user?.id!);
+      if (!user?.id) return [];
+      const { data: memberships, error } = await supabase
+        .from("class_members")
+        .select("id, class_id, joined_at")
+        .eq("student_id", user.id);
       if (error) throw error;
-      return data;
+      if (!memberships || memberships.length === 0) return [];
+
+      const classIds = memberships.map((m) => m.class_id);
+      const { data: classesData } = await supabase
+        .from("classes")
+        .select("id, class_name, description")
+        .in("id", classIds);
+
+      return (classesData || []).map((cls) => {
+        const membership = memberships.find((m) => m.class_id === cls.id);
+        return { ...cls, membership_id: membership?.id, joined_at: membership?.joined_at };
+      });
     },
-    enabled: !!user?.id,
+    enabled: !!user?.id && !hasEducatorAccess,
+  });
+
+  // Join class mutation
+  const joinClassMutation = useMutation({
+    mutationFn: async (code: string) => {
+      if (!user?.id) throw new Error("Not authenticated");
+      const { data: cls, error: findError } = await supabase
+        .from("classes")
+        .select("id, class_name, max_students")
+        .eq("class_code", code.toUpperCase())
+        .single();
+      if (findError || !cls) throw new Error("Invalid class code");
+
+      // Check if already joined
+      const { data: existing } = await supabase
+        .from("class_members")
+        .select("id")
+        .eq("class_id", cls.id)
+        .eq("student_id", user.id);
+      if (existing && existing.length > 0) throw new Error("Already in this class");
+
+      const { error } = await supabase.from("class_members").insert({
+        class_id: cls.id,
+        student_id: user.id,
+      });
+      if (error) throw error;
+      return cls.class_name;
+    },
+    onSuccess: (name) => {
+      setClassCode("");
+      queryClient.invalidateQueries({ queryKey: ["student-classes"] });
+      toast.success(`Joined "${name}" successfully!`);
+    },
+    onError: (err) => toast.error(err.message),
+  });
+
+  // Leave class mutation
+  const leaveClassMutation = useMutation({
+    mutationFn: async (membershipId: string) => {
+      const { error } = await supabase.from("class_members").delete().eq("id", membershipId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["student-classes"] });
+      toast.success("Left class");
+    },
+    onError: () => toast.error("Failed to leave class"),
   });
 
   // Create post
@@ -236,8 +306,8 @@ const Community = ({ onNavigate }: CommunityProps) => {
           <TabsTrigger value="dms" className="text-xs md:text-sm">
             <Send className="w-4 h-4 mr-1" /> Messages
           </TabsTrigger>
-          <TabsTrigger value="groups" className="text-xs md:text-sm">
-            <Hash className="w-4 h-4 mr-1" /> Groups
+          <TabsTrigger value="classes" className="text-xs md:text-sm">
+            <GraduationCap className="w-4 h-4 mr-1" /> Classes
           </TabsTrigger>
         </TabsList>
 
@@ -478,42 +548,176 @@ const Community = ({ onNavigate }: CommunityProps) => {
           </div>
         </TabsContent>
 
-        {/* Groups Tab */}
-        <TabsContent value="groups" className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h3 className="font-semibold">Your Groups</h3>
-            <Button size="sm" className="bg-gradient-primary shadow-glow">
-              <Plus className="w-4 h-4 mr-1" /> Create Group
-            </Button>
-          </div>
+        {/* Classes Tab */}
+        <TabsContent value="classes" className="space-y-4">
+          {hasEducatorAccess ? (
+            /* ── Educator View ── */
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h3 className="font-semibold">Your Classes</h3>
+                <Dialog open={showCreateClass} onOpenChange={setShowCreateClass}>
+                  <DialogTrigger asChild>
+                    <Button size="sm" className="bg-gradient-primary shadow-glow">
+                      <Plus className="w-4 h-4 mr-1" /> Create Class
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Create a New Class</DialogTitle>
+                    </DialogHeader>
+                    <div className="space-y-4 pt-2">
+                      <div>
+                        <Label>Class Name</Label>
+                        <Input value={newClassName} onChange={(e) => setNewClassName(e.target.value)} placeholder="e.g. Finance 101" className="mt-1" />
+                      </div>
+                      <div>
+                        <Label>Description (optional)</Label>
+                        <Textarea value={newClassDesc} onChange={(e) => setNewClassDesc(e.target.value)} placeholder="Brief description..." className="mt-1" rows={2} />
+                      </div>
+                      <div>
+                        <Label>Max Students (optional)</Label>
+                        <Input value={newClassMax} onChange={(e) => setNewClassMax(e.target.value)} placeholder="e.g. 30" type="number" className="mt-1" />
+                      </div>
+                      <Button
+                        className="w-full bg-gradient-primary shadow-glow"
+                        disabled={!newClassName.trim() || createClass.isPending}
+                        onClick={() => {
+                          createClass.mutate(
+                            { className: newClassName, description: newClassDesc || undefined, maxStudents: newClassMax ? parseInt(newClassMax) : undefined },
+                            { onSuccess: () => { setShowCreateClass(false); setNewClassName(""); setNewClassDesc(""); setNewClassMax(""); } }
+                          );
+                        }}
+                      >
+                        {createClass.isPending ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+                        Create Class
+                      </Button>
+                    </div>
+                  </DialogContent>
+                </Dialog>
+              </div>
 
-          {groups?.length === 0 ? (
-            <Card className="p-12 text-center border-border">
-              <Hash className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
-              <h3 className="text-lg font-semibold mb-2">No groups yet</h3>
-              <p className="text-muted-foreground mb-4">Create or join a group to start chatting</p>
-              <Button className="bg-gradient-primary shadow-glow">
-                <Plus className="w-4 h-4 mr-1" /> Create Your First Group
-              </Button>
-            </Card>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {groups?.map((group: any) => (
-                <Card key={group.id} className="p-4 border-border hover:border-primary/30 transition-colors cursor-pointer">
-                  <div className="flex items-center gap-3">
-                    <div
-                      className="w-10 h-10 rounded-lg flex items-center justify-center font-bold text-white"
-                      style={{ backgroundColor: group.avatar_color || "#9b87f5" }}
-                    >
-                      <Hash className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <h4 className="font-semibold">{group.name}</h4>
-                      <p className="text-xs text-muted-foreground">{group.description || "No description"}</p>
-                    </div>
-                  </div>
+              {classesLoading ? (
+                <div className="flex justify-center py-12"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>
+              ) : classes.length === 0 ? (
+                <Card className="p-12 text-center border-border">
+                  <GraduationCap className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
+                  <h3 className="text-lg font-semibold mb-2">No classes yet</h3>
+                  <p className="text-muted-foreground mb-4">Create a class and share the code with your students</p>
                 </Card>
-              ))}
+              ) : (
+                <div className="space-y-4">
+                  {classes.map((cls) => (
+                    <Card key={cls.id} className="p-4 border-border">
+                      <div className="flex items-start justify-between mb-3">
+                        <div>
+                          <h4 className="font-semibold text-lg">{cls.class_name}</h4>
+                          {cls.description && <p className="text-sm text-muted-foreground">{cls.description}</p>}
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              navigator.clipboard.writeText(cls.class_code);
+                              toast.success("Class code copied!");
+                            }}
+                          >
+                            <Copy className="w-4 h-4 mr-1" />
+                            {cls.class_code}
+                          </Button>
+                          <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive" onClick={() => deleteClass.mutate(cls.id)}>
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2 mb-3">
+                        <Badge variant="outline"><Users className="w-3 h-3 mr-1" />{cls.member_count} students</Badge>
+                        {cls.max_students && <Badge variant="outline">Max: {cls.max_students}</Badge>}
+                      </div>
+                      {cls.members.length > 0 && (
+                        <div className="border-t border-border pt-3 space-y-2">
+                          {cls.members.map((member) => (
+                            <div key={member.id} className="flex items-center justify-between py-1.5">
+                              <div className="flex items-center gap-2">
+                                <Avatar className="w-7 h-7">
+                                  <AvatarFallback className="text-xs bg-primary/20 text-primary font-bold">
+                                    {member.display_name?.[0]?.toUpperCase() || "S"}
+                                  </AvatarFallback>
+                                </Avatar>
+                                <span className="text-sm font-medium">{member.display_name || "Student"}</span>
+                                <Badge variant="outline" className="text-[10px]">Lvl {member.level}</Badge>
+                              </div>
+                              <div className="flex items-center gap-3">
+                                <span className="text-xs text-muted-foreground">{member.lessons_completed} lessons • {member.avg_quiz_score}% avg</span>
+                                <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => removeStudent.mutate(member.id)}>
+                                  <UserMinus className="w-3.5 h-3.5" />
+                                </Button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </Card>
+                  ))}
+                </div>
+              )}
+            </div>
+          ) : (
+            /* ── Student View ── */
+            <div className="space-y-4">
+              <Card className="p-6 border-border">
+                <h3 className="font-semibold mb-3 flex items-center gap-2">
+                  <GraduationCap className="w-5 h-5 text-primary" />
+                  Join a Class
+                </h3>
+                <p className="text-sm text-muted-foreground mb-4">Enter the 6-character code provided by your teacher</p>
+                <div className="flex gap-2">
+                  <Input
+                    placeholder="e.g. ABC123"
+                    value={classCode}
+                    onChange={(e) => setClassCode(e.target.value.toUpperCase())}
+                    maxLength={6}
+                    className="font-mono text-lg tracking-widest uppercase"
+                  />
+                  <Button
+                    onClick={() => joinClassMutation.mutate(classCode)}
+                    disabled={classCode.length !== 6 || joinClassMutation.isPending}
+                    className="bg-gradient-primary shadow-glow"
+                  >
+                    {joinClassMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : "Join"}
+                  </Button>
+                </div>
+              </Card>
+
+              <h3 className="font-semibold">Your Classes</h3>
+              {!studentClasses || studentClasses.length === 0 ? (
+                <Card className="p-12 text-center border-border">
+                  <GraduationCap className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
+                  <h3 className="text-lg font-semibold mb-2">No classes joined</h3>
+                  <p className="text-muted-foreground">Ask your teacher for a class code to get started</p>
+                </Card>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {studentClasses.map((cls: any) => (
+                    <Card key={cls.id} className="p-4 border-border hover:border-primary/30 transition-colors">
+                      <div className="flex items-start justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center">
+                            <GraduationCap className="w-5 h-5 text-primary" />
+                          </div>
+                          <div>
+                            <h4 className="font-semibold">{cls.class_name}</h4>
+                            <p className="text-xs text-muted-foreground">{cls.description || "No description"}</p>
+                          </div>
+                        </div>
+                        <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => leaveClassMutation.mutate(cls.membership_id)}>
+                          <UserMinus className="w-3.5 h-3.5" />
+                        </Button>
+                      </div>
+                    </Card>
+                  ))}
+                </div>
+              )}
             </div>
           )}
         </TabsContent>
