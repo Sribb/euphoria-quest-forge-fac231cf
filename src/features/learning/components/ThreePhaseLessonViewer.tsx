@@ -7,7 +7,8 @@ import { X, BookOpen, Trophy, LineChart } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
-import { playLessonComplete, playClick } from "@/lib/soundEffects";
+import { playLessonComplete, playClick, playNav } from "@/lib/soundEffects";
+import { fireConfetti } from "@/lib/confetti";
 import { getLessonContent } from "./InteractiveLessonContent";
 import { AILessonChatbot } from "./AILessonChatbot";
 import { AdaptiveLessonChallenge } from "./AdaptiveLessonChallenge";
@@ -106,6 +107,7 @@ export const ThreePhaseLessonViewer = ({ lessonId, onClose }: ThreePhaseLessonVi
   const sections = lesson ? getLessonContent(lesson.order_index) : [];
 
   const handleLearnNext = async () => {
+    playNav();
     if (currentSection < sections.length - 1) {
       const newSection = currentSection + 1;
       setCurrentSection(newSection);
@@ -157,9 +159,12 @@ export const ThreePhaseLessonViewer = ({ lessonId, onClose }: ThreePhaseLessonVi
 
   const handleContinue = () => {
     if (challengePassed) {
-      onClose();
-      toast.success("Lesson completed! Next lesson unlocked!");
+      fireConfetti();
       playLessonComplete();
+      setTimeout(() => {
+        onClose();
+        toast.success("Lesson completed! Next lesson unlocked!");
+      }, 600);
     } else {
       setPhase('learn');
       setCurrentSection(0);
@@ -178,6 +183,7 @@ export const ThreePhaseLessonViewer = ({ lessonId, onClose }: ThreePhaseLessonVi
     if (isCompleted) {
       updateData.completed_at = new Date().toISOString();
       playLessonComplete();
+      fireConfetti();
     }
     
     const { error } = await supabase.from("user_lesson_progress").upsert(updateData, {

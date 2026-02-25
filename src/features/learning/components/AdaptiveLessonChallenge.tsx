@@ -9,7 +9,8 @@ import { useAuth } from "@/hooks/useAuth";
 import { useXPSystem } from "@/hooks/useXPSystem";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import { playCorrect, playIncorrect } from "@/lib/soundEffects";
+import { playCorrect, playIncorrect, playReward } from "@/lib/soundEffects";
+import { fireSmallConfetti } from "@/lib/confetti";
 
 interface Question {
   question: string;
@@ -103,6 +104,7 @@ export const AdaptiveLessonChallenge = ({ lessonId, onComplete, onBack }: Adapti
       addXP(questionXP);
       toast.success(`+${questionXP} XP! 🎯`);
       playCorrect();
+      fireSmallConfetti();
     } else {
       playIncorrect();
     }

@@ -2,6 +2,8 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronRight, ChevronLeft, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { playClick, playNav, playReward, playLessonComplete } from "@/lib/soundEffects";
+import { fireConfetti } from "@/lib/confetti";
 
 export interface LessonSlide {
   id: string;
@@ -21,19 +23,32 @@ export const BeginnerLessonTemplate = ({ slides, onComplete }: BeginnerLessonTem
   const isLast = current === slides.length - 1;
   const isFirst = current === 0;
 
+  // Play milestone sound at halfway
+  const halfwayIndex = Math.floor(slides.length / 2);
+
   const goNext = () => {
     if (isLast) {
-      onComplete();
+      playLessonComplete();
+      fireConfetti();
+      setTimeout(() => onComplete(), 600);
       return;
     }
     setDirection(1);
-    setCurrent((p) => p + 1);
+    const next = current + 1;
+    setCurrent(next);
+
+    if (next === halfwayIndex) {
+      playReward();
+    } else {
+      playNav();
+    }
   };
 
   const goBack = () => {
     if (isFirst) return;
     setDirection(-1);
     setCurrent((p) => p - 1);
+    playClick();
   };
 
   const slide = slides[current];
