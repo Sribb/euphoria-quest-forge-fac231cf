@@ -29,6 +29,7 @@ const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [loading, setLoading] = useState(false);
   const [signupRole, setSignupRole] = useState<SignupRole>(null);
+  const [loginRole, setLoginRole] = useState<"student" | "educator">("student");
   const [authStep, setAuthStep] = useState<AuthStep>("form");
   
   // Educator info
@@ -305,13 +306,46 @@ const Auth = () => {
                  <h1 className="text-3xl font-bold">Euphoria</h1>
               </div>
 
+              {isLogin && (
+                <div className="flex rounded-lg border border-border overflow-hidden mb-6">
+                  <button
+                    type="button"
+                    onClick={() => setLoginRole("student")}
+                    className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-medium transition-all ${
+                      loginRole === "student"
+                        ? "bg-primary text-primary-foreground shadow-glow"
+                        : "bg-card/50 text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    <BookOpen className="w-4 h-4" />
+                    Student
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setLoginRole("educator")}
+                    className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-medium transition-all ${
+                      loginRole === "educator"
+                        ? "bg-primary text-primary-foreground shadow-glow"
+                        : "bg-card/50 text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    <GraduationCap className="w-4 h-4" />
+                    Educator
+                  </button>
+                </div>
+              )}
+
               <div className="mb-6">
                 <h2 className="text-2xl font-bold mb-2">
-                  {isLogin ? "Welcome back!" : `Create ${signupRole === "educator" ? "educator" : "student"} account`}
+                  {isLogin
+                    ? loginRole === "educator" ? "Welcome back, Educator!" : "Welcome back!"
+                    : `Create ${signupRole === "educator" ? "educator" : "student"} account`}
                 </h2>
                 <p className="text-muted-foreground">
                   {isLogin
-                    ? "Sign in to continue your learning journey"
+                    ? loginRole === "educator"
+                      ? "Sign in to manage your classes"
+                      : "Sign in to continue your learning journey"
                     : signupRole === "educator"
                     ? "You're signing up as an educator"
                     : "Create an account to start learning"}
