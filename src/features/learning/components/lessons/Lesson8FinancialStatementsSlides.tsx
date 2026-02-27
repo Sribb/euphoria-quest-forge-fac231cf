@@ -1,660 +1,292 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { motion } from "framer-motion";
+import { FileText, TrendingUp, Calculator, CheckCircle2, XCircle, Sparkles, DollarSign } from "lucide-react";
+import { BeginnerLessonTemplate, LessonSlide } from "./BeginnerLessonTemplate";
+import { useXPSystem } from "@/hooks/useXPSystem";
+import { playCorrect, playIncorrect } from "@/lib/soundEffects";
+import { fireSmallConfetti } from "@/lib/confetti";
 import { DragSortChallenge } from "../interactive/DragSortChallenge";
-import { motion, AnimatePresence } from "framer-motion";
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
-import { Input } from "@/components/ui/input";
-import { 
-  ArrowRight, 
-  Sparkles, 
-  Lock,
-  Unlock,
-  Calculator,
-  TrendingUp,
-  FileText,
-  CheckCircle,
-  XCircle,
-  Lightbulb,
-  Target
-} from "lucide-react";
 
-type Slide = 1 | 2 | 3 | 4;
+// Slide 1: The Three Statements
+const ThreeStatements = () => (
+  <div className="space-y-6">
+    <p className="text-lg text-muted-foreground leading-relaxed">
+      Every public company shares three key reports. Think of them as a company's 
+      <span className="text-primary font-bold"> financial health checkup</span>.
+    </p>
+
+    <div className="space-y-4 mt-6">
+      {[
+        {
+          emoji: "💰", name: "Income Statement",
+          subtitle: "The Report Card",
+          desc: "Shows if the company made money. Revenue - Expenses = Profit (or Loss).",
+          example: "Revenue: $10M → Costs: $7M → Profit: $3M ✅"
+        },
+        {
+          emoji: "🏦", name: "Balance Sheet",
+          subtitle: "The Snapshot",
+          desc: "Shows what the company owns (assets) vs. what it owes (liabilities).",
+          example: "Assets: $50M → Liabilities: $20M → Net Worth: $30M"
+        },
+        {
+          emoji: "🌊", name: "Cash Flow Statement",
+          subtitle: "The Reality Check",
+          desc: "Shows actual cash coming in and going out. Profit on paper ≠ cash in hand.",
+          example: "Cash In: $8M → Cash Out: $6M → Net Cash: +$2M"
+        },
+      ].map((item, i) => (
+        <motion.div
+          key={i}
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: i * 0.15 }}
+          className="p-5 rounded-xl bg-muted/40 border border-border"
+        >
+          <div className="flex items-center gap-3 mb-2">
+            <span className="text-2xl">{item.emoji}</span>
+            <div>
+              <h3 className="font-bold text-foreground">{item.name}</h3>
+              <p className="text-xs text-muted-foreground">{item.subtitle}</p>
+            </div>
+          </div>
+          <p className="text-sm text-muted-foreground mb-2">{item.desc}</p>
+          <p className="text-xs font-mono bg-muted/50 p-2 rounded-lg text-muted-foreground">{item.example}</p>
+        </motion.div>
+      ))}
+    </div>
+  </div>
+);
+
+// Slide 2: Key Ratios Made Simple
+const KeyRatios = () => (
+  <div className="space-y-6">
+    <p className="text-lg text-muted-foreground leading-relaxed">
+      You don't need to be an accountant. Just know these <span className="text-primary font-bold">3 ratios</span>:
+    </p>
+
+    <div className="space-y-4 mt-6">
+      {[
+        {
+          name: "P/E Ratio (Price-to-Earnings)",
+          formula: "Stock Price ÷ Earnings Per Share",
+          meaning: "How many years of profits you're paying for",
+          rule: "< 15 = cheap • 15-25 = fair • > 25 = expensive",
+          emoji: "📊"
+        },
+        {
+          name: "Debt-to-Equity",
+          formula: "Total Debt ÷ Total Equity",
+          meaning: "How much the company borrowed vs. what it owns",
+          rule: "< 0.5 = strong • 0.5-1 = ok • > 1 = risky",
+          emoji: "⚖️"
+        },
+        {
+          name: "Profit Margin",
+          formula: "Net Profit ÷ Revenue × 100",
+          meaning: "What percentage of sales becomes profit",
+          rule: "> 20% = great • 10-20% = decent • < 10% = thin",
+          emoji: "📈"
+        },
+      ].map((item, i) => (
+        <motion.div
+          key={i}
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: i * 0.15 }}
+          className="p-5 rounded-xl bg-muted/40 border border-border"
+        >
+          <div className="flex items-center gap-2 mb-2">
+            <span className="text-xl">{item.emoji}</span>
+            <h3 className="font-bold text-foreground">{item.name}</h3>
+          </div>
+          <p className="text-xs font-mono bg-muted/50 p-2 rounded-lg text-muted-foreground mb-2">{item.formula}</p>
+          <p className="text-sm text-muted-foreground mb-1">{item.meaning}</p>
+          <p className="text-xs text-primary font-medium">{item.rule}</p>
+        </motion.div>
+      ))}
+    </div>
+  </div>
+);
+
+// Slide 3: Practice Reading
+const PracticeReading = () => {
+  const [revealed, setRevealed] = useState<number[]>([]);
+
+  const company = {
+    name: "SnackCo",
+    revenue: "$50M",
+    expenses: "$35M",
+    profit: "$15M",
+    assets: "$80M",
+    liabilities: "$30M",
+    pe: 12,
+    debtEquity: 0.6,
+    margin: 30,
+  };
+
+  const insights = [
+    { label: "Profit Margin", value: `${company.margin}%`, verdict: "Great — keeps 30¢ of every dollar", good: true },
+    { label: "P/E Ratio", value: `${company.pe}x`, verdict: "Cheap — paying 12 years of earnings", good: true },
+    { label: "Debt/Equity", value: `${company.debtEquity}`, verdict: "Moderate — manageable debt level", good: true },
+  ];
+
+  return (
+    <div className="space-y-6">
+      <p className="text-lg text-muted-foreground leading-relaxed">
+        Let's analyze <span className="text-primary font-bold">SnackCo</span> together. Tap each metric to reveal the insight:
+      </p>
+
+      <div className="p-5 rounded-xl bg-muted/30 border border-border">
+        <div className="grid grid-cols-3 gap-3 mb-6">
+          <div className="text-center p-3 rounded-lg bg-muted/50">
+            <p className="text-xs text-muted-foreground">Revenue</p>
+            <p className="text-lg font-bold">{company.revenue}</p>
+          </div>
+          <div className="text-center p-3 rounded-lg bg-muted/50">
+            <p className="text-xs text-muted-foreground">Expenses</p>
+            <p className="text-lg font-bold">{company.expenses}</p>
+          </div>
+          <div className="text-center p-3 rounded-lg bg-primary/10">
+            <p className="text-xs text-muted-foreground">Profit</p>
+            <p className="text-lg font-bold text-primary">{company.profit}</p>
+          </div>
+        </div>
+
+        <div className="space-y-3">
+          {insights.map((item, i) => (
+            <motion.button
+              key={i}
+              onClick={() => !revealed.includes(i) && setRevealed(prev => [...prev, i])}
+              className={`w-full text-left p-4 rounded-xl border transition-all ${
+                revealed.includes(i)
+                  ? "border-primary/40 bg-primary/5"
+                  : "border-border bg-background hover:bg-muted/30 cursor-pointer"
+              }`}
+            >
+              <div className="flex items-center justify-between">
+                <span className="font-medium text-foreground">{item.label}</span>
+                <span className="font-bold text-primary">{item.value}</span>
+              </div>
+              {revealed.includes(i) && (
+                <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-sm text-muted-foreground mt-2">
+                  {item.good ? "✅" : "⚠️"} {item.verdict}
+                </motion.p>
+              )}
+              {!revealed.includes(i) && (
+                <p className="text-xs text-muted-foreground mt-1">Tap to reveal insight</p>
+              )}
+            </motion.button>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Slide 4: Quiz
+const StatementsQuiz = () => {
+  const [selected, setSelected] = useState<number | null>(null);
+  const [answered, setAnswered] = useState(false);
+  const { addXP } = useXPSystem();
+  const correctIndex = 2;
+
+  const options = [
+    "The Balance Sheet — it shows current cash",
+    "The Income Statement — it shows stock price history",
+    "The Cash Flow Statement — profit on paper doesn't mean cash in hand",
+    "None of them — just look at the stock price",
+  ];
+
+  const handleSelect = (index: number) => {
+    if (answered) return;
+    setSelected(index);
+    setAnswered(true);
+    if (index === correctIndex) { playCorrect(); fireSmallConfetti(); addXP(10); } else { playIncorrect(); }
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="p-5 rounded-2xl bg-muted/30 border border-border">
+        <p className="font-bold text-foreground text-base mb-4">Which statement shows if a company actually has cash to operate?</p>
+        <div className="space-y-3">
+          {options.map((option, i) => {
+            const isCorrect = i === correctIndex;
+            const isSelected = i === selected;
+            let borderClass = "border-border";
+            let bgClass = "bg-background hover:bg-muted/50";
+            if (answered && isSelected && isCorrect) { borderClass = "border-primary"; bgClass = "bg-primary/10"; }
+            else if (answered && isSelected && !isCorrect) { borderClass = "border-destructive"; bgClass = "bg-destructive/10"; }
+            else if (answered && isCorrect) { borderClass = "border-primary/40"; bgClass = "bg-primary/5"; }
+
+            return (
+              <motion.button key={i} onClick={() => handleSelect(i)} disabled={answered}
+                className={`w-full text-left p-4 rounded-xl border ${borderClass} ${bgClass} transition-all duration-200 flex items-center gap-3`}>
+                <span className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center text-sm font-bold text-muted-foreground flex-shrink-0">{String.fromCharCode(65 + i)}</span>
+                <span className="text-sm font-medium text-foreground flex-1">{option}</span>
+                {answered && isSelected && isCorrect && <CheckCircle2 className="w-5 h-5 text-primary flex-shrink-0" />}
+                {answered && isSelected && !isCorrect && <XCircle className="w-5 h-5 text-destructive flex-shrink-0" />}
+              </motion.button>
+            );
+          })}
+        </div>
+      </div>
+      {answered && (
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+          className={`p-4 rounded-xl border ${selected === correctIndex ? "bg-primary/5 border-primary/20" : "bg-destructive/5 border-destructive/20"}`}>
+          <p className="text-sm text-muted-foreground">
+            {selected === correctIndex
+              ? "🎯 Correct! +10 XP — The cash flow statement reveals if a company can actually pay its bills."
+              : "❌ The cash flow statement shows real cash moving in and out — a company can be 'profitable' on paper but cash-poor!"}
+          </p>
+        </motion.div>
+      )}
+    </div>
+  );
+};
+
+// Slide 5: Takeaways
+const KeyTakeaways = () => {
+  const takeaways = [
+    { icon: <FileText className="w-5 h-5" />, text: "Three key statements: Income, Balance Sheet, Cash Flow" },
+    { icon: <Calculator className="w-5 h-5" />, text: "P/E ratio, Debt/Equity, and Profit Margin are the basics you need" },
+    { icon: <DollarSign className="w-5 h-5" />, text: "Cash flow is king — profit on paper ≠ cash in hand" },
+    { icon: <Sparkles className="w-5 h-5" />, text: "You don't need to be an accountant — just know the key signals" },
+  ];
+
+  return (
+    <div className="space-y-6">
+      <p className="text-lg text-muted-foreground leading-relaxed">You can now read a company's financial health:</p>
+      <div className="space-y-3 mt-6">
+        {takeaways.map((item, i) => (
+          <motion.div key={i} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.15 }}
+            className="flex items-start gap-4 p-4 rounded-xl bg-muted/40 border border-border">
+            <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary flex-shrink-0">{item.icon}</div>
+            <p className="text-foreground font-medium leading-relaxed pt-1.5">{item.text}</p>
+          </motion.div>
+        ))}
+      </div>
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.8 }}
+        className="p-5 rounded-2xl bg-primary/5 border border-primary/20 text-center mt-6">
+        <p className="text-xl font-bold text-foreground mb-1">Financial literacy unlocked! 📊</p>
+        <p className="text-sm text-muted-foreground">Next: understanding competitive moats.</p>
+      </motion.div>
+    </div>
+  );
+};
 
 interface Lesson8Props {
   onComplete?: () => void;
 }
 
-const puzzles = [
-  {
-    id: 1,
-    company: "TechGrowth Inc.",
-    data: { revenue: 500000, costOfGoods: 200000, operatingExpenses: 150000, netIncome: 112500 },
-    question: "Calculate the Gross Profit Margin (Gross Profit / Revenue × 100)",
-    answer: 60,
-    hint: "Gross Profit = Revenue - Cost of Goods Sold",
-    tolerance: 2,
-  },
-  {
-    id: 2,
-    company: "RetailMax Corp.",
-    data: { totalAssets: 2000000, totalLiabilities: 800000, currentAssets: 600000, currentLiabilities: 300000 },
-    question: "Calculate the Current Ratio (Current Assets / Current Liabilities)",
-    answer: 2,
-    hint: "A ratio above 1 means the company can pay short-term debts",
-    tolerance: 0.1,
-  },
-  {
-    id: 3,
-    company: "DebtFree Ltd.",
-    data: { totalDebt: 500000, totalEquity: 1000000, netIncome: 150000 },
-    question: "Calculate the Debt-to-Equity Ratio (Total Debt / Total Equity)",
-    answer: 0.5,
-    hint: "Lower ratios indicate less financial risk",
-    tolerance: 0.05,
-  },
-];
-
-const reflectionQuestions = [
-  {
-    question: "Why is Gross Profit Margin important for investors?",
-    options: [
-      { text: "It shows how efficiently a company produces goods", correct: true },
-      { text: "It tells you the stock price", correct: false },
-      { text: "It measures employee satisfaction", correct: false },
-    ],
-  },
-  {
-    question: "What does a Current Ratio below 1 indicate?",
-    options: [
-      { text: "The company is highly profitable", correct: false },
-      { text: "The company may struggle to pay short-term debts", correct: true },
-      { text: "The stock will go up", correct: false },
-    ],
-  },
-  {
-    question: "Why might high Debt-to-Equity be risky?",
-    options: [
-      { text: "More debt means higher interest payments and risk", correct: true },
-      { text: "It means the company has too many employees", correct: false },
-      { text: "It indicates weak marketing", correct: false },
-    ],
-  },
-];
-
 export const Lesson8FinancialStatementsSlides = ({ onComplete }: Lesson8Props) => {
-  const [currentSlide, setCurrentSlide] = useState<Slide>(1);
-  const [currentPuzzle, setCurrentPuzzle] = useState(0);
-  const [userAnswer, setUserAnswer] = useState("");
-  const [solvedPuzzles, setSolvedPuzzles] = useState<number[]>([]);
-  const [showHint, setShowHint] = useState(false);
-  const [feedback, setFeedback] = useState<"correct" | "incorrect" | null>(null);
-  const [reflectionIndex, setReflectionIndex] = useState(0);
-  const [reflectionAnswers, setReflectionAnswers] = useState<boolean[]>([]);
-  const [challengeComplete, setChallengeComplete] = useState(false);
+  const slides: LessonSlide[] = [
+    { id: "three-statements", title: "The 3 Financial Statements", content: <ThreeStatements /> },
+    { id: "key-ratios", title: "3 Ratios You Need to Know", content: <KeyRatios /> },
+    { id: "practice", title: "Let's Analyze a Company 🔍", content: <PracticeReading /> },
+    { id: "quiz", title: "Quick Check ✍️", content: <StatementsQuiz /> },
+    { id: "takeaways", title: "Key Takeaways", content: <KeyTakeaways /> },
+  ];
 
-  const puzzle = puzzles[currentPuzzle];
-  const progress = (solvedPuzzles.length / puzzles.length) * 100;
-
-  const checkAnswer = () => {
-    const numAnswer = parseFloat(userAnswer);
-    const isCorrect = Math.abs(numAnswer - puzzle.answer) <= puzzle.tolerance;
-    
-    setFeedback(isCorrect ? "correct" : "incorrect");
-    
-    if (isCorrect && !solvedPuzzles.includes(currentPuzzle)) {
-      setSolvedPuzzles([...solvedPuzzles, currentPuzzle]);
-    }
-    
-    setTimeout(() => setFeedback(null), 2000);
-  };
-
-  const handleReflectionAnswer = (isCorrect: boolean) => {
-    setReflectionAnswers([...reflectionAnswers, isCorrect]);
-    if (reflectionIndex < reflectionQuestions.length - 1) {
-      setTimeout(() => setReflectionIndex(reflectionIndex + 1), 1000);
-    }
-  };
-
-  const nextSlide = () => {
-    if (currentSlide < 4) {
-      setCurrentSlide((currentSlide + 1) as Slide);
-    } else {
-      onComplete?.();
-    }
-  };
-
-  const slideLabels = ["Experience", "Reflect", "Insight", "Apply"];
-
-  return (
-    <div className="space-y-6">
-      {/* Progress indicator */}
-      <div className="flex justify-center gap-2 mb-4">
-        {[1, 2, 3, 4].map((slide) => (
-          <div key={slide} className="flex flex-col items-center">
-            <motion.div
-              className={`h-2 rounded-full transition-all duration-300 ${
-                slide === currentSlide 
-                  ? "w-8 bg-primary" 
-                  : slide < currentSlide 
-                    ? "w-4 bg-primary/50" 
-                    : "w-4 bg-muted"
-              }`}
-            />
-            <span className={`text-xs mt-1 ${slide === currentSlide ? "text-primary font-medium" : "text-muted-foreground"}`}>
-              {slideLabels[slide - 1]}
-            </span>
-          </div>
-        ))}
-      </div>
-
-      <AnimatePresence mode="wait">
-        {/* Slide 1: Experience - Financial Escape Room */}
-        {currentSlide === 1 && (
-          <motion.div
-            key="slide1"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.5 }}
-          >
-            <Card className="p-8">
-              <Badge className="mb-4 bg-primary/20 text-primary border-primary/30">Experience</Badge>
-              
-              <motion.h2 
-                className="text-2xl font-bold mb-2"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-              >
-                Financial Statement Escape Room
-              </motion.h2>
-              <motion.p 
-                className="text-muted-foreground mb-6"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.2 }}
-              >
-                Solve ratio puzzles to unlock each door. Calculate correctly to escape!
-              </motion.p>
-
-              {/* Progress Bar */}
-              <div className="mb-6">
-                <div className="flex justify-between text-sm mb-2">
-                  <span className="text-muted-foreground">Escape Progress</span>
-                  <span className="font-bold text-primary">{solvedPuzzles.length}/{puzzles.length} Doors Unlocked</span>
-                </div>
-                <Progress value={progress} className="h-3" />
-              </div>
-
-              {/* Puzzle Cards */}
-              <div className="flex gap-4 mb-6">
-                {puzzles.map((p, idx) => (
-                  <motion.div
-                    key={p.id}
-                    className={`flex-1 p-4 rounded-xl border-2 cursor-pointer transition-all ${
-                      idx === currentPuzzle 
-                        ? "border-primary bg-primary/10" 
-                        : solvedPuzzles.includes(idx)
-                          ? "border-emerald-500 bg-emerald-500/10"
-                          : "border-border"
-                    }`}
-                    onClick={() => setCurrentPuzzle(idx)}
-                    whileHover={{ scale: 1.02 }}
-                  >
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="font-semibold text-sm">Door {idx + 1}</span>
-                      {solvedPuzzles.includes(idx) ? (
-                        <Unlock className="w-5 h-5 text-emerald-500" />
-                      ) : (
-                        <Lock className="w-5 h-5 text-muted-foreground" />
-                      )}
-                    </div>
-                    <p className="text-xs text-muted-foreground">{p.company}</p>
-                  </motion.div>
-                ))}
-              </div>
-
-              {/* Current Puzzle */}
-              <Card className="p-6 bg-muted/50 mb-6">
-                <div className="flex items-center gap-2 mb-4">
-                  <FileText className="w-5 h-5 text-primary" />
-                  <h3 className="font-bold">{puzzle.company}</h3>
-                </div>
-
-                {/* Financial Data */}
-                <div className="grid grid-cols-2 gap-3 mb-6">
-                  {Object.entries(puzzle.data).map(([key, value]) => (
-                    <div key={key} className="p-3 rounded-lg bg-background border border-border">
-                      <p className="text-xs text-muted-foreground capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}</p>
-                      <p className="font-bold">${value.toLocaleString()}</p>
-                    </div>
-                  ))}
-                </div>
-
-                {/* Question */}
-                <div className="p-4 rounded-xl bg-primary/10 border border-primary/30 mb-4">
-                  <p className="font-medium mb-3">{puzzle.question}</p>
-                  <div className="flex gap-3">
-                    <Input
-                      type="number"
-                      placeholder="Enter your answer"
-                      value={userAnswer}
-                      onChange={(e) => setUserAnswer(e.target.value)}
-                      className="flex-1"
-                    />
-                    <Button onClick={checkAnswer} disabled={!userAnswer}>
-                      <Calculator className="w-4 h-4 mr-2" /> Check
-                    </Button>
-                  </div>
-                </div>
-
-                {/* Hint */}
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  onClick={() => setShowHint(!showHint)}
-                  className="text-muted-foreground"
-                >
-                  <Lightbulb className="w-4 h-4 mr-2" /> {showHint ? "Hide" : "Show"} Hint
-                </Button>
-                
-                {showHint && (
-                  <motion.p 
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: "auto" }}
-                    className="text-sm text-muted-foreground mt-2 p-3 bg-muted rounded-lg"
-                  >
-                    💡 {puzzle.hint}
-                  </motion.p>
-                )}
-
-                {/* Feedback */}
-                <AnimatePresence>
-                  {feedback && (
-                    <motion.div
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.9 }}
-                      className={`mt-4 p-4 rounded-xl flex items-center gap-3 ${
-                        feedback === "correct" 
-                          ? "bg-emerald-500/20 border border-emerald-500/50" 
-                          : "bg-destructive/20 border border-destructive/50"
-                      }`}
-                    >
-                      {feedback === "correct" ? (
-                        <>
-                          <CheckCircle className="w-6 h-6 text-emerald-500" />
-                          <span className="font-medium text-emerald-500">Correct! Door unlocked! 🎉</span>
-                        </>
-                      ) : (
-                        <>
-                          <XCircle className="w-6 h-6 text-destructive" />
-                          <span className="font-medium text-destructive">Not quite. Try again!</span>
-                        </>
-                      )}
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </Card>
-
-              <motion.div 
-                className="flex justify-center relative z-10"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.5 }}
-              >
-                <Button 
-                  onClick={nextSlide} 
-                  size="lg" 
-                  className="gap-2"
-                  disabled={solvedPuzzles.length < 2}
-                >
-                  {solvedPuzzles.length < 2 ? `Solve ${2 - solvedPuzzles.length} more to continue` : "Continue to Reflect"} 
-                  <ArrowRight className="w-4 h-4" />
-                </Button>
-              </motion.div>
-            </Card>
-          </motion.div>
-        )}
-
-        {/* Slide 2: Reflect */}
-        {currentSlide === 2 && (
-          <motion.div
-            key="slide2"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.5 }}
-          >
-            <Card className="p-8">
-              <Badge className="mb-4 bg-amber-500/20 text-amber-400 border-amber-500/30">Reflect</Badge>
-              
-              <motion.h2 
-                className="text-2xl font-bold text-center mb-2"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-              >
-                Why Do These Ratios Matter?
-              </motion.h2>
-              <motion.p 
-                className="text-center text-muted-foreground mb-8"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.2 }}
-              >
-                Test your understanding of financial analysis
-              </motion.p>
-
-              {/* Reflection Question */}
-              <Card className="p-6 bg-muted/50 mb-6">
-                <div className="flex items-center gap-2 mb-4">
-                  <Target className="w-5 h-5 text-amber-500" />
-                  <span className="text-sm text-muted-foreground">Question {reflectionIndex + 1} of {reflectionQuestions.length}</span>
-                </div>
-                
-                <h3 className="font-bold text-lg mb-6">{reflectionQuestions[reflectionIndex].question}</h3>
-                
-                <div className="space-y-3">
-                  {reflectionQuestions[reflectionIndex].options.map((option, idx) => (
-                    <motion.button
-                      key={idx}
-                      onClick={() => handleReflectionAnswer(option.correct)}
-                      className={`w-full p-4 rounded-xl text-left border-2 transition-all ${
-                        reflectionAnswers[reflectionIndex] !== undefined
-                          ? option.correct
-                            ? "border-emerald-500 bg-emerald-500/10"
-                            : "border-border opacity-50"
-                          : "border-border hover:border-primary"
-                      }`}
-                      disabled={reflectionAnswers[reflectionIndex] !== undefined}
-                      whileHover={reflectionAnswers[reflectionIndex] === undefined ? { scale: 1.02 } : {}}
-                      whileTap={reflectionAnswers[reflectionIndex] === undefined ? { scale: 0.98 } : {}}
-                    >
-                      {option.text}
-                      {reflectionAnswers[reflectionIndex] !== undefined && option.correct && (
-                        <CheckCircle className="w-5 h-5 text-emerald-500 inline ml-2" />
-                      )}
-                    </motion.button>
-                  ))}
-                </div>
-              </Card>
-
-              {/* Progress Dots */}
-              <div className="flex justify-center gap-2 mb-8">
-                {reflectionQuestions.map((_, idx) => (
-                  <div
-                    key={idx}
-                    className={`w-3 h-3 rounded-full transition-all ${
-                      idx === reflectionIndex
-                        ? "bg-primary scale-125"
-                        : reflectionAnswers[idx] !== undefined
-                          ? reflectionAnswers[idx]
-                            ? "bg-emerald-500"
-                            : "bg-destructive"
-                          : "bg-muted"
-                    }`}
-                  />
-                ))}
-              </div>
-
-              <motion.div 
-                className="flex justify-center relative z-10"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.5 }}
-              >
-                <Button 
-                  onClick={nextSlide} 
-                  size="lg" 
-                  className="gap-2"
-                  disabled={reflectionAnswers.length < reflectionQuestions.length}
-                >
-                  Continue to Insight <ArrowRight className="w-4 h-4" />
-                </Button>
-              </motion.div>
-            </Card>
-          </motion.div>
-        )}
-
-        {/* Slide 3: Insight */}
-        {currentSlide === 3 && (
-          <motion.div
-            key="slide3"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.5 }}
-          >
-            <Card className="p-8">
-              <Badge className="mb-4 bg-blue-500/20 text-blue-400 border-blue-500/30">Insight</Badge>
-              
-              <motion.h2 
-                className="text-2xl font-bold text-center mb-8"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-              >
-                Key Financial Analysis Insights
-              </motion.h2>
-
-              <div className="grid gap-6 mb-8">
-                {[
-                  {
-                    title: "Profitability Ratios",
-                    description: "Gross and Net Profit Margins reveal how efficiently a company converts revenue into profit.",
-                    icon: TrendingUp,
-                    color: "emerald",
-                  },
-                  {
-                    title: "Liquidity Ratios",
-                    description: "Current and Quick Ratios show if a company can meet its short-term obligations.",
-                    icon: Calculator,
-                    color: "blue",
-                  },
-                  {
-                    title: "Leverage Ratios",
-                    description: "Debt-to-Equity shows financial risk—higher debt means more risk but potentially higher returns.",
-                    icon: Target,
-                    color: "amber",
-                  },
-                ].map((insight, idx) => (
-                  <motion.div
-                    key={idx}
-                    initial={{ opacity: 0, x: -30 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.3 + idx * 0.2 }}
-                    className="flex gap-4 p-4 rounded-xl border border-border bg-muted/30"
-                  >
-                    <div 
-                      className={`w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0`}
-                      style={{ 
-                        backgroundColor: insight.color === "emerald" ? "rgba(16, 185, 129, 0.2)" 
-                          : insight.color === "blue" ? "rgba(59, 130, 246, 0.2)" 
-                          : "rgba(245, 158, 11, 0.2)" 
-                      }}
-                    >
-                      <insight.icon 
-                        className="w-6 h-6" 
-                        style={{ 
-                          color: insight.color === "emerald" ? "#10b981" 
-                            : insight.color === "blue" ? "#3b82f6" 
-                            : "#f59e0b" 
-                        }} 
-                      />
-                    </div>
-                    <div>
-                      <h3 className="font-bold mb-1">{insight.title}</h3>
-                      <p className="text-sm text-muted-foreground">{insight.description}</p>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 1 }}
-                className="p-6 rounded-xl bg-primary/10 border border-primary/30 mb-8"
-              >
-                <div className="flex items-start gap-3">
-                  <Sparkles className="w-6 h-6 text-primary flex-shrink-0 mt-1" />
-                  <div>
-                    <h3 className="font-bold mb-2">The Complete Picture</h3>
-                    <p className="text-sm text-muted-foreground">
-                      No single ratio tells the full story. Compare ratios across time and against competitors 
-                      to understand a company's true financial health. Look for trends, not just snapshots.
-                    </p>
-                  </div>
-                </div>
-              </motion.div>
-
-              <motion.div 
-                className="flex justify-center relative z-10"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 1.2 }}
-              >
-                <Button onClick={nextSlide} size="lg" className="gap-2">
-                  Apply What You Learned <ArrowRight className="w-4 h-4" />
-                </Button>
-              </motion.div>
-            </Card>
-          </motion.div>
-        )}
-
-        {/* Slide 4: Apply */}
-        {currentSlide === 4 && (
-          <motion.div
-            key="slide4"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.5 }}
-          >
-            <Card className="p-8">
-              <Badge className="mb-4 bg-purple-500/20 text-purple-400 border-purple-500/30">Apply</Badge>
-              
-              <motion.h2 
-                className="text-2xl font-bold text-center mb-2"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-              >
-                Investment Decision Challenge
-              </motion.h2>
-              <motion.p 
-                className="text-center text-muted-foreground mb-8"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.2 }}
-              >
-                Analyze these two companies and decide which is a better investment
-              </motion.p>
-
-              <div className="grid md:grid-cols-2 gap-6 mb-8">
-                {[
-                  {
-                    name: "SafeGrowth Inc.",
-                    metrics: { grossMargin: "45%", currentRatio: 2.5, debtToEquity: 0.3 },
-                    description: "Stable, low-debt company with consistent margins",
-                    riskLevel: "Low",
-                    color: "emerald",
-                  },
-                  {
-                    name: "AgressiveVentures",
-                    metrics: { grossMargin: "65%", currentRatio: 1.1, debtToEquity: 1.8 },
-                    description: "High-margin but heavily leveraged growth company",
-                    riskLevel: "High",
-                    color: "rose",
-                  },
-                ].map((company, idx) => (
-                  <motion.div
-                    key={idx}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.3 + idx * 0.2 }}
-                    className="p-6 rounded-xl border-2 border-border hover:border-primary transition-all cursor-pointer"
-                    onClick={() => setChallengeComplete(true)}
-                  >
-                    <div className="flex items-center justify-between mb-4">
-                      <h3 className="font-bold">{company.name}</h3>
-                      <Badge 
-                        style={{ 
-                          backgroundColor: company.color === "emerald" ? "rgba(16, 185, 129, 0.2)" : "rgba(244, 63, 94, 0.2)",
-                          color: company.color === "emerald" ? "#10b981" : "#f43f5e",
-                          borderColor: company.color === "emerald" ? "#10b981" : "#f43f5e",
-                        }}
-                      >
-                        {company.riskLevel} Risk
-                      </Badge>
-                    </div>
-                    
-                    <div className="space-y-2 mb-4">
-                      <div className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">Gross Margin</span>
-                        <span className="font-semibold">{company.metrics.grossMargin}</span>
-                      </div>
-                      <div className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">Current Ratio</span>
-                        <span className="font-semibold">{company.metrics.currentRatio}</span>
-                      </div>
-                      <div className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">Debt-to-Equity</span>
-                        <span className="font-semibold">{company.metrics.debtToEquity}</span>
-                      </div>
-                    </div>
-                    
-                    <p className="text-sm text-muted-foreground">{company.description}</p>
-                  </motion.div>
-                ))}
-              </div>
-
-              {challengeComplete && (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  className="p-6 rounded-xl bg-emerald-500/20 border border-emerald-500/50 mb-8 text-center"
-                >
-                  <Sparkles className="w-10 h-10 mx-auto mb-3 text-emerald-500" />
-                  <h3 className="font-bold text-lg mb-2">Great Analysis!</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Both choices can be valid depending on your risk tolerance and goals. 
-                    SafeGrowth offers stability, while AgressiveVentures offers higher potential returns with more risk.
-                  </p>
-                </motion.div>
-              )}
-
-              {/* Interactive Challenge */}
-              <DragSortChallenge
-                title="📊 Order the Financial Statements"
-                description="Rank from MOST to LEAST important for evaluating a company's health:"
-                items={[
-                  { id: "cashflow", label: "💵 Cash Flow Statement" },
-                  { id: "income", label: "📈 Income Statement" },
-                  { id: "balance", label: "⚖️ Balance Sheet" },
-                  { id: "footnotes", label: "📝 Footnotes & Notes" },
-                ]}
-                correctOrder={["cashflow", "income", "balance", "footnotes"]}
-              />
-
-              <motion.div
-                className="flex justify-center relative z-10"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.8 }}
-              >
-                <Button 
-                  onClick={nextSlide} 
-                  size="lg" 
-                  className="gap-2"
-                  disabled={!challengeComplete}
-                >
-                  Complete Lesson <CheckCircle className="w-4 h-4" />
-                </Button>
-              </motion.div>
-            </Card>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  );
+  return <BeginnerLessonTemplate slides={slides} onComplete={onComplete || (() => {})} />;
 };
