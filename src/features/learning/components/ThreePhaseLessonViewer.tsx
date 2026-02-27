@@ -14,7 +14,8 @@ import { AILessonChatbot } from "./AILessonChatbot";
 import { AdaptiveLessonChallenge } from "./AdaptiveLessonChallenge";
 import { LessonMasteryDashboard } from "./LessonMasteryDashboard";
 import { InteractiveLessonSimulation } from "./InteractiveLessonSimulation";
-import { InteractiveLessonRouter } from "./InteractiveLessonRouter";
+
+// Investing pathway
 import { Lesson1Beginner } from "./lessons/Lesson1Beginner";
 import { Lesson2RiskRewardSlides } from "./lessons/Lesson2RiskRewardSlides";
 import { Lesson3CompoundInterestSlides } from "./lessons/Lesson3CompoundInterestSlides";
@@ -41,12 +42,94 @@ import { Lesson23MarginRiskSlides } from "./lessons/Lesson23MarginRiskSlides";
 import { Lesson24PortfolioConstraintsSlides } from "./lessons/Lesson24PortfolioConstraintsSlides";
 import { Lesson25ShortSellingSlides } from "./lessons/Lesson25ShortSellingSlides";
 
+// Personal Finance pathway
+import { PF1FinancialStartingPoint } from "./lessons/pf/PF1FinancialStartingPoint";
+import { PF2BudgetingWorks } from "./lessons/pf/PF2BudgetingWorks";
+import { PF3EmergencyFund } from "./lessons/pf/PF3EmergencyFund";
+import { PF4CreditScores } from "./lessons/pf/PF4CreditScores";
+import { PF5GoodVsBadDebt } from "./lessons/pf/PF5GoodVsBadDebt";
+import { PF6BankingAccounts } from "./lessons/pf/PF6BankingAccounts";
+import { PF7PaycheckDeductions } from "./lessons/pf/PF7PaycheckDeductions";
+import { PF8FinancialGoals } from "./lessons/pf/PF8FinancialGoals";
+import { PF9LifestyleInflation } from "./lessons/pf/PF9LifestyleInflation";
+import { PF10Challenge } from "./lessons/pf/PF10Challenge";
+
+// Corporate Finance pathway
+import { CF1WhatIsCorporateFinance } from "./lessons/cf/CF1WhatIsCorporateFinance";
+import { CF2IncomeStatement } from "./lessons/cf/CF2IncomeStatement";
+import { CF3BalanceSheets } from "./lessons/cf/CF3BalanceSheets";
+import { CF4CashFlow } from "./lessons/cf/CF4CashFlow";
+import { CF5FinancialRatios } from "./lessons/cf/CF5FinancialRatios";
+import { CF6RevenueRecognition } from "./lessons/cf/CF6RevenueRecognition";
+import { CF7COGSMargins } from "./lessons/cf/CF7COGSMargins";
+import { CF8WorkingCapital } from "./lessons/cf/CF8WorkingCapital";
+import { CF9SECFilings } from "./lessons/cf/CF9SECFilings";
+import { CF10Challenge } from "./lessons/cf/CF10Challenge";
+
+// Trading pathway
+import { TR1WhatIsTrading } from "./lessons/tr/TR1WhatIsTrading";
+import { TR2CandlestickBasics } from "./lessons/tr/TR2CandlestickBasics";
+import { TR3SupportResistance } from "./lessons/tr/TR3SupportResistance";
+import { TR4TrendLines } from "./lessons/tr/TR4TrendLines";
+import { TR5VolumeAnalysis } from "./lessons/tr/TR5VolumeAnalysis";
+import { TR6MovingAverages } from "./lessons/tr/TR6MovingAverages";
+import { TR7OrderTypes } from "./lessons/tr/TR7OrderTypes";
+import { TR8RiskManagement } from "./lessons/tr/TR8RiskManagement";
+import { TR9PaperTrading } from "./lessons/tr/TR9PaperTrading";
+import { TR10Challenge } from "./lessons/tr/TR10Challenge";
+
+// Alternative Assets pathway
+import { ALT1BeyondStocks } from "./lessons/alt/ALT1BeyondStocks";
+import { ALT2RealEstate } from "./lessons/alt/ALT2RealEstate";
+import { ALT3REITs } from "./lessons/alt/ALT3REITs";
+import { ALT4GoldMetals } from "./lessons/alt/ALT4GoldMetals";
+import { ALT5Commodities } from "./lessons/alt/ALT5Commodities";
+import { ALT6Crypto } from "./lessons/alt/ALT6Crypto";
+import { ALT7NFTs } from "./lessons/alt/ALT7NFTs";
+import { ALT8Collectibles } from "./lessons/alt/ALT8Collectibles";
+import { ALT9ESG } from "./lessons/alt/ALT9ESG";
+import { ALT10Challenge } from "./lessons/alt/ALT10Challenge";
+
+// Pathway-aware lesson map
+const LESSON_MAP: Record<string, Record<number, React.ComponentType<{ onComplete: () => void }>>> = {
+  'investing': {
+    1: Lesson1Beginner, 2: Lesson2RiskRewardSlides, 3: Lesson3CompoundInterestSlides,
+    4: Lesson4AssetMixSlides, 5: Lesson5DiversificationSlides, 6: Lesson6MarketPsychologySlides,
+    7: Lesson7ValueInvestingSlides, 8: Lesson8FinancialStatementsSlides, 9: Lesson9MoatBuilderSlides,
+    10: Lesson10StressTestSlides, 11: Lesson11LifePathSlides, 12: Lesson12DecisionChecklistSlides,
+    13: Lesson13PatternRecognitionSlides, 14: Lesson14BiasDetectionSlides, 15: Lesson15OptionsBasicsSlides,
+    16: Lesson16CostDragSlides, 17: Lesson17YieldCurveSlides, 18: Lesson18EconomicCyclesSlides,
+    19: Lesson19VolatilitySlides, 20: Lesson20DividendIncomeSlides, 21: Lesson21IndicatorSignalsSlides,
+    22: Lesson22REITComparisonSlides, 23: Lesson23MarginRiskSlides, 24: Lesson24PortfolioConstraintsSlides,
+    25: Lesson25ShortSellingSlides,
+  },
+  'personal-finance': {
+    1: PF1FinancialStartingPoint, 2: PF2BudgetingWorks, 3: PF3EmergencyFund,
+    4: PF4CreditScores, 5: PF5GoodVsBadDebt, 6: PF6BankingAccounts,
+    7: PF7PaycheckDeductions, 8: PF8FinancialGoals, 9: PF9LifestyleInflation, 10: PF10Challenge,
+  },
+  'corporate-finance': {
+    1: CF1WhatIsCorporateFinance, 2: CF2IncomeStatement, 3: CF3BalanceSheets,
+    4: CF4CashFlow, 5: CF5FinancialRatios, 6: CF6RevenueRecognition,
+    7: CF7COGSMargins, 8: CF8WorkingCapital, 9: CF9SECFilings, 10: CF10Challenge,
+  },
+  'trading': {
+    1: TR1WhatIsTrading, 2: TR2CandlestickBasics, 3: TR3SupportResistance,
+    4: TR4TrendLines, 5: TR5VolumeAnalysis, 6: TR6MovingAverages,
+    7: TR7OrderTypes, 8: TR8RiskManagement, 9: TR9PaperTrading, 10: TR10Challenge,
+  },
+  'alternative-assets': {
+    1: ALT1BeyondStocks, 2: ALT2RealEstate, 3: ALT3REITs,
+    4: ALT4GoldMetals, 5: ALT5Commodities, 6: ALT6Crypto,
+    7: ALT7NFTs, 8: ALT8Collectibles, 9: ALT9ESG, 10: ALT10Challenge,
+  },
+};
+
 interface ThreePhaseLessonViewerProps {
   lessonId: string;
   onClose: () => void;
 }
 
-// Lesson 1 now uses the beginner-friendly template
 type Phase = 'learn' | 'challenge' | 'feedback';
 
 export const ThreePhaseLessonViewer = ({ lessonId, onClose }: ThreePhaseLessonViewerProps) => {
@@ -57,7 +140,6 @@ export const ThreePhaseLessonViewer = ({ lessonId, onClose }: ThreePhaseLessonVi
   const [currentSection, setCurrentSection] = useState(0);
   const [learnProgress, setLearnProgress] = useState(0);
   
-  // Challenge results
   const [challengeScore, setChallengeScore] = useState(0);
   const [challengePassed, setChallengePassed] = useState(false);
   const [weakAreas, setWeakAreas] = useState<string[]>([]);
@@ -82,7 +164,6 @@ export const ThreePhaseLessonViewer = ({ lessonId, onClose }: ThreePhaseLessonVi
 
     setLesson(data);
 
-    // Load user progress
     const { data: progressData } = await supabase
       .from("user_lesson_progress")
       .select("*")
@@ -97,9 +178,8 @@ export const ThreePhaseLessonViewer = ({ lessonId, onClose }: ThreePhaseLessonVi
       setMasteryLevel(typeof progressData.mastery_level === 'string' ? progressData.mastery_level : 'beginner');
       setAttempts(typeof progressData.quiz_attempts === 'number' ? progressData.quiz_attempts : 0);
       
-      // If already completed, can start at challenge phase
       if (progressData.progress >= 100 && !progressData.completed) {
-        setPhase('learn'); // Always start at learn, but allow quick skip
+        setPhase('learn');
       }
     }
   };
@@ -113,10 +193,8 @@ export const ThreePhaseLessonViewer = ({ lessonId, onClose }: ThreePhaseLessonVi
       setCurrentSection(newSection);
       const newProgress = Math.round(((newSection + 1) / sections.length) * 100);
       setLearnProgress(newProgress);
-      
       await updateProgress(newProgress, false);
     } else {
-      // Completed learning phase
       await updateProgress(100, false);
       setPhase('challenge');
       toast.success("Learning phase complete! Ready for the challenge?");
@@ -124,16 +202,13 @@ export const ThreePhaseLessonViewer = ({ lessonId, onClose }: ThreePhaseLessonVi
   };
 
   const handleLearnBack = () => {
-    if (currentSection > 0) {
-      setCurrentSection(currentSection - 1);
-    }
+    if (currentSection > 0) setCurrentSection(currentSection - 1);
   };
 
   const handleChallengeComplete = async (score: number, passed: boolean) => {
     setChallengeScore(score);
     setChallengePassed(passed);
     
-    // Fetch updated progress data
     const { data: progressData } = await supabase
       .from("user_lesson_progress")
       .select("*")
@@ -172,14 +247,15 @@ export const ThreePhaseLessonViewer = ({ lessonId, onClose }: ThreePhaseLessonVi
   };
 
   const updateProgress = async (newProgress: number, isCompleted: boolean = false) => {
+    if (!user?.id) return;
+    
     const updateData: any = {
-      user_id: user?.id,
+      user_id: user.id,
       lesson_id: lessonId,
       progress: newProgress,
       completed: isCompleted,
     };
     
-    // Set completed_at timestamp when marking as complete
     if (isCompleted) {
       updateData.completed_at = new Date().toISOString();
       playLessonComplete();
@@ -199,11 +275,42 @@ export const ThreePhaseLessonViewer = ({ lessonId, onClose }: ThreePhaseLessonVi
 
   if (!lesson) return null;
 
-  // Handle case where lesson content isn't available
+  // Check pathway-aware lesson map first
+  const pathway = lesson.pathway || 'investing';
+  const SlideComponent = LESSON_MAP[pathway]?.[lesson.order_index];
+
+  if (SlideComponent) {
+    return (
+      <div className="fixed inset-0 bg-background/95 z-50 overflow-y-auto">
+        <div className="max-w-4xl mx-auto p-6">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h1 className="text-3xl font-bold">{lesson.title}</h1>
+              <p className="text-muted-foreground mt-1">{lesson.description}</p>
+            </div>
+            <Button variant="ghost" size="icon" onClick={onClose}>
+              <X className="w-6 h-6" />
+            </Button>
+          </div>
+          <div className="animate-fade-in">
+            <SlideComponent
+              onComplete={async () => {
+                await updateProgress(100, true);
+                onClose();
+                toast.success(`${lesson.title} complete! 🎉`);
+              }}
+            />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Fallback: generic three-phase flow for lessons without custom slides
   if (!sections.length || !currentContent) {
     return (
       <div className="fixed inset-0 bg-background/95 z-50 overflow-y-auto">
-        <div className="max-w-7xl mx-auto p-6">
+        <div className="max-w-4xl mx-auto p-6">
           <div className="flex items-center justify-between mb-6">
             <h1 className="text-3xl font-bold">{lesson.title}</h1>
             <Button variant="ghost" size="icon" onClick={onClose}>
@@ -221,8 +328,7 @@ export const ThreePhaseLessonViewer = ({ lessonId, onClose }: ThreePhaseLessonVi
 
   return (
     <div className="fixed inset-0 bg-background/95 z-50 overflow-y-auto">
-      <div className="max-w-7xl mx-auto p-6">
-        {/* Header */}
+      <div className="max-w-4xl mx-auto p-6">
         <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="text-3xl font-bold">{lesson.title}</h1>
@@ -233,376 +339,104 @@ export const ThreePhaseLessonViewer = ({ lessonId, onClose }: ThreePhaseLessonVi
           </Button>
         </div>
 
-        {/* Phase Indicator - Different for Lesson 1, hidden for Lesson 2 (has internal nav) */}
-        {lesson.order_index >= 1 && lesson.order_index <= 25 ? (
-          // Lessons 1-25 have internal slide navigation, no external phase tabs needed
-          null
-        ) : (
-          <div className="flex items-center gap-4 mb-6">
-            <PhaseTab 
-              icon={<BookOpen className="w-4 h-4" />}
-              label="Learn"
-              active={phase === 'learn'}
-              completed={learnProgress >= 100}
-            />
-            <div className="flex-1 h-px bg-border" />
-            <PhaseTab 
-              icon={<Trophy className="w-4 h-4" />}
-              label="Challenge"
-              active={phase === 'challenge'}
-              completed={challengePassed}
-            />
-            <div className="flex-1 h-px bg-border" />
-            <PhaseTab 
-              icon={<LineChart className="w-4 h-4" />}
-              label="Feedback"
-              active={phase === 'feedback'}
-              completed={false}
-            />
-          </div>
-        )}
+        <div className="flex items-center gap-4 mb-6">
+          <PhaseTab 
+            icon={<BookOpen className="w-4 h-4" />}
+            label="Learn"
+            active={phase === 'learn'}
+            completed={learnProgress >= 100}
+          />
+          <div className="flex-1 h-px bg-border" />
+          <PhaseTab 
+            icon={<Trophy className="w-4 h-4" />}
+            label="Challenge"
+            active={phase === 'challenge'}
+            completed={challengePassed}
+          />
+          <div className="flex-1 h-px bg-border" />
+          <PhaseTab 
+            icon={<LineChart className="w-4 h-4" />}
+            label="Feedback"
+            active={phase === 'feedback'}
+            completed={false}
+          />
+        </div>
 
-        {/* Content */}
-        <div className="max-w-7xl mx-auto">
-          {/* Lesson 1: Beginner-friendly slide-based lesson */}
-          {lesson.order_index === 1 ? (
-            <div className="animate-fade-in">
-              <Lesson1Beginner
-                onComplete={() => {
-                  updateProgress(100, true);
-                  onClose();
-                  toast.success("Lesson 1 complete! 🎉");
-                }}
-              />
-            </div>
-          ) : lesson.order_index === 2 ? (
-            // Special 4-slide flow for Lesson 2 (Risk vs Reward)
-            <div className="animate-fade-in">
-              <Lesson2RiskRewardSlides
-                onComplete={() => {
-                  updateProgress(100, true);
-                  onClose();
-                  toast.success("Lesson 2 complete! You understand risk vs reward.");
-                }}
-              />
-            </div>
-          ) : lesson.order_index === 3 ? (
-            // Special 4-slide flow for Lesson 3 (Compound Interest)
-            <div className="animate-fade-in">
-              <Lesson3CompoundInterestSlides
-                onComplete={() => {
-                  updateProgress(100, true);
-                  onClose();
-                  toast.success("Lesson 3 complete! You understand compound interest.");
-                }}
-              />
-            </div>
-          ) : lesson.order_index === 4 ? (
-            <div className="animate-fade-in">
-              <Lesson4AssetMixSlides
-                onComplete={() => {
-                  updateProgress(100, true);
-                  onClose();
-                  toast.success("Lesson 4 complete! You understand asset allocation.");
-                }}
-              />
-            </div>
-          ) : lesson.order_index === 5 ? (
-            <div className="animate-fade-in">
-              <Lesson5DiversificationSlides
-                onComplete={() => {
-                  updateProgress(100, true);
-                  onClose();
-                  toast.success("Lesson 5 complete! You understand diversification.");
-                }}
-              />
-            </div>
-          ) : lesson.order_index === 6 ? (
-            <div className="animate-fade-in">
-              <Lesson6MarketPsychologySlides
-                onComplete={() => {
-                  updateProgress(100, true);
-                  onClose();
-                  toast.success("Lesson 6 complete! You understand market psychology.");
-                }}
-              />
-            </div>
-          ) : lesson.order_index === 7 ? (
-            <div className="animate-fade-in">
-              <Lesson7ValueInvestingSlides
-                onComplete={() => {
-                  updateProgress(100, true);
-                  onClose();
-                  toast.success("Lesson 7 complete! You understand value investing.");
-                }}
-              />
-            </div>
-          ) : lesson.order_index === 8 ? (
-            <div className="animate-fade-in">
-              <Lesson8FinancialStatementsSlides
-                onComplete={() => {
-                  updateProgress(100, true);
-                  onClose();
-                  toast.success("Lesson 8 complete! You can analyze financial statements.");
-                }}
-              />
-            </div>
-          ) : lesson.order_index === 9 ? (
-            <div className="animate-fade-in">
-              <Lesson9MoatBuilderSlides
-                onComplete={() => {
-                  updateProgress(100, true);
-                  onClose();
-                  toast.success("Lesson 9 complete! You understand competitive moats.");
-                }}
-              />
-            </div>
-          ) : lesson.order_index === 10 ? (
-            <div className="animate-fade-in">
-              <Lesson10StressTestSlides
-                onComplete={() => {
-                  updateProgress(100, true);
-                  onClose();
-                  toast.success("Lesson 10 complete! You can stress test portfolios.");
-                }}
-              />
-            </div>
-          ) : lesson.order_index === 11 ? (
-            <div className="animate-fade-in">
-              <Lesson11LifePathSlides
-                onComplete={() => {
-                  updateProgress(100, true);
-                  onClose();
-                  toast.success("Lesson 11 complete! You understand life path planning.");
-                }}
-              />
-            </div>
-          ) : lesson.order_index === 12 ? (
-            <div className="animate-fade-in">
-              <Lesson12DecisionChecklistSlides
-                onComplete={() => {
-                  updateProgress(100, true);
-                  onClose();
-                  toast.success("Lesson 12 complete! You've mastered decision checklists.");
-                }}
-              />
-            </div>
-          ) : lesson.order_index === 13 ? (
-            <div className="animate-fade-in">
-              <Lesson13PatternRecognitionSlides
-                onComplete={() => {
-                  updateProgress(100, true);
-                  onClose();
-                  toast.success("Lesson 13 complete! You can recognize chart patterns.");
-                }}
-              />
-            </div>
-          ) : lesson.order_index === 14 ? (
-            <div className="animate-fade-in">
-              <Lesson14BiasDetectionSlides
-                onComplete={() => {
-                  updateProgress(100, true);
-                  onClose();
-                  toast.success("Lesson 14 complete! You can detect cognitive biases.");
-                }}
-              />
-            </div>
-          ) : lesson.order_index === 15 ? (
-            <div className="animate-fade-in">
-              <Lesson15OptionsBasicsSlides
-                onComplete={() => {
-                  updateProgress(100, true);
-                  onClose();
-                  toast.success("Lesson 15 complete! You understand options basics.");
-                }}
-              />
-            </div>
-          ) : lesson.order_index === 16 ? (
-            <div className="animate-fade-in">
-              <Lesson16CostDragSlides
-                onComplete={() => {
-                  updateProgress(100, true);
-                  onClose();
-                  toast.success("Lesson 16 complete! You understand cost drag impact.");
-                }}
-              />
-            </div>
-          ) : lesson.order_index === 17 ? (
-            <div className="animate-fade-in">
-              <Lesson17YieldCurveSlides
-                onComplete={() => {
-                  updateProgress(100, true);
-                  onClose();
-                  toast.success("Lesson 17 complete! You understand yield curves.");
-                }}
-              />
-            </div>
-          ) : lesson.order_index === 18 ? (
-            <div className="animate-fade-in">
-              <Lesson18EconomicCyclesSlides
-                onComplete={() => {
-                  updateProgress(100, true);
-                  onClose();
-                  toast.success("Lesson 18 complete! You understand economic cycles.");
-                }}
-              />
-            </div>
-          ) : lesson.order_index === 19 ? (
-            <div className="animate-fade-in">
-              <Lesson19VolatilitySlides
-                onComplete={() => {
-                  updateProgress(100, true);
-                  onClose();
-                  toast.success("Lesson 19 complete! You understand volatility management.");
-                }}
-              />
-            </div>
-          ) : lesson.order_index === 20 ? (
-            <div className="animate-fade-in">
-              <Lesson20DividendIncomeSlides
-                onComplete={() => {
-                  updateProgress(100, true);
-                  onClose();
-                  toast.success("Lesson 20 complete! You understand dividend income.");
-                }}
-              />
-            </div>
-          ) : lesson.order_index === 21 ? (
-            <div className="animate-fade-in">
-              <Lesson21IndicatorSignalsSlides
-                onComplete={() => {
-                  updateProgress(100, true);
-                  onClose();
-                  toast.success("Lesson 21 complete! You understand technical indicators.");
-                }}
-              />
-            </div>
-          ) : lesson.order_index === 22 ? (
-            <div className="animate-fade-in">
-              <Lesson22REITComparisonSlides
-                onComplete={() => {
-                  updateProgress(100, true);
-                  onClose();
-                  toast.success("Lesson 22 complete! You understand REIT investing.");
-                }}
-              />
-            </div>
-          ) : lesson.order_index === 23 ? (
-            <div className="animate-fade-in">
-              <Lesson23MarginRiskSlides
-                onComplete={() => {
-                  updateProgress(100, true);
-                  onClose();
-                  toast.success("Lesson 23 complete! You understand margin risk.");
-                }}
-              />
-            </div>
-          ) : lesson.order_index === 24 ? (
-            <div className="animate-fade-in">
-              <Lesson24PortfolioConstraintsSlides
-                onComplete={() => {
-                  updateProgress(100, true);
-                  onClose();
-                  toast.success("Lesson 24 complete! You understand portfolio constraints.");
-                }}
-              />
-            </div>
-          ) : lesson.order_index === 25 ? (
-            <div className="animate-fade-in">
-              <Lesson25ShortSellingSlides
-                onComplete={() => {
-                  updateProgress(100, true);
-                  onClose();
-                  toast.success("Lesson 25 complete! You understand short selling.");
-                }}
-              />
-            </div>
-          ) : (
-            <>
-              {/* Normal flow for other lessons */}
-              {phase === 'learn' && (
-                <div className="space-y-6 animate-fade-in">
-                  <Progress value={(currentSection + 1) / sections.length * 100} className="mb-6 h-3" />
-                  
-                  <Card className="p-6">
-                    <div className="mb-4">
-                      <Badge variant="secondary" className="mb-2">
-                        Section {currentSection + 1} of {sections.length}
-                      </Badge>
-                      <h2 className="text-2xl font-bold">{currentContent.title}</h2>
-                    </div>
-
-                    <div className="text-lg leading-relaxed mb-6">
-                      {currentContent.content}
-                    </div>
-
-                    {/* Interactive elements */}
-                    {lesson.order_index >= 3 && lesson.order_index <= 6 && (
-                      <InteractiveLessonSimulation
-                        lessonId={lessonId}
-                        simulationType={
-                          lesson.order_index === 3 ? "diversification" :
-                          lesson.order_index === 4 ? "compound" :
-                          lesson.order_index === 5 ? "risk" : "portfolio"
-                        }
-                        onComplete={(score) => {
-                          toast.success(`Simulation complete! Score: ${score}/100`);
-                        }}
-                      />
-                    )}
-
-                    {lesson.order_index >= 7 && lesson.order_index <= 9 && (
-                      <div className="my-6 p-4 bg-muted/30 rounded-lg text-center text-muted-foreground">
-                        <p className="text-sm">📈 Check the Trade tab for live market charts</p>
-                      </div>
-                    )}
-
-                    <div className="flex justify-between items-center mt-8 pt-4 border-t">
-                      <Button 
-                        variant="outline" 
-                        onClick={handleLearnBack}
-                        disabled={currentSection === 0}
-                      >
-                        Previous
-                      </Button>
-                      <Button
-                        onClick={handleLearnNext}
-                        className="bg-gradient-primary"
-                      >
-                        {currentSection === sections.length - 1 ? "Start Challenge" : "Next"}
-                      </Button>
-                    </div>
-                  </Card>
-
-                  <AILessonChatbot
-                    lessonId={lessonId}
-                    lessonTitle={lesson.title}
-                    currentContent={currentContent.title}
-                    userProgress={learnProgress}
-                  />
+        <div className="max-w-4xl mx-auto">
+          {phase === 'learn' && (
+            <div className="space-y-6 animate-fade-in">
+              <Progress value={(currentSection + 1) / sections.length * 100} className="mb-6 h-3" />
+              
+              <Card className="p-6">
+                <div className="mb-4">
+                  <Badge variant="secondary" className="mb-2">
+                    Section {currentSection + 1} of {sections.length}
+                  </Badge>
+                  <h2 className="text-2xl font-bold">{currentContent.title}</h2>
                 </div>
-              )}
 
-              {phase === 'challenge' && (
-                <AdaptiveLessonChallenge
-                  lessonId={lessonId}
-                  onComplete={handleChallengeComplete}
-                  onBack={() => setPhase('learn')}
-                />
-              )}
+                <div className="text-lg leading-relaxed mb-6">
+                  {currentContent.content}
+                </div>
 
-              {phase === 'feedback' && (
-                <LessonMasteryDashboard
-                  score={challengeScore}
-                  passed={challengePassed}
-                  weakAreas={weakAreas}
-                  masteryLevel={masteryLevel}
-                  attempts={attempts}
-                  onRetry={handleRetry}
-                  onContinue={handleContinue}
-                />
-              )}
-            </>
+                {lesson.order_index >= 3 && lesson.order_index <= 6 && (
+                  <InteractiveLessonSimulation
+                    lessonId={lessonId}
+                    simulationType={
+                      lesson.order_index === 3 ? "diversification" :
+                      lesson.order_index === 4 ? "compound" :
+                      lesson.order_index === 5 ? "risk" : "portfolio"
+                    }
+                    onComplete={(score) => {
+                      toast.success(`Simulation complete! Score: ${score}/100`);
+                    }}
+                  />
+                )}
+
+                <div className="flex justify-between items-center mt-8 pt-4 border-t">
+                  <Button 
+                    variant="outline" 
+                    onClick={handleLearnBack}
+                    disabled={currentSection === 0}
+                  >
+                    Previous
+                  </Button>
+                  <Button
+                    onClick={handleLearnNext}
+                    className="bg-gradient-primary"
+                  >
+                    {currentSection === sections.length - 1 ? "Start Challenge" : "Next"}
+                  </Button>
+                </div>
+              </Card>
+
+              <AILessonChatbot
+                lessonId={lessonId}
+                lessonTitle={lesson.title}
+                currentContent={currentContent.title}
+                userProgress={learnProgress}
+              />
+            </div>
+          )}
+
+          {phase === 'challenge' && (
+            <AdaptiveLessonChallenge
+              lessonId={lessonId}
+              onComplete={handleChallengeComplete}
+              onBack={() => setPhase('learn')}
+            />
+          )}
+
+          {phase === 'feedback' && (
+            <LessonMasteryDashboard
+              score={challengeScore}
+              passed={challengePassed}
+              weakAreas={weakAreas}
+              masteryLevel={masteryLevel}
+              attempts={attempts}
+              onRetry={handleRetry}
+              onContinue={handleContinue}
+            />
           )}
         </div>
       </div>
@@ -610,7 +444,6 @@ export const ThreePhaseLessonViewer = ({ lessonId, onClose }: ThreePhaseLessonVi
   );
 };
 
-// Helper component for phase tabs
 const PhaseTab = ({ icon, label, active, completed }: any) => (
   <div className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
     active ? 'bg-primary text-primary-foreground' :

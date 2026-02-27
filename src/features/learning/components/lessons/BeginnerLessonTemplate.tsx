@@ -66,7 +66,7 @@ export const BeginnerLessonTemplate = ({ slides, onComplete }: BeginnerLessonTem
   };
 
   return (
-    <div className="min-h-[600px] flex flex-col">
+    <div className="min-h-[600px] flex flex-col max-w-3xl mx-auto">
       {/* Progress bar */}
       <div className="flex items-center gap-2 mb-8">
         {slides.map((_, i) => (
@@ -92,8 +92,8 @@ export const BeginnerLessonTemplate = ({ slides, onComplete }: BeginnerLessonTem
             transition={{ duration: 0.35, ease: "easeOut" }}
             className="w-full"
           >
-            <h2 className="text-2xl md:text-3xl font-black text-foreground mb-6">{slide.title}</h2>
-            <div className="text-foreground">{slide.content}</div>
+            <h2 className="text-3xl md:text-4xl font-black text-foreground mb-6">{slide.title}</h2>
+            <div className="text-lg leading-relaxed text-foreground">{slide.content}</div>
           </motion.div>
         </AnimatePresence>
       </div>
