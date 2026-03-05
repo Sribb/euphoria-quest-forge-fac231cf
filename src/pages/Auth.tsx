@@ -7,7 +7,7 @@ import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
-import { Loader2, GraduationCap, BookOpen, ArrowLeft, School, Users, BookMarked } from "lucide-react";
+import { Loader2, GraduationCap, BookOpen, ArrowLeft, School, Users, BookMarked, Check, X } from "lucide-react";
 import euphoriaLogo from "@/assets/euphoria-logo-button.png";
 import { z } from "zod";
 import { motion, AnimatePresence } from "framer-motion";
@@ -419,8 +419,19 @@ const Auth = () => {
                     onChange={(e) => setEmail(e.target.value)}
                     required
                     disabled={loading}
-                    className="bg-background/50"
+                    className={`bg-background/50 transition-colors ${
+                      email.length > 0
+                        ? /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+                          ? "border-success focus-visible:ring-success"
+                          : "border-destructive focus-visible:ring-destructive"
+                        : ""
+                    }`}
                   />
+                  {email.length > 0 && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) && (
+                    <p className="text-xs text-destructive flex items-center gap-1">
+                      <X className="w-3 h-3" /> Please enter a valid email address
+                    </p>
+                  )}
                 </div>
 
                 <div className="space-y-2">
@@ -433,9 +444,29 @@ const Auth = () => {
                     onChange={(e) => setPassword(e.target.value)}
                     required
                     disabled={loading}
-                    minLength={8}
-                    className="bg-background/50"
+                    className={`bg-background/50 transition-colors ${
+                      !isLogin && password.length > 0
+                        ? password.length >= 8 && /[A-Z]/.test(password) && /[0-9]/.test(password) && /[^A-Za-z0-9]/.test(password)
+                          ? "border-success focus-visible:ring-success"
+                          : "border-destructive focus-visible:ring-destructive"
+                        : ""
+                    }`}
                   />
+                  {!isLogin && password.length > 0 && (
+                    <div className="space-y-1 pt-1">
+                      {[
+                        { test: password.length >= 8, label: "At least 8 characters" },
+                        { test: /[A-Z]/.test(password), label: "One uppercase letter" },
+                        { test: /[0-9]/.test(password), label: "One number" },
+                        { test: /[^A-Za-z0-9]/.test(password), label: "One special character" },
+                      ].map((rule, i) => (
+                        <p key={i} className={`text-xs flex items-center gap-1.5 transition-colors ${rule.test ? "text-success" : "text-muted-foreground"}`}>
+                          {rule.test ? <Check className="w-3 h-3" /> : <X className="w-3 h-3 text-muted-foreground/50" />}
+                          {rule.label}
+                        </p>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
                 <Button type="submit" className="w-full bg-gradient-primary hover:opacity-90 shadow-glow" disabled={loading}>
