@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { motion, useScroll, useTransform } from "framer-motion";
+import { FeatureShowcase } from "@/features/landing/components/FeatureShowcase";
 import logo from "@/assets/euphoria-logo-button.png";
 const TYPEWRITER_LINES = [
   { text: "Master the Markets.", gradient: false },
@@ -266,60 +267,7 @@ const Landing = () => {
       </section>
 
       {/* Features */}
-      <section id="features" className="py-32 md:py-40 relative overflow-hidden">
-        {/* Radial purple glow behind headline */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-[radial-gradient(ellipse_at_center,hsl(262_83%_58%/0.12),hsl(280_83%_65%/0.06)_40%,transparent_70%)] pointer-events-none blur-2xl" />
-        
-        <div className="max-w-7xl mx-auto px-6 relative z-10">
-          {/* Header */}
-          <motion.div className="text-center mb-24" variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}>
-            <p className="text-[11px] font-extrabold text-primary uppercase tracking-[0.35em] mb-6">Features</p>
-            <h2 className="text-[2.75rem] md:text-[3.25rem] lg:text-[3.5rem] font-extrabold mb-6 leading-[1.1] tracking-[-0.02em]">
-              Everything you need to master investing
-            </h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto text-base md:text-[1.1rem] leading-relaxed">
-              From interactive lessons to AI-powered trading — gamified for maximum retention.
-            </p>
-          </motion.div>
-
-          {/* Feature Cards Grid */}
-          <motion.div 
-            className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6" 
-            variants={{ hidden: {}, show: { transition: { staggerChildren: 0.08 } } }} 
-            initial="hidden" 
-            whileInView="show" 
-            viewport={{ once: true, margin: "-50px" }}
-          >
-            {features.map((f, i) => (
-              <motion.div 
-                key={i} 
-                variants={{ 
-                  hidden: { opacity: 0, y: 32 }, 
-                  show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] } } 
-                }}
-              >
-                <div className="relative h-full p-[1px] rounded-2xl bg-gradient-to-b from-[hsl(var(--border))] to-transparent group">
-                  <div className="relative h-full rounded-2xl bg-[hsl(240_10%_6%)] p-8 md:p-9 backdrop-blur-xl overflow-hidden transition-all duration-500 group-hover:-translate-y-1.5 group-hover:shadow-[0_20px_60px_-12px_hsl(262_83%_58%/0.25)]">
-                    {/* Hover glow overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.06] via-transparent to-accent/[0.03] opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none rounded-2xl" />
-                    
-                    <div className="relative z-10">
-                      {/* Icon with gradient glow */}
-                      <div className={`w-12 h-12 rounded-xl ${f.bg} border border-[hsl(var(--border))] flex items-center justify-center mb-6 transition-all duration-500 group-hover:shadow-[0_0_24px_hsl(262_83%_58%/0.3)] group-hover:scale-110`}>
-                        <f.icon className={`w-[22px] h-[22px] ${f.color}`} />
-                      </div>
-                      
-                      {/* Content */}
-                      <h3 className="text-[1.05rem] font-bold mb-2 tracking-[-0.01em]">{f.title}</h3>
-                      <p className="text-[0.875rem] text-muted-foreground leading-[1.7]">{f.description}</p>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
-      </section>
+      <FeatureShowcase />
 
       {/* How It Works */}
       <section id="how-it-works" className="py-20 md:py-28 bg-muted/20">
