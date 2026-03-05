@@ -126,6 +126,10 @@ export default {
           "50%": { transform: "scale(1.2) rotate(180deg)", opacity: "1" },
           "100%": { transform: "scale(0) rotate(360deg)", opacity: "0" },
         },
+        "marquee": {
+          "0%": { transform: "translateX(0)" },
+          "100%": { transform: "translateX(-50%)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",

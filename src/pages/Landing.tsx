@@ -167,6 +167,8 @@ const Landing = () => {
     { quote: "My students went from 'finance is boring' to fighting over trading scores. Euphoria changed how I teach.", author: "Ms. Rodriguez", role: "AP Economics Teacher" },
     { quote: "I learned more in two weeks than a semester of finance class. The simulations make everything click.", author: "Jake T.", role: "College Sophomore" },
     { quote: "Finally, a platform where my kids learn about money without risking any. The games are brilliant.", author: "Sarah M.", role: "Parent of 2" },
+    { quote: "This is hands-down the best tool I've seen for teaching young investors. I recommend Euphoria to every client with kids heading to college.", author: "Connor Shepard", role: "Lead Advisor, Wealth Management Firm" },
+    { quote: "As a CFP, I've tried dozens of financial literacy platforms. Euphoria is the only one that actually gets students engaged and retaining what they learn.", author: "Sam Rodriguez", role: "CFP & Wealth Management Firm Owner" },
   ];
 
   const fadeUp = { hidden: { opacity: 0, y: 24 }, show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] as const } } };
@@ -318,32 +320,35 @@ const Landing = () => {
         </div>
       </section>
 
-      {/* Testimonials */}
-      <section className="py-20 md:py-28">
+      <section className="py-20 md:py-28 overflow-hidden">
         <div className="max-w-6xl mx-auto px-6">
           <motion.div className="text-center mb-14" variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}>
             <p className="text-xs font-semibold text-primary uppercase tracking-widest mb-3">Testimonials</p>
-            <h2 className="text-3xl md:text-4xl font-bold">Loved by students & educators</h2>
+            <h2 className="text-3xl md:text-4xl font-bold">Loved by students & professionals</h2>
           </motion.div>
+        </div>
 
-          <motion.div className="grid md:grid-cols-3 gap-5" variants={stagger} initial="hidden" whileInView="show" viewport={{ once: true }}>
-            {testimonials.map((t, i) => (
-              <motion.div key={i} variants={fadeUp}>
-                <Card className="p-5 h-full border-border/40 bg-card/50">
-                  <div className="flex gap-0.5 mb-3">
-                    {[...Array(5)].map((_, j) => (
-                      <Star key={j} className="w-3.5 h-3.5 text-warning fill-warning" />
-                    ))}
-                  </div>
-                  <p className="text-sm text-foreground leading-relaxed mb-4">"{t.quote}"</p>
-                  <div className="border-t border-border/30 pt-3">
-                    <p className="text-xs font-semibold">{t.author}</p>
-                    <p className="text-[11px] text-muted-foreground">{t.role}</p>
-                  </div>
-                </Card>
-              </motion.div>
+        {/* Infinite scrolling marquee */}
+        <div className="relative">
+          <div className="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-background to-transparent z-10 pointer-events-none" />
+          <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-background to-transparent z-10 pointer-events-none" />
+          
+          <div className="flex gap-5 animate-[marquee_35s_linear_infinite] hover:[animation-play-state:paused] w-max">
+            {[...testimonials, ...testimonials].map((t, i) => (
+              <Card key={i} className="p-5 border-border/40 bg-card/50 w-[340px] flex-shrink-0">
+                <div className="flex gap-0.5 mb-3">
+                  {[...Array(5)].map((_, j) => (
+                    <Star key={j} className="w-3.5 h-3.5 text-warning fill-warning" />
+                  ))}
+                </div>
+                <p className="text-sm text-foreground leading-relaxed mb-4">"{t.quote}"</p>
+                <div className="border-t border-border/30 pt-3">
+                  <p className="text-xs font-semibold">{t.author}</p>
+                  <p className="text-[11px] text-muted-foreground">{t.role}</p>
+                </div>
+              </Card>
             ))}
-          </motion.div>
+          </div>
         </div>
       </section>
 
