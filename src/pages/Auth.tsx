@@ -168,34 +168,60 @@ const Auth = () => {
                  <h1 className="text-3xl font-bold">Euphoria</h1>
               </div>
 
-              <h2 className="text-2xl font-bold mb-2 text-center">Join as...</h2>
-              <p className="text-muted-foreground text-center mb-8">Choose how you want to use Euphoria</p>
+              <h2 className="text-2xl font-bold mb-1 text-center">Join as...</h2>
+              <p className="text-muted-foreground text-center mb-8 text-sm">Pick your path — you can always explore later</p>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <button
                   onClick={() => handleRoleSelect("student")}
-                  className="group p-6 rounded-xl border-2 border-border hover:border-primary bg-card/50 hover:bg-primary/5 transition-all duration-300 text-left space-y-3"
+                  className="group p-6 rounded-2xl border-2 border-border hover:border-primary bg-card/50 hover:bg-primary/5 transition-all duration-300 text-left space-y-4 hover:-translate-y-1 hover:shadow-lg"
                 >
-                  <div className="w-14 h-14 rounded-xl bg-primary/10 group-hover:bg-primary/20 flex items-center justify-center transition-colors">
-                    <BookOpen className="w-7 h-7 text-primary" />
+                  <div className="w-12 h-12 rounded-xl bg-primary/10 group-hover:bg-primary/20 flex items-center justify-center transition-colors">
+                    <BookOpen className="w-6 h-6 text-primary" />
                   </div>
-                  <h3 className="text-lg font-bold">Student</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Learn investing through interactive lessons, simulations & games
-                  </p>
+                  <div>
+                    <h3 className="text-lg font-bold mb-1">Student</h3>
+                    <p className="text-xs text-muted-foreground leading-relaxed">
+                      Practice trading, take lessons & earn XP — all risk-free
+                    </p>
+                  </div>
+                  <ul className="space-y-1.5 pt-1">
+                    <li className="flex items-center gap-2 text-xs text-muted-foreground">
+                      <span className="w-1 h-1 rounded-full bg-primary flex-shrink-0" />AI market simulator
+                    </li>
+                    <li className="flex items-center gap-2 text-xs text-muted-foreground">
+                      <span className="w-1 h-1 rounded-full bg-primary flex-shrink-0" />25+ interactive lessons
+                    </li>
+                    <li className="flex items-center gap-2 text-xs text-muted-foreground">
+                      <span className="w-1 h-1 rounded-full bg-primary flex-shrink-0" />Games & achievements
+                    </li>
+                  </ul>
                 </button>
 
                 <button
                   onClick={() => handleRoleSelect("educator")}
-                  className="group p-6 rounded-xl border-2 border-border hover:border-primary bg-card/50 hover:bg-primary/5 transition-all duration-300 text-left space-y-3"
+                  className="group p-6 rounded-2xl border-2 border-border hover:border-accent bg-card/50 hover:bg-accent/5 transition-all duration-300 text-left space-y-4 hover:-translate-y-1 hover:shadow-lg"
                 >
-                  <div className="w-14 h-14 rounded-xl bg-primary/10 group-hover:bg-primary/20 flex items-center justify-center transition-colors">
-                    <GraduationCap className="w-7 h-7 text-primary" />
+                  <div className="w-12 h-12 rounded-xl bg-accent/10 group-hover:bg-accent/20 flex items-center justify-center transition-colors">
+                    <GraduationCap className="w-6 h-6 text-accent" />
                   </div>
-                  <h3 className="text-lg font-bold">Educator</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Create classes, track students & manage learning at scale
-                  </p>
+                  <div>
+                    <h3 className="text-lg font-bold mb-1">Educator</h3>
+                    <p className="text-xs text-muted-foreground leading-relaxed">
+                      Create classes, monitor progress & identify struggling students
+                    </p>
+                  </div>
+                  <ul className="space-y-1.5 pt-1">
+                    <li className="flex items-center gap-2 text-xs text-muted-foreground">
+                      <span className="w-1 h-1 rounded-full bg-accent flex-shrink-0" />Class codes & rosters
+                    </li>
+                    <li className="flex items-center gap-2 text-xs text-muted-foreground">
+                      <span className="w-1 h-1 rounded-full bg-accent flex-shrink-0" />Real-time analytics
+                    </li>
+                    <li className="flex items-center gap-2 text-xs text-muted-foreground">
+                      <span className="w-1 h-1 rounded-full bg-accent flex-shrink-0" />Struggling student alerts
+                    </li>
+                  </ul>
                 </button>
               </div>
 
