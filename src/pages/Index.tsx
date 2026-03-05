@@ -4,7 +4,9 @@ import { PersonalizedWelcomeOverlay } from "@/shared/components/PersonalizedWelc
 import { AnimatePresence } from "framer-motion";
 import { GlobalAIAssistant } from "@/shared/components/GlobalAIAssistant";
 import { useEducatorRole } from "@/features/educator/hooks/useEducatorRole";
+import { useOnboarding } from "@/hooks/useOnboarding";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { supabase } from "@/integrations/supabase/client";
 import Dashboard from "./Dashboard";
 import Feed from "./Feed";
 import Learn from "./Learn";
@@ -26,18 +28,33 @@ const Index = () => {
   const [selectedLesson, setSelectedLesson] = useState<string | null>(null);
   const [selectedStock, setSelectedStock] = useState<string | null>(null);
   const [showStockSearch, setShowStockSearch] = useState(false);
+  const { onboarding } = useOnboarding();
   const [showWelcome, setShowWelcome] = useState(false);
 
   useEffect(() => {
-    const seen = localStorage.getItem("euphoria_welcome_seen");
-    if (!seen) setShowWelcome(true);
-  }, []);
+    if (!onboarding) return;
+    const prefs = onboarding.preferences as Record<string, unknown> | null;
+    const welcomeSeen = prefs?.welcome_seen === true;
+    if (!welcomeSeen) setShowWelcome(true);
+  }, [onboarding]);
 
-  const handleWelcomeComplete = (navigateTo?: string) => {
-    localStorage.setItem("euphoria_welcome_seen", "true");
+  const handleWelcomeComplete = async (navigateTo?: string) => {
     setShowWelcome(false);
     if (navigateTo) {
       setActiveTab(navigateTo);
+    }
+    // Mark welcome as seen in the database
+    try {
+      const { data } = await supabase.auth.getUser();
+      if (data?.user) {
+        const currentPrefs = (onboarding?.preferences as Record<string, unknown>) || {};
+        await supabase
+          .from("user_onboarding")
+          .update({ preferences: { ...currentPrefs, welcome_seen: true } })
+          .eq("user_id", data.user.id);
+      }
+    } catch (e) {
+      console.error("Failed to mark welcome as seen", e);
     }
   };
 
