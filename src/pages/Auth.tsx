@@ -27,6 +27,10 @@ type AuthStep = "choose-role" | "form" | "educator-info";
 const Auth = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [studentGrade, setStudentGrade] = useState("");
+  const [studentSchool, setStudentSchool] = useState("");
   const [isLogin, setIsLogin] = useState(true);
   const [loading, setLoading] = useState(false);
   const [signupRole, setSignupRole] = useState<SignupRole>(null);
@@ -81,6 +85,17 @@ const Auth = () => {
         throw new Error(validation.error.errors[0].message);
       }
 
+      if (!isLogin) {
+        if (signupRole === "student") {
+          if (!fullName.trim()) throw new Error("Full name is required");
+          if (!studentGrade) throw new Error("Grade level is required");
+          if (password !== confirmPassword) throw new Error("Passwords do not match");
+        }
+        if (signupRole === "educator" && password !== confirmPassword) {
+          throw new Error("Passwords do not match");
+        }
+      }
+
       if (isLogin) {
         const { error } = await supabase.auth.signInWithPassword({
           email: validation.data.email,
@@ -90,14 +105,20 @@ const Auth = () => {
         toast({ title: "Welcome back!", description: "Successfully signed in." });
         navigate("/app");
       } else {
+        const displayName = signupRole === "educator"
+          ? `Prof. ${email.split("@")[0]}`
+          : fullName.trim();
+
         const { data, error } = await supabase.auth.signUp({
           email: validation.data.email,
           password: validation.data.password,
           options: {
             emailRedirectTo: `${window.location.origin}/app`,
             data: {
-              display_name: signupRole === "educator" ? `Prof. ${email.split("@")[0]}` : undefined,
+              display_name: displayName,
               signup_role: signupRole || "student",
+              grade_level: signupRole === "student" ? studentGrade : undefined,
+              school: signupRole === "student" && studentSchool.trim() ? studentSchool.trim() : undefined,
             },
           },
         });
@@ -137,7 +158,16 @@ const Auth = () => {
     setSubject("");
     setGradeLevel("");
     setClassSize("30");
+    setFullName("");
+    setConfirmPassword("");
+    setStudentGrade("");
+    setStudentSchool("");
   };
+
+  const gradeOptions = [
+    "6th Grade", "7th Grade", "8th Grade", "9th Grade",
+    "10th Grade", "11th Grade", "12th Grade", "College",
+  ];
 
   return (
     <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-background">
@@ -409,8 +439,36 @@ const Auth = () => {
               </div>
 
               <form onSubmit={handleAuth} className="space-y-4">
+                {/* Full Name - Student signup only */}
+                {!isLogin && signupRole === "student" && (
+                  <div className="space-y-2">
+                    <Label htmlFor="fullName">Full Name *</Label>
+                    <Input
+                      id="fullName"
+                      type="text"
+                      placeholder="e.g. Alex Johnson"
+                      value={fullName}
+                      onChange={(e) => setFullName(e.target.value)}
+                      required
+                      disabled={loading}
+                      className={`bg-background/50 transition-colors ${
+                        fullName.length > 0
+                          ? fullName.trim().length >= 2
+                            ? "border-success focus-visible:ring-success"
+                            : "border-destructive focus-visible:ring-destructive"
+                          : ""
+                      }`}
+                    />
+                    {fullName.length > 0 && fullName.trim().length < 2 && (
+                      <p className="text-xs text-destructive flex items-center gap-1">
+                        <X className="w-3 h-3" /> Name must be at least 2 characters
+                      </p>
+                    )}
+                  </div>
+                )}
+
                 <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
+                  <Label htmlFor="email">Email *</Label>
                   <Input
                     id="email"
                     type="email"
@@ -435,7 +493,7 @@ const Auth = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="password">Password</Label>
+                  <Label htmlFor="password">Password {!isLogin && "*"}</Label>
                   <Input
                     id="password"
                     type="password"
@@ -468,6 +526,78 @@ const Auth = () => {
                     </div>
                   )}
                 </div>
+
+                {/* Confirm Password - Signup only */}
+                {!isLogin && (
+                  <div className="space-y-2">
+                    <Label htmlFor="confirmPassword">Confirm Password *</Label>
+                    <Input
+                      id="confirmPassword"
+                      type="password"
+                      placeholder="••••••••"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      required
+                      disabled={loading}
+                      className={`bg-background/50 transition-colors ${
+                        confirmPassword.length > 0
+                          ? confirmPassword === password
+                            ? "border-success focus-visible:ring-success"
+                            : "border-destructive focus-visible:ring-destructive"
+                          : ""
+                      }`}
+                    />
+                    {confirmPassword.length > 0 && confirmPassword !== password && (
+                      <p className="text-xs text-destructive flex items-center gap-1">
+                        <X className="w-3 h-3" /> Passwords do not match
+                      </p>
+                    )}
+                    {confirmPassword.length > 0 && confirmPassword === password && (
+                      <p className="text-xs text-success flex items-center gap-1">
+                        <Check className="w-3 h-3" /> Passwords match
+                      </p>
+                    )}
+                  </div>
+                )}
+
+                {/* Grade Level & School - Student signup only */}
+                {!isLogin && signupRole === "student" && (
+                  <>
+                    <div className="space-y-2">
+                      <Label htmlFor="studentGrade">Grade Level *</Label>
+                      <select
+                        id="studentGrade"
+                        value={studentGrade}
+                        onChange={(e) => setStudentGrade(e.target.value)}
+                        required
+                        disabled={loading}
+                        className={`flex h-10 w-full rounded-md border bg-background/50 px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 transition-colors ${
+                          studentGrade
+                            ? "border-success focus-visible:ring-success"
+                            : "border-input"
+                        }`}
+                      >
+                        <option value="" disabled>Select your grade level</option>
+                        {gradeOptions.map((g) => (
+                          <option key={g} value={g}>{g}</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="studentSchool">School <span className="text-muted-foreground text-xs">(optional)</span></Label>
+                      <Input
+                        id="studentSchool"
+                        type="text"
+                        placeholder="e.g. Lincoln High School"
+                        value={studentSchool}
+                        onChange={(e) => setStudentSchool(e.target.value)}
+                        disabled={loading}
+                        className="bg-background/50"
+                      />
+                    </div>
+                  </>
+                )}
 
                 <Button type="submit" className="w-full bg-gradient-primary hover:opacity-90 shadow-glow" disabled={loading}>
                   {loading ? (
