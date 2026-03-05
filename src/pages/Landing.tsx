@@ -266,23 +266,27 @@ const Landing = () => {
       </section>
 
       {/* Features */}
-      <section id="features" className="py-20 md:py-28">
-        <div className="max-w-6xl mx-auto px-6">
-          <motion.div className="text-center mb-14" variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}>
-            <p className="text-xs font-semibold text-primary uppercase tracking-widest mb-3">Features</p>
-            <h2 className="text-3xl md:text-4xl font-bold mb-3">Everything you need to master investing</h2>
-            <p className="text-muted-foreground max-w-lg mx-auto">From interactive lessons to AI-powered trading — gamified for maximum retention.</p>
+      <section id="features" className="py-24 md:py-32 relative">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,hsl(var(--primary)/0.04),transparent_70%)] pointer-events-none" />
+        <div className="max-w-6xl mx-auto px-6 relative">
+          <motion.div className="text-center mb-16" variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}>
+            <p className="text-xs font-bold text-primary uppercase tracking-[0.2em] mb-4">Features</p>
+            <h2 className="text-4xl md:text-5xl font-bold mb-4">Everything you need to master investing</h2>
+            <p className="text-muted-foreground max-w-xl mx-auto text-base">From interactive lessons to AI-powered trading — gamified for maximum retention.</p>
           </motion.div>
 
           <motion.div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5" variants={stagger} initial="hidden" whileInView="show" viewport={{ once: true }}>
             {features.map((f, i) => (
               <motion.div key={i} variants={fadeUp}>
-                <Card className="p-5 h-full border-border/40 bg-card/50 hover:border-primary/25 transition-colors group">
-                  <div className={`w-10 h-10 rounded-lg ${f.bg} flex items-center justify-center mb-3 group-hover:scale-105 transition-transform`}>
-                    <f.icon className={`w-5 h-5 ${f.color}`} />
+                <Card className="relative p-6 h-full border-border/30 bg-card/60 backdrop-blur-sm hover:border-primary/30 hover:-translate-y-1 hover:shadow-[0_8px_30px_hsl(var(--primary)/0.12)] transition-all duration-300 group overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.03] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+                  <div className="relative">
+                    <div className={`w-11 h-11 rounded-xl ${f.bg} border border-current/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300`}>
+                      <f.icon className={`w-5 h-5 ${f.color}`} />
+                    </div>
+                    <h3 className="text-base font-bold mb-1.5">{f.title}</h3>
+                    <p className="text-sm text-muted-foreground leading-relaxed">{f.description}</p>
                   </div>
-                  <h3 className="text-sm font-semibold mb-1">{f.title}</h3>
-                  <p className="text-xs text-muted-foreground leading-relaxed">{f.description}</p>
                 </Card>
               </motion.div>
             ))}
