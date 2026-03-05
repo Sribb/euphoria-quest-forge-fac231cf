@@ -182,7 +182,7 @@ const Auth = () => {
                   <div>
                     <h3 className="text-lg font-bold mb-1">Student</h3>
                     <p className="text-xs text-muted-foreground leading-relaxed">
-                      Practice trading, take lessons & earn XP — all risk-free
+                      Practice trading, take lessons & earn XP, all risk-free
                     </p>
                   </div>
                   <ul className="space-y-1.5 pt-1">
