@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -11,6 +11,64 @@ import {
 import { useAuth } from "@/hooks/useAuth";
 import { motion, useScroll, useTransform } from "framer-motion";
 import logo from "@/assets/euphoria-logo-button.png";
+const TYPEWRITER_LINES = [
+  { text: "Master the Markets.", gradient: false },
+  { text: "Trade with Euphoria.", gradient: true },
+  { text: "Dominate your Future.", gradient: false },
+];
+
+const TypewriterHeadline = () => {
+  const [lineIndex, setLineIndex] = useState(0);
+  const [charIndex, setCharIndex] = useState(0);
+  const [done, setDone] = useState(false);
+
+  useEffect(() => {
+    if (done) return;
+    const line = TYPEWRITER_LINES[lineIndex];
+    if (charIndex < line.text.length) {
+      const t = setTimeout(() => setCharIndex((c) => c + 1), 45);
+      return () => clearTimeout(t);
+    }
+    // line finished
+    if (lineIndex < TYPEWRITER_LINES.length - 1) {
+      const t = setTimeout(() => {
+        setLineIndex((l) => l + 1);
+        setCharIndex(0);
+      }, 350);
+      return () => clearTimeout(t);
+    }
+    setDone(true);
+  }, [charIndex, lineIndex, done]);
+
+  return (
+    <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold leading-[1.1] tracking-tight mb-6">
+      {TYPEWRITER_LINES.map((line, i) => {
+        const visible =
+          i < lineIndex
+            ? line.text
+            : i === lineIndex
+            ? line.text.slice(0, charIndex)
+            : "";
+        const showCursor = !done && i === lineIndex;
+        return (
+          <span key={i} className="block">
+            {line.gradient ? (
+              <span className="bg-gradient-to-r from-primary via-violet-400 to-fuchsia-400 bg-clip-text text-transparent">
+                {visible}
+              </span>
+            ) : (
+              visible
+            )}
+            {showCursor && (
+              <span className="inline-block w-[3px] h-[1em] bg-primary ml-1 animate-pulse align-middle" />
+            )}
+          </span>
+        );
+      })}
+    </h1>
+  );
+};
+
 const HeroImage = () => {
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
@@ -151,16 +209,7 @@ const Landing = () => {
               </div>
             </motion.div>
 
-            <motion.h1 
-              className="text-4xl sm:text-5xl md:text-6xl font-bold leading-[1.1] tracking-tight mb-6"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.1 }}
-            >
-              Learn investing by
-              <br />
-              <span className="bg-gradient-to-r from-purple-400 via-violet-400 to-fuchsia-400 bg-clip-text text-transparent">actually investing.</span>
-            </motion.h1>
+            <TypewriterHeadline />
 
             <motion.p 
               className="text-base md:text-lg text-muted-foreground max-w-xl mx-auto mb-8"
