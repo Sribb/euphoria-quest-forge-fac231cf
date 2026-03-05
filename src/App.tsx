@@ -1,3 +1,4 @@
+import { EuphoriaSpinner } from "@/shared/components/EuphoriaSpinner";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -29,7 +30,7 @@ const OnboardingCheck = ({ children }: { children: React.ReactNode }) => {
   if (isLoading || roleLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+        <EuphoriaSpinner size="lg" />
       </div>
     );
   }
@@ -54,7 +55,7 @@ const OnboardingRedirect = ({ children }: { children: React.ReactNode }) => {
   if (isLoading || roleLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+        <EuphoriaSpinner size="lg" />
       </div>
     );
   }

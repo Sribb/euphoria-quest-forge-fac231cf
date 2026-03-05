@@ -6,6 +6,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { FeedCard, FeedCardData } from "./FeedCard";
 import { generateFeedCards } from "../utils/generateCards";
 import { Zap, Flame, ChevronDown, Filter, Trophy } from "lucide-react";
+import { EuphoriaSpinner } from "@/shared/components/EuphoriaSpinner";
 import { cn } from "@/lib/utils";
 
 interface MicroLearningFeedProps {
@@ -90,14 +91,7 @@ export const MicroLearningFeed = ({ onNavigate }: MicroLearningFeedProps) => {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-screen bg-black">
-        <div className="text-center space-y-4">
-          <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-            className="w-14 h-14 border-4 border-primary border-t-transparent rounded-full mx-auto"
-          />
-          <p className="text-white/40 text-sm font-bold">Loading your feed...</p>
-        </div>
+        <EuphoriaSpinner size="lg" label="Loading your feed..." />
       </div>
     );
   }
