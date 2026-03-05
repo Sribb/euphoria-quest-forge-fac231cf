@@ -1,4 +1,4 @@
-import { PlacementQuiz } from "@/features/onboarding/components/PlacementQuiz";
+import { ABOnboardingQuiz } from "@/features/onboarding/components/ABOnboardingQuiz";
 import { useOnboarding } from "@/hooks/useOnboarding";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -56,7 +56,7 @@ const Onboarding = ({ isRetake = false, onComplete }: OnboardingProps) => {
   }
 
   return (
-    <PlacementQuiz 
+    <ABOnboardingQuiz 
       onComplete={handleQuizComplete} 
       isRetake={isRetake}
     />

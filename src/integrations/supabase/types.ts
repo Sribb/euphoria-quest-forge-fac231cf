@@ -1120,6 +1120,72 @@ export type Database = {
         }
         Relationships: []
       }
+      onboarding_ab_analytics: {
+        Row: {
+          action: string
+          created_at: string
+          id: string
+          response: Json | null
+          step_name: string
+          step_number: number
+          time_spent_ms: number | null
+          user_id: string
+          variant: string
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          id?: string
+          response?: Json | null
+          step_name: string
+          step_number: number
+          time_spent_ms?: number | null
+          user_id: string
+          variant: string
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          id?: string
+          response?: Json | null
+          step_name?: string
+          step_number?: number
+          time_spent_ms?: number | null
+          user_id?: string
+          variant?: string
+        }
+        Relationships: []
+      }
+      onboarding_ab_assignments: {
+        Row: {
+          completed: boolean
+          completed_at: string | null
+          created_at: string
+          id: string
+          total_time_ms: number | null
+          user_id: string
+          variant: string
+        }
+        Insert: {
+          completed?: boolean
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          total_time_ms?: number | null
+          user_id: string
+          variant: string
+        }
+        Update: {
+          completed?: boolean
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          total_time_ms?: number | null
+          user_id?: string
+          variant?: string
+        }
+        Relationships: []
+      }
       orders: {
         Row: {
           average_fill_price: number | null
