@@ -190,7 +190,11 @@ const Landing = () => {
           </div>
           <div className="flex items-center gap-3">
             <Button variant="ghost" size="sm" onClick={() => navigate("/auth")}>Log in</Button>
-            <Button size="sm" onClick={() => navigate("/auth")} className="bg-gradient-primary">
+            <Button
+              size="sm"
+              onClick={() => navigate("/auth?signup=true")}
+              className="bg-gradient-primary shadow-glow-soft hover:shadow-glow hover:-translate-y-0.5 transition-all duration-200 font-semibold"
+            >
               Sign up free
             </Button>
           </div>
@@ -226,7 +230,7 @@ const Landing = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.4 }}
             >
-              <Button size="lg" onClick={() => navigate("/auth")} className="px-8 bg-gradient-primary shadow-glow-soft hover:shadow-glow transition-shadow">
+              <Button size="lg" onClick={() => navigate("/auth?signup=true")} className="px-8 bg-gradient-primary shadow-glow-soft hover:shadow-glow hover:-translate-y-0.5 transition-all duration-200 font-semibold text-base">
                 Start Learning Free <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
               <Button size="lg" variant="outline" onClick={() => document.getElementById("how-it-works")?.scrollIntoView({ behavior: "smooth" })}>
@@ -436,7 +440,7 @@ const Landing = () => {
           <motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}>
             <h2 className="text-3xl md:text-4xl font-bold mb-4">Ready to start investing?</h2>
             <p className="text-muted-foreground mb-8">Join thousands of students learning through simulation.</p>
-            <Button size="lg" onClick={() => navigate("/auth")} className="px-10 bg-gradient-primary shadow-glow-soft hover:shadow-glow transition-shadow">
+            <Button size="lg" onClick={() => navigate("/auth?signup=true")} className="px-10 bg-gradient-primary shadow-glow-soft hover:shadow-glow hover:-translate-y-0.5 transition-all duration-200 font-semibold">
               Create Free Account <ArrowRight className="w-4 h-4 ml-2" />
             </Button>
           </motion.div>
