@@ -33,6 +33,7 @@ const Auth = () => {
   const [studentSchool, setStudentSchool] = useState("");
   const [isLogin, setIsLogin] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [termsAccepted, setTermsAccepted] = useState(false);
   const [signupRole, setSignupRole] = useState<SignupRole>(null);
   const [loginRole, setLoginRole] = useState<"student" | "educator">("student");
   const [authStep, setAuthStep] = useState<AuthStep>("form");
@@ -172,12 +173,33 @@ const Auth = () => {
     setConfirmPassword("");
     setStudentGrade("");
     setStudentSchool("");
+    setTermsAccepted(false);
   };
 
   const gradeOptions = [
     "6th Grade", "7th Grade", "8th Grade", "9th Grade",
     "10th Grade", "11th Grade", "12th Grade", "College",
   ];
+
+  const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  const isValidPassword = password.length >= 8 && /[A-Z]/.test(password) && /[0-9]/.test(password) && /[^A-Za-z0-9]/.test(password);
+  const passwordsMatch = password === confirmPassword;
+
+  const isStudentFormValid =
+    fullName.trim().length >= 2 &&
+    isValidEmail &&
+    isValidPassword &&
+    passwordsMatch &&
+    !!studentGrade &&
+    termsAccepted;
+
+  const isEducatorFormValid =
+    isValidEmail &&
+    isValidPassword &&
+    passwordsMatch &&
+    termsAccepted;
+
+  const isSignupFormValid = signupRole === "student" ? isStudentFormValid : isEducatorFormValid;
 
   return (
     <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-background">
@@ -660,7 +682,49 @@ const Auth = () => {
                   </>
                 )}
 
-                <Button type="submit" className="w-full bg-gradient-primary hover:opacity-90 shadow-glow" disabled={loading}>
+                {/* Terms & Conditions - Signup only */}
+                {!isLogin && (
+                  <div className="space-y-3 pt-1">
+                    <label className="flex items-start gap-3 cursor-pointer group">
+                      <input
+                        type="checkbox"
+                        checked={termsAccepted}
+                        onChange={(e) => setTermsAccepted(e.target.checked)}
+                        disabled={loading}
+                        className="mt-1 h-4 w-4 rounded border-border accent-primary cursor-pointer"
+                      />
+                      <span className="text-xs text-muted-foreground leading-relaxed">
+                        I agree to the{" "}
+                        <a
+                          href="/terms"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-primary underline hover:text-primary/80 transition-colors"
+                        >
+                          Terms &amp; Conditions
+                        </a>{" "}
+                        and{" "}
+                        <a
+                          href="/privacy"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-primary underline hover:text-primary/80 transition-colors"
+                        >
+                          Privacy Policy
+                        </a>
+                      </span>
+                    </label>
+                    <p className="text-[10px] text-muted-foreground/70 leading-relaxed">
+                      All content on Euphoria is for <strong className="text-muted-foreground">educational purposes only</strong> and does not constitute financial, investment, or trading advice. Simulated trading involves no real money.
+                    </p>
+                  </div>
+                )}
+
+                <Button
+                  type="submit"
+                  className="w-full bg-gradient-primary hover:opacity-90 shadow-glow transition-opacity"
+                  disabled={loading || (!isLogin && !isSignupFormValid)}
+                >
                   {loading ? (
                     <>
                       <Loader2 className="w-4 h-4 mr-2 animate-spin" />
