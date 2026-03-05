@@ -13,8 +13,7 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import logo from "@/assets/euphoria-logo-button.png";
 const TYPEWRITER_LINES = [
   { text: "Master the Markets.", gradient: false },
-  { text: "Trade with Euphoria.", gradient: true },
-  { text: "Dominate your Future.", gradient: false },
+  { text: "Learn with Euphoria.", gradient: true },
 ];
 
 const TypewriterHeadline = () => {
