@@ -46,6 +46,7 @@ const HeroImage = () => {
           {/* Dashboard demo video */}
           <div className="relative">
             <video
+              ref={(el) => { if (el) el.playbackRate = 2; }}
               src="/videos/dashboard-demo.mov"
               autoPlay
               loop
