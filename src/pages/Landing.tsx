@@ -11,8 +11,6 @@ import {
 import { useAuth } from "@/hooks/useAuth";
 import { motion, useScroll, useTransform } from "framer-motion";
 import logo from "@/assets/euphoria-logo-button.png";
-import dashboardPreview from "@/assets/dashboard-preview.png";
-
 const HeroImage = () => {
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
@@ -45,13 +43,15 @@ const HeroImage = () => {
             </div>
           </div>
           
-          {/* Dashboard image */}
+          {/* Dashboard demo video */}
           <div className="relative">
-            <img 
-              src={dashboardPreview} 
-              alt="Euphoria Dashboard — portfolio tracking, AI insights, lessons, and market intel" 
+            <video
+              src="/videos/dashboard-demo.mov"
+              autoPlay
+              loop
+              muted
+              playsInline
               className="w-full h-auto block"
-              loading="eager"
             />
           </div>
         </div>
