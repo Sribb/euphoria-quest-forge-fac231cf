@@ -157,9 +157,10 @@ const Auth = () => {
         {!isLogin && authStep === "choose-role" && (
           <motion.div
             key="choose-role"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
+            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, x: -60 }}
+            transition={{ duration: 0.35, ease: [0.25, 0.46, 0.45, 0.94] }}
             className="w-full max-w-lg px-4 relative z-10"
           >
             <Card className="p-8 shadow-glow border-border backdrop-blur-sm bg-card/90">
@@ -238,9 +239,10 @@ const Auth = () => {
         {!isLogin && authStep === "educator-info" && (
           <motion.div
             key="educator-info"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
+            initial={{ opacity: 0, scale: 0.95, x: 60 }}
+            animate={{ opacity: 1, scale: 1, x: 0 }}
+            exit={{ opacity: 0, scale: 0.95, x: -60 }}
+            transition={{ duration: 0.35, ease: [0.25, 0.46, 0.45, 0.94] }}
             className="w-full max-w-md px-4 relative z-10"
           >
             <Card className="p-8 shadow-glow border-border backdrop-blur-sm bg-card/90">
@@ -320,9 +322,10 @@ const Auth = () => {
         {(isLogin || authStep === "form") && (
           <motion.div
             key="auth-form"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
+            initial={{ opacity: 0, scale: 0.95, x: 60 }}
+            animate={{ opacity: 1, scale: 1, x: 0 }}
+            exit={{ opacity: 0, scale: 0.95, x: -60 }}
+            transition={{ duration: 0.35, ease: [0.25, 0.46, 0.45, 0.94] }}
             className="w-full max-w-md px-4 relative z-10"
           >
             <Card className={`p-8 shadow-glow border-border backdrop-blur-sm bg-card/90 relative overflow-hidden ${
