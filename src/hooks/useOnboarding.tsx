@@ -33,13 +33,15 @@ export const useOnboarding = () => {
   });
 
   const completeOnboarding = useMutation({
-    mutationFn: async ({ score, placementLesson }: { score: number; placementLesson: number }) => {
+    mutationFn: async ({ score, placementLesson, quizPreferences }: { score: number; placementLesson: number; quizPreferences?: Record<string, unknown> }) => {
       if (!user?.id) throw new Error("User not authenticated");
 
       // Determine investment level based on placement
       let investmentLevel = "beginner";
       if (placementLesson >= 20) investmentLevel = "advanced";
       else if (placementLesson >= 10) investmentLevel = "intermediate";
+
+      const preferences = { placement_lesson: placementLesson, ...quizPreferences };
 
       // Check if onboarding record exists
       const { data: existing } = await supabase
@@ -49,27 +51,25 @@ export const useOnboarding = () => {
         .maybeSingle();
 
       if (existing) {
-        // Update existing record (retake)
         const { error } = await supabase
           .from("user_onboarding")
           .update({
             quiz_score: score,
             investment_level: investmentLevel,
-            preferences: { placement_lesson: placementLesson },
+            preferences,
             completed_at: new Date().toISOString(),
           })
           .eq("user_id", user.id);
 
         if (error) throw error;
       } else {
-        // Create new record
         const { error } = await supabase
           .from("user_onboarding")
           .insert({
             user_id: user.id,
             quiz_score: score,
             investment_level: investmentLevel,
-            preferences: { placement_lesson: placementLesson },
+            preferences,
           });
 
         if (error) throw error;

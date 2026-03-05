@@ -21,7 +21,7 @@ interface StepDef {
 }
 
 interface Props {
-  onComplete: (score: number, placementLesson: number) => Promise<void>;
+  onComplete: (score: number, placementLesson: number, quizPreferences?: Record<string, unknown>) => Promise<void>;
   isRetake?: boolean;
 }
 
@@ -109,7 +109,17 @@ export const ABOnboardingQuiz = ({ onComplete, isRetake = false }: Props) => {
       setIsFinishing(true);
       // Brief delay for the "personalizing" feel
       await new Promise((r) => setTimeout(r, 2200));
-      await onComplete(score, placementLesson);
+      
+      // Collect all quiz preferences to save
+      const quizPreferences: Record<string, unknown> = {
+        financial_goal: financialGoal,
+        risk_level: riskLevel,
+        learning_style: learningStyle,
+        ...(topics.length > 0 && { topics }),
+        ...(timeCommitment !== null && { time_commitment: timeCommitment }),
+      };
+      
+      await onComplete(score, placementLesson, quizPreferences);
     }
   }, [variant, step, currentStep, totalSteps, analytics, onComplete]);
 
