@@ -21,9 +21,9 @@ const Onboarding = ({ isRetake = false, onComplete }: OnboardingProps) => {
     }
   }, [hasCompletedOnboarding, isLoading, isRetake, navigate]);
 
-  const handleQuizComplete = async (score: number, placementLesson: number): Promise<void> => {
+  const handleQuizComplete = async (score: number, placementLesson: number, quizPreferences?: Record<string, unknown>): Promise<void> => {
     try {
-      await completeOnboarding.mutateAsync({ score, placementLesson });
+      await completeOnboarding.mutateAsync({ score, placementLesson, quizPreferences });
       
       // Refetch to update hasCompletedOnboarding before navigation
       await refetch();
