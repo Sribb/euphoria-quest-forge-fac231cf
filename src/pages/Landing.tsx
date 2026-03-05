@@ -266,25 +266,25 @@ const Landing = () => {
       </section>
 
       {/* Features */}
-      <section id="features" className="py-24 md:py-32 relative">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,hsl(var(--primary)/0.04),transparent_70%)] pointer-events-none" />
+      <section id="features" className="py-28 md:py-36 relative">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,hsl(var(--primary)/0.06),transparent_60%)] pointer-events-none" />
         <div className="max-w-6xl mx-auto px-6 relative">
-          <motion.div className="text-center mb-16" variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}>
-            <p className="text-xs font-bold text-primary uppercase tracking-[0.2em] mb-4">Features</p>
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">Everything you need to master investing</h2>
-            <p className="text-muted-foreground max-w-xl mx-auto text-base">From interactive lessons to AI-powered trading — gamified for maximum retention.</p>
+          <motion.div className="text-center mb-20" variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}>
+            <p className="text-xs font-bold text-primary uppercase tracking-[0.25em] mb-5">Features</p>
+            <h2 className="text-4xl md:text-5xl lg:text-[3.25rem] font-bold mb-5 leading-tight">Everything you need to master investing</h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto text-base md:text-lg">From interactive lessons to AI-powered trading — gamified for maximum retention.</p>
           </motion.div>
 
-          <motion.div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5" variants={stagger} initial="hidden" whileInView="show" viewport={{ once: true }}>
+          <motion.div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6" variants={stagger} initial="hidden" whileInView="show" viewport={{ once: true }}>
             {features.map((f, i) => (
               <motion.div key={i} variants={fadeUp}>
-                <Card className="relative p-6 h-full border-border/30 bg-card/60 backdrop-blur-sm hover:border-primary/30 hover:-translate-y-1 hover:shadow-[0_8px_30px_hsl(var(--primary)/0.12)] transition-all duration-300 group overflow-hidden">
-                  <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.03] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+                <Card className="relative p-7 md:p-8 h-full border-border/20 bg-card/40 backdrop-blur-sm hover:border-primary/20 hover:-translate-y-1.5 hover:shadow-[0_12px_40px_hsl(var(--primary)/0.15)] transition-all duration-300 group overflow-hidden rounded-2xl">
+                  <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.04] to-accent/[0.02] opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
                   <div className="relative">
-                    <div className={`w-11 h-11 rounded-xl ${f.bg} border border-current/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300`}>
+                    <div className={`w-12 h-12 rounded-xl ${f.bg} flex items-center justify-center mb-5 group-hover:scale-110 transition-transform duration-300`}>
                       <f.icon className={`w-5 h-5 ${f.color}`} />
                     </div>
-                    <h3 className="text-base font-bold mb-1.5">{f.title}</h3>
+                    <h3 className="text-lg font-bold mb-2">{f.title}</h3>
                     <p className="text-sm text-muted-foreground leading-relaxed">{f.description}</p>
                   </div>
                 </Card>
