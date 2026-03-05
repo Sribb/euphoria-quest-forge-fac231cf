@@ -1,4 +1,5 @@
 import { ABOnboardingQuiz } from "@/features/onboarding/components/ABOnboardingQuiz";
+import { EuphoriaSpinner } from "@/shared/components/EuphoriaSpinner";
 import { useOnboarding } from "@/hooks/useOnboarding";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -45,7 +46,7 @@ const Onboarding = ({ isRetake = false, onComplete }: OnboardingProps) => {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+        <EuphoriaSpinner size="lg" />
       </div>
     );
   }

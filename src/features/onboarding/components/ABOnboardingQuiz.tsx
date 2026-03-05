@@ -3,7 +3,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { ArrowLeft, ArrowRight, Sparkles, Loader2 } from "lucide-react";
+import { ArrowLeft, ArrowRight, Sparkles } from "lucide-react";
+import { EuphoriaSpinner } from "@/shared/components/EuphoriaSpinner";
+import euphoriaLogo from "@/assets/euphoria-logo-button.png";
 import { useABOnboardingAnalytics, ABVariant } from "../hooks/useABOnboardingAnalytics";
 import { FinancialGoalStep } from "./steps/FinancialGoalStep";
 import { RiskComfortStep } from "./steps/RiskComfortStep";
@@ -151,7 +153,7 @@ export const ABOnboardingQuiz = ({ onComplete, isRetake = false }: Props) => {
   if (!variant) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-background via-background to-primary/5 flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+        <EuphoriaSpinner size="lg" />
       </div>
     );
   }
@@ -164,13 +166,13 @@ export const ABOnboardingQuiz = ({ onComplete, isRetake = false }: Props) => {
           animate={{ opacity: 1, scale: 1 }}
           className="max-w-md w-full text-center space-y-6"
         >
-          <motion.div
-            animate={{ rotate: [0, 360] }}
-            transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-            className="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-[var(--shadow-glow)]"
-          >
-            <Sparkles className="w-8 h-8 text-primary-foreground" />
-          </motion.div>
+          <motion.img
+            src={euphoriaLogo}
+            alt="Euphoria"
+            className="w-16 h-16 mx-auto rounded-2xl shadow-[var(--shadow-glow)]"
+            animate={{ rotate: 360 }}
+            transition={{ duration: 1.2, repeat: Infinity, ease: "linear" }}
+          />
           <div>
             <h2 className="text-2xl font-bold">Personalizing your plan…</h2>
             <p className="text-muted-foreground mt-2">
