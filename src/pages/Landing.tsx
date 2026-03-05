@@ -11,6 +11,7 @@ import {
 import { useAuth } from "@/hooks/useAuth";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { FeatureShowcase } from "@/features/landing/components/FeatureShowcase";
+import { PricingSection } from "@/features/landing/components/PricingSection";
 import logo from "@/assets/euphoria-logo-button.png";
 const TYPEWRITER_LINES = [
   { text: "Master the Markets.", gradient: false },
@@ -149,11 +150,7 @@ const Landing = () => {
     { num: "04", title: "Level Up", desc: "Earn XP, maintain streaks, grow your skills.", icon: Trophy },
   ];
 
-  const pricing = [
-    { name: "Student", price: "Free", period: "", desc: "Everything you need to learn investing", features: ["25+ interactive lessons", "5 investment games", "AI market simulation", "Portfolio tracking", "XP & achievements", "Community access"], cta: "Get Started Free", highlighted: false },
-    { name: "Educator", price: "$12", period: "/mo", desc: "Manage classes and track progress", features: ["Everything in Student", "Unlimited classes", "Student analytics", "Progress tracking", "Struggling student alerts", "Class leaderboards", "Export reports"], cta: "Start Free Trial", highlighted: true },
-    { name: "School", price: "Custom", period: "", desc: "For schools and districts", features: ["Everything in Educator", "Unlimited educators", "Admin dashboard", "SSO integration", "Priority support", "Custom curriculum"], cta: "Contact Sales", highlighted: false },
-  ];
+  const pricing: never[] = [];
 
   const faqs = [
     { q: "Is Euphoria actually free for students?", a: "Yes! Full access to all lessons, games, the AI market simulator, and portfolio tracking — completely free. No credit card required." },
@@ -331,55 +328,7 @@ const Landing = () => {
       </section>
 
       {/* Pricing */}
-      <section id="pricing" className="py-20 md:py-28 bg-muted/20">
-        <div className="max-w-5xl mx-auto px-6">
-          <motion.div className="text-center mb-14" variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}>
-            <p className="text-xs font-semibold text-primary uppercase tracking-widest mb-3">Pricing</p>
-            <h2 className="text-3xl md:text-4xl font-bold mb-2">Simple, transparent pricing</h2>
-            <p className="text-muted-foreground">Free for students. Affordable for educators.</p>
-          </motion.div>
-
-          <motion.div className="grid md:grid-cols-3 gap-5 items-start" variants={stagger} initial="hidden" whileInView="show" viewport={{ once: true }}>
-            {pricing.map((plan, i) => (
-              <motion.div key={i} variants={fadeUp}>
-                <Card className={`p-6 h-full transition-all ${
-                  plan.highlighted 
-                    ? "border-2 border-primary shadow-glow-soft bg-card relative" 
-                    : "border border-border/40 bg-card/50 hover:border-primary/25"
-                }`}>
-                  {plan.highlighted && (
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-primary text-primary-foreground text-[10px] font-bold px-3 py-0.5 rounded-full">
-                      Most Popular
-                    </div>
-                  )}
-                  <h3 className="text-lg font-bold">{plan.name}</h3>
-                  <p className="text-xs text-muted-foreground mb-3">{plan.desc}</p>
-                  <div className="flex items-baseline gap-0.5 mb-5">
-                    <span className="text-3xl font-bold">{plan.price}</span>
-                    {plan.period && <span className="text-sm text-muted-foreground">{plan.period}</span>}
-                  </div>
-                  <Button 
-                    className={`w-full mb-5 ${plan.highlighted ? "bg-gradient-primary" : ""}`}
-                    variant={plan.highlighted ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => navigate("/auth")}
-                  >
-                    {plan.cta}
-                  </Button>
-                  <ul className="space-y-2">
-                    {plan.features.map((f, j) => (
-                      <li key={j} className="flex items-start gap-2 text-xs">
-                        <Check className="w-3.5 h-3.5 text-success flex-shrink-0 mt-0.5" />
-                        <span className="text-muted-foreground">{f}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </Card>
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
-      </section>
+      <PricingSection />
 
       {/* FAQ */}
       <section id="faq" className="py-20 md:py-28">
