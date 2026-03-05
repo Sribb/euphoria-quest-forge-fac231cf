@@ -38,6 +38,7 @@ const Auth = () => {
   const [authStep, setAuthStep] = useState<AuthStep>("form");
   
   // Educator info
+  const [educatorName, setEducatorName] = useState("");
   const [schoolName, setSchoolName] = useState("");
   const [subject, setSubject] = useState("");
   const [gradeLevel, setGradeLevel] = useState("");
@@ -68,6 +69,14 @@ const Auth = () => {
   };
 
   const handleEducatorInfoNext = () => {
+    if (!educatorName.trim()) {
+      toast({ title: "Required", description: "Please enter your name.", variant: "destructive" });
+      return;
+    }
+    if (!email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      toast({ title: "Required", description: "Please enter a valid email address.", variant: "destructive" });
+      return;
+    }
     if (!schoolName.trim()) {
       toast({ title: "Required", description: "Please enter your school name.", variant: "destructive" });
       return;
@@ -106,7 +115,7 @@ const Auth = () => {
         navigate("/app");
       } else {
         const displayName = signupRole === "educator"
-          ? `Prof. ${email.split("@")[0]}`
+          ? educatorName.trim()
           : fullName.trim();
 
         const { data, error } = await supabase.auth.signUp({
@@ -154,6 +163,7 @@ const Auth = () => {
     setIsLogin(true);
     setAuthStep("form");
     setSignupRole(null);
+    setEducatorName("");
     setSchoolName("");
     setSubject("");
     setGradeLevel("");
@@ -295,13 +305,64 @@ const Auth = () => {
 
               <div className="space-y-4">
                 <div className="space-y-2">
+                  <Label htmlFor="educatorName">Full Name *</Label>
+                  <Input
+                    id="educatorName"
+                    placeholder="e.g. Dr. Sarah Mitchell"
+                    value={educatorName}
+                    onChange={(e) => setEducatorName(e.target.value)}
+                    className={`bg-background/50 transition-colors ${
+                      educatorName.length > 0
+                        ? educatorName.trim().length >= 2
+                          ? "border-success focus-visible:ring-success"
+                          : "border-destructive focus-visible:ring-destructive"
+                        : ""
+                    }`}
+                  />
+                  {educatorName.length > 0 && educatorName.trim().length < 2 && (
+                    <p className="text-xs text-destructive flex items-center gap-1">
+                      <X className="w-3 h-3" /> Name must be at least 2 characters
+                    </p>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="educatorEmail">Email Address *</Label>
+                  <Input
+                    id="educatorEmail"
+                    type="email"
+                    placeholder="you@school.edu"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className={`bg-background/50 transition-colors ${
+                      email.length > 0
+                        ? /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+                          ? "border-success focus-visible:ring-success"
+                          : "border-destructive focus-visible:ring-destructive"
+                        : ""
+                    }`}
+                  />
+                  {email.length > 0 && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) && (
+                    <p className="text-xs text-destructive flex items-center gap-1">
+                      <X className="w-3 h-3" /> Please enter a valid email address
+                    </p>
+                  )}
+                </div>
+
+                <div className="space-y-2">
                   <Label htmlFor="schoolName">School / Institution *</Label>
                   <Input
                     id="schoolName"
                     placeholder="e.g. Lincoln High School"
                     value={schoolName}
                     onChange={(e) => setSchoolName(e.target.value)}
-                    className="bg-background/50"
+                    className={`bg-background/50 transition-colors ${
+                      schoolName.length > 0
+                        ? schoolName.trim().length >= 2
+                          ? "border-success focus-visible:ring-success"
+                          : "border-destructive focus-visible:ring-destructive"
+                        : ""
+                    }`}
                   />
                 </div>
 
