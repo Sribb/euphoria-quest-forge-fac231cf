@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Check,
+  X,
   ArrowRight,
   Zap,
   Crown,
@@ -47,11 +48,13 @@ const tiers: PricingTier[] = [
     tagline: "Start building your investing instincts",
     description: "Perfect for curious learners ready to explore the world of investing.",
     features: [
-      { text: "10 interactive lessons" },
-      { text: "3 investment games" },
-      { text: "Basic portfolio tracker" },
-      { text: "Community access" },
-      { text: "XP & streaks" },
+      { text: "10 interactive lessons", highlight: true },
+      { text: "3 investment games", highlight: true },
+      { text: "Basic portfolio tracker", highlight: true },
+      { text: "Community access", highlight: true },
+      { text: "XP & streaks", highlight: true },
+      { text: "AI market simulation" },
+      { text: "AI Coach" },
     ],
     cta: "Get Started Free",
     ctaVariant: "outline",
@@ -62,6 +65,7 @@ const tiers: PricingTier[] = [
     icon: Zap,
     price: "$9.99",
     period: "/mo",
+    originalPrice: "$12.99",
     tagline: "The fastest path to financial confidence",
     description: "Everything you need to go from beginner to confident investor.",
     badge: "Most Popular",
@@ -71,9 +75,9 @@ const tiers: PricingTier[] = [
       { text: "All 5 investment games", highlight: true },
       { text: "Full AI market simulation", highlight: true },
       { text: "AI Coach — personalized feedback", highlight: true },
-      { text: "Advanced portfolio analytics" },
-      { text: "Priority community access" },
-      { text: "Unlimited XP & achievements" },
+      { text: "Advanced portfolio analytics", highlight: true },
+      { text: "Priority community access", highlight: true },
+      { text: "Unlimited XP & achievements", highlight: true },
     ],
     cta: "Start Free Trial",
     ctaVariant: "default",
@@ -88,13 +92,13 @@ const tiers: PricingTier[] = [
     tagline: "For ambitious students who want every edge",
     description: "Unlock exclusive tools used by top-performing learners.",
     features: [
-      { text: "Everything in Pro Student" },
+      { text: "Everything in Pro Student", highlight: true },
       { text: "Exclusive advanced simulations", highlight: true },
       { text: "1-on-1 AI mentorship sessions", highlight: true },
       { text: "Certification of completion", highlight: true },
-      { text: "Early access to new features" },
-      { text: "Export portfolio reports" },
-      { text: "Custom learning pathways" },
+      { text: "Early access to new features", highlight: true },
+      { text: "Export portfolio reports", highlight: true },
+      { text: "Custom learning pathways", highlight: true },
     ],
     cta: "Upgrade to Premium",
     ctaVariant: "outline",
@@ -108,13 +112,13 @@ const tiers: PricingTier[] = [
     tagline: "Financial literacy at scale",
     description: "Empower every student in your school or district.",
     features: [
-      { text: "Everything in Premium" },
+      { text: "Everything in Premium", highlight: true },
       { text: "Unlimited educator seats", highlight: true },
       { text: "Admin dashboard & analytics", highlight: true },
-      { text: "SSO integration" },
-      { text: "Struggling student alerts" },
-      { text: "Custom curriculum builder" },
-      { text: "Dedicated success manager" },
+      { text: "SSO integration", highlight: true },
+      { text: "Struggling student alerts", highlight: true },
+      { text: "Custom curriculum builder", highlight: true },
+      { text: "Dedicated success manager", highlight: true },
     ],
     cta: "Contact Sales",
     ctaVariant: "outline",
@@ -292,11 +296,11 @@ export const PricingSection = () => {
                     <ul className="space-y-2.5 flex-1">
                       {tier.features.map((f, j) => (
                         <li key={j} className="flex items-start gap-2.5">
-                          <Check
-                            className={`w-3.5 h-3.5 flex-shrink-0 mt-0.5 ${
-                              f.highlight ? "text-primary" : "text-success/70"
-                            }`}
-                          />
+                          {f.highlight ? (
+                            <Check className="w-3.5 h-3.5 flex-shrink-0 mt-0.5 text-primary" />
+                          ) : (
+                            <X className="w-3.5 h-3.5 flex-shrink-0 mt-0.5 text-muted-foreground/40" />
+                          )}
                           <span
                             className={`text-xs leading-relaxed ${
                               f.highlight
