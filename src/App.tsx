@@ -15,6 +15,7 @@ import NotFound from "./pages/NotFound";
 import { AuthProvider, useAuth } from "@/hooks/useAuth";
 import { useOnboarding } from "@/hooks/useOnboarding";
 import { useEducatorRole } from "@/features/educator/hooks/useEducatorRole";
+import { BetaAccessGate } from "@/shared/components/BetaAccessGate";
 
 const RootRedirect = () => {
   const { user, loading } = useAuth();
