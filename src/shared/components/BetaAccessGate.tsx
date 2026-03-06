@@ -78,9 +78,17 @@ export const BetaAccessGate = ({ children }: { children: React.ReactNode }) => {
           </Button>
         </form>
 
-        <p className="text-[10px] text-muted-foreground/50 text-center mt-6">
-          Euphoria is currently in private beta. Contact the team for access.
-        </p>
+        <div className="text-center mt-6 space-y-1">
+          <p className="text-xs text-muted-foreground">Don't have an access code?</p>
+          <a
+            href="https://euphoriainv.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-xs text-primary hover:text-primary/80 underline underline-offset-2 transition-colors"
+          >
+            Join the waitlist →
+          </a>
+        </div>
       </div>
     </div>
   );
