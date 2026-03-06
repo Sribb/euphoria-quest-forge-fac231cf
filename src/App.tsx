@@ -76,44 +76,46 @@ const OnboardingRedirect = ({ children }: { children: React.ReactNode }) => {
 const queryClient = new QueryClient();
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <AuthProvider>
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<RootRedirect />} />
-            <Route path="/auth" element={<Auth />} />
-            <Route path="/terms" element={<Terms />} />
-            <Route path="/privacy" element={<Privacy />} />
-            <Route
-              path="/onboarding"
-              element={
-                <ProtectedRoute>
-                  <OnboardingRedirect>
-                    <Onboarding />
-                  </OnboardingRedirect>
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/app/*"
-              element={
-                <ProtectedRoute>
-                  <OnboardingCheck>
-                    <Index />
-                  </OnboardingCheck>
-                </ProtectedRoute>
-              }
-            />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
-      </AuthProvider>
-    </TooltipProvider>
-  </QueryClientProvider>
+  <BetaAccessGate>
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <AuthProvider>
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<RootRedirect />} />
+              <Route path="/auth" element={<Auth />} />
+              <Route path="/terms" element={<Terms />} />
+              <Route path="/privacy" element={<Privacy />} />
+              <Route
+                path="/onboarding"
+                element={
+                  <ProtectedRoute>
+                    <OnboardingRedirect>
+                      <Onboarding />
+                    </OnboardingRedirect>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/app/*"
+                element={
+                  <ProtectedRoute>
+                    <OnboardingCheck>
+                      <Index />
+                    </OnboardingCheck>
+                  </ProtectedRoute>
+                }
+              />
+              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
+        </AuthProvider>
+      </TooltipProvider>
+    </QueryClientProvider>
+  </BetaAccessGate>
 );
 
 export default App;
