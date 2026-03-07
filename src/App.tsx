@@ -15,7 +15,6 @@ import NotFound from "./pages/NotFound";
 import { AuthProvider, useAuth } from "@/hooks/useAuth";
 import { useOnboarding } from "@/hooks/useOnboarding";
 import { useEducatorRole } from "@/features/educator/hooks/useEducatorRole";
-import { BetaAccessGate } from "@/shared/components/BetaAccessGate";
 
 const RootRedirect = () => {
   const { user, loading } = useAuth();
@@ -84,7 +83,7 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<RootRedirect />} />
-            <Route path="/auth" element={<BetaAccessGate><Auth /></BetaAccessGate>} />
+            <Route path="/auth" element={<Auth />} />
             <Route path="/terms" element={<Terms />} />
             <Route path="/privacy" element={<Privacy />} />
             <Route

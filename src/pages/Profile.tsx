@@ -573,7 +573,6 @@ const Profile = ({
             <div className="space-y-4">
               <Button variant="outline" onClick={async () => {
               try {
-                sessionStorage.removeItem("euphoria_beta_access");
                 await supabase.auth.signOut();
                 toast.success("Signed out successfully");
                 window.location.href = "/auth";
