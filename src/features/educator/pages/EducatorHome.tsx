@@ -14,6 +14,7 @@ import {
   Clock, Zap, Target, ChevronRight, UserCheck, AlertTriangle
 } from "lucide-react";
 import { useClassManagement, ClassWithMembers, ClassMember } from "../hooks/useClassManagement";
+import { RosterImportDialog } from "../roster-import/RosterImportDialog";
 import { useEducatorData } from "../hooks/useEducatorData";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
@@ -187,6 +188,7 @@ export const EducatorHome = ({ onNavigate }: EducatorHomeProps) => {
           </div>
         </div>
         <div className="flex items-center gap-3">
+          <RosterImportDialog />
           <Button
             variant="outline"
             className="gap-2 border-border/50"
