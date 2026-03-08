@@ -22,6 +22,7 @@ import { RosterImportDialog } from "../roster-import/RosterImportDialog";
 import { ConsentManagementPanel } from "../components/ConsentManagementPanel";
 import { ClassEditDialog } from "../components/ClassEditDialog";
 import { RosterManagementPanel } from "../components/RosterManagementPanel";
+import { AssignmentsPanel } from "../components/AssignmentsPanel";
 import { useEducatorData } from "../hooks/useEducatorData";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
