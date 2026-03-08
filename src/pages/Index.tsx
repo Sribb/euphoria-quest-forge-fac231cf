@@ -82,6 +82,16 @@ const Index = () => {
         return <EducatorHome onNavigate={handleNavigate} />;
       case "educator-analytics":
         return <EducatorDashboard onBack={() => handleNavigate("educator")} />;
+      case "educator-lti":
+        return (
+          <div className="space-y-6 py-6">
+            <div className="flex items-center gap-3">
+              <Button variant="ghost" size="sm" onClick={() => handleNavigate("educator")}>← Back</Button>
+              <h1 className="text-2xl font-bold">Canvas LTI Integration</h1>
+            </div>
+            <LtiConfigPanel />
+          </div>
+        );
       case "dashboard":
         return <Dashboard onNavigate={handleNavigate} onStockSearch={() => setShowStockSearch(true)} />;
       case "feed":

@@ -192,6 +192,14 @@ export const EducatorHome = ({ onNavigate }: EducatorHomeProps) => {
           <Button
             variant="outline"
             className="gap-2 border-border/50"
+            onClick={() => onNavigate("educator-lti")}
+          >
+            <School className="w-4 h-4" />
+            <span className="hidden sm:inline">Canvas LTI</span>
+          </Button>
+          <Button
+            variant="outline"
+            className="gap-2 border-border/50"
             onClick={() => onNavigate("educator-analytics")}
           >
             <BarChart3 className="w-4 h-4" />
