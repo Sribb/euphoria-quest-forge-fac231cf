@@ -17,7 +17,6 @@ import { AuthProvider, useAuth } from "@/hooks/useAuth";
 import { useOnboarding } from "@/hooks/useOnboarding";
 import { useEducatorRole } from "@/features/educator/hooks/useEducatorRole";
 import { useNeedsRoleSelection } from "@/hooks/useNeedsRoleSelection";
-import { useEducatorRole } from "@/features/educator/hooks/useEducatorRole";
 
 const RootRedirect = () => {
   const { user, loading } = useAuth();
