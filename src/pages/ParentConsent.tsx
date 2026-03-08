@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ShieldCheck, CheckCircle2, XCircle, Trash2, Loader2 } from "lucide-react";
+import { ShieldCheck, CheckCircle2, XCircle, Trash2, Loader2, ArrowLeft } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import logo from "@/assets/euphoria-logo-button.png";
 
