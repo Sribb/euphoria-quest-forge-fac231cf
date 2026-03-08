@@ -570,9 +570,11 @@ export type Database = {
           created_at: string
           description: string | null
           educator_id: string
+          grade_level: string | null
           id: string
           is_active: boolean | null
           max_students: number | null
+          requires_coppa_consent: boolean
           updated_at: string
         }
         Insert: {
@@ -581,9 +583,11 @@ export type Database = {
           created_at?: string
           description?: string | null
           educator_id: string
+          grade_level?: string | null
           id?: string
           is_active?: boolean | null
           max_students?: number | null
+          requires_coppa_consent?: boolean
           updated_at?: string
         }
         Update: {
@@ -592,9 +596,11 @@ export type Database = {
           created_at?: string
           description?: string | null
           educator_id?: string
+          grade_level?: string | null
           id?: string
           is_active?: boolean | null
           max_students?: number | null
+          requires_coppa_consent?: boolean
           updated_at?: string
         }
         Relationships: []
@@ -1447,6 +1453,62 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      parental_consents: {
+        Row: {
+          class_id: string
+          consent_status: string
+          consent_token: string
+          created_at: string
+          deletion_requested_at: string | null
+          id: string
+          parent_email: string
+          requested_at: string
+          requested_by: string
+          responded_at: string | null
+          revoked_at: string | null
+          student_id: string
+          updated_at: string
+        }
+        Insert: {
+          class_id: string
+          consent_status?: string
+          consent_token?: string
+          created_at?: string
+          deletion_requested_at?: string | null
+          id?: string
+          parent_email: string
+          requested_at?: string
+          requested_by: string
+          responded_at?: string | null
+          revoked_at?: string | null
+          student_id: string
+          updated_at?: string
+        }
+        Update: {
+          class_id?: string
+          consent_status?: string
+          consent_token?: string
+          created_at?: string
+          deletion_requested_at?: string | null
+          id?: string
+          parent_email?: string
+          requested_at?: string
+          requested_by?: string
+          responded_at?: string | null
+          revoked_at?: string | null
+          student_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "parental_consents_class_id_fkey"
+            columns: ["class_id"]
+            isOneToOne: false
+            referencedRelation: "classes"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       pattern_insights: {
         Row: {
