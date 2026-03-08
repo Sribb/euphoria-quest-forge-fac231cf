@@ -148,7 +148,7 @@ const StudentRow = ({ member, onRemove }: { member: ClassMember; onRemove: () =>
 
 export const EducatorHome = ({ onNavigate }: EducatorHomeProps) => {
   const { classes, isLoading, createClass, updateClass, archiveClass, deleteClass, removeStudent } = useClassManagement();
-  const queryClient = (await import("@tanstack/react-query")).useQueryClient();
+  const queryClient = useQueryClient();
   const { stats, isLoading: statsLoading } = useEducatorData();
   const [selectedClass, setSelectedClass] = useState<ClassWithMembers | null>(null);
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
