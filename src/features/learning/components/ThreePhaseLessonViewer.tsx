@@ -119,6 +119,7 @@ const LESSON_MAP: Record<string, Record<number, React.ComponentType<{ onComplete
     1: CF1WhatIsCorporateFinance, 2: CF2IncomeStatement, 3: CF3BalanceSheets,
     4: CF4CashFlow, 5: CF5FinancialRatios, 6: CF6RevenueRecognition,
     7: CF7COGSMargins, 8: CF8WorkingCapital, 9: CF9SECFilings, 10: CF10Challenge,
+    11: CF11ValuationMethods,
   },
   'trading': {
     1: TR1WhatIsTrading, 2: TR2CandlestickBasics, 3: TR3SupportResistance,
