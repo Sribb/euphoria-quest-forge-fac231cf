@@ -1,7 +1,7 @@
 import { DashboardHeader } from "@/features/dashboard/components/DashboardHeader";
 import { QuickOverviewGrid } from "@/features/dashboard/components/QuickOverviewGrid";
 
-import { EconomicCalendarNative } from "@/features/dashboard/components/EconomicCalendarNative";
+
 import { LiveEconomicHeadlines } from "@/features/dashboard/components/LiveEconomicHeadlines";
 import { DailyRewardsModal } from "@/features/learning/components/DailyRewardsModal";
 import { SeasonalBanner } from "@/features/dashboard/components/SeasonalBanner";
