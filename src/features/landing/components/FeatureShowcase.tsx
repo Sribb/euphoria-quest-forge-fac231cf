@@ -302,7 +302,7 @@ export const FeatureShowcase = () => {
   const activeFeature = features[active];
 
   return (
-    <section id="features" className="py-28 md:py-36 relative overflow-hidden">
+    <section id="features" className="py-28 md:py-36 relative overflow-x-hidden">
       {/* Background glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[600px] bg-[radial-gradient(ellipse_at_center,hsl(262_83%_58%/0.08),transparent_70%)] pointer-events-none blur-3xl" />
 

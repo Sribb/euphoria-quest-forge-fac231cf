@@ -182,7 +182,15 @@ const Landing = () => {
           </div>
           <div className="hidden md:flex items-center gap-8">
             {["Features", "How It Works", "Pricing", "FAQ"].map((item) => (
-              <a key={item} href={`#${item.toLowerCase().replace(/\s+/g, "-")}`} className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              <a
+                key={item}
+                href={`#${item.toLowerCase().replace(/\s+/g, "-")}`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  document.getElementById(item.toLowerCase().replace(/\s+/g, "-"))?.scrollIntoView({ behavior: "smooth" });
+                }}
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+              >
                 {item}
               </a>
             ))}
