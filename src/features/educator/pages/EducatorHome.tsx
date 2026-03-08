@@ -538,6 +538,17 @@ export const EducatorHome = ({ onNavigate }: EducatorHomeProps) => {
                           </AnimatePresence>
                         </div>
                       )}
+
+                      {/* COPPA Consent Panel */}
+                      {activeClass.requires_coppa_consent && activeClass.members.length > 0 && (
+                        <div className="mt-6 pt-6 border-t border-border/50">
+                          <ConsentManagementPanel
+                            classId={activeClass.id}
+                            className={activeClass.class_name}
+                            members={activeClass.members}
+                          />
+                        </div>
+                      )}
                     </div>
                   </Card>
                 </motion.div>
