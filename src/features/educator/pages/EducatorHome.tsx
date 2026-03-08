@@ -407,7 +407,14 @@ export const EducatorHome = ({ onNavigate }: EducatorHomeProps) => {
                     >
                       <div className="flex items-start justify-between mb-3">
                         <div className="flex-1 min-w-0">
-                          <h4 className="font-bold text-sm truncate">{cls.class_name}</h4>
+                          <div className="flex items-center gap-1.5">
+                            <h4 className="font-bold text-sm truncate">{cls.class_name}</h4>
+                            {cls.requires_coppa_consent && (
+                              <Badge variant="outline" className="text-[9px] px-1.5 py-0 border-warning/40 text-warning shrink-0">
+                                COPPA
+                              </Badge>
+                            )}
+                          </div>
                           {cls.description && (
                             <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1">{cls.description}</p>
                           )}
