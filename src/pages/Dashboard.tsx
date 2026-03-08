@@ -11,8 +11,6 @@ import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { motion } from "framer-motion";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { CalendarDays, Newspaper } from "lucide-react";
 interface DashboardProps {
   onNavigate: (tab: string) => void;
   onStockSearch?: () => void;
