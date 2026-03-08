@@ -123,6 +123,8 @@ export const useClassManagement = () => {
         max_students: maxStudents || null,
         grade_level: gradeLevel || null,
         requires_coppa_consent: coppaRequired,
+        period_block: periodBlock || null,
+        display_color: displayColor || '#6366f1',
       });
 
       if (error) throw error;
