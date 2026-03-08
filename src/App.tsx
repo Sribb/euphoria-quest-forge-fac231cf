@@ -10,6 +10,7 @@ import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
+import Ferpa from "./pages/Ferpa";
 import Onboarding from "./pages/Onboarding";
 import RoleSelection from "./pages/RoleSelection";
 import NotFound from "./pages/NotFound";
