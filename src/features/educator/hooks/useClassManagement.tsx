@@ -101,8 +101,9 @@ export const useClassManagement = () => {
   });
 
   const createClass = useMutation({
-    mutationFn: async ({ className, description, maxStudents, gradeLevel, requiresCoppaConsent }: { 
+    mutationFn: async ({ className, description, maxStudents, gradeLevel, requiresCoppaConsent, periodBlock, displayColor }: { 
       className: string; description?: string; maxStudents?: number; gradeLevel?: string; requiresCoppaConsent?: boolean;
+      periodBlock?: string; displayColor?: string;
     }) => {
       if (!user?.id) throw new Error("Not authenticated");
 
