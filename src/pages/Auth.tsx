@@ -36,7 +36,7 @@ const Auth = () => {
   const [studentSchool, setStudentSchool] = useState("");
   const [isLogin, setIsLogin] = useState(true);
   const [loading, setLoading] = useState(false);
-  const [termsAccepted, setTermsAccepted] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
   const [signupRole, setSignupRole] = useState<SignupRole>(null);
   const [loginRole, setLoginRole] = useState<"student" | "educator">("student");
   const [authStep, setAuthStep] = useState<AuthStep>("form");
