@@ -630,6 +630,11 @@ export const EducatorHome = ({ onNavigate }: EducatorHomeProps) => {
           <div className="mt-6">
             <AssignmentsPanel classes={classes} />
           </div>
+
+          {/* Templates & Pacing Guides */}
+          <div className="mt-6">
+            <TemplatesPanel classes={classes} />
+          </div>
         </>
       )}
     </div>
