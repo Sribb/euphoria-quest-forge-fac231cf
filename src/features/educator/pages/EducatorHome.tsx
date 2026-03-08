@@ -141,6 +141,12 @@ export const EducatorHome = ({ onNavigate }: EducatorHomeProps) => {
   const [newClassName, setNewClassName] = useState("");
   const [newClassDescription, setNewClassDescription] = useState("");
   const [newClassMaxStudents, setNewClassMaxStudents] = useState("30");
+  const [newClassGradeLevel, setNewClassGradeLevel] = useState("");
+  const [newClassUnder13, setNewClassUnder13] = useState(false);
+
+  const COPPA_GRADES = ["k", "1st", "2nd", "3rd", "4th", "5th", "6th", "7th"];
+  const ALL_GRADES = ["K", "1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th", "9th", "10th", "11th", "12th"];
+  const isCoppaGrade = newClassGradeLevel ? COPPA_GRADES.includes(newClassGradeLevel.toLowerCase()) : false;
 
   const handleCreateClass = async () => {
     if (!newClassName.trim()) {
