@@ -13,7 +13,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { 
   GraduationCap, Plus, Copy, Users, BookOpen, Trophy, 
   TrendingUp, Trash2, BarChart3, School, Sparkles, 
-  Clock, Zap, Target, ChevronRight, UserCheck, AlertTriangle
+  Clock, Zap, Target, ChevronRight, UserCheck, AlertTriangle, ShieldCheck
 } from "lucide-react";
 import { useClassManagement, ClassWithMembers, ClassMember } from "../hooks/useClassManagement";
 import { RosterImportDialog } from "../roster-import/RosterImportDialog";
