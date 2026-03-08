@@ -411,13 +411,15 @@ const Landing = () => {
               <ul className="space-y-1.5">
                 <li><a href="#pricing" className="text-xs text-muted-foreground hover:text-foreground transition-colors">Classroom Plans</a></li>
                 <li><a href="#how-it-works" className="text-xs text-muted-foreground hover:text-foreground transition-colors">How It Works</a></li>
+                <li><a href="/ferpa" className="text-xs text-muted-foreground hover:text-foreground transition-colors">FERPA Compliance</a></li>
               </ul>
             </div>
             <div>
               <h4 className="text-xs font-semibold mb-2">Legal</h4>
               <ul className="space-y-1.5">
-                <li><a href="#" className="text-xs text-muted-foreground hover:text-foreground transition-colors">Privacy Policy</a></li>
-                <li><a href="#" className="text-xs text-muted-foreground hover:text-foreground transition-colors">Terms of Service</a></li>
+                <li><a href="/privacy" className="text-xs text-muted-foreground hover:text-foreground transition-colors">Privacy Policy</a></li>
+                <li><a href="/terms" className="text-xs text-muted-foreground hover:text-foreground transition-colors">Terms of Service</a></li>
+                <li><a href="/ferpa" className="text-xs text-muted-foreground hover:text-foreground transition-colors">FERPA Compliance</a></li>
               </ul>
             </div>
           </div>
