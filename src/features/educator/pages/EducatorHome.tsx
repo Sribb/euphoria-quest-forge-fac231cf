@@ -157,10 +157,14 @@ export const EducatorHome = ({ onNavigate }: EducatorHomeProps) => {
       className: newClassName,
       description: newClassDescription || undefined,
       maxStudents: parseInt(newClassMaxStudents) || undefined,
+      gradeLevel: newClassGradeLevel || undefined,
+      requiresCoppaConsent: newClassUnder13,
     });
     setNewClassName("");
     setNewClassDescription("");
     setNewClassMaxStudents("30");
+    setNewClassGradeLevel("");
+    setNewClassUnder13(false);
     setCreateDialogOpen(false);
   };
 
