@@ -194,6 +194,13 @@ const Landing = () => {
                 {item}
               </a>
             ))}
+            <a
+              href="/legal"
+              onClick={(e) => { e.preventDefault(); navigate("/legal"); }}
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Legal
+            </a>
           </div>
           <div className="flex items-center gap-3">
             <Button variant="ghost" size="sm" onClick={() => navigate("/auth")}>Log in</Button>
