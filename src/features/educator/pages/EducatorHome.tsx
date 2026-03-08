@@ -623,6 +623,11 @@ export const EducatorHome = ({ onNavigate }: EducatorHomeProps) => {
             </AnimatePresence>
           </div>
         </div>
+
+        {/* Assignments Panel */}
+        <div className="mt-6">
+          <AssignmentsPanel classes={classes} />
+        </div>
       )}
     </div>
   );
