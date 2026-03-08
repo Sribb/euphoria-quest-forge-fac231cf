@@ -203,6 +203,10 @@ const Auth = () => {
 
   const isSignupFormValid = signupRole === "student" ? isStudentFormValid : isEducatorFormValid;
 
+  if (!betaUnlocked) {
+    return <BetaAccessGate onUnlock={() => setBetaUnlocked(true)} />;
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-background">
       <div className="absolute inset-0 bg-gradient-hero opacity-30 blur-3xl" />
