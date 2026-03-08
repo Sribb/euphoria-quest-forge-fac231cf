@@ -26,7 +26,7 @@ type SignupRole = "student" | "educator" | null;
 type AuthStep = "choose-role" | "form" | "educator-info";
 
 const Auth = () => {
-  const [betaUnlocked, setBetaUnlocked] = useState(hasBetaAccess());
+  const [betaUnlocked, setBetaUnlocked] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");

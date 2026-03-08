@@ -42,7 +42,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       session,
       loading,
       signOut: async () => {
-        sessionStorage.removeItem("euphoria_beta_access");
         await supabase.auth.signOut();
         // Route protection will redirect after auth state changes.
       },

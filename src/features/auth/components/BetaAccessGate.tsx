@@ -19,7 +19,6 @@ export const BetaAccessGate = ({ onUnlock }: Props) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (code === BETA_CODE) {
-      sessionStorage.setItem(STORAGE_KEY, "true");
       onUnlock();
     } else {
       setError(true);
