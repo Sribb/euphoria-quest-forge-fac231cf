@@ -1072,6 +1072,202 @@ export type Database = {
         }
         Relationships: []
       }
+      lti_content_items: {
+        Row: {
+          content_id: string
+          content_type: string
+          created_at: string
+          description: string | null
+          educator_id: string
+          id: string
+          pathway: string | null
+          scoring_mode: string
+          title: string
+        }
+        Insert: {
+          content_id: string
+          content_type: string
+          created_at?: string
+          description?: string | null
+          educator_id: string
+          id?: string
+          pathway?: string | null
+          scoring_mode?: string
+          title: string
+        }
+        Update: {
+          content_id?: string
+          content_type?: string
+          created_at?: string
+          description?: string | null
+          educator_id?: string
+          id?: string
+          pathway?: string | null
+          scoring_mode?: string
+          title?: string
+        }
+        Relationships: []
+      }
+      lti_keys: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean
+          kid: string
+          private_key_pem: string
+          public_key_jwk: Json
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          kid: string
+          private_key_pem: string
+          public_key_jwk: Json
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          kid?: string
+          private_key_pem?: string
+          public_key_jwk?: Json
+        }
+        Relationships: []
+      }
+      lti_launches: {
+        Row: {
+          ags_endpoint: string | null
+          ags_token_url: string | null
+          completion_status: string | null
+          content_id: string
+          content_type: string
+          id: string
+          last_score_synced_at: string | null
+          launched_at: string
+          lineitem_url: string | null
+          lti_user_id: string | null
+          platform_id: string
+          score_max: number | null
+          score_value: number | null
+          scoring_mode: string
+          user_id: string
+        }
+        Insert: {
+          ags_endpoint?: string | null
+          ags_token_url?: string | null
+          completion_status?: string | null
+          content_id: string
+          content_type: string
+          id?: string
+          last_score_synced_at?: string | null
+          launched_at?: string
+          lineitem_url?: string | null
+          lti_user_id?: string | null
+          platform_id: string
+          score_max?: number | null
+          score_value?: number | null
+          scoring_mode?: string
+          user_id: string
+        }
+        Update: {
+          ags_endpoint?: string | null
+          ags_token_url?: string | null
+          completion_status?: string | null
+          content_id?: string
+          content_type?: string
+          id?: string
+          last_score_synced_at?: string | null
+          launched_at?: string
+          lineitem_url?: string | null
+          lti_user_id?: string | null
+          platform_id?: string
+          score_max?: number | null
+          score_value?: number | null
+          scoring_mode?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lti_launches_platform_id_fkey"
+            columns: ["platform_id"]
+            isOneToOne: false
+            referencedRelation: "lti_platforms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lti_nonces: {
+        Row: {
+          id: string
+          nonce: string
+          platform_id: string
+          used_at: string
+        }
+        Insert: {
+          id?: string
+          nonce: string
+          platform_id: string
+          used_at?: string
+        }
+        Update: {
+          id?: string
+          nonce?: string
+          platform_id?: string
+          used_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lti_nonces_platform_id_fkey"
+            columns: ["platform_id"]
+            isOneToOne: false
+            referencedRelation: "lti_platforms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lti_platforms: {
+        Row: {
+          auth_login_url: string
+          auth_token_url: string
+          client_id: string
+          created_at: string
+          deployment_id: string
+          educator_id: string
+          id: string
+          issuer: string
+          jwks_url: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          auth_login_url: string
+          auth_token_url: string
+          client_id: string
+          created_at?: string
+          deployment_id: string
+          educator_id: string
+          id?: string
+          issuer: string
+          jwks_url: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          auth_login_url?: string
+          auth_token_url?: string
+          client_id?: string
+          created_at?: string
+          deployment_id?: string
+          educator_id?: string
+          id?: string
+          issuer?: string
+          jwks_url?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       message_groups: {
         Row: {
           avatar_color: string | null
@@ -1907,6 +2103,7 @@ export type Database = {
         Returns: Json
       }
       calculate_level_from_xp: { Args: { xp: number }; Returns: number }
+      cleanup_lti_nonces: { Args: never; Returns: undefined }
       generate_class_code: { Args: never; Returns: string }
       get_educator_user_stats: {
         Args: never

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
 import { DuoSidebar } from "@/shared/components/DuoSidebar";
 import { PersonalizedWelcomeOverlay } from "@/shared/components/PersonalizedWelcomeOverlay";
 import { AnimatePresence } from "framer-motion";
@@ -18,6 +19,7 @@ import StockSearch from "./StockSearch";
 import StockDetail from "./StockDetail";
 import { EducatorHome } from "@/features/educator/pages/EducatorHome";
 import { EducatorDashboard } from "@/features/educator/pages/EducatorDashboard";
+import { LtiConfigPanel } from "@/features/educator/components/LtiConfigPanel";
 
 const Index = () => {
   const { hasEducatorAccess } = useEducatorRole();
@@ -81,6 +83,16 @@ const Index = () => {
         return <EducatorHome onNavigate={handleNavigate} />;
       case "educator-analytics":
         return <EducatorDashboard onBack={() => handleNavigate("educator")} />;
+      case "educator-lti":
+        return (
+          <div className="space-y-6 py-6">
+            <div className="flex items-center gap-3">
+              <Button variant="ghost" size="sm" onClick={() => handleNavigate("educator")}>← Back</Button>
+              <h1 className="text-2xl font-bold">Canvas LTI Integration</h1>
+            </div>
+            <LtiConfigPanel />
+          </div>
+        );
       case "dashboard":
         return <Dashboard onNavigate={handleNavigate} onStockSearch={() => setShowStockSearch(true)} />;
       case "feed":
