@@ -94,6 +94,8 @@ const Index = () => {
             <LtiConfigPanel />
           </div>
         );
+      case "educator-data-deletion":
+        return <DataDeletionPanel onBack={() => handleNavigate("educator")} />;
       case "dashboard":
         return <Dashboard onNavigate={handleNavigate} onStockSearch={() => setShowStockSearch(true)} />;
       case "feed":
