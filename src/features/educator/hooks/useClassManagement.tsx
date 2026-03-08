@@ -98,12 +98,18 @@ export const useClassManagement = () => {
   });
 
   const createClass = useMutation({
-    mutationFn: async ({ className, description, maxStudents }: { className: string; description?: string; maxStudents?: number }) => {
+    mutationFn: async ({ className, description, maxStudents, gradeLevel, requiresCoppaConsent }: { 
+      className: string; description?: string; maxStudents?: number; gradeLevel?: string; requiresCoppaConsent?: boolean;
+    }) => {
       if (!user?.id) throw new Error("Not authenticated");
 
-      // Generate class code using the database function
       const { data: codeData, error: codeError } = await supabase.rpc("generate_class_code");
       if (codeError) throw codeError;
+
+      // Auto-detect COPPA requirement from grade level
+      const COPPA_GRADES = ["k", "1st", "2nd", "3rd", "4th", "5th", "6th", "7th"];
+      const autoCoppa = gradeLevel ? COPPA_GRADES.includes(gradeLevel.toLowerCase()) : false;
+      const coppaRequired = requiresCoppaConsent || autoCoppa;
 
       const { error } = await supabase.from("classes").insert({
         class_name: className,
@@ -111,6 +117,8 @@ export const useClassManagement = () => {
         description: description || null,
         educator_id: user.id,
         max_students: maxStudents || null,
+        grade_level: gradeLevel || null,
+        requires_coppa_consent: coppaRequired,
       });
 
       if (error) throw error;
