@@ -13,6 +13,9 @@ export interface ClassWithMembers {
   max_students: number | null;
   grade_level: string | null;
   requires_coppa_consent: boolean;
+  period_block: string | null;
+  display_color: string | null;
+  archived_at: string | null;
   created_at: string;
   updated_at: string;
   member_count: number;
