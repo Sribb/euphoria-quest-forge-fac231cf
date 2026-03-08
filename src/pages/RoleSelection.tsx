@@ -32,7 +32,7 @@ const RoleSelection = () => {
     if (!user) return;
     setLoading(true);
     try {
-      // User role is already assigned by default via handle_new_user trigger
+      markRoleChosen();
       navigate("/app");
     } catch (error: any) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
