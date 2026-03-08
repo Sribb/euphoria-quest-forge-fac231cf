@@ -62,3 +62,6 @@ verify_jwt = true
 
 [functions.bulk-create-students]
 verify_jwt = true
+
+[functions.manage-roster]
+verify_jwt = true
