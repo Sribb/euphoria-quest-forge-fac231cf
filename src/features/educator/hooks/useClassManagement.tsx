@@ -11,6 +11,8 @@ export interface ClassWithMembers {
   educator_id: string;
   is_active: boolean | null;
   max_students: number | null;
+  grade_level: string | null;
+  requires_coppa_consent: boolean;
   created_at: string;
   updated_at: string;
   member_count: number;
