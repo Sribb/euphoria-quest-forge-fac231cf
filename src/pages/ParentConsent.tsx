@@ -109,7 +109,11 @@ const ParentConsent = () => {
         <Card className="max-w-md w-full p-8 text-center border-border/50 bg-card/60">
           <XCircle className="w-12 h-12 text-destructive mx-auto mb-4" />
           <h1 className="text-xl font-bold mb-2">Consent Not Found</h1>
-          <p className="text-sm text-muted-foreground">This consent request may have expired or been processed already.</p>
+          <p className="text-sm text-muted-foreground mb-4">This consent request may have expired or been processed already.</p>
+          <Button variant="outline" className="gap-2" onClick={() => navigate("/")}>
+            <ArrowLeft className="w-4 h-4" />
+            Back to Home
+          </Button>
         </Card>
       </div>
     );
