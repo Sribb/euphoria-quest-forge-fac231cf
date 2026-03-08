@@ -29,13 +29,19 @@ const RootRedirect = () => {
 const OnboardingCheck = ({ children }: { children: React.ReactNode }) => {
   const { hasCompletedOnboarding, isLoading } = useOnboarding();
   const { hasEducatorAccess, isLoading: roleLoading } = useEducatorRole();
+  const { needsRoleSelection, isLoading: roleSelectionLoading } = useNeedsRoleSelection();
   
-  if (isLoading || roleLoading) {
+  if (isLoading || roleLoading || roleSelectionLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <EuphoriaSpinner size="lg" />
       </div>
     );
+  }
+
+  // New Google users need to pick student vs educator first
+  if (needsRoleSelection) {
+    return <Navigate to="/role-selection" replace />;
   }
   
   // Educators skip the placement quiz entirely
