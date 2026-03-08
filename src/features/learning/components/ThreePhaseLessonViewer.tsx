@@ -125,6 +125,7 @@ const LESSON_MAP: Record<string, Record<number, React.ComponentType<{ onComplete
     1: TR1WhatIsTrading, 2: TR2CandlestickBasics, 3: TR3SupportResistance,
     4: TR4TrendLines, 5: TR5VolumeAnalysis, 6: TR6MovingAverages,
     7: TR7OrderTypes, 8: TR8RiskManagement, 9: TR9PaperTrading, 10: TR10Challenge,
+    11: TR11ChartPatterns,
   },
   'alternative-assets': {
     1: ALT1BeyondStocks, 2: ALT2RealEstate, 3: ALT3REITs,
