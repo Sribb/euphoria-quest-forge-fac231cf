@@ -533,6 +533,45 @@ export type Database = {
           },
         ]
       }
+      assignment_templates: {
+        Row: {
+          created_at: string
+          description: string | null
+          educator_id: string
+          id: string
+          is_public: boolean
+          items: Json
+          meeting_days: string[]
+          name: string
+          template_type: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          educator_id: string
+          id?: string
+          is_public?: boolean
+          items?: Json
+          meeting_days?: string[]
+          name: string
+          template_type?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          educator_id?: string
+          id?: string
+          is_public?: boolean
+          items?: Json
+          meeting_days?: string[]
+          name?: string
+          template_type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       assignments: {
         Row: {
           class_ids: string[]

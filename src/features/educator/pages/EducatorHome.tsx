@@ -23,6 +23,7 @@ import { ConsentManagementPanel } from "../components/ConsentManagementPanel";
 import { ClassEditDialog } from "../components/ClassEditDialog";
 import { RosterManagementPanel } from "../components/RosterManagementPanel";
 import { AssignmentsPanel } from "../components/AssignmentsPanel";
+import { TemplatesPanel } from "../components/TemplatesPanel";
 import { useEducatorData } from "../hooks/useEducatorData";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
@@ -628,6 +629,11 @@ export const EducatorHome = ({ onNavigate }: EducatorHomeProps) => {
           {/* Assignments Panel */}
           <div className="mt-6">
             <AssignmentsPanel classes={classes} />
+          </div>
+
+          {/* Templates & Pacing Guides */}
+          <div className="mt-6">
+            <TemplatesPanel classes={classes} />
           </div>
         </>
       )}
