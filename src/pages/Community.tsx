@@ -649,7 +649,7 @@ const Community = ({ onNavigate }: CommunityProps) => {
                               </div>
                               <div className="flex items-center gap-3">
                                 <span className="text-xs text-muted-foreground">{member.lessons_completed} lessons • {member.avg_quiz_score}% avg</span>
-                                <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => removeStudent.mutate(member.id)}>
+                                <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => removeStudent.mutate({ memberId: member.id, studentId: member.student_id, studentName: member.display_name || "Student", classId: cls.id, className: cls.class_name })}>
                                   <UserMinus className="w-3.5 h-3.5" />
                                 </Button>
                               </div>
