@@ -29,8 +29,8 @@ const pages = [
   {
     icon: ShieldCheck,
     title: "COPPA Parental Consent",
-    description: "Parental consent workflow for students under 13. Educators manage consent requests; parents can grant, revoke consent, or request data deletion at any time.",
-    href: "/parent-consent",
+    description: "For students under 13, educators send parental consent requests via email. Parents receive a secure link to grant, revoke consent, or request data deletion. Contact your child's educator if you haven't received a consent email.",
+    href: null,
     updated: "March 2026",
     badge: "For Parents",
   },
