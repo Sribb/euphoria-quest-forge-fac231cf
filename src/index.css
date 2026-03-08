@@ -144,7 +144,12 @@ All colors MUST be HSL.
   }
 
   html {
-    scroll-behavior: smooth;
+    /* Removed CSS smooth-scroll to prevent conflicts with programmatic scrolling */
+  }
+
+  /* Scroll offset for fixed navbar on anchor links */
+  section[id] {
+    scroll-margin-top: 5rem;
   }
 
   /* Safe area insets for mobile devices with notches */

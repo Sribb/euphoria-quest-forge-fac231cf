@@ -174,7 +174,7 @@ const Landing = () => {
   return (
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
       {/* Nav */}
-      <nav className="fixed top-0 w-full z-50 backdrop-blur-xl bg-background/80 border-b border-border/40">
+      <nav className="fixed top-0 w-full z-50 backdrop-blur-md bg-background/85 border-b border-border/40">
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <img src={logo} alt="Euphoria" className="w-8 h-8 object-contain" />
@@ -182,7 +182,15 @@ const Landing = () => {
           </div>
           <div className="hidden md:flex items-center gap-8">
             {["Features", "How It Works", "Pricing", "FAQ"].map((item) => (
-              <a key={item} href={`#${item.toLowerCase().replace(/\s+/g, "-")}`} className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              <a
+                key={item}
+                href={`#${item.toLowerCase().replace(/\s+/g, "-")}`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  document.getElementById(item.toLowerCase().replace(/\s+/g, "-"))?.scrollIntoView({ behavior: "smooth" });
+                }}
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+              >
                 {item}
               </a>
             ))}

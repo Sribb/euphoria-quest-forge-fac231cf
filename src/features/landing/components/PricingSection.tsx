@@ -138,7 +138,7 @@ export const PricingSection = () => {
   const [hoveredTier, setHoveredTier] = useState<number | null>(null);
 
   return (
-    <section id="pricing" className="py-24 md:py-32 relative overflow-hidden">
+    <section id="pricing" className="py-24 md:py-32 relative overflow-x-hidden">
       {/* Background glow */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,hsl(262_83%_58%/0.06),transparent_70%)]" />
 
