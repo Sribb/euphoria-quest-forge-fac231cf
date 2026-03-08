@@ -647,6 +647,74 @@ export type Database = {
           },
         ]
       }
+      data_deletion_requests: {
+        Row: {
+          cancelled_at: string | null
+          certificate_url: string | null
+          class_id: string | null
+          class_name: string | null
+          created_at: string
+          data_categories: Json
+          deletion_type: string
+          educator_id: string
+          id: string
+          purged_at: string | null
+          reason: string | null
+          requested_at: string
+          scheduled_purge_at: string
+          status: string
+          student_id: string
+          student_name: string
+          updated_at: string
+        }
+        Insert: {
+          cancelled_at?: string | null
+          certificate_url?: string | null
+          class_id?: string | null
+          class_name?: string | null
+          created_at?: string
+          data_categories?: Json
+          deletion_type?: string
+          educator_id: string
+          id?: string
+          purged_at?: string | null
+          reason?: string | null
+          requested_at?: string
+          scheduled_purge_at?: string
+          status?: string
+          student_id: string
+          student_name?: string
+          updated_at?: string
+        }
+        Update: {
+          cancelled_at?: string | null
+          certificate_url?: string | null
+          class_id?: string | null
+          class_name?: string | null
+          created_at?: string
+          data_categories?: Json
+          deletion_type?: string
+          educator_id?: string
+          id?: string
+          purged_at?: string | null
+          reason?: string | null
+          requested_at?: string
+          scheduled_purge_at?: string
+          status?: string
+          student_id?: string
+          student_name?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "data_deletion_requests_class_id_fkey"
+            columns: ["class_id"]
+            isOneToOne: false
+            referencedRelation: "classes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       direct_messages: {
         Row: {
           content: string

@@ -148,13 +148,30 @@ export const useClassManagement = () => {
   });
 
   const removeStudent = useMutation({
-    mutationFn: async (memberId: string) => {
+    mutationFn: async ({ memberId, studentId, studentName, classId, className }: {
+      memberId: string; studentId: string; studentName: string; classId: string; className: string;
+    }) => {
+      // Remove from class
       const { error } = await supabase.from("class_members").delete().eq("id", memberId);
       if (error) throw error;
+
+      // Auto-create deletion request for roster removal
+      if (user?.id) {
+        await supabase.from("data_deletion_requests").insert({
+          educator_id: user.id,
+          student_id: studentId,
+          student_name: studentName,
+          class_id: classId,
+          class_name: className,
+          deletion_type: "roster_removal",
+          reason: "Student removed from class roster",
+        });
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["educator-classes"] });
-      toast.success("Student removed from class");
+      queryClient.invalidateQueries({ queryKey: ["deletion-requests"] });
+      toast.success("Student removed. Data deletion scheduled (30-day grace period).");
     },
     onError: (error) => {
       toast.error("Failed to remove student: " + error.message);

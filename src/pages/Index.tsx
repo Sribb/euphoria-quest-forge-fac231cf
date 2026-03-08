@@ -20,6 +20,7 @@ import StockDetail from "./StockDetail";
 import { EducatorHome } from "@/features/educator/pages/EducatorHome";
 import { EducatorDashboard } from "@/features/educator/pages/EducatorDashboard";
 import { LtiConfigPanel } from "@/features/educator/components/LtiConfigPanel";
+import { DataDeletionPanel } from "@/features/educator/components/DataDeletionPanel";
 
 const Index = () => {
   const { hasEducatorAccess } = useEducatorRole();
@@ -93,6 +94,8 @@ const Index = () => {
             <LtiConfigPanel />
           </div>
         );
+      case "educator-data-deletion":
+        return <DataDeletionPanel onBack={() => handleNavigate("educator")} />;
       case "dashboard":
         return <Dashboard onNavigate={handleNavigate} onStockSearch={() => setShowStockSearch(true)} />;
       case "feed":

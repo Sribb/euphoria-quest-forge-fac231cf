@@ -200,8 +200,16 @@ export const EducatorHome = ({ onNavigate }: EducatorHomeProps) => {
             </p>
           </div>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 flex-wrap">
           <RosterImportDialog />
+          <Button
+            variant="outline"
+            className="gap-2 border-border/50"
+            onClick={() => onNavigate("educator-data-deletion")}
+          >
+            <Trash2 className="w-4 h-4" />
+            <span className="hidden sm:inline">Data Deletion</span>
+          </Button>
           <Button
             variant="outline"
             className="gap-2 border-border/50"
@@ -539,7 +547,7 @@ export const EducatorHome = ({ onNavigate }: EducatorHomeProps) => {
                               <StudentRow
                                 key={member.id}
                                 member={member}
-                                onRemove={() => removeStudent.mutate(member.id)}
+                                onRemove={() => removeStudent.mutate({ memberId: member.id, studentId: member.student_id, studentName: member.display_name || "Student", classId: activeClass.id, className: activeClass.class_name })}
                               />
                             ))}
                           </AnimatePresence>
