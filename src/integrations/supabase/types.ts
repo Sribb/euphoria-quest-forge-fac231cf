@@ -492,6 +492,103 @@ export type Database = {
         }
         Relationships: []
       }
+      assignment_submissions: {
+        Row: {
+          assignment_id: string
+          completed_at: string | null
+          created_at: string
+          id: string
+          score: number | null
+          started_at: string | null
+          status: string
+          student_id: string
+        }
+        Insert: {
+          assignment_id: string
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          score?: number | null
+          started_at?: string | null
+          status?: string
+          student_id: string
+        }
+        Update: {
+          assignment_id?: string
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          score?: number | null
+          started_at?: string | null
+          status?: string
+          student_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "assignment_submissions_assignment_id_fkey"
+            columns: ["assignment_id"]
+            isOneToOne: false
+            referencedRelation: "assignments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      assignments: {
+        Row: {
+          class_ids: string[]
+          created_at: string
+          due_date: string | null
+          educator_id: string
+          id: string
+          instructions: string | null
+          is_published: boolean
+          lesson_id: string
+          scheduled_at: string | null
+          student_ids: string[]
+          target_type: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          class_ids?: string[]
+          created_at?: string
+          due_date?: string | null
+          educator_id: string
+          id?: string
+          instructions?: string | null
+          is_published?: boolean
+          lesson_id: string
+          scheduled_at?: string | null
+          student_ids?: string[]
+          target_type?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          class_ids?: string[]
+          created_at?: string
+          due_date?: string | null
+          educator_id?: string
+          id?: string
+          instructions?: string | null
+          is_published?: boolean
+          lesson_id?: string
+          scheduled_at?: string | null
+          student_ids?: string[]
+          target_type?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "assignments_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
+            referencedRelation: "lessons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       automated_reminders: {
         Row: {
           created_at: string

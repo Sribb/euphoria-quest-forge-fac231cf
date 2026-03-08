@@ -22,6 +22,7 @@ import { RosterImportDialog } from "../roster-import/RosterImportDialog";
 import { ConsentManagementPanel } from "../components/ConsentManagementPanel";
 import { ClassEditDialog } from "../components/ClassEditDialog";
 import { RosterManagementPanel } from "../components/RosterManagementPanel";
+import { AssignmentsPanel } from "../components/AssignmentsPanel";
 import { useEducatorData } from "../hooks/useEducatorData";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
@@ -359,269 +360,276 @@ export const EducatorHome = ({ onNavigate }: EducatorHomeProps) => {
           </Card>
         </motion.div>
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          {/* Class List — Sidebar */}
-          <div className="lg:col-span-4 space-y-3">
-            <div className="flex items-center justify-between gap-2">
-              <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">
-                {showArchived ? "Archived Classes" : "Your Classes"}
-              </h3>
-              <div className="flex items-center gap-1.5">
-                {archivedClasses.length > 0 && (
-                  <Button
-                    variant={showArchived ? "secondary" : "ghost"}
-                    size="sm"
-                    className="h-7 text-xs gap-1 px-2"
-                    onClick={() => { setShowArchived(!showArchived); setSelectedClass(null); }}
-                  >
-                    <Archive className="w-3 h-3" />
-                    {archivedClasses.length}
-                  </Button>
-                )}
-                {usedPeriods.length > 0 && (
-                  <Select value={filterPeriod} onValueChange={setFilterPeriod}>
-                    <SelectTrigger className="h-7 text-xs w-auto gap-1 px-2 border-border/50">
-                      <Filter className="w-3 h-3" />
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Periods</SelectItem>
-                      {usedPeriods.map(p => (
-                        <SelectItem key={p} value={p}>{p}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                )}
-                <Badge variant="secondary" className="text-[10px]">{filteredClasses.length}</Badge>
-              </div>
-            </div>
-            <div className="space-y-2">
-              {filteredClasses.map((cls, i) => {
-                const isSelected = activeClass?.id === cls.id;
-                const color = cls.display_color || "#6366f1";
-                return (
-                  <motion.div
-                    key={cls.id}
-                    layout
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: i * 0.05 }}
-                  >
-                    <Card
-                      className={`p-4 cursor-pointer transition-all duration-300 border-border/50 hover:border-primary/40 group ${
-                        isSelected 
-                          ? "border-primary/60 bg-primary/5 shadow-glow-soft" 
-                          : "bg-card/50 backdrop-blur-sm hover:bg-card/80"
-                      } ${cls.archived_at ? "opacity-70" : ""}`}
-                      onClick={() => setSelectedClass(cls)}
+        <>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            {/* Class List — Sidebar */}
+            <div className="lg:col-span-4 space-y-3">
+              <div className="flex items-center justify-between gap-2">
+                <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">
+                  {showArchived ? "Archived Classes" : "Your Classes"}
+                </h3>
+                <div className="flex items-center gap-1.5">
+                  {archivedClasses.length > 0 && (
+                    <Button
+                      variant={showArchived ? "secondary" : "ghost"}
+                      size="sm"
+                      className="h-7 text-xs gap-1 px-2"
+                      onClick={() => { setShowArchived(!showArchived); setSelectedClass(null); }}
                     >
-                      <div className="flex items-start justify-between mb-3">
-                        <div className="flex items-center gap-2.5 flex-1 min-w-0">
-                          <div className="w-3 h-8 rounded-full shrink-0" style={{ backgroundColor: color }} />
-                          <div className="min-w-0">
-                            <div className="flex items-center gap-1.5">
-                              <h4 className="font-bold text-sm truncate">{cls.class_name}</h4>
-                              {cls.requires_coppa_consent && (
-                                <Badge variant="outline" className="text-[9px] px-1.5 py-0 border-warning/40 text-warning shrink-0">
-                                  COPPA
-                                </Badge>
-                              )}
-                              {cls.archived_at && (
-                                <Badge variant="outline" className="text-[9px] px-1.5 py-0 shrink-0">
-                                  Archived
-                                </Badge>
-                              )}
-                            </div>
-                            <div className="flex items-center gap-2 mt-0.5">
-                              {cls.period_block && (
-                                <span className="text-[10px] text-muted-foreground font-medium">{cls.period_block}</span>
-                              )}
-                              {cls.grade_level && (
-                                <span className="text-[10px] text-muted-foreground">{cls.grade_level} Grade</span>
-                              )}
+                      <Archive className="w-3 h-3" />
+                      {archivedClasses.length}
+                    </Button>
+                  )}
+                  {usedPeriods.length > 0 && (
+                    <Select value={filterPeriod} onValueChange={setFilterPeriod}>
+                      <SelectTrigger className="h-7 text-xs w-auto gap-1 px-2 border-border/50">
+                        <Filter className="w-3 h-3" />
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Periods</SelectItem>
+                        {usedPeriods.map(p => (
+                          <SelectItem key={p} value={p}>{p}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
+                  <Badge variant="secondary" className="text-[10px]">{filteredClasses.length}</Badge>
+                </div>
+              </div>
+              <div className="space-y-2">
+                {filteredClasses.map((cls, i) => {
+                  const isSelected = activeClass?.id === cls.id;
+                  const color = cls.display_color || "#6366f1";
+                  return (
+                    <motion.div
+                      key={cls.id}
+                      layout
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: i * 0.05 }}
+                    >
+                      <Card
+                        className={`p-4 cursor-pointer transition-all duration-300 border-border/50 hover:border-primary/40 group ${
+                          isSelected 
+                            ? "border-primary/60 bg-primary/5 shadow-glow-soft" 
+                            : "bg-card/50 backdrop-blur-sm hover:bg-card/80"
+                        } ${cls.archived_at ? "opacity-70" : ""}`}
+                        onClick={() => setSelectedClass(cls)}
+                      >
+                        <div className="flex items-start justify-between mb-3">
+                          <div className="flex items-center gap-2.5 flex-1 min-w-0">
+                            <div className="w-3 h-8 rounded-full shrink-0" style={{ backgroundColor: color }} />
+                            <div className="min-w-0">
+                              <div className="flex items-center gap-1.5">
+                                <h4 className="font-bold text-sm truncate">{cls.class_name}</h4>
+                                {cls.requires_coppa_consent && (
+                                  <Badge variant="outline" className="text-[9px] px-1.5 py-0 border-warning/40 text-warning shrink-0">
+                                    COPPA
+                                  </Badge>
+                                )}
+                                {cls.archived_at && (
+                                  <Badge variant="outline" className="text-[9px] px-1.5 py-0 shrink-0">
+                                    Archived
+                                  </Badge>
+                                )}
+                              </div>
+                              <div className="flex items-center gap-2 mt-0.5">
+                                {cls.period_block && (
+                                  <span className="text-[10px] text-muted-foreground font-medium">{cls.period_block}</span>
+                                )}
+                                {cls.grade_level && (
+                                  <span className="text-[10px] text-muted-foreground">{cls.grade_level} Grade</span>
+                                )}
+                              </div>
                             </div>
                           </div>
+                          <ChevronRight className={`w-4 h-4 text-muted-foreground shrink-0 mt-0.5 transition-transform duration-300 ${isSelected ? 'rotate-90 text-primary' : 'group-hover:translate-x-0.5'}`} />
                         </div>
-                        <ChevronRight className={`w-4 h-4 text-muted-foreground shrink-0 mt-0.5 transition-transform duration-300 ${isSelected ? 'rotate-90 text-primary' : 'group-hover:translate-x-0.5'}`} />
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-1.5">
-                          <button
-                            className="flex items-center gap-1 bg-muted/50 hover:bg-muted px-2 py-1 rounded-md transition-colors"
-                            onClick={(e) => { e.stopPropagation(); copyClassCode(cls.class_code); }}
-                          >
-                            <code className="text-[11px] font-mono font-bold text-primary">{cls.class_code}</code>
-                            <Copy className="w-3 h-3 text-muted-foreground" />
-                          </button>
-                        </div>
-                        <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                          <UserCheck className="w-3.5 h-3.5" />
-                          <span className="font-medium">{cls.member_count}</span>
-                        </div>
-                      </div>
-                    </Card>
-                  </motion.div>
-                );
-              })}
-              {filteredClasses.length === 0 && (
-                <p className="text-sm text-muted-foreground text-center py-8">
-                  {showArchived ? "No archived classes" : "No classes match this filter"}
-                </p>
-              )}
-            </div>
-          </div>
-
-          {/* Class Detail Panel */}
-          <div className="lg:col-span-8">
-            <AnimatePresence mode="wait">
-              {activeClass ? (
-                <motion.div
-                  key={activeClass.id}
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -12 }}
-                  transition={{ duration: 0.25 }}
-                >
-                  <Card className="border-border/50 bg-card/60 backdrop-blur-xl overflow-hidden">
-                    {/* Class Header with color accent */}
-                    <div className="relative">
-                      <div className="absolute top-0 left-0 right-0 h-1" style={{ backgroundColor: activeClass.display_color || "#6366f1" }} />
-                      <div className="p-6 border-b border-border/50 bg-gradient-hero pt-7">
-                        <div className="flex items-start justify-between">
-                          <div>
-                            <div className="flex items-center gap-2">
-                              <h3 className="text-xl font-bold">{activeClass.class_name}</h3>
-                              {activeClass.period_block && (
-                                <Badge variant="secondary" className="text-[10px]">{activeClass.period_block}</Badge>
-                              )}
-                              {activeClass.archived_at && (
-                                <Badge variant="outline" className="text-[10px]">Archived</Badge>
-                              )}
-                            </div>
-                            <p className="text-sm text-muted-foreground mt-1">
-                              {activeClass.description || "No description provided"}
-                            </p>
-                          </div>
+                        <div className="flex items-center justify-between">
                           <div className="flex items-center gap-1.5">
                             <button
-                              className="flex items-center gap-2 bg-muted/40 hover:bg-muted/70 px-3 py-2 rounded-lg transition-colors"
-                              onClick={() => copyClassCode(activeClass.class_code)}
+                              className="flex items-center gap-1 bg-muted/50 hover:bg-muted px-2 py-1 rounded-md transition-colors"
+                              onClick={(e) => { e.stopPropagation(); copyClassCode(cls.class_code); }}
                             >
-                              <span className="text-[10px] text-muted-foreground uppercase tracking-wider">Code</span>
-                              <code className="font-mono font-bold text-primary text-sm">{activeClass.class_code}</code>
-                              <Copy className="w-3.5 h-3.5 text-muted-foreground" />
+                              <code className="text-[11px] font-mono font-bold text-primary">{cls.class_code}</code>
+                              <Copy className="w-3 h-3 text-muted-foreground" />
                             </button>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="text-muted-foreground hover:text-primary hover:bg-primary/10"
-                              onClick={() => setEditDialogOpen(true)}
-                            >
-                              <Settings className="w-4 h-4" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="text-muted-foreground hover:text-primary hover:bg-primary/10"
-                              onClick={() => {
-                                archiveClass.mutate({ classId: activeClass.id, archive: !activeClass.archived_at });
-                              }}
-                            >
-                              {activeClass.archived_at ? <ArchiveRestore className="w-4 h-4" /> : <Archive className="w-4 h-4" />}
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="text-muted-foreground hover:text-destructive hover:bg-destructive/10"
-                              onClick={() => {
-                                deleteClass.mutate(activeClass.id);
-                                setSelectedClass(null);
-                              }}
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </Button>
+                          </div>
+                          <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                            <UserCheck className="w-3.5 h-3.5" />
+                            <span className="font-medium">{cls.member_count}</span>
                           </div>
                         </div>
+                      </Card>
+                    </motion.div>
+                  );
+                })}
+                {filteredClasses.length === 0 && (
+                  <p className="text-sm text-muted-foreground text-center py-8">
+                    {showArchived ? "No archived classes" : "No classes match this filter"}
+                  </p>
+                )}
+              </div>
+            </div>
 
-                        {/* Quick Stats */}
-                        {activeClass.members.length > 0 && (
-                          <div className="flex items-center gap-6 mt-4 pt-4 border-t border-border/30">
+            {/* Class Detail Panel */}
+            <div className="lg:col-span-8">
+              <AnimatePresence mode="wait">
+                {activeClass ? (
+                  <motion.div
+                    key={activeClass.id}
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -12 }}
+                    transition={{ duration: 0.25 }}
+                  >
+                    <Card className="border-border/50 bg-card/60 backdrop-blur-xl overflow-hidden">
+                      {/* Class Header with color accent */}
+                      <div className="relative">
+                        <div className="absolute top-0 left-0 right-0 h-1" style={{ backgroundColor: activeClass.display_color || "#6366f1" }} />
+                        <div className="p-6 border-b border-border/50 bg-gradient-hero pt-7">
+                          <div className="flex items-start justify-between">
                             <div>
-                              <p className="text-lg font-bold">{activeClass.members.length}</p>
-                              <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Students</p>
-                            </div>
-                            <div>
-                              <p className="text-lg font-bold">
-                                {Math.round(activeClass.members.reduce((a, m) => a + m.lessons_completed, 0) / activeClass.members.length)}
+                              <div className="flex items-center gap-2">
+                                <h3 className="text-xl font-bold">{activeClass.class_name}</h3>
+                                {activeClass.period_block && (
+                                  <Badge variant="secondary" className="text-[10px]">{activeClass.period_block}</Badge>
+                                )}
+                                {activeClass.archived_at && (
+                                  <Badge variant="outline" className="text-[10px]">Archived</Badge>
+                                )}
+                              </div>
+                              <p className="text-sm text-muted-foreground mt-1">
+                                {activeClass.description || "No description provided"}
                               </p>
-                              <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Avg Lessons</p>
                             </div>
-                            <div>
-                              <p className="text-lg font-bold">
-                                {Math.round(activeClass.members.reduce((a, m) => a + m.avg_quiz_score, 0) / activeClass.members.length)}%
-                              </p>
-                              <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Avg Score</p>
+                            <div className="flex items-center gap-1.5">
+                              <button
+                                className="flex items-center gap-2 bg-muted/40 hover:bg-muted/70 px-3 py-2 rounded-lg transition-colors"
+                                onClick={() => copyClassCode(activeClass.class_code)}
+                              >
+                                <span className="text-[10px] text-muted-foreground uppercase tracking-wider">Code</span>
+                                <code className="font-mono font-bold text-primary text-sm">{activeClass.class_code}</code>
+                                <Copy className="w-3.5 h-3.5 text-muted-foreground" />
+                              </button>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="text-muted-foreground hover:text-primary hover:bg-primary/10"
+                                onClick={() => setEditDialogOpen(true)}
+                              >
+                                <Settings className="w-4 h-4" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="text-muted-foreground hover:text-primary hover:bg-primary/10"
+                                onClick={() => {
+                                  archiveClass.mutate({ classId: activeClass.id, archive: !activeClass.archived_at });
+                                }}
+                              >
+                                {activeClass.archived_at ? <ArchiveRestore className="w-4 h-4" /> : <Archive className="w-4 h-4" />}
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                                onClick={() => {
+                                  deleteClass.mutate(activeClass.id);
+                                  setSelectedClass(null);
+                                }}
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
                             </div>
-                            <div>
-                              <p className="text-lg font-bold">
-                                Lv.{Math.round(activeClass.members.reduce((a, m) => a + m.level, 0) / activeClass.members.length)}
-                              </p>
-                              <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Avg Level</p>
+                          </div>
+
+                          {/* Quick Stats */}
+                          {activeClass.members.length > 0 && (
+                            <div className="flex items-center gap-6 mt-4 pt-4 border-t border-border/30">
+                              <div>
+                                <p className="text-lg font-bold">{activeClass.members.length}</p>
+                                <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Students</p>
+                              </div>
+                              <div>
+                                <p className="text-lg font-bold">
+                                  {Math.round(activeClass.members.reduce((a, m) => a + m.lessons_completed, 0) / activeClass.members.length)}
+                                </p>
+                                <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Avg Lessons</p>
+                              </div>
+                              <div>
+                                <p className="text-lg font-bold">
+                                  {Math.round(activeClass.members.reduce((a, m) => a + m.avg_quiz_score, 0) / activeClass.members.length)}%
+                                </p>
+                                <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Avg Score</p>
+                              </div>
+                              <div>
+                                <p className="text-lg font-bold">
+                                  Lv.{Math.round(activeClass.members.reduce((a, m) => a + m.level, 0) / activeClass.members.length)}
+                                </p>
+                                <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Avg Level</p>
+                              </div>
                             </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Roster Management */}
+                      <div className="p-6">
+                        <RosterManagementPanel
+                          activeClass={activeClass}
+                          allClasses={classes}
+                          onRemoveStudent={(params) => removeStudent.mutate(params)}
+                          onRefresh={() => queryClient.invalidateQueries({ queryKey: ["educator-classes"] })}
+                        />
+
+                        {/* COPPA Consent Panel */}
+                        {activeClass.requires_coppa_consent && activeClass.members.length > 0 && (
+                          <div className="mt-6 pt-6 border-t border-border/50">
+                            <ConsentManagementPanel
+                              classId={activeClass.id}
+                              className={activeClass.class_name}
+                              members={activeClass.members}
+                            />
                           </div>
                         )}
                       </div>
-                    </div>
+                    </Card>
 
-                    {/* Roster Management */}
-                    <div className="p-6">
-                      <RosterManagementPanel
-                        activeClass={activeClass}
-                        allClasses={classes}
-                        onRemoveStudent={(params) => removeStudent.mutate(params)}
-                        onRefresh={() => queryClient.invalidateQueries({ queryKey: ["educator-classes"] })}
-                      />
-
-                      {/* COPPA Consent Panel */}
-                      {activeClass.requires_coppa_consent && activeClass.members.length > 0 && (
-                        <div className="mt-6 pt-6 border-t border-border/50">
-                          <ConsentManagementPanel
-                            classId={activeClass.id}
-                            className={activeClass.class_name}
-                            members={activeClass.members}
-                          />
-                        </div>
-                      )}
+                    {/* Edit Dialog */}
+                    <ClassEditDialog
+                      cls={activeClass}
+                      open={editDialogOpen}
+                      onOpenChange={setEditDialogOpen}
+                      onSave={(classId, updates) => updateClass.mutate({ classId, updates })}
+                      isPending={updateClass.isPending}
+                    />
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="flex items-center justify-center h-80 lg:h-96"
+                  >
+                    <div className="text-center">
+                      <div className="w-16 h-16 rounded-2xl bg-muted/20 flex items-center justify-center mx-auto mb-4">
+                        <BarChart3 className="w-8 h-8 text-muted-foreground/50" />
+                      </div>
+                      <h4 className="font-semibold text-muted-foreground mb-1">Select a Class</h4>
+                      <p className="text-sm text-muted-foreground/70">Choose a class to view student details and analytics</p>
                     </div>
-                  </Card>
-
-                  {/* Edit Dialog */}
-                  <ClassEditDialog
-                    cls={activeClass}
-                    open={editDialogOpen}
-                    onOpenChange={setEditDialogOpen}
-                    onSave={(classId, updates) => updateClass.mutate({ classId, updates })}
-                    isPending={updateClass.isPending}
-                  />
-                </motion.div>
-              ) : (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="flex items-center justify-center h-80 lg:h-96"
-                >
-                  <div className="text-center">
-                    <div className="w-16 h-16 rounded-2xl bg-muted/20 flex items-center justify-center mx-auto mb-4">
-                      <BarChart3 className="w-8 h-8 text-muted-foreground/50" />
-                    </div>
-                    <h4 className="font-semibold text-muted-foreground mb-1">Select a Class</h4>
-                    <p className="text-sm text-muted-foreground/70">Choose a class to view student details and analytics</p>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
           </div>
-        </div>
+
+          {/* Assignments Panel */}
+          <div className="mt-6">
+            <AssignmentsPanel classes={classes} />
+          </div>
+        </>
       )}
     </div>
   );
