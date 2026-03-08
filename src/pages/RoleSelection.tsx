@@ -68,6 +68,7 @@ const RoleSelection = () => {
         estimated_class_size: parseInt(classSize) || 30,
       });
 
+      markRoleChosen();
       toast({ title: "Welcome, Educator!", description: "Your educator account is ready." });
       navigate("/app");
     } catch (error: any) {
