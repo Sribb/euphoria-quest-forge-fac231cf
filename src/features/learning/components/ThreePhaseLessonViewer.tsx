@@ -90,6 +90,12 @@ import { ALT8Collectibles } from "./lessons/alt/ALT8Collectibles";
 import { ALT9ESG } from "./lessons/alt/ALT9ESG";
 import { ALT10Challenge } from "./lessons/alt/ALT10Challenge";
 
+// Lesson 11 for non-investing pathways
+import { PF11DebtSnowball } from "./lessons/pf/PF11DebtSnowball";
+import { CF11ValuationMethods } from "./lessons/cf/CF11ValuationMethods";
+import { TR11ChartPatterns } from "./lessons/tr/TR11ChartPatterns";
+import { ALT11PortfolioDiversification } from "./lessons/alt/ALT11PortfolioDiversification";
+
 // Pathway-aware lesson map
 const LESSON_MAP: Record<string, Record<number, React.ComponentType<{ onComplete: () => void }>>> = {
   'investing': {
