@@ -6,11 +6,6 @@ import { Lock, ArrowRight } from "lucide-react";
 import euphoriaLogo from "@/assets/euphoria-logo-button.png";
 
 const BETA_CODE = "euphoria@INV!";
-const STORAGE_KEY = "euphoria_beta_access";
-
-export const hasBetaAccess = () => sessionStorage.getItem(STORAGE_KEY) === "true";
-
-export const clearBetaAccess = () => sessionStorage.removeItem(STORAGE_KEY);
 
 interface Props {
   onUnlock: () => void;
