@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ShieldCheck, CheckCircle2, XCircle, Trash2, Loader2 } from "lucide-react";
+import { ShieldCheck, CheckCircle2, XCircle, Trash2, Loader2, ArrowLeft } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import logo from "@/assets/euphoria-logo-button.png";
 
@@ -10,6 +10,7 @@ type ConsentAction = "grant" | "deny" | "revoke" | "delete";
 
 const ParentConsent = () => {
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const token = searchParams.get("token");
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -64,7 +65,11 @@ const ParentConsent = () => {
         <Card className="max-w-md w-full p-8 text-center border-border/50 bg-card/60">
           <XCircle className="w-12 h-12 text-destructive mx-auto mb-4" />
           <h1 className="text-xl font-bold mb-2">Invalid Link</h1>
-          <p className="text-sm text-muted-foreground">This consent link is missing or invalid. Please use the link from the email sent to you.</p>
+          <p className="text-sm text-muted-foreground mb-4">This consent link is missing or invalid. Please use the link from the email sent to you.</p>
+          <Button variant="outline" className="gap-2" onClick={() => navigate("/")}>
+            <ArrowLeft className="w-4 h-4" />
+            Back to Home
+          </Button>
         </Card>
       </div>
     );
@@ -88,7 +93,11 @@ const ParentConsent = () => {
             <XCircle className="w-12 h-12 text-destructive mx-auto mb-4" />
           )}
           <h1 className="text-xl font-bold mb-2">{result.success ? "Thank You" : "Error"}</h1>
-          <p className="text-sm text-muted-foreground">{result.message}</p>
+          <p className="text-sm text-muted-foreground mb-4">{result.message}</p>
+          <Button variant="outline" className="gap-2" onClick={() => navigate("/")}>
+            <ArrowLeft className="w-4 h-4" />
+            Back to Home
+          </Button>
         </Card>
       </div>
     );
@@ -100,7 +109,11 @@ const ParentConsent = () => {
         <Card className="max-w-md w-full p-8 text-center border-border/50 bg-card/60">
           <XCircle className="w-12 h-12 text-destructive mx-auto mb-4" />
           <h1 className="text-xl font-bold mb-2">Consent Not Found</h1>
-          <p className="text-sm text-muted-foreground">This consent request may have expired or been processed already.</p>
+          <p className="text-sm text-muted-foreground mb-4">This consent request may have expired or been processed already.</p>
+          <Button variant="outline" className="gap-2" onClick={() => navigate("/")}>
+            <ArrowLeft className="w-4 h-4" />
+            Back to Home
+          </Button>
         </Card>
       </div>
     );
