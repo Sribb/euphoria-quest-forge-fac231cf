@@ -642,35 +642,14 @@ export const EducatorHome = ({ onNavigate }: EducatorHomeProps) => {
                       </div>
                     </div>
 
-                    {/* Student List */}
+                    {/* Roster Management */}
                     <div className="p-6">
-                      {activeClass.members.length === 0 ? (
-                        <div className="text-center py-12">
-                          <div className="w-14 h-14 rounded-2xl bg-muted/30 flex items-center justify-center mx-auto mb-4">
-                            <Users className="w-7 h-7 text-muted-foreground" />
-                          </div>
-                          <h4 className="font-semibold mb-1">No Students Yet</h4>
-                          <p className="text-sm text-muted-foreground max-w-sm mx-auto">
-                            Share the class code <code className="font-mono text-primary font-bold">{activeClass.class_code}</code> with your students to get started.
-                          </p>
-                        </div>
-                      ) : (
-                        <div className="space-y-2">
-                          <div className="flex items-center justify-between mb-3">
-                            <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">Students</h4>
-                            <span className="text-xs text-muted-foreground">{activeClass.members.length} enrolled</span>
-                          </div>
-                          <AnimatePresence>
-                            {activeClass.members.map((member) => (
-                              <StudentRow
-                                key={member.id}
-                                member={member}
-                                onRemove={() => removeStudent.mutate({ memberId: member.id, studentId: member.student_id, studentName: member.display_name || "Student", classId: activeClass.id, className: activeClass.class_name })}
-                              />
-                            ))}
-                          </AnimatePresence>
-                        </div>
-                      )}
+                      <RosterManagementPanel
+                        activeClass={activeClass}
+                        allClasses={classes}
+                        onRemoveStudent={(params) => removeStudent.mutate(params)}
+                        onRefresh={() => queryClient.invalidateQueries({ queryKey: ["educator-classes"] })}
+                      />
 
                       {/* COPPA Consent Panel */}
                       {activeClass.requires_coppa_consent && activeClass.members.length > 0 && (
