@@ -13,7 +13,8 @@ import {
   AlertTriangle,
   Lightbulb,
   Activity,
-  Shield
+  Shield,
+  Coins
 } from "lucide-react";
 
 type Slide = 1 | 2 | 3 | 4;
@@ -24,38 +25,38 @@ interface Lesson19Props {
 
 const reflectionQuestions = [
   {
-    question: "What is the maximum drawdown?",
+    question: "What is blockchain technology?",
     options: [
-      { text: "The largest peak-to-trough decline before a new high", correct: true },
-      { text: "The average daily loss", correct: false },
-      { text: "The total return of a portfolio", correct: false },
+      { text: "A decentralized digital ledger that records transactions across many computers", correct: true },
+      { text: "A type of bank account for storing cryptocurrency", correct: false },
+      { text: "A government-regulated payment system", correct: false },
     ],
   },
   {
-    question: "How should you react to a 20% portfolio drawdown?",
+    question: "Why is cryptocurrency considered high-risk?",
     options: [
-      { text: "Panic sell everything", correct: false },
-      { text: "Evaluate if it's within your risk tolerance", correct: true },
-      { text: "Double your position immediately", correct: false },
+      { text: "It is backed by the government", correct: false },
+      { text: "Its price can swing dramatically in short periods due to extreme volatility", correct: true },
+      { text: "It always loses value over time", correct: false },
     ],
   },
   {
-    question: "What's a healthy mindset about volatility?",
+    question: "What is the best approach to crypto in a portfolio?",
     options: [
-      { text: "Volatility is always bad and should be avoided", correct: false },
-      { text: "Volatility is the price of admission for higher returns", correct: true },
-      { text: "Volatility doesn't affect long-term investors", correct: false },
+      { text: "Invest everything for maximum returns", correct: false },
+      { text: "Avoid it completely — it's too risky", correct: false },
+      { text: "Use strict position sizing and only invest what you can afford to lose", correct: true },
     ],
   },
 ];
 
 export const Lesson19VolatilitySlides = ({ onComplete }: Lesson19Props) => {
   const [currentSlide, setCurrentSlide] = useState<Slide>(1);
-  const [portfolioValue, setPortfolioValue] = useState(100000);
-  const [peak, setPeak] = useState(100000);
+  const [portfolioValue, setPortfolioValue] = useState(10000);
+  const [peak, setPeak] = useState(10000);
   const [drawdown, setDrawdown] = useState(0);
   const [maxDrawdown, setMaxDrawdown] = useState(0);
-  const [history, setHistory] = useState<number[]>([100000]);
+  const [history, setHistory] = useState<number[]>([10000]);
   const [isSimulating, setIsSimulating] = useState(false);
   const [reflectionIndex, setReflectionIndex] = useState(0);
   const [reflectionAnswers, setReflectionAnswers] = useState<boolean[]>([]);
@@ -64,7 +65,8 @@ export const Lesson19VolatilitySlides = ({ onComplete }: Lesson19Props) => {
     if (isSimulating && currentSlide === 1) {
       const interval = setInterval(() => {
         setPortfolioValue((prev) => {
-          const change = (Math.random() - 0.48) * 0.05;
+          // Crypto-level volatility: bigger swings than traditional assets
+          const change = (Math.random() - 0.47) * 0.08;
           const newValue = prev * (1 + change);
           
           setHistory((h) => [...h.slice(-50), newValue]);
@@ -96,11 +98,11 @@ export const Lesson19VolatilitySlides = ({ onComplete }: Lesson19Props) => {
   };
 
   const resetSimulation = () => {
-    setPortfolioValue(100000);
-    setPeak(100000);
+    setPortfolioValue(10000);
+    setPeak(10000);
     setDrawdown(0);
     setMaxDrawdown(0);
-    setHistory([100000]);
+    setHistory([10000]);
   };
 
   const nextSlide = () => {
@@ -111,8 +113,8 @@ export const Lesson19VolatilitySlides = ({ onComplete }: Lesson19Props) => {
     }
   };
 
-  const slideLabels = ["Experience", "Reflect", "Insight", "Apply"];
-  const totalReturn = ((portfolioValue - 100000) / 100000) * 100;
+  const slideLabels = ["Explore", "Simulate", "Quiz", "Apply"];
+  const totalReturn = ((portfolioValue - 10000) / 10000) * 100;
 
   return (
     <div className="space-y-6">
@@ -133,7 +135,7 @@ export const Lesson19VolatilitySlides = ({ onComplete }: Lesson19Props) => {
       </div>
 
       <AnimatePresence mode="wait">
-        {/* Slide 1: Experience - Volatility Roller Coaster */}
+        {/* Slide 1: What is Cryptocurrency? */}
         {currentSlide === 1 && (
           <motion.div
             key="slide1"
@@ -143,11 +145,82 @@ export const Lesson19VolatilitySlides = ({ onComplete }: Lesson19Props) => {
             transition={{ duration: 0.5 }}
           >
             <Card className="p-8">
-              <Badge className="mb-4 bg-primary/20 text-primary border-primary/30">Experience</Badge>
+              <Badge className="mb-4 bg-primary/20 text-primary border-primary/30">Explore</Badge>
               
-              <h2 className="text-2xl font-bold mb-2">Volatility Roller Coaster</h2>
+              <h2 className="text-2xl font-bold mb-2">Cryptocurrency Basics</h2>
               <p className="text-muted-foreground mb-6">
-                Watch a portfolio fluctuate in real-time. Track drawdowns and see how volatility feels emotionally.
+                Cryptocurrency is a digital asset built on <span className="text-primary font-semibold">blockchain technology</span> — a decentralized ledger that records transactions across thousands of computers.
+              </p>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <motion.div 
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 }}
+                  className="p-5 rounded-xl bg-amber-500/10 border border-amber-500/30"
+                >
+                  <Coins className="w-8 h-8 text-amber-500 mb-2" />
+                  <h3 className="font-bold mb-1">Bitcoin (BTC)</h3>
+                  <p className="text-sm text-muted-foreground">The first and largest cryptocurrency. Created in 2009 as a peer-to-peer digital currency with a fixed supply of 21 million coins.</p>
+                </motion.div>
+                <motion.div 
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 }}
+                  className="p-5 rounded-xl bg-blue-500/10 border border-blue-500/30"
+                >
+                  <Activity className="w-8 h-8 text-blue-500 mb-2" />
+                  <h3 className="font-bold mb-1">Ethereum (ETH)</h3>
+                  <p className="text-sm text-muted-foreground">A programmable blockchain enabling smart contracts and decentralized apps (dApps). Powers DeFi and NFTs.</p>
+                </motion.div>
+              </div>
+
+              <div className="space-y-3 mb-6">
+                {[
+                  { label: "Decentralization", desc: "No single entity controls the network" },
+                  { label: "Transparency", desc: "All transactions are publicly verifiable on the blockchain" },
+                  { label: "Extreme Volatility", desc: "Prices can swing 20-50% in days — far more than stocks" },
+                ].map((item, idx) => (
+                  <motion.div
+                    key={idx}
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.3 + idx * 0.1 }}
+                    className="flex items-start gap-3 p-3 rounded-lg bg-muted/50 border"
+                  >
+                    <div className="w-2 h-2 rounded-full bg-primary mt-2 shrink-0" />
+                    <div>
+                      <span className="font-medium">{item.label}:</span>{" "}
+                      <span className="text-muted-foreground text-sm">{item.desc}</span>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+
+              <div className="flex justify-center">
+                <Button onClick={nextSlide} size="lg" className="gap-2">
+                  Try the Volatility Simulator <ArrowRight className="w-4 h-4" />
+                </Button>
+              </div>
+            </Card>
+          </motion.div>
+        )}
+
+        {/* Slide 2: Crypto Volatility Roller Coaster */}
+        {currentSlide === 2 && (
+          <motion.div
+            key="slide2"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.5 }}
+          >
+            <Card className="p-8">
+              <Badge className="mb-4 bg-amber-500/20 text-amber-400 border-amber-500/30">Simulate</Badge>
+              
+              <h2 className="text-2xl font-bold mb-2">Crypto Volatility Roller Coaster</h2>
+              <p className="text-muted-foreground mb-6">
+                Watch a $10,000 crypto portfolio swing wildly in real-time. This is what crypto volatility <em>feels</em> like.
               </p>
 
               {/* Control Buttons */}
@@ -167,7 +240,7 @@ export const Lesson19VolatilitySlides = ({ onComplete }: Lesson19Props) => {
               <Card className="p-4 bg-muted/50 mb-6">
                 <div className="h-40 flex items-end gap-0.5 overflow-hidden">
                   {history.map((value, idx) => {
-                    const height = ((value - 80000) / 40000) * 100;
+                    const height = ((value - 5000) / 15000) * 100;
                     const isUp = idx > 0 && value > history[idx - 1];
                     return (
                       <motion.div
@@ -184,23 +257,23 @@ export const Lesson19VolatilitySlides = ({ onComplete }: Lesson19Props) => {
               {/* Stats Grid */}
               <div className="grid grid-cols-4 gap-3 mb-6">
                 <div className="p-3 rounded-xl bg-background border text-center">
-                  <p className="text-xs text-muted-foreground">Portfolio Value</p>
+                  <p className="text-xs text-muted-foreground">Portfolio</p>
                   <p className="text-lg font-bold">${portfolioValue.toLocaleString(undefined, { maximumFractionDigits: 0 })}</p>
                 </div>
                 <div className={`p-3 rounded-xl text-center ${totalReturn >= 0 ? "bg-emerald-500/10 border-emerald-500/30" : "bg-destructive/10 border-destructive/30"} border`}>
-                  <p className="text-xs text-muted-foreground">Total Return</p>
+                  <p className="text-xs text-muted-foreground">Return</p>
                   <p className={`text-lg font-bold ${totalReturn >= 0 ? "text-emerald-500" : "text-destructive"}`}>
                     {totalReturn >= 0 ? "+" : ""}{totalReturn.toFixed(1)}%
                   </p>
                 </div>
                 <div className={`p-3 rounded-xl text-center ${drawdown > 10 ? "bg-destructive/10 border-destructive/30" : "bg-amber-500/10 border-amber-500/30"} border`}>
-                  <p className="text-xs text-muted-foreground">Current Drawdown</p>
+                  <p className="text-xs text-muted-foreground">Drawdown</p>
                   <p className={`text-lg font-bold ${drawdown > 10 ? "text-destructive" : "text-amber-500"}`}>
                     -{drawdown.toFixed(1)}%
                   </p>
                 </div>
                 <div className="p-3 rounded-xl bg-destructive/10 border border-destructive/30 text-center">
-                  <p className="text-xs text-muted-foreground">Max Drawdown</p>
+                  <p className="text-xs text-muted-foreground">Max Drop</p>
                   <p className="text-lg font-bold text-destructive">-{maxDrawdown.toFixed(1)}%</p>
                 </div>
               </div>
@@ -229,8 +302,8 @@ export const Lesson19VolatilitySlides = ({ onComplete }: Lesson19Props) => {
                   <div className="flex items-center gap-3">
                     <AlertTriangle className="w-6 h-6 text-destructive" />
                     <div>
-                      <p className="font-bold text-destructive">Significant Drawdown Experienced!</p>
-                      <p className="text-sm text-muted-foreground">This is when many investors panic sell. Would you have held on?</p>
+                      <p className="font-bold text-destructive">Significant Crash!</p>
+                      <p className="text-sm text-muted-foreground">Bitcoin dropped ~80% in 2018 and ~75% in 2022. These crashes are normal in crypto. Could you hold through this?</p>
                     </div>
                   </div>
                 </motion.div>
@@ -238,27 +311,27 @@ export const Lesson19VolatilitySlides = ({ onComplete }: Lesson19Props) => {
 
               <div className="flex justify-center">
                 <Button onClick={nextSlide} size="lg" className="gap-2">
-                  Continue to Reflect <ArrowRight className="w-4 h-4" />
+                  Continue to Quiz <ArrowRight className="w-4 h-4" />
                 </Button>
               </div>
             </Card>
           </motion.div>
         )}
 
-        {/* Slide 2: Reflect */}
-        {currentSlide === 2 && (
+        {/* Slide 3: Quiz */}
+        {currentSlide === 3 && (
           <motion.div
-            key="slide2"
+            key="slide3"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.5 }}
           >
             <Card className="p-8">
-              <Badge className="mb-4 bg-amber-500/20 text-amber-400 border-amber-500/30">Reflect</Badge>
+              <Badge className="mb-4 bg-amber-500/20 text-amber-400 border-amber-500/30">Quiz</Badge>
               
-              <h2 className="text-2xl font-bold text-center mb-2">Understanding Volatility</h2>
-              <p className="text-center text-muted-foreground mb-8">Test your knowledge of drawdowns and risk</p>
+              <h2 className="text-2xl font-bold text-center mb-2">Crypto Knowledge Check</h2>
+              <p className="text-center text-muted-foreground mb-8">Test your understanding of cryptocurrency basics</p>
 
               <Card className="p-6 bg-muted/50 mb-6">
                 <div className="flex items-center gap-2 mb-4">
@@ -298,75 +371,14 @@ export const Lesson19VolatilitySlides = ({ onComplete }: Lesson19Props) => {
 
               <div className="flex justify-center">
                 <Button onClick={nextSlide} size="lg" className="gap-2" disabled={reflectionAnswers.length < reflectionQuestions.length}>
-                  Continue to Insight <ArrowRight className="w-4 h-4" />
+                  Continue <ArrowRight className="w-4 h-4" />
                 </Button>
               </div>
             </Card>
           </motion.div>
         )}
 
-        {/* Slide 3: Insight */}
-        {currentSlide === 3 && (
-          <motion.div
-            key="slide3"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.5 }}
-          >
-            <Card className="p-8">
-              <Badge className="mb-4 bg-blue-500/20 text-blue-400 border-blue-500/30">Insight</Badge>
-              
-              <h2 className="text-2xl font-bold text-center mb-8">Volatility Insights</h2>
-
-              <div className="grid gap-6 mb-8">
-                {[
-                  {
-                    title: "Volatility ≠ Risk",
-                    description: "Volatility measures price fluctuation. True risk is permanent capital loss. A quality stock dropping 30% isn't risky if fundamentals are intact—it's an opportunity.",
-                    icon: Activity,
-                  },
-                  {
-                    title: "Drawdowns Are Normal",
-                    description: "The S&P 500 has a 10%+ drawdown almost every year, 20%+ every few years, and 40%+ each decade. Expecting constant gains sets you up for panic.",
-                    icon: TrendingDown,
-                  },
-                  {
-                    title: "Know Your Tolerance",
-                    description: "Before investing, ask: 'Can I handle a 30% drop without selling?' If not, reduce equity exposure. Your behavior during drawdowns determines returns.",
-                    icon: Shield,
-                  },
-                ].map((insight, idx) => (
-                  <motion.div
-                    key={idx}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: idx * 0.2 }}
-                    className="p-6 rounded-xl bg-blue-500/10 border border-blue-500/30"
-                  >
-                    <div className="flex items-start gap-4">
-                      <div className="p-3 rounded-xl bg-blue-500/20">
-                        <insight.icon className="w-6 h-6 text-blue-500" />
-                      </div>
-                      <div>
-                        <h3 className="font-bold mb-2">{insight.title}</h3>
-                        <p className="text-muted-foreground">{insight.description}</p>
-                      </div>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-
-              <div className="flex justify-center">
-                <Button onClick={nextSlide} size="lg" className="gap-2">
-                  Continue to Apply <ArrowRight className="w-4 h-4" />
-                </Button>
-              </div>
-            </Card>
-          </motion.div>
-        )}
-
-        {/* Slide 4: Apply */}
+        {/* Slide 4: Apply - Position Sizing */}
         {currentSlide === 4 && (
           <motion.div
             key="slide4"
@@ -378,66 +390,78 @@ export const Lesson19VolatilitySlides = ({ onComplete }: Lesson19Props) => {
             <Card className="p-8">
               <Badge className="mb-4 bg-purple-500/20 text-purple-400 border-purple-500/30">Apply</Badge>
               
-              <h2 className="text-2xl font-bold text-center mb-2">Managing Volatility</h2>
-              <p className="text-center text-muted-foreground mb-8">Practical strategies for handling market swings</p>
+              <h2 className="text-2xl font-bold text-center mb-2">Crypto Position Sizing</h2>
+              <p className="text-center text-muted-foreground mb-8">How much of your portfolio should be in crypto?</p>
 
-              <div className="space-y-4 mb-6">
+              <div className="grid gap-4 mb-6">
                 {[
-                  { strategy: "Set Your Allocation Before Volatility Hits", tip: "Decide stock/bond mix when calm, not during crashes" },
-                  { strategy: "Automate Your Investments", tip: "Dollar-cost averaging removes emotion from timing decisions" },
-                  { strategy: "Write Down Your Plan", tip: "Document what you'll do in a 20% drop—and stick to it" },
-                  { strategy: "Rebalance Systematically", tip: "Sell high, buy low by rebalancing to target allocation" },
-                ].map((item, idx) => (
+                  {
+                    title: "High Risk, High Volatility",
+                    description: "Crypto can drop 50-80% in a bear market. Only invest money you can afford to lose entirely.",
+                    icon: AlertTriangle,
+                  },
+                  {
+                    title: "Position Sizing Matters",
+                    description: "Most financial advisors suggest limiting crypto to 1-5% of your total portfolio to manage risk.",
+                    icon: Shield,
+                  },
+                  {
+                    title: "Never Chase the Hype",
+                    description: "The biggest crypto gains often reverse just as quickly. FOMO is the most expensive emotion in crypto.",
+                    icon: TrendingDown,
+                  },
+                ].map((insight, idx) => (
                   <motion.div
                     key={idx}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: idx * 0.1 }}
-                    className="p-4 rounded-xl bg-muted/50 border"
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: idx * 0.2 }}
+                    className="p-5 rounded-xl bg-muted/50 border"
                   >
-                    <div className="flex items-start gap-3">
-                      <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center text-sm font-bold text-primary">
-                        {idx + 1}
+                    <div className="flex items-start gap-4">
+                      <div className="p-2 rounded-lg bg-primary/10">
+                        <insight.icon className="w-5 h-5 text-primary" />
                       </div>
                       <div>
-                        <p className="font-medium">{item.strategy}</p>
-                        <p className="text-sm text-muted-foreground">{item.tip}</p>
+                        <h3 className="font-bold mb-1">{insight.title}</h3>
+                        <p className="text-sm text-muted-foreground">{insight.description}</p>
                       </div>
                     </div>
                   </motion.div>
                 ))}
               </div>
 
-              <Card className="p-4 bg-emerald-500/10 border border-emerald-500/30 mb-6">
+              {/* Crypto Allocation Simulator */}
+              <SliderSimulator
+                title="📊 Crypto Allocation Impact"
+                description="See how crypto allocation affects your portfolio's risk:"
+                sliders={[
+                  { id: "portfolio", label: "Total Portfolio", min: 10000, max: 500000, step: 10000, defaultValue: 100000, unit: "$" },
+                  { id: "cryptoPct", label: "Crypto Allocation", min: 0, max: 30, step: 1, defaultValue: 5, unit: "%" },
+                ]}
+                calculateResult={(vals) => {
+                  const cryptoAmount = Math.round(vals.portfolio * vals.cryptoPct / 100);
+                  const worstCase = Math.round(cryptoAmount * 0.2); // 80% crash
+                  const portfolioLoss = Math.round((cryptoAmount - worstCase) / vals.portfolio * 100);
+                  return {
+                    primary: `$${cryptoAmount.toLocaleString()} in crypto`,
+                    secondary: `Worst case (80% crash): lose $${(cryptoAmount - worstCase).toLocaleString()} = ${portfolioLoss}% of total portfolio`,
+                    insight: vals.cryptoPct <= 5 ? "Conservative — manageable even in a crash." : vals.cryptoPct <= 15 ? "Moderate risk — significant loss potential in a crash." : "Aggressive — a crypto crash could seriously damage your portfolio!",
+                  };
+                }}
+              />
+
+              <Card className="p-4 bg-emerald-500/10 border border-emerald-500/30 mb-6 mt-4">
                 <div className="flex items-start gap-3">
                   <Lightbulb className="w-5 h-5 text-emerald-500 mt-1" />
                   <div>
                     <h4 className="font-bold text-emerald-500">Key Takeaway</h4>
                     <p className="text-sm text-muted-foreground">
-                      The investors who build wealth aren't those who avoid volatility—they're those who stay invested through it. Plan for drawdowns before they happen.
+                      Cryptocurrency is a high-risk, high-volatility asset. It should only be a small, carefully sized portion of a diversified portfolio. Never invest more than you can afford to lose.
                     </p>
                   </div>
                 </div>
               </Card>
-
-              {/* Volatility Impact Simulator */}
-              <SliderSimulator
-                title="📊 Volatility Impact Simulator"
-                description="See how volatility affects your portfolio value range:"
-                sliders={[
-                  { id: "investment", label: "Portfolio Value", min: 10000, max: 500000, step: 10000, defaultValue: 100000, unit: "$" },
-                  { id: "volatility", label: "Annual Volatility", min: 5, max: 40, step: 1, defaultValue: 15, unit: "%" },
-                ]}
-                calculateResult={(vals) => {
-                  const downside = Math.round(vals.investment * (1 - vals.volatility * 2 / 100));
-                  const upside = Math.round(vals.investment * (1 + vals.volatility * 2 / 100));
-                  return {
-                    primary: `$${downside.toLocaleString()} — $${upside.toLocaleString()}`,
-                    secondary: `95% confidence range over 1 year`,
-                    insight: vals.volatility > 20 ? "High volatility — only for long-term investors!" : "Manageable volatility for most investors.",
-                  };
-                }}
-              />
 
               <div className="flex justify-center">
                 <Button onClick={nextSlide} size="lg" className="gap-2">
