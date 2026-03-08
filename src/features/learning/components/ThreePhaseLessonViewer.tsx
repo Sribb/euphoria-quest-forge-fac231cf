@@ -90,6 +90,12 @@ import { ALT8Collectibles } from "./lessons/alt/ALT8Collectibles";
 import { ALT9ESG } from "./lessons/alt/ALT9ESG";
 import { ALT10Challenge } from "./lessons/alt/ALT10Challenge";
 
+// Lesson 11 for non-investing pathways
+import { PF11DebtSnowball } from "./lessons/pf/PF11DebtSnowball";
+import { CF11ValuationMethods } from "./lessons/cf/CF11ValuationMethods";
+import { TR11ChartPatterns } from "./lessons/tr/TR11ChartPatterns";
+import { ALT11PortfolioDiversification } from "./lessons/alt/ALT11PortfolioDiversification";
+
 // Pathway-aware lesson map
 const LESSON_MAP: Record<string, Record<number, React.ComponentType<{ onComplete: () => void }>>> = {
   'investing': {
@@ -107,21 +113,25 @@ const LESSON_MAP: Record<string, Record<number, React.ComponentType<{ onComplete
     1: PF1FinancialStartingPoint, 2: PF2BudgetingWorks, 3: PF3EmergencyFund,
     4: PF4CreditScores, 5: PF5GoodVsBadDebt, 6: PF6BankingAccounts,
     7: PF7PaycheckDeductions, 8: PF8FinancialGoals, 9: PF9LifestyleInflation, 10: PF10Challenge,
+    11: PF11DebtSnowball,
   },
   'corporate-finance': {
     1: CF1WhatIsCorporateFinance, 2: CF2IncomeStatement, 3: CF3BalanceSheets,
     4: CF4CashFlow, 5: CF5FinancialRatios, 6: CF6RevenueRecognition,
     7: CF7COGSMargins, 8: CF8WorkingCapital, 9: CF9SECFilings, 10: CF10Challenge,
+    11: CF11ValuationMethods,
   },
   'trading': {
     1: TR1WhatIsTrading, 2: TR2CandlestickBasics, 3: TR3SupportResistance,
     4: TR4TrendLines, 5: TR5VolumeAnalysis, 6: TR6MovingAverages,
     7: TR7OrderTypes, 8: TR8RiskManagement, 9: TR9PaperTrading, 10: TR10Challenge,
+    11: TR11ChartPatterns,
   },
   'alternative-assets': {
     1: ALT1BeyondStocks, 2: ALT2RealEstate, 3: ALT3REITs,
     4: ALT4GoldMetals, 5: ALT5Commodities, 6: ALT6Crypto,
     7: ALT7NFTs, 8: ALT8Collectibles, 9: ALT9ESG, 10: ALT10Challenge,
+    11: ALT11PortfolioDiversification,
   },
 };
 
