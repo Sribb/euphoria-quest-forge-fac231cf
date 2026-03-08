@@ -251,15 +251,54 @@ export const EducatorHome = ({ onNavigate }: EducatorHomeProps) => {
                     rows={3}
                   />
                 </div>
-                <div className="space-y-2">
-                  <Label className="text-xs uppercase tracking-wider text-muted-foreground">Max Students</Label>
-                  <Input
-                    type="number"
-                    placeholder="30"
-                    value={newClassMaxStudents}
-                    onChange={(e) => setNewClassMaxStudents(e.target.value)}
-                    className="bg-muted/30 border-border/50 w-32"
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label className="text-xs uppercase tracking-wider text-muted-foreground">Grade Level</Label>
+                    <Select value={newClassGradeLevel} onValueChange={setNewClassGradeLevel}>
+                      <SelectTrigger className="bg-muted/30 border-border/50">
+                        <SelectValue placeholder="Select grade" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {ALL_GRADES.map((g) => (
+                          <SelectItem key={g} value={g}>{g} Grade</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-xs uppercase tracking-wider text-muted-foreground">Max Students</Label>
+                    <Input
+                      type="number"
+                      placeholder="30"
+                      value={newClassMaxStudents}
+                      onChange={(e) => setNewClassMaxStudents(e.target.value)}
+                      className="bg-muted/30 border-border/50"
+                    />
+                  </div>
+                </div>
+                {isCoppaGrade && (
+                  <div className="p-3 rounded-lg bg-warning/10 border border-warning/30 flex items-start gap-2">
+                    <ShieldCheck className="w-4 h-4 text-warning mt-0.5 shrink-0" />
+                    <p className="text-xs text-warning">
+                      Grade {newClassGradeLevel} typically includes students under 13. COPPA parental consent will be required for students in this class.
+                    </p>
+                  </div>
+                )}
+                <div className="flex items-start gap-3 p-3 rounded-lg bg-muted/20 border border-border/30">
+                  <Checkbox
+                    id="under13"
+                    checked={newClassUnder13 || isCoppaGrade}
+                    disabled={isCoppaGrade}
+                    onCheckedChange={(checked) => setNewClassUnder13(checked === true)}
                   />
+                  <div>
+                    <label htmlFor="under13" className="text-sm font-medium cursor-pointer">
+                      This class contains students under 13
+                    </label>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      Enables COPPA parental consent workflow. Parents must consent before student data is collected.
+                    </p>
+                  </div>
                 </div>
                 <Button
                   onClick={handleCreateClass}
