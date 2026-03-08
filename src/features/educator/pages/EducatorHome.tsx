@@ -20,6 +20,7 @@ import { useClassManagement, ClassWithMembers, ClassMember } from "../hooks/useC
 import { RosterImportDialog } from "../roster-import/RosterImportDialog";
 import { ConsentManagementPanel } from "../components/ConsentManagementPanel";
 import { ClassEditDialog } from "../components/ClassEditDialog";
+import { RosterManagementPanel } from "../components/RosterManagementPanel";
 import { useEducatorData } from "../hooks/useEducatorData";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
