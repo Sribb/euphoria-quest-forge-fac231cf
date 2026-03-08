@@ -84,27 +84,10 @@ const Dashboard = ({ onNavigate, onStockSearch }: DashboardProps) => {
 
         {/* Market Intel */}
         <motion.div variants={fadeUp}>
-          <Tabs defaultValue="calendar" className="w-full">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-bold text-foreground">Market Intel</h3>
-              <TabsList className="bg-muted/50 rounded-2xl p-1">
-                <TabsTrigger value="calendar" className="gap-2 text-xs rounded-xl">
-                  <CalendarDays className="w-3.5 h-3.5" />
-                  Calendar
-                </TabsTrigger>
-                <TabsTrigger value="headlines" className="gap-2 text-xs rounded-xl">
-                  <Newspaper className="w-3.5 h-3.5" />
-                  Headlines
-                </TabsTrigger>
-              </TabsList>
-            </div>
-            <TabsContent value="calendar">
-              <EconomicCalendarNative />
-            </TabsContent>
-            <TabsContent value="headlines">
-              <LiveEconomicHeadlines />
-            </TabsContent>
-          </Tabs>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-bold text-foreground">Market Intel</h3>
+          </div>
+          <LiveEconomicHeadlines />
         </motion.div>
       </motion.div>
 
