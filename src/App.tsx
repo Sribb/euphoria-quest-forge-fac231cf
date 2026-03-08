@@ -11,10 +11,12 @@ import Auth from "./pages/Auth";
 import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
 import Onboarding from "./pages/Onboarding";
+import RoleSelection from "./pages/RoleSelection";
 import NotFound from "./pages/NotFound";
 import { AuthProvider, useAuth } from "@/hooks/useAuth";
 import { useOnboarding } from "@/hooks/useOnboarding";
 import { useEducatorRole } from "@/features/educator/hooks/useEducatorRole";
+import { useNeedsRoleSelection } from "@/hooks/useNeedsRoleSelection";
 
 const RootRedirect = () => {
   const { user, loading } = useAuth();
@@ -26,13 +28,19 @@ const RootRedirect = () => {
 const OnboardingCheck = ({ children }: { children: React.ReactNode }) => {
   const { hasCompletedOnboarding, isLoading } = useOnboarding();
   const { hasEducatorAccess, isLoading: roleLoading } = useEducatorRole();
+  const { needsRoleSelection, isLoading: roleSelectionLoading } = useNeedsRoleSelection();
   
-  if (isLoading || roleLoading) {
+  if (isLoading || roleLoading || roleSelectionLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <EuphoriaSpinner size="lg" />
       </div>
     );
+  }
+
+  // New Google users need to pick student vs educator first
+  if (needsRoleSelection) {
+    return <Navigate to="/role-selection" replace />;
   }
   
   // Educators skip the placement quiz entirely
@@ -86,6 +94,14 @@ const App = () => (
             <Route path="/auth" element={<Auth />} />
             <Route path="/terms" element={<Terms />} />
             <Route path="/privacy" element={<Privacy />} />
+            <Route
+              path="/role-selection"
+              element={
+                <ProtectedRoute>
+                  <RoleSelection />
+                </ProtectedRoute>
+              }
+            />
             <Route
               path="/onboarding"
               element={
