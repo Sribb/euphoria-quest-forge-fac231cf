@@ -86,7 +86,7 @@ const Legal = () => {
                   <p className="text-sm text-muted-foreground leading-relaxed">{page.description}</p>
                   <p className="text-xs text-muted-foreground/60 mt-2">Last updated: {page.updated}</p>
                 </div>
-                <ExternalLink className="w-4 h-4 text-muted-foreground/40 group-hover:text-primary shrink-0 mt-1 transition-colors" />
+                {page.href && <ExternalLink className="w-4 h-4 text-muted-foreground/40 group-hover:text-primary shrink-0 mt-1 transition-colors" />}
               </div>
             </Card>
           ))}
