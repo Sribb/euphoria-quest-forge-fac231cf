@@ -12,6 +12,7 @@ import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
 import Ferpa from "./pages/Ferpa";
 import Legal from "./pages/Legal";
+import ParentConsent from "./pages/ParentConsent";
 import Onboarding from "./pages/Onboarding";
 import RoleSelection from "./pages/RoleSelection";
 import NotFound from "./pages/NotFound";
@@ -98,6 +99,7 @@ const App = () => (
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/ferpa" element={<Ferpa />} />
             <Route path="/legal" element={<Legal />} />
+            <Route path="/parent-consent" element={<ParentConsent />} />
             <Route
               path="/role-selection"
               element={

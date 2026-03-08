@@ -1,4 +1,4 @@
-import { ArrowLeft, Shield, FileText, Lock, ExternalLink } from "lucide-react";
+import { ArrowLeft, Shield, FileText, Lock, ExternalLink, ShieldCheck } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import logo from "@/assets/euphoria-logo-button.png";
@@ -25,6 +25,14 @@ const pages = [
     href: "/ferpa",
     updated: "March 2026",
     badge: "For Districts",
+  },
+  {
+    icon: ShieldCheck,
+    title: "COPPA Parental Consent",
+    description: "Parental consent workflow for students under 13. Educators manage consent requests; parents can grant, revoke consent, or request data deletion at any time.",
+    href: "/parent-consent",
+    updated: "March 2026",
+    badge: "For Parents",
   },
 ];
 

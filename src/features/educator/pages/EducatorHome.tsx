@@ -3,6 +3,8 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -11,10 +13,11 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { 
   GraduationCap, Plus, Copy, Users, BookOpen, Trophy, 
   TrendingUp, Trash2, BarChart3, School, Sparkles, 
-  Clock, Zap, Target, ChevronRight, UserCheck, AlertTriangle
+  Clock, Zap, Target, ChevronRight, UserCheck, AlertTriangle, ShieldCheck
 } from "lucide-react";
 import { useClassManagement, ClassWithMembers, ClassMember } from "../hooks/useClassManagement";
 import { RosterImportDialog } from "../roster-import/RosterImportDialog";
+import { ConsentManagementPanel } from "../components/ConsentManagementPanel";
 import { useEducatorData } from "../hooks/useEducatorData";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
@@ -139,6 +142,12 @@ export const EducatorHome = ({ onNavigate }: EducatorHomeProps) => {
   const [newClassName, setNewClassName] = useState("");
   const [newClassDescription, setNewClassDescription] = useState("");
   const [newClassMaxStudents, setNewClassMaxStudents] = useState("30");
+  const [newClassGradeLevel, setNewClassGradeLevel] = useState("");
+  const [newClassUnder13, setNewClassUnder13] = useState(false);
+
+  const COPPA_GRADES = ["k", "1st", "2nd", "3rd", "4th", "5th", "6th", "7th"];
+  const ALL_GRADES = ["K", "1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th", "9th", "10th", "11th", "12th"];
+  const isCoppaGrade = newClassGradeLevel ? COPPA_GRADES.includes(newClassGradeLevel.toLowerCase()) : false;
 
   const handleCreateClass = async () => {
     if (!newClassName.trim()) {
@@ -149,10 +158,14 @@ export const EducatorHome = ({ onNavigate }: EducatorHomeProps) => {
       className: newClassName,
       description: newClassDescription || undefined,
       maxStudents: parseInt(newClassMaxStudents) || undefined,
+      gradeLevel: newClassGradeLevel || undefined,
+      requiresCoppaConsent: newClassUnder13,
     });
     setNewClassName("");
     setNewClassDescription("");
     setNewClassMaxStudents("30");
+    setNewClassGradeLevel("");
+    setNewClassUnder13(false);
     setCreateDialogOpen(false);
   };
 
@@ -239,15 +252,54 @@ export const EducatorHome = ({ onNavigate }: EducatorHomeProps) => {
                     rows={3}
                   />
                 </div>
-                <div className="space-y-2">
-                  <Label className="text-xs uppercase tracking-wider text-muted-foreground">Max Students</Label>
-                  <Input
-                    type="number"
-                    placeholder="30"
-                    value={newClassMaxStudents}
-                    onChange={(e) => setNewClassMaxStudents(e.target.value)}
-                    className="bg-muted/30 border-border/50 w-32"
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label className="text-xs uppercase tracking-wider text-muted-foreground">Grade Level</Label>
+                    <Select value={newClassGradeLevel} onValueChange={setNewClassGradeLevel}>
+                      <SelectTrigger className="bg-muted/30 border-border/50">
+                        <SelectValue placeholder="Select grade" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {ALL_GRADES.map((g) => (
+                          <SelectItem key={g} value={g}>{g} Grade</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-xs uppercase tracking-wider text-muted-foreground">Max Students</Label>
+                    <Input
+                      type="number"
+                      placeholder="30"
+                      value={newClassMaxStudents}
+                      onChange={(e) => setNewClassMaxStudents(e.target.value)}
+                      className="bg-muted/30 border-border/50"
+                    />
+                  </div>
+                </div>
+                {isCoppaGrade && (
+                  <div className="p-3 rounded-lg bg-warning/10 border border-warning/30 flex items-start gap-2">
+                    <ShieldCheck className="w-4 h-4 text-warning mt-0.5 shrink-0" />
+                    <p className="text-xs text-warning">
+                      Grade {newClassGradeLevel} typically includes students under 13. COPPA parental consent will be required for students in this class.
+                    </p>
+                  </div>
+                )}
+                <div className="flex items-start gap-3 p-3 rounded-lg bg-muted/20 border border-border/30">
+                  <Checkbox
+                    id="under13"
+                    checked={newClassUnder13 || isCoppaGrade}
+                    disabled={isCoppaGrade}
+                    onCheckedChange={(checked) => setNewClassUnder13(checked === true)}
                   />
+                  <div>
+                    <label htmlFor="under13" className="text-sm font-medium cursor-pointer">
+                      This class contains students under 13
+                    </label>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      Enables COPPA parental consent workflow. Parents must consent before student data is collected.
+                    </p>
+                  </div>
                 </div>
                 <Button
                   onClick={handleCreateClass}
@@ -355,7 +407,14 @@ export const EducatorHome = ({ onNavigate }: EducatorHomeProps) => {
                     >
                       <div className="flex items-start justify-between mb-3">
                         <div className="flex-1 min-w-0">
-                          <h4 className="font-bold text-sm truncate">{cls.class_name}</h4>
+                          <div className="flex items-center gap-1.5">
+                            <h4 className="font-bold text-sm truncate">{cls.class_name}</h4>
+                            {cls.requires_coppa_consent && (
+                              <Badge variant="outline" className="text-[9px] px-1.5 py-0 border-warning/40 text-warning shrink-0">
+                                COPPA
+                              </Badge>
+                            )}
+                          </div>
                           {cls.description && (
                             <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1">{cls.description}</p>
                           )}
@@ -484,6 +543,17 @@ export const EducatorHome = ({ onNavigate }: EducatorHomeProps) => {
                               />
                             ))}
                           </AnimatePresence>
+                        </div>
+                      )}
+
+                      {/* COPPA Consent Panel */}
+                      {activeClass.requires_coppa_consent && activeClass.members.length > 0 && (
+                        <div className="mt-6 pt-6 border-t border-border/50">
+                          <ConsentManagementPanel
+                            classId={activeClass.id}
+                            className={activeClass.class_name}
+                            members={activeClass.members}
+                          />
                         </div>
                       )}
                     </div>
