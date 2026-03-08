@@ -23,6 +23,7 @@ import { ConsentManagementPanel } from "../components/ConsentManagementPanel";
 import { ClassEditDialog } from "../components/ClassEditDialog";
 import { RosterManagementPanel } from "../components/RosterManagementPanel";
 import { AssignmentsPanel } from "../components/AssignmentsPanel";
+import { TemplatesPanel } from "../components/TemplatesPanel";
 import { useEducatorData } from "../hooks/useEducatorData";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
