@@ -219,6 +219,8 @@ export const useClassManagement = () => {
     classes: classes || [],
     isLoading,
     createClass,
+    updateClass,
+    archiveClass,
     deleteClass,
     removeStudent,
   };
