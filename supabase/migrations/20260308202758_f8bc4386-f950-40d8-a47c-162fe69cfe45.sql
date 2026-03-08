@@ -1,0 +1,1 @@
+ALTER TABLE public.class_members ADD CONSTRAINT class_members_class_id_student_id_unique UNIQUE (class_id, student_id);
