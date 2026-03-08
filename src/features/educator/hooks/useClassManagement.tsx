@@ -13,6 +13,9 @@ export interface ClassWithMembers {
   max_students: number | null;
   grade_level: string | null;
   requires_coppa_consent: boolean;
+  period_block: string | null;
+  display_color: string | null;
+  archived_at: string | null;
   created_at: string;
   updated_at: string;
   member_count: number;
@@ -98,8 +101,9 @@ export const useClassManagement = () => {
   });
 
   const createClass = useMutation({
-    mutationFn: async ({ className, description, maxStudents, gradeLevel, requiresCoppaConsent }: { 
+    mutationFn: async ({ className, description, maxStudents, gradeLevel, requiresCoppaConsent, periodBlock, displayColor }: { 
       className: string; description?: string; maxStudents?: number; gradeLevel?: string; requiresCoppaConsent?: boolean;
+      periodBlock?: string; displayColor?: string;
     }) => {
       if (!user?.id) throw new Error("Not authenticated");
 
@@ -119,6 +123,8 @@ export const useClassManagement = () => {
         max_students: maxStudents || null,
         grade_level: gradeLevel || null,
         requires_coppa_consent: coppaRequired,
+        period_block: periodBlock || null,
+        display_color: displayColor || '#6366f1',
       });
 
       if (error) throw error;
@@ -130,6 +136,37 @@ export const useClassManagement = () => {
     },
     onError: (error) => {
       toast.error("Failed to create class: " + error.message);
+    },
+  });
+
+  const updateClass = useMutation({
+    mutationFn: async ({ classId, updates }: { classId: string; updates: { class_name?: string; description?: string; period_block?: string | null; display_color?: string; max_students?: number | null; grade_level?: string | null } }) => {
+      const { error } = await supabase.from("classes").update(updates).eq("id", classId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["educator-classes"] });
+      toast.success("Class updated");
+    },
+    onError: (error) => {
+      toast.error("Failed to update class: " + error.message);
+    },
+  });
+
+  const archiveClass = useMutation({
+    mutationFn: async ({ classId, archive }: { classId: string; archive: boolean }) => {
+      const { error } = await supabase.from("classes").update({
+        archived_at: archive ? new Date().toISOString() : null,
+        is_active: !archive,
+      }).eq("id", classId);
+      if (error) throw error;
+    },
+    onSuccess: (_, { archive }) => {
+      queryClient.invalidateQueries({ queryKey: ["educator-classes"] });
+      toast.success(archive ? "Class archived — historical data preserved" : "Class restored");
+    },
+    onError: (error) => {
+      toast.error("Failed to archive class: " + error.message);
     },
   });
 
@@ -182,6 +219,8 @@ export const useClassManagement = () => {
     classes: classes || [],
     isLoading,
     createClass,
+    updateClass,
+    archiveClass,
     deleteClass,
     removeStudent,
   };

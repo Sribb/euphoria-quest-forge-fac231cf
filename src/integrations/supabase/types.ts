@@ -565,41 +565,50 @@ export type Database = {
       }
       classes: {
         Row: {
+          archived_at: string | null
           class_code: string
           class_name: string
           created_at: string
           description: string | null
+          display_color: string | null
           educator_id: string
           grade_level: string | null
           id: string
           is_active: boolean | null
           max_students: number | null
+          period_block: string | null
           requires_coppa_consent: boolean
           updated_at: string
         }
         Insert: {
+          archived_at?: string | null
           class_code: string
           class_name: string
           created_at?: string
           description?: string | null
+          display_color?: string | null
           educator_id: string
           grade_level?: string | null
           id?: string
           is_active?: boolean | null
           max_students?: number | null
+          period_block?: string | null
           requires_coppa_consent?: boolean
           updated_at?: string
         }
         Update: {
+          archived_at?: string | null
           class_code?: string
           class_name?: string
           created_at?: string
           description?: string | null
+          display_color?: string | null
           educator_id?: string
           grade_level?: string | null
           id?: string
           is_active?: boolean | null
           max_students?: number | null
+          period_block?: string | null
           requires_coppa_consent?: boolean
           updated_at?: string
         }
