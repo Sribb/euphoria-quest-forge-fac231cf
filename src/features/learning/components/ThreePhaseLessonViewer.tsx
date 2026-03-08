@@ -14,6 +14,8 @@ import { AILessonChatbot } from "./AILessonChatbot";
 import { AdaptiveLessonChallenge } from "./AdaptiveLessonChallenge";
 import { LessonMasteryDashboard } from "./LessonMasteryDashboard";
 import { InteractiveLessonSimulation } from "./InteractiveLessonSimulation";
+import { StandardLessonTemplate } from "./lessons/StandardLessonTemplate";
+import { getLessonDefinition } from "../data/allLessons";
 
 // Investing pathway
 import { Lesson1Beginner } from "./lessons/Lesson1Beginner";
