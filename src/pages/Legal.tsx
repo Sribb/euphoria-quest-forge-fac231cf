@@ -62,11 +62,13 @@ const Legal = () => {
         </p>
 
         <div className="space-y-4">
-          {pages.map((page) => (
+          {pages.map((page, i) => (
             <Card
-              key={page.href}
-              className="p-5 border-border/50 hover:border-primary/30 bg-card/60 backdrop-blur-sm cursor-pointer transition-all duration-200 hover:-translate-y-0.5 group"
-              onClick={() => navigate(page.href)}
+              key={page.title}
+              className={`p-5 border-border/50 bg-card/60 backdrop-blur-sm transition-all duration-200 group ${
+                page.href ? "cursor-pointer hover:border-primary/30 hover:-translate-y-0.5" : ""
+              }`}
+              onClick={() => page.href && navigate(page.href)}
             >
               <div className="flex items-start gap-4">
                 <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 group-hover:bg-primary/15 transition-colors">
