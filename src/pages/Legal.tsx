@@ -1,4 +1,4 @@
-import { ArrowLeft, Shield, FileText, Lock, ExternalLink } from "lucide-react";
+import { ArrowLeft, Shield, FileText, Lock, ExternalLink, ShieldCheck } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import logo from "@/assets/euphoria-logo-button.png";
