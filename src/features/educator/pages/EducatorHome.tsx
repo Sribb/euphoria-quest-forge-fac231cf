@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { useClassManagement, ClassWithMembers, ClassMember } from "../hooks/useClassManagement";
 import { RosterImportDialog } from "../roster-import/RosterImportDialog";
+import { ConsentManagementPanel } from "../components/ConsentManagementPanel";
 import { useEducatorData } from "../hooks/useEducatorData";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
