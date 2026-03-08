@@ -11,6 +11,7 @@ import Auth from "./pages/Auth";
 import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
 import Onboarding from "./pages/Onboarding";
+import RoleSelection from "./pages/RoleSelection";
 import NotFound from "./pages/NotFound";
 import { AuthProvider, useAuth } from "@/hooks/useAuth";
 import { useOnboarding } from "@/hooks/useOnboarding";
