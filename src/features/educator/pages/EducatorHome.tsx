@@ -14,6 +14,7 @@ import {
   Clock, Zap, Target, ChevronRight, UserCheck, AlertTriangle
 } from "lucide-react";
 import { useClassManagement, ClassWithMembers, ClassMember } from "../hooks/useClassManagement";
+import { RosterImportDialog } from "../roster-import/RosterImportDialog";
 import { useEducatorData } from "../hooks/useEducatorData";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
