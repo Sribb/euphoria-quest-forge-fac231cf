@@ -97,6 +97,7 @@ const App = () => (
             <Route path="/terms" element={<Terms />} />
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/ferpa" element={<Ferpa />} />
+            <Route path="/legal" element={<Legal />} />
             <Route
               path="/role-selection"
               element={
