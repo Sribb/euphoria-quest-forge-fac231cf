@@ -44,3 +44,21 @@ verify_jwt = true
 
 [functions.analytics-chat]
 verify_jwt = true
+
+[functions.lti-jwks]
+verify_jwt = false
+
+[functions.lti-oidc-login]
+verify_jwt = false
+
+[functions.lti-launch]
+verify_jwt = false
+
+[functions.lti-content-picker]
+verify_jwt = false
+
+[functions.lti-grade-passback]
+verify_jwt = true
+
+[functions.bulk-create-students]
+verify_jwt = true
