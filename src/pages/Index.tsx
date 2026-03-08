@@ -18,6 +18,7 @@ import StockSearch from "./StockSearch";
 import StockDetail from "./StockDetail";
 import { EducatorHome } from "@/features/educator/pages/EducatorHome";
 import { EducatorDashboard } from "@/features/educator/pages/EducatorDashboard";
+import { LtiConfigPanel } from "@/features/educator/components/LtiConfigPanel";
 
 const Index = () => {
   const { hasEducatorAccess } = useEducatorRole();
