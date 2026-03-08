@@ -13,6 +13,7 @@ import Privacy from "./pages/Privacy";
 import Ferpa from "./pages/Ferpa";
 import Legal from "./pages/Legal";
 import ParentConsent from "./pages/ParentConsent";
+import DpaPortal from "./pages/DpaPortal";
 import Onboarding from "./pages/Onboarding";
 import RoleSelection from "./pages/RoleSelection";
 import NotFound from "./pages/NotFound";
@@ -100,6 +101,14 @@ const App = () => (
             <Route path="/ferpa" element={<Ferpa />} />
             <Route path="/legal" element={<Legal />} />
             <Route path="/parent-consent" element={<ParentConsent />} />
+            <Route
+              path="/legal/dpa"
+              element={
+                <ProtectedRoute>
+                  <DpaPortal />
+                </ProtectedRoute>
+              }
+            />
             <Route
               path="/role-selection"
               element={

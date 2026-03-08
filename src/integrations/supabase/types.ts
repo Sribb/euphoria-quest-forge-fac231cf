@@ -674,6 +674,63 @@ export type Database = {
         }
         Relationships: []
       }
+      dpa_records: {
+        Row: {
+          contract_start_date: string
+          created_at: string
+          district_address: string
+          district_name: string
+          generated_at: string
+          id: string
+          pdf_url: string | null
+          signatory_email: string
+          signatory_name: string
+          signatory_title: string
+          state: string
+          status: string
+          student_count: number
+          term_years: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          contract_start_date: string
+          created_at?: string
+          district_address: string
+          district_name: string
+          generated_at?: string
+          id?: string
+          pdf_url?: string | null
+          signatory_email: string
+          signatory_name: string
+          signatory_title: string
+          state: string
+          status?: string
+          student_count: number
+          term_years?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          contract_start_date?: string
+          created_at?: string
+          district_address?: string
+          district_name?: string
+          generated_at?: string
+          id?: string
+          pdf_url?: string | null
+          signatory_email?: string
+          signatory_name?: string
+          signatory_title?: string
+          state?: string
+          status?: string
+          student_count?: number
+          term_years?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       educator_messages: {
         Row: {
           content: string

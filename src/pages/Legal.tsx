@@ -1,4 +1,4 @@
-import { ArrowLeft, Shield, FileText, Lock, ExternalLink, ShieldCheck } from "lucide-react";
+import { ArrowLeft, Shield, FileText, Lock, ExternalLink, ShieldCheck, Scale } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import logo from "@/assets/euphoria-logo-button.png";
@@ -23,6 +23,14 @@ const pages = [
     title: "FERPA Compliance",
     description: "How Euphoria qualifies as a school official under FERPA, student data inventory, retention policies, and downloadable documentation for district reviews.",
     href: "/ferpa",
+    updated: "March 2026",
+    badge: "For Districts",
+  },
+  {
+    icon: Scale,
+    title: "Data Processing Agreements",
+    description: "Self-service DPA portal for district administrators. Generate, download, and manage Data Processing Agreements with state-specific addenda — no legal back-and-forth needed.",
+    href: "/legal/dpa",
     updated: "March 2026",
     badge: "For Districts",
   },
