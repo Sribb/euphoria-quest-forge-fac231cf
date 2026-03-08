@@ -188,6 +188,7 @@ export const EducatorHome = ({ onNavigate }: EducatorHomeProps) => {
           </div>
         </div>
         <div className="flex items-center gap-3">
+          <RosterImportDialog />
           <Button
             variant="outline"
             className="gap-2 border-border/50"
