@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,6 +21,7 @@ import { useClassManagement, ClassWithMembers, ClassMember } from "../hooks/useC
 import { RosterImportDialog } from "../roster-import/RosterImportDialog";
 import { ConsentManagementPanel } from "../components/ConsentManagementPanel";
 import { ClassEditDialog } from "../components/ClassEditDialog";
+import { RosterManagementPanel } from "../components/RosterManagementPanel";
 import { useEducatorData } from "../hooks/useEducatorData";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
@@ -74,78 +76,10 @@ const KPICard = ({ label, value, icon: Icon, gradient, subtitle }: {
   </motion.div>
 );
 
-const StudentRow = ({ member, onRemove }: { member: ClassMember; onRemove: () => void }) => {
-  const isStruggling = member.avg_quiz_score > 0 && member.avg_quiz_score < 50;
-  const isExcelling = member.avg_quiz_score >= 80;
-
-  return (
-    <motion.div
-      layout
-      initial={{ opacity: 0, x: -10 }}
-      animate={{ opacity: 1, x: 0 }}
-      exit={{ opacity: 0, x: 10 }}
-      className="group flex items-center gap-3 p-3 rounded-xl bg-muted/20 border border-border/50 hover:border-primary/30 hover:bg-muted/40 transition-all duration-300"
-    >
-      <div className="w-10 h-10 rounded-full bg-gradient-primary flex items-center justify-center ring-2 ring-primary/20 shrink-0">
-        <span className="text-sm font-bold text-primary-foreground">
-          {(member.display_name || "S")[0].toUpperCase()}
-        </span>
-      </div>
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2">
-          <p className="font-semibold text-sm truncate">{member.display_name || "Student"}</p>
-          {isStruggling && (
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger>
-                  <AlertTriangle className="w-3.5 h-3.5 text-warning" />
-                </TooltipTrigger>
-                <TooltipContent><p>Needs attention — low quiz scores</p></TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          )}
-          {isExcelling && (
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger>
-                  <Trophy className="w-3.5 h-3.5 text-warning" />
-                </TooltipTrigger>
-                <TooltipContent><p>Top performer!</p></TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          )}
-        </div>
-        <div className="flex items-center gap-3 text-xs text-muted-foreground mt-0.5">
-          <span className="flex items-center gap-1">
-            <Zap className="w-3 h-3" />
-            Lv.{member.level}
-          </span>
-          <span>{member.experience_points.toLocaleString()} XP</span>
-          <span>{member.lessons_completed} lessons</span>
-        </div>
-      </div>
-      <div className="flex items-center gap-3 shrink-0">
-        <div className="text-right hidden sm:block">
-          <p className={`text-sm font-bold ${isExcelling ? 'text-success' : isStruggling ? 'text-warning' : 'text-foreground'}`}>
-            {member.avg_quiz_score}%
-          </p>
-          <p className="text-[10px] text-muted-foreground">avg score</p>
-        </div>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="w-7 h-7 text-muted-foreground hover:text-destructive hover:bg-destructive/10 opacity-0 group-hover:opacity-100 transition-all"
-          onClick={onRemove}
-        >
-          <Trash2 className="w-3.5 h-3.5" />
-        </Button>
-      </div>
-    </motion.div>
-  );
-};
 
 export const EducatorHome = ({ onNavigate }: EducatorHomeProps) => {
   const { classes, isLoading, createClass, updateClass, archiveClass, deleteClass, removeStudent } = useClassManagement();
+  const queryClient = useQueryClient();
   const { stats, isLoading: statsLoading } = useEducatorData();
   const [selectedClass, setSelectedClass] = useState<ClassWithMembers | null>(null);
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
@@ -639,35 +573,14 @@ export const EducatorHome = ({ onNavigate }: EducatorHomeProps) => {
                       </div>
                     </div>
 
-                    {/* Student List */}
+                    {/* Roster Management */}
                     <div className="p-6">
-                      {activeClass.members.length === 0 ? (
-                        <div className="text-center py-12">
-                          <div className="w-14 h-14 rounded-2xl bg-muted/30 flex items-center justify-center mx-auto mb-4">
-                            <Users className="w-7 h-7 text-muted-foreground" />
-                          </div>
-                          <h4 className="font-semibold mb-1">No Students Yet</h4>
-                          <p className="text-sm text-muted-foreground max-w-sm mx-auto">
-                            Share the class code <code className="font-mono text-primary font-bold">{activeClass.class_code}</code> with your students to get started.
-                          </p>
-                        </div>
-                      ) : (
-                        <div className="space-y-2">
-                          <div className="flex items-center justify-between mb-3">
-                            <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">Students</h4>
-                            <span className="text-xs text-muted-foreground">{activeClass.members.length} enrolled</span>
-                          </div>
-                          <AnimatePresence>
-                            {activeClass.members.map((member) => (
-                              <StudentRow
-                                key={member.id}
-                                member={member}
-                                onRemove={() => removeStudent.mutate({ memberId: member.id, studentId: member.student_id, studentName: member.display_name || "Student", classId: activeClass.id, className: activeClass.class_name })}
-                              />
-                            ))}
-                          </AnimatePresence>
-                        </div>
-                      )}
+                      <RosterManagementPanel
+                        activeClass={activeClass}
+                        allClasses={classes}
+                        onRemoveStudent={(params) => removeStudent.mutate(params)}
+                        onRefresh={() => queryClient.invalidateQueries({ queryKey: ["educator-classes"] })}
+                      />
 
                       {/* COPPA Consent Panel */}
                       {activeClass.requires_coppa_consent && activeClass.members.length > 0 && (
