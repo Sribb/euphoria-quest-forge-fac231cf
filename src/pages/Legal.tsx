@@ -29,8 +29,8 @@ const pages = [
   {
     icon: ShieldCheck,
     title: "COPPA Parental Consent",
-    description: "Parental consent workflow for students under 13. Educators manage consent requests; parents can grant, revoke consent, or request data deletion at any time.",
-    href: "/parent-consent",
+    description: "For students under 13, educators send parental consent requests via email. Parents receive a secure link to grant, revoke consent, or request data deletion. Contact your child's educator if you haven't received a consent email.",
+    href: null,
     updated: "March 2026",
     badge: "For Parents",
   },
@@ -62,11 +62,13 @@ const Legal = () => {
         </p>
 
         <div className="space-y-4">
-          {pages.map((page) => (
+          {pages.map((page, i) => (
             <Card
-              key={page.href}
-              className="p-5 border-border/50 hover:border-primary/30 bg-card/60 backdrop-blur-sm cursor-pointer transition-all duration-200 hover:-translate-y-0.5 group"
-              onClick={() => navigate(page.href)}
+              key={page.title}
+              className={`p-5 border-border/50 bg-card/60 backdrop-blur-sm transition-all duration-200 group ${
+                page.href ? "cursor-pointer hover:border-primary/30 hover:-translate-y-0.5" : ""
+              }`}
+              onClick={() => page.href && navigate(page.href)}
             >
               <div className="flex items-start gap-4">
                 <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 group-hover:bg-primary/15 transition-colors">
@@ -84,7 +86,7 @@ const Legal = () => {
                   <p className="text-sm text-muted-foreground leading-relaxed">{page.description}</p>
                   <p className="text-xs text-muted-foreground/60 mt-2">Last updated: {page.updated}</p>
                 </div>
-                <ExternalLink className="w-4 h-4 text-muted-foreground/40 group-hover:text-primary shrink-0 mt-1 transition-colors" />
+                {page.href && <ExternalLink className="w-4 h-4 text-muted-foreground/40 group-hover:text-primary shrink-0 mt-1 transition-colors" />}
               </div>
             </Card>
           ))}
