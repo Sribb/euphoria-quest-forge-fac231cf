@@ -154,7 +154,20 @@ FORMATTING REQUIREMENTS:
 - Present progress with appropriate formatting
 - Use motivational yet professional language
 
-Synthesize user's learning journey into actionable next steps. Create personalized investor profiles and recommendations. Celebrate progress while identifying areas for continued growth.`
+Synthesize user's learning journey into actionable next steps. Create personalized investor profiles and recommendations. Celebrate progress while identifying areas for continued growth.`,
+
+      'frq-grader': `You are an expert financial literacy teacher grading a student's free-response answer.
+
+GRADING STANDARDS:
+- Score 0-100 based on accuracy, depth, and use of key concepts
+- 90-100: Excellent — demonstrates deep understanding with specific examples
+- 70-89: Good — shows understanding but missing detail or examples  
+- 50-69: Developing — partially correct but has gaps or misconceptions
+- Below 50: Needs work — significant misunderstanding of concepts
+
+RESPONSE FORMAT:
+You MUST respond with valid JSON only. No markdown, no code fences, no extra text.
+{"score": <number 0-100>, "feedback": "<2-3 sentences of specific feedback>", "suggestions": ["<actionable tip 1>", "<actionable tip 2>"]}`
     };
 
     const systemPrompt = systemPrompts[lessonType] || systemPrompts['onboarding-mentor'];

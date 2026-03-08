@@ -14,6 +14,8 @@ import { AILessonChatbot } from "./AILessonChatbot";
 import { AdaptiveLessonChallenge } from "./AdaptiveLessonChallenge";
 import { LessonMasteryDashboard } from "./LessonMasteryDashboard";
 import { InteractiveLessonSimulation } from "./InteractiveLessonSimulation";
+import { StandardLessonTemplate } from "./lessons/StandardLessonTemplate";
+import { getLessonDefinition } from "../data/allLessons";
 
 // Investing pathway
 import { Lesson1Beginner } from "./lessons/Lesson1Beginner";
@@ -316,7 +318,39 @@ export const ThreePhaseLessonViewer = ({ lessonId, onClose }: ThreePhaseLessonVi
     );
   }
 
-  // Fallback: generic three-phase flow for lessons without custom slides
+  // Data-driven StandardLessonTemplate fallback for lessons 12-25+
+  const lessonDef = getLessonDefinition(pathway, lesson.order_index);
+  if (lessonDef) {
+    return (
+      <div className="fixed inset-0 bg-background/95 z-50 overflow-y-auto">
+        <div className="max-w-4xl mx-auto p-6">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h1 className="text-3xl font-bold">{lesson.title}</h1>
+              <p className="text-muted-foreground mt-1">{lesson.description}</p>
+            </div>
+            <Button variant="ghost" size="icon" onClick={onClose}>
+              <X className="w-6 h-6" />
+            </Button>
+          </div>
+          <div className="animate-fade-in">
+            <StandardLessonTemplate
+              lesson={lessonDef}
+              lessonTitle={lesson.title}
+              lessonId={lessonId}
+              onComplete={async () => {
+                await updateProgress(100, true);
+                onClose();
+                toast.success(`${lesson.title} complete! 🎉`);
+              }}
+            />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Fallback: generic three-phase flow for lessons without any content
   if (!sections.length || !currentContent) {
     return (
       <div className="fixed inset-0 bg-background/95 z-50 overflow-y-auto">
