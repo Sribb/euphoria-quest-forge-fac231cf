@@ -197,6 +197,22 @@ const Auth = () => {
     }
   };
 
+  const handleAppleSignIn = async () => {
+    setAppleLoading(true);
+    try {
+      const { error } = await lovable.auth.signInWithOAuth("apple", {
+        redirect_uri: window.location.origin,
+      });
+      if (error) {
+        toast({ title: "Apple Sign-In Failed", description: error.message, variant: "destructive" });
+      }
+    } catch (error: any) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } finally {
+      setAppleLoading(false);
+    }
+  };
+
   const gradeOptions = [
     "6th Grade", "7th Grade", "8th Grade", "9th Grade",
     "10th Grade", "11th Grade", "12th Grade", "College",
