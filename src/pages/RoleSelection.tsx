@@ -16,6 +16,7 @@ type RoleStep = "choose" | "educator-info";
 
 const RoleSelection = () => {
   const { user } = useAuth();
+  const { markRoleChosen } = useNeedsRoleSelection();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [step, setStep] = useState<RoleStep>("choose");
