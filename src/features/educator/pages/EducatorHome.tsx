@@ -547,7 +547,7 @@ export const EducatorHome = ({ onNavigate }: EducatorHomeProps) => {
                               <StudentRow
                                 key={member.id}
                                 member={member}
-                                onRemove={() => removeStudent.mutate(member.id)}
+                                onRemove={() => removeStudent.mutate({ memberId: member.id, studentId: member.student_id, studentName: member.display_name || "Student", classId: activeClass.id, className: activeClass.class_name })}
                               />
                             ))}
                           </AnimatePresence>
