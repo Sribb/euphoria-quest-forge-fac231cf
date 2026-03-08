@@ -131,6 +131,7 @@ const LESSON_MAP: Record<string, Record<number, React.ComponentType<{ onComplete
     1: ALT1BeyondStocks, 2: ALT2RealEstate, 3: ALT3REITs,
     4: ALT4GoldMetals, 5: ALT5Commodities, 6: ALT6Crypto,
     7: ALT7NFTs, 8: ALT8Collectibles, 9: ALT9ESG, 10: ALT10Challenge,
+    11: ALT11PortfolioDiversification,
   },
 };
 
