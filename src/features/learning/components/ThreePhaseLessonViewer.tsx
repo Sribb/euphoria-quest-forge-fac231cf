@@ -113,6 +113,7 @@ const LESSON_MAP: Record<string, Record<number, React.ComponentType<{ onComplete
     1: PF1FinancialStartingPoint, 2: PF2BudgetingWorks, 3: PF3EmergencyFund,
     4: PF4CreditScores, 5: PF5GoodVsBadDebt, 6: PF6BankingAccounts,
     7: PF7PaycheckDeductions, 8: PF8FinancialGoals, 9: PF9LifestyleInflation, 10: PF10Challenge,
+    11: PF11DebtSnowball,
   },
   'corporate-finance': {
     1: CF1WhatIsCorporateFinance, 2: CF2IncomeStatement, 3: CF3BalanceSheets,
