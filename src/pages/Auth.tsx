@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
+import { BetaAccessGate, hasBetaAccess } from "@/features/auth/components/BetaAccessGate";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -25,6 +26,7 @@ type SignupRole = "student" | "educator" | null;
 type AuthStep = "choose-role" | "form" | "educator-info";
 
 const Auth = () => {
+  const [betaUnlocked, setBetaUnlocked] = useState(hasBetaAccess());
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -200,6 +202,10 @@ const Auth = () => {
     termsAccepted;
 
   const isSignupFormValid = signupRole === "student" ? isStudentFormValid : isEducatorFormValid;
+
+  if (!betaUnlocked) {
+    return <BetaAccessGate onUnlock={() => setBetaUnlocked(true)} />;
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-background">
