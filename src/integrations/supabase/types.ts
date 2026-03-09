@@ -1724,6 +1724,108 @@ export type Database = {
         }
         Relationships: []
       }
+      notification_preferences: {
+        Row: {
+          achievement_alerts: boolean
+          created_at: string
+          id: string
+          last_notification_at: string | null
+          max_daily_notifications: number
+          notifications_today: number
+          push_enabled: boolean
+          push_subscription: Json | null
+          quiet_hours_end: number | null
+          quiet_hours_start: number | null
+          re_engagement: boolean
+          streak_alerts: boolean
+          updated_at: string
+          user_id: string
+          weekly_summary: boolean
+        }
+        Insert: {
+          achievement_alerts?: boolean
+          created_at?: string
+          id?: string
+          last_notification_at?: string | null
+          max_daily_notifications?: number
+          notifications_today?: number
+          push_enabled?: boolean
+          push_subscription?: Json | null
+          quiet_hours_end?: number | null
+          quiet_hours_start?: number | null
+          re_engagement?: boolean
+          streak_alerts?: boolean
+          updated_at?: string
+          user_id: string
+          weekly_summary?: boolean
+        }
+        Update: {
+          achievement_alerts?: boolean
+          created_at?: string
+          id?: string
+          last_notification_at?: string | null
+          max_daily_notifications?: number
+          notifications_today?: number
+          push_enabled?: boolean
+          push_subscription?: Json | null
+          quiet_hours_end?: number | null
+          quiet_hours_start?: number | null
+          re_engagement?: boolean
+          streak_alerts?: boolean
+          updated_at?: string
+          user_id?: string
+          weekly_summary?: boolean
+        }
+        Relationships: []
+      }
+      notifications: {
+        Row: {
+          action_url: string | null
+          category: string
+          created_at: string
+          expires_at: string | null
+          icon: string | null
+          id: string
+          is_pushed: boolean
+          is_read: boolean
+          message: string
+          notification_type: string
+          read_at: string | null
+          title: string
+          user_id: string
+        }
+        Insert: {
+          action_url?: string | null
+          category?: string
+          created_at?: string
+          expires_at?: string | null
+          icon?: string | null
+          id?: string
+          is_pushed?: boolean
+          is_read?: boolean
+          message: string
+          notification_type?: string
+          read_at?: string | null
+          title: string
+          user_id: string
+        }
+        Update: {
+          action_url?: string | null
+          category?: string
+          created_at?: string
+          expires_at?: string | null
+          icon?: string | null
+          id?: string
+          is_pushed?: boolean
+          is_read?: boolean
+          message?: string
+          notification_type?: string
+          read_at?: string | null
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       onboarding_ab_analytics: {
         Row: {
           action: string
