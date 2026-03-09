@@ -232,6 +232,7 @@ function renderScreen(
             correctIndex={screen.correctIndex}
             explanation={screen.explanation}
             onWrongAnswer={onWrongAnswer}
+            onCorrectAnswer={onCorrectAnswer}
           />
         </div>
       );
