@@ -2092,6 +2092,77 @@ export type Database = {
         }
         Relationships: []
       }
+      spaced_repetition_items: {
+        Row: {
+          concept_key: string
+          concept_label: string
+          consecutive_correct: number
+          correct_reviews: number
+          created_at: string
+          ease_factor: number
+          id: string
+          interval_days: number
+          is_cracked: boolean
+          last_reviewed_at: string | null
+          lesson_id: string
+          mastery_level: string
+          next_review_at: string
+          pathway: string
+          repetition_count: number
+          total_reviews: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          concept_key: string
+          concept_label: string
+          consecutive_correct?: number
+          correct_reviews?: number
+          created_at?: string
+          ease_factor?: number
+          id?: string
+          interval_days?: number
+          is_cracked?: boolean
+          last_reviewed_at?: string | null
+          lesson_id: string
+          mastery_level?: string
+          next_review_at?: string
+          pathway?: string
+          repetition_count?: number
+          total_reviews?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          concept_key?: string
+          concept_label?: string
+          consecutive_correct?: number
+          correct_reviews?: number
+          created_at?: string
+          ease_factor?: number
+          id?: string
+          interval_days?: number
+          is_cracked?: boolean
+          last_reviewed_at?: string | null
+          lesson_id?: string
+          mastery_level?: string
+          next_review_at?: string
+          pathway?: string
+          repetition_count?: number
+          total_reviews?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "spaced_repetition_items_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
+            referencedRelation: "lessons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       stocks: {
         Row: {
           created_at: string
