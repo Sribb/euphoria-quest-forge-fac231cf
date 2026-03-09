@@ -220,7 +220,7 @@ export const LiveActivityDashboard = ({ classId }: Props) => {
               All ({activities.length})
             </TabsTrigger>
             <TabsTrigger value="active" className="gap-2">
-              <Wifi className="w-4 h-4" />
+              <Circle className="w-4 h-4 fill-current" />
               Active ({activeStudents.length})
             </TabsTrigger>
             <TabsTrigger value="stuck" className="gap-2">
