@@ -16,6 +16,8 @@ import { LessonMasteryDashboard } from "./LessonMasteryDashboard";
 import { InteractiveLessonSimulation } from "./InteractiveLessonSimulation";
 import { MicroLessonTemplate } from "./lessons/MicroLessonTemplate";
 import { getMicroLesson } from "../data/allMicroLessons";
+import { useSpacedRepetition } from "@/hooks/useSpacedRepetition";
+import { getConceptsForLesson } from "../data/lessonConcepts";
 import { useHearts } from "@/hooks/useHearts";
 import { HeartsDisplay } from "./HeartsDisplay";
 import { HeartsDepleted } from "./HeartsDepleted";
