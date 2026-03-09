@@ -2,7 +2,7 @@ import { DashboardHeader } from "@/features/dashboard/components/DashboardHeader
 import { QuickOverviewGrid } from "@/features/dashboard/components/QuickOverviewGrid";
 import { StreakCard } from "@/features/dashboard/components/StreakCard";
 import { SpacedRepetitionPanel } from "@/features/dashboard/components/SpacedRepetitionPanel";
-
+import { DailyChallengeCard } from "@/features/daily-challenge/components/DailyChallengeCard";
 import { LiveEconomicHeadlines } from "@/features/dashboard/components/LiveEconomicHeadlines";
 import { DailyRewardsModal } from "@/features/learning/components/DailyRewardsModal";
 import { SeasonalBanner } from "@/features/dashboard/components/SeasonalBanner";
@@ -74,6 +74,10 @@ const Dashboard = ({ onNavigate, onStockSearch }: DashboardProps) => {
 
         <motion.div variants={fadeUp}>
           <DailyPnLCard />
+        </motion.div>
+
+        <motion.div variants={fadeUp}>
+          <DailyChallengeCard />
         </motion.div>
 
         <motion.div variants={fadeUp}>
