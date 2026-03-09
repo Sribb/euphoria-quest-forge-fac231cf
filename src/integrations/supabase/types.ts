@@ -2158,6 +2158,66 @@ export type Database = {
         }
         Relationships: []
       }
+      student_activity: {
+        Row: {
+          class_id: string | null
+          completion_percentage: number
+          created_at: string
+          current_lesson_id: string | null
+          id: string
+          is_online: boolean
+          last_active_at: string
+          last_interaction_type: string | null
+          lesson_title: string | null
+          session_started_at: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          class_id?: string | null
+          completion_percentage?: number
+          created_at?: string
+          current_lesson_id?: string | null
+          id?: string
+          is_online?: boolean
+          last_active_at?: string
+          last_interaction_type?: string | null
+          lesson_title?: string | null
+          session_started_at?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          class_id?: string | null
+          completion_percentage?: number
+          created_at?: string
+          current_lesson_id?: string | null
+          id?: string
+          is_online?: boolean
+          last_active_at?: string
+          last_interaction_type?: string | null
+          lesson_title?: string | null
+          session_started_at?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "student_activity_class_id_fkey"
+            columns: ["class_id"]
+            isOneToOne: false
+            referencedRelation: "classes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "student_activity_current_lesson_id_fkey"
+            columns: ["current_lesson_id"]
+            isOneToOne: false
+            referencedRelation: "lessons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       transaction_logs: {
         Row: {
           amount: number | null
