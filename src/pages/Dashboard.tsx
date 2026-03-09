@@ -93,6 +93,10 @@ const Dashboard = ({ onNavigate, onStockSearch }: DashboardProps) => {
           <QuickOverviewGrid onNavigate={onNavigate} />
         </motion.div>
 
+        <motion.div variants={fadeUp}>
+          <LeaderboardPanel />
+        </motion.div>
+
 
         {/* Market Intel */}
         <motion.div variants={fadeUp}>
