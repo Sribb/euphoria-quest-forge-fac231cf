@@ -19,7 +19,7 @@ import StockSearch from "./StockSearch";
 import StockDetail from "./StockDetail";
 import { EducatorHome } from "@/features/educator/pages/EducatorHome";
 import { EducatorDashboard } from "@/features/educator/pages/EducatorDashboard";
-import { LtiConfigPanel } from "@/features/educator/components/LtiConfigPanel";
+import { LtiSetupWizard } from "@/features/educator/components/LtiSetupWizard";
 import { DataDeletionPanel } from "@/features/educator/components/DataDeletionPanel";
 
 const Index = () => {
@@ -85,15 +85,7 @@ const Index = () => {
       case "educator-analytics":
         return <EducatorDashboard onBack={() => handleNavigate("educator")} />;
       case "educator-lti":
-        return (
-          <div className="space-y-6 py-6">
-            <div className="flex items-center gap-3">
-              <Button variant="ghost" size="sm" onClick={() => handleNavigate("educator")}>← Back</Button>
-              <h1 className="text-2xl font-bold">Canvas LTI Integration</h1>
-            </div>
-            <LtiConfigPanel />
-          </div>
-        );
+        return <LtiSetupWizard onBack={() => handleNavigate("educator")} />;
       case "educator-data-deletion":
         return <DataDeletionPanel onBack={() => handleNavigate("educator")} />;
       case "dashboard":
