@@ -146,9 +146,10 @@ const Learn = ({ onNavigate, selectedLesson, onLessonSelect }: LearnProps) => {
   }
 
   return (
-    <PathwaySelector
+    <SkillTreeMap
       lessons={lessons}
       onSelectPathway={setSelectedPathway}
+      onLessonSelect={onLessonSelect}
     />
   );
 };
