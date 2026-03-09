@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { ChallengeModal } from "./ChallengeModal";
-import { Trophy, Lock, ArrowLeft, CheckCircle2, Zap, GraduationCap } from "lucide-react";
+import { Trophy, Lock, ArrowLeft, CheckCircle2, Zap, GraduationCap, Crown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
@@ -16,11 +16,13 @@ interface Lesson {
   completed: boolean;
   progress: number;
   skippedByPlacement?: boolean;
+  legendary_completed?: boolean;
 }
 
 interface LearningPathwayProps {
   lessons: Lesson[];
   onLessonSelect: (lessonId: string) => void;
+  onLegendarySelect?: (lessonId: string) => void;
   completedCount: number;
   totalCount: number;
   pathwayTitle?: string;
@@ -34,6 +36,7 @@ const getX = (index: number) => Math.sin((index / 3) * Math.PI) * 90;
 export const LearningPathway = ({
   lessons,
   onLessonSelect,
+  onLegendarySelect,
   completedCount,
   totalCount,
   pathwayTitle,
@@ -50,6 +53,13 @@ export const LearningPathway = ({
   const handleStartChallenge = () => {
     if (selectedLesson) {
       onLessonSelect(selectedLesson.id);
+      setSelectedLesson(null);
+    }
+  };
+
+  const handleStartLegendary = () => {
+    if (selectedLesson && onLegendarySelect) {
+      onLegendarySelect(selectedLesson.id);
       setSelectedLesson(null);
     }
   };
@@ -109,6 +119,7 @@ export const LearningPathway = ({
             const isHovered = hovered === lesson.id;
             const isChallengeLevel = (index + 1) % 10 === 0;
             const isCapstone = index === lessons.length - 1;
+            const isLegendary = lesson.legendary_completed;
 
             // Section divider every 5 lessons (but not on challenge levels)
             const showDivider = index > 0 && index % 5 === 0 && !isChallengeLevel;
@@ -155,7 +166,6 @@ export const LearningPathway = ({
                     transition={{ delay: index * 0.03, duration: 0.3 }}
                     className="relative flex flex-col items-center my-6"
                   >
-                    {/* Capstone divider */}
                     <motion.div
                       initial={{ opacity: 0, scaleX: 0 }}
                       animate={{ opacity: 1, scaleX: 1 }}
@@ -188,7 +198,9 @@ export const LearningPathway = ({
                       disabled={lesson.is_locked}
                       className={cn(
                         "relative w-28 h-28 rounded-full flex items-center justify-center transition-all duration-200 z-10",
-                        lesson.completed
+                        isLegendary
+                          ? "bg-gradient-to-br from-amber-400 via-amber-500 to-amber-600 shadow-lg shadow-amber-500/30 hover:scale-110 hover:-translate-y-1 cursor-pointer border-4 border-amber-400/50 ring-4 ring-amber-400/20"
+                          : lesson.completed
                           ? "bg-gradient-to-br from-primary via-accent to-primary shadow-lg shadow-primary/30 hover:scale-110 hover:-translate-y-1 cursor-pointer border-4 border-primary/50"
                           : lesson.is_locked
                           ? "bg-muted border-4 border-border cursor-not-allowed opacity-40"
@@ -197,7 +209,9 @@ export const LearningPathway = ({
                           : "bg-card border-4 border-primary/30 hover:border-primary/60 hover:scale-110 hover:-translate-y-1 cursor-pointer shadow-md"
                       )}
                     >
-                      {lesson.completed ? (
+                      {isLegendary ? (
+                        <Crown className="w-12 h-12 text-white" />
+                      ) : lesson.completed ? (
                         <GraduationCap className="w-12 h-12 text-primary-foreground" />
                       ) : lesson.is_locked ? (
                         <Lock className="w-8 h-8 text-muted-foreground" />
@@ -206,8 +220,11 @@ export const LearningPathway = ({
                       )}
                     </button>
 
-                    <span className="mt-2.5 text-xs font-black text-primary uppercase tracking-widest">
-                      Final Project
+                    <span className={cn(
+                      "mt-2.5 text-xs font-black uppercase tracking-widest",
+                      isLegendary ? "text-amber-500" : "text-primary"
+                    )}>
+                      {isLegendary ? "⭐ Legendary" : "Final Project"}
                     </span>
                     <span className="text-[10px] text-muted-foreground mt-0.5">10-15 min</span>
                   </motion.div>
@@ -240,7 +257,9 @@ export const LearningPathway = ({
                       disabled={lesson.is_locked}
                       className={cn(
                         "relative w-24 h-24 rounded-full flex items-center justify-center transition-all duration-200 z-10",
-                        lesson.completed
+                        isLegendary
+                          ? "bg-gradient-to-br from-amber-400 to-amber-600 shadow-lg shadow-amber-500/20 hover:scale-110 hover:-translate-y-1 cursor-pointer border-4 border-amber-400/50 ring-4 ring-amber-400/20"
+                          : lesson.completed
                           ? "bg-gradient-to-br from-warning to-warning/70 shadow-lg shadow-warning/20 hover:scale-110 hover:-translate-y-1 cursor-pointer border-4 border-warning/50"
                           : lesson.is_locked
                           ? "bg-muted border-4 border-border cursor-not-allowed opacity-40"
@@ -249,7 +268,9 @@ export const LearningPathway = ({
                           : "bg-card border-4 border-warning/30 hover:border-warning/60 hover:scale-110 hover:-translate-y-1 cursor-pointer"
                       )}
                     >
-                      {lesson.completed ? (
+                      {isLegendary ? (
+                        <Crown className="w-10 h-10 text-white" />
+                      ) : lesson.completed ? (
                         <Trophy className="w-10 h-10 text-warning-foreground" />
                       ) : lesson.is_locked ? (
                         <Lock className="w-8 h-8 text-muted-foreground" />
@@ -258,8 +279,11 @@ export const LearningPathway = ({
                       )}
                     </button>
 
-                    <span className="mt-2 text-xs font-black text-warning uppercase tracking-widest">
-                      Challenge
+                    <span className={cn(
+                      "mt-2 text-xs font-black uppercase tracking-widest",
+                      isLegendary ? "text-amber-500" : "text-warning"
+                    )}>
+                      {isLegendary ? "⭐ Legendary" : "Challenge"}
                     </span>
                   </motion.div>
                 ) : (
@@ -278,6 +302,9 @@ export const LearningPathway = ({
                       >
                         <p className="text-sm font-black text-foreground line-clamp-2">{lesson.title}</p>
                         <p className="text-xs text-muted-foreground mt-0.5">{lesson.duration} · {lesson.difficulty}</p>
+                        {isLegendary && (
+                          <p className="text-[10px] text-amber-500 font-bold mt-0.5">⭐ Legendary</p>
+                        )}
                         <div className="absolute left-1/2 -translate-x-1/2 -bottom-1.5 w-3 h-3 bg-card border-b border-r border-border rotate-45" />
                       </motion.div>
                     )}
@@ -289,17 +316,21 @@ export const LearningPathway = ({
                       disabled={lesson.is_locked}
                       className={cn(
                         "relative w-[72px] h-[72px] rounded-full flex items-center justify-center transition-all duration-200 z-10",
-                        lesson.completed &&
+                        isLegendary &&
+                          "bg-gradient-to-br from-amber-400 to-amber-600 shadow-lg shadow-amber-500/25 hover:scale-110 hover:-translate-y-1 cursor-pointer border-[3px] border-amber-400/60 ring-2 ring-amber-400/20",
+                        !isLegendary && lesson.completed &&
                           "bg-primary shadow-lg shadow-primary/25 hover:scale-110 hover:-translate-y-1 cursor-pointer border-[3px] border-primary/60",
                         lesson.is_locked &&
                           "bg-muted border-[3px] border-border cursor-not-allowed opacity-40",
                         isNextLesson &&
                           "bg-primary/20 border-[3px] border-primary cursor-pointer hover:scale-110 hover:-translate-y-1 ring-4 ring-primary/20 shadow-md shadow-primary/15",
-                        !lesson.completed && !lesson.is_locked && !isNextLesson &&
+                        !isLegendary && !lesson.completed && !lesson.is_locked && !isNextLesson &&
                           "bg-card border-[3px] border-border/80 shadow-md hover:border-primary/50 hover:scale-110 hover:-translate-y-1 cursor-pointer"
                       )}
                     >
-                      {lesson.completed ? (
+                      {isLegendary ? (
+                        <Crown className="w-7 h-7 text-white" />
+                      ) : lesson.completed ? (
                         <CheckCircle2 className="w-8 h-8 text-primary-foreground" strokeWidth={2.5} />
                       ) : lesson.is_locked ? (
                         <Lock className="w-6 h-6 text-muted-foreground" />
@@ -309,7 +340,9 @@ export const LearningPathway = ({
                     </button>
 
                     <div className="flex gap-0.5 mt-1.5 h-4">
-                      {isNextLesson ? (
+                      {isLegendary ? (
+                        <span className="text-[10px] text-amber-500 font-black uppercase tracking-widest">Legendary</span>
+                      ) : isNextLesson ? (
                         <span className="text-[10px] text-primary font-black uppercase tracking-widest">Start</span>
                       ) : null}
                     </div>
@@ -336,12 +369,14 @@ export const LearningPathway = ({
           isOpen={!!selectedLesson}
           onClose={() => setSelectedLesson(null)}
           onStart={handleStartChallenge}
+          onStartLegendary={selectedLesson.completed && !selectedLesson.legendary_completed && onLegendarySelect ? handleStartLegendary : undefined}
           title={selectedLesson.title}
           description={selectedLesson.description}
           duration={selectedLesson.duration}
           difficulty={selectedLesson.difficulty}
           orderIndex={selectedLesson.order_index}
           isCompleted={selectedLesson.completed}
+          isLegendaryCompleted={selectedLesson.legendary_completed}
           stars={0}
         />
       )}

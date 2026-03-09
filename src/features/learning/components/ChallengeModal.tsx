@@ -1,4 +1,4 @@
-import { X, Play, Clock, BarChart, CheckCircle2 } from "lucide-react";
+import { X, Play, Clock, BarChart, CheckCircle2, Crown } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -14,12 +14,14 @@ interface ChallengeModalProps {
   isOpen: boolean;
   onClose: () => void;
   onStart: () => void;
+  onStartLegendary?: () => void;
   title: string;
   description: string;
   duration: string;
   difficulty: string;
   orderIndex: number;
   isCompleted: boolean;
+  isLegendaryCompleted?: boolean;
   stars?: number;
 }
 
@@ -27,12 +29,14 @@ export const ChallengeModal = ({
   isOpen,
   onClose,
   onStart,
+  onStartLegendary,
   title,
   description,
   duration,
   difficulty,
   orderIndex,
   isCompleted,
+  isLegendaryCompleted = false,
   stars = 0,
 }: ChallengeModalProps) => {
   const getDifficultyColor = (diff: string) => {
@@ -48,7 +52,12 @@ export const ChallengeModal = ({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl p-0 overflow-hidden border-primary/20 shadow-glow-soft">
         {/* Header with Gradient Background */}
-        <div className="relative p-8 bg-gradient-to-br from-primary/20 via-primary/10 to-transparent border-b border-border">
+        <div className={cn(
+          "relative p-8 border-b border-border",
+          isLegendaryCompleted
+            ? "bg-gradient-to-br from-amber-500/20 via-amber-400/10 to-transparent"
+            : "bg-gradient-to-br from-primary/20 via-primary/10 to-transparent"
+        )}>
           <div className="absolute top-4 right-4">
             <button
               onClick={onClose}
@@ -59,8 +68,13 @@ export const ChallengeModal = ({
           </div>
 
           <div className="flex items-start gap-4 mb-4">
-            <div className="flex-shrink-0 w-16 h-16 rounded-2xl bg-gradient-primary flex items-center justify-center text-2xl font-bold text-white shadow-glow">
-              {orderIndex}
+            <div className={cn(
+              "flex-shrink-0 w-16 h-16 rounded-2xl flex items-center justify-center text-2xl font-bold text-white shadow-glow",
+              isLegendaryCompleted
+                ? "bg-gradient-to-br from-amber-500 to-amber-600"
+                : "bg-gradient-primary"
+            )}>
+              {isLegendaryCompleted ? <Crown className="w-8 h-8" /> : orderIndex}
             </div>
             <div className="flex-1">
               <DialogTitle className="text-3xl font-bold text-foreground mb-2">
@@ -79,6 +93,12 @@ export const ChallengeModal = ({
                   <Badge variant="outline" className="text-xs text-primary border-primary/20 bg-primary/10">
                     <CheckCircle2 className="w-3 h-3 mr-1" />
                     Completed
+                  </Badge>
+                )}
+                {isLegendaryCompleted && (
+                  <Badge className="text-xs bg-amber-500/20 text-amber-500 border-amber-500/30">
+                    <Crown className="w-3 h-3 mr-1" />
+                    Legendary
                   </Badge>
                 )}
               </div>
@@ -113,6 +133,32 @@ export const ChallengeModal = ({
             </ul>
           </div>
 
+          {/* Legendary Challenge Card */}
+          {isCompleted && !isLegendaryCompleted && onStartLegendary && (
+            <div className="mb-6 p-4 bg-amber-500/5 rounded-xl border border-amber-500/20">
+              <div className="flex items-center gap-3 mb-2">
+                <Crown className="w-5 h-5 text-amber-500" />
+                <h4 className="font-bold text-foreground">Legendary Challenge Available!</h4>
+              </div>
+              <p className="text-sm text-muted-foreground mb-3">
+                Think you've truly mastered this skill? Attempt the Legendary challenge — harder questions, no hints, no mercy. Score 90%+ to turn this skill gold!
+              </p>
+              <ul className="text-xs text-muted-foreground space-y-1 mb-3">
+                <li>• All questions are hard difficulty</li>
+                <li>• No explanations shown during the challenge</li>
+                <li>• Only 2 wrong answers allowed</li>
+                <li>• Rewards: 250 coins + 50 XP + gold badge</li>
+              </ul>
+              <Button
+                onClick={onStartLegendary}
+                className="w-full h-10 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-bold"
+              >
+                <Crown className="w-4 h-4 mr-2" />
+                Attempt Legendary Challenge
+              </Button>
+            </div>
+          )}
+
           {/* Action Buttons */}
           <div className="flex gap-3">
             <Button
@@ -131,7 +177,7 @@ export const ChallengeModal = ({
             </Button>
           </div>
 
-          {isCompleted && (
+          {isCompleted && !onStartLegendary && (
             <p className="text-xs text-center text-muted-foreground mt-4">
               💡 Replay to reinforce your understanding
             </p>
