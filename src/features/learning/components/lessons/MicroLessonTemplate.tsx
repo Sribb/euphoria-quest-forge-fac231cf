@@ -115,7 +115,7 @@ export const MicroLessonTemplate = ({ lesson, onComplete, hearts, maxHearts, onW
             transition={{ duration: 0.3, ease: "easeOut" }}
             className="w-full"
           >
-            {renderScreen(screen, quizAnswers, handleQuizSelect, handleInteractiveWrong)}
+            {renderScreen(screen, quizAnswers, handleQuizSelect, handleInteractiveWrong, handleInteractiveCorrect)}
           </motion.div>
         </AnimatePresence>
       </div>
