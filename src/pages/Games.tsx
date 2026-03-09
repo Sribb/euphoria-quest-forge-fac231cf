@@ -1,4 +1,4 @@
-import { Trophy, Brain, Users, Coins, TrendingUp, Globe, Wallet, Gamepad2, Zap, Play, Star, Clock, CircleDollarSign, CreditCard } from "lucide-react";
+import { Trophy, Brain, Users, Coins, TrendingUp, Globe, Wallet, Gamepad2, Zap, Play, Star, Clock, CircleDollarSign, CreditCard, Store } from "lucide-react";
 import { useState } from "react";
 import { LifeSimInvestorGame } from "@/features/games/components/LifeSimInvestorGame";
 import { TrendMasterGame } from "@/features/games/components/TrendMasterGame";
@@ -7,6 +7,7 @@ import { MarketReactionGame } from "@/features/games/components/MarketReactionGa
 import { BudgetBalancerGame } from "@/features/games/components/BudgetBalancerGame";
 import { BudgetSimulatorGame } from "@/features/games/components/BudgetSimulatorGame";
 import { CreditScoreSimulator } from "@/features/games/components/CreditScoreSimulator";
+import { BusinessStartupSimulator } from "@/features/games/components/BusinessStartupSimulator";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -95,6 +96,17 @@ const games = [
     badgeColor: "bg-sky-500/20 text-sky-500",
     stats: "4 Scenarios",
   },
+  {
+    id: "business-sim",
+    title: "Business Startup Simulator",
+    description: "Launch a food truck, boutique, or tutoring service with $10K. Make pricing, hiring, and marketing decisions over 18 months.",
+    icon: Store,
+    color: "text-orange-500",
+    bg: "bg-orange-500/10",
+    badge: "New",
+    badgeColor: "bg-orange-500/20 text-orange-500",
+    stats: "18 Months",
+  },
 ];
 
 const Games = ({ onNavigate }: GamesProps) => {
@@ -108,6 +120,7 @@ const Games = ({ onNavigate }: GamesProps) => {
     "budget-balancer": <BudgetBalancerGame onClose={() => setActiveGame(null)} />,
     "budget-sim": <BudgetSimulatorGame onClose={() => setActiveGame(null)} />,
     "credit-sim": <CreditScoreSimulator onClose={() => setActiveGame(null)} />,
+    "business-sim": <BusinessStartupSimulator onClose={() => setActiveGame(null)} />,
   };
 
   if (activeGame && gameComponents[activeGame]) {
