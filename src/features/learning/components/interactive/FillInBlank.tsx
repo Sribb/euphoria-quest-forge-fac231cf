@@ -12,14 +12,14 @@ interface FillInBlankProps {
   onCorrectAnswer?: () => void;
 }
 
-export const FillInBlank = ({ sentence, options, correctIndex, explanation, onWrongAnswer }: FillInBlankProps) => {
+export const FillInBlank = ({ sentence, options, correctIndex, explanation, onWrongAnswer, onCorrectAnswer }: FillInBlankProps) => {
   const [selected, setSelected] = useState<number | null>(null);
   const isCorrect = selected === correctIndex;
 
   const handleSelect = (i: number) => {
     if (selected !== null) return;
     setSelected(i);
-    if (i === correctIndex) { playCorrect(); fireSmallConfetti(); }
+    if (i === correctIndex) { playCorrect(); fireSmallConfetti(); onCorrectAnswer?.(); }
     else { playIncorrect(); onWrongAnswer?.(); }
   };
 

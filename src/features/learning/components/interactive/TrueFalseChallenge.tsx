@@ -13,14 +13,14 @@ interface TrueFalseChallengeProps {
   onCorrectAnswer?: () => void;
 }
 
-export const TrueFalseChallenge = ({ statement, isTrue, explanation, onWrongAnswer }: TrueFalseChallengeProps) => {
+export const TrueFalseChallenge = ({ statement, isTrue, explanation, onWrongAnswer, onCorrectAnswer }: TrueFalseChallengeProps) => {
   const [answer, setAnswer] = useState<boolean | null>(null);
   const correct = answer === isTrue;
 
   const handleAnswer = (val: boolean) => {
     if (answer !== null) return;
     setAnswer(val);
-    if (val === isTrue) { playCorrect(); fireSmallConfetti(); }
+    if (val === isTrue) { playCorrect(); fireSmallConfetti(); onCorrectAnswer?.(); }
     else { playIncorrect(); onWrongAnswer?.(); }
   };
 
