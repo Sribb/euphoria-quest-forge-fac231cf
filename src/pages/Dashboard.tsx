@@ -2,7 +2,7 @@ import { DashboardHeader } from "@/features/dashboard/components/DashboardHeader
 import { QuickOverviewGrid } from "@/features/dashboard/components/QuickOverviewGrid";
 import { StreakCard } from "@/features/dashboard/components/StreakCard";
 import { SpacedRepetitionPanel } from "@/features/dashboard/components/SpacedRepetitionPanel";
-
+import { DailyChallengeCard } from "@/features/daily-challenge/components/DailyChallengeCard";
 import { LiveEconomicHeadlines } from "@/features/dashboard/components/LiveEconomicHeadlines";
 import { DailyRewardsModal } from "@/features/learning/components/DailyRewardsModal";
 import { SeasonalBanner } from "@/features/dashboard/components/SeasonalBanner";
