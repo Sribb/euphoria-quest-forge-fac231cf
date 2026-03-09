@@ -17,44 +17,6 @@ import { InteractiveLessonSimulation } from "./InteractiveLessonSimulation";
 import { MicroLessonTemplate } from "./lessons/MicroLessonTemplate";
 import { getMicroLesson } from "../data/allMicroLessons";
 
-// Pathway-aware lesson map
-const LESSON_MAP: Record<string, Record<number, React.ComponentType<{ onComplete: () => void }>>> = {
-  'investing': {
-    1: Lesson1Beginner, 2: Lesson2RiskRewardSlides, 3: Lesson3CompoundInterestSlides,
-    4: Lesson4AssetMixSlides, 5: Lesson5DiversificationSlides, 6: Lesson6MarketPsychologySlides,
-    7: Lesson7ValueInvestingSlides, 8: Lesson8FinancialStatementsSlides, 9: Lesson9MoatBuilderSlides,
-    10: Lesson10StressTestSlides, 11: Lesson11LifePathSlides, 12: Lesson12DecisionChecklistSlides,
-    13: Lesson13PatternRecognitionSlides, 14: Lesson14BiasDetectionSlides, 15: Lesson15OptionsBasicsSlides,
-    16: Lesson16CostDragSlides, 17: Lesson17YieldCurveSlides, 18: Lesson18EconomicCyclesSlides,
-    19: Lesson19VolatilitySlides, 20: Lesson20DividendIncomeSlides, 21: Lesson21IndicatorSignalsSlides,
-    22: Lesson22REITComparisonSlides, 23: Lesson23MarginRiskSlides, 24: Lesson24PortfolioConstraintsSlides,
-    25: Lesson25ShortSellingSlides,
-  },
-  'personal-finance': {
-    1: PF1FinancialStartingPoint, 2: PF2BudgetingWorks, 3: PF3EmergencyFund,
-    4: PF4CreditScores, 5: PF5GoodVsBadDebt, 6: PF6BankingAccounts,
-    7: PF7PaycheckDeductions, 8: PF8FinancialGoals, 9: PF9LifestyleInflation, 10: PF10Challenge,
-    11: PF11DebtSnowball,
-  },
-  'corporate-finance': {
-    1: CF1WhatIsCorporateFinance, 2: CF2IncomeStatement, 3: CF3BalanceSheets,
-    4: CF4CashFlow, 5: CF5FinancialRatios, 6: CF6RevenueRecognition,
-    7: CF7COGSMargins, 8: CF8WorkingCapital, 9: CF9SECFilings, 10: CF10Challenge,
-    11: CF11ValuationMethods,
-  },
-  'trading': {
-    1: TR1WhatIsTrading, 2: TR2CandlestickBasics, 3: TR3SupportResistance,
-    4: TR4TrendLines, 5: TR5VolumeAnalysis, 6: TR6MovingAverages,
-    7: TR7OrderTypes, 8: TR8RiskManagement, 9: TR9PaperTrading, 10: TR10Challenge,
-    11: TR11ChartPatterns,
-  },
-  'alternative-assets': {
-    1: ALT1BeyondStocks, 2: ALT2RealEstate, 3: ALT3REITs,
-    4: ALT4GoldMetals, 5: ALT5Commodities, 6: ALT6Crypto,
-    7: ALT7NFTs, 8: ALT8Collectibles, 9: ALT9ESG, 10: ALT10Challenge,
-    11: ALT11PortfolioDiversification,
-  },
-};
 
 interface ThreePhaseLessonViewerProps {
   lessonId: string;
