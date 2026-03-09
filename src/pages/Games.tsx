@@ -1,4 +1,4 @@
-import { Trophy, Brain, Users, Coins, TrendingUp, Globe, Wallet, Gamepad2, Zap, Play, Star, Clock, CircleDollarSign, CreditCard } from "lucide-react";
+import { Trophy, Brain, Users, Coins, TrendingUp, Globe, Wallet, Gamepad2, Zap, Play, Star, Clock, CircleDollarSign, CreditCard, Store } from "lucide-react";
 import { useState } from "react";
 import { LifeSimInvestorGame } from "@/features/games/components/LifeSimInvestorGame";
 import { TrendMasterGame } from "@/features/games/components/TrendMasterGame";
