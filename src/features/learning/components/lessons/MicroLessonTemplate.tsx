@@ -11,13 +11,17 @@ import { FillInBlank } from "../interactive/FillInBlank";
 import { MatchPairs } from "../interactive/MatchPairs";
 import { DragSortChallenge } from "../interactive/DragSortChallenge";
 import { SliderSimulator } from "../interactive/SliderSimulator";
+import { HeartsDisplay } from "../HeartsDisplay";
 
 interface MicroLessonTemplateProps {
   lesson: MicroLessonDefinition;
   onComplete: () => void;
+  hearts?: number;
+  maxHearts?: number;
+  onWrongAnswer?: () => void;
 }
 
-export const MicroLessonTemplate = ({ lesson, onComplete }: MicroLessonTemplateProps) => {
+export const MicroLessonTemplate = ({ lesson, onComplete, hearts, maxHearts, onWrongAnswer }: MicroLessonTemplateProps) => {
   const [current, setCurrent] = useState(0);
   const [direction, setDirection] = useState(1);
   const [quizAnswers, setQuizAnswers] = useState<Record<string, number>>({});
@@ -60,21 +64,30 @@ export const MicroLessonTemplate = ({ lesson, onComplete }: MicroLessonTemplateP
     if (quizAnswers[screenId] !== undefined) return;
     setQuizAnswers(prev => ({ ...prev, [screenId]: optIdx }));
     if (optIdx === correctIdx) { playCorrect(); fireSmallConfetti(); }
-    else playIncorrect();
+    else { playIncorrect(); onWrongAnswer?.(); }
+  };
+
+  const handleInteractiveWrong = () => {
+    onWrongAnswer?.();
   };
 
   return (
     <div className="min-h-[500px] flex flex-col max-w-2xl mx-auto">
-      {/* Progress dots */}
-      <div className="flex items-center gap-1.5 mb-6">
-        {screens.map((_, i) => (
-          <div
-            key={i}
-            className={`h-2 rounded-full flex-1 transition-all duration-500 ${
-              i <= current ? "bg-primary" : "bg-muted"
-            }`}
-          />
-        ))}
+      {/* Progress dots + Hearts */}
+      <div className="flex items-center gap-3 mb-6">
+        <div className="flex items-center gap-1.5 flex-1">
+          {screens.map((_, i) => (
+            <div
+              key={i}
+              className={`h-2 rounded-full flex-1 transition-all duration-500 ${
+                i <= current ? "bg-primary" : "bg-muted"
+              }`}
+            />
+          ))}
+        </div>
+        {hearts !== undefined && maxHearts !== undefined && (
+          <HeartsDisplay hearts={hearts} maxHearts={maxHearts} compact />
+        )}
       </div>
 
       {/* Screen content */}
@@ -90,7 +103,7 @@ export const MicroLessonTemplate = ({ lesson, onComplete }: MicroLessonTemplateP
             transition={{ duration: 0.3, ease: "easeOut" }}
             className="w-full"
           >
-            {renderScreen(screen, quizAnswers, handleQuizSelect)}
+            {renderScreen(screen, quizAnswers, handleQuizSelect, handleInteractiveWrong)}
           </motion.div>
         </AnimatePresence>
       </div>
@@ -118,7 +131,8 @@ export const MicroLessonTemplate = ({ lesson, onComplete }: MicroLessonTemplateP
 function renderScreen(
   screen: MicroScreen,
   quizAnswers: Record<string, number>,
-  onQuizSelect: (id: string, opt: number, correct: number) => void
+  onQuizSelect: (id: string, opt: number, correct: number) => void,
+  onWrongAnswer: () => void
 ) {
   switch (screen.type) {
     case 'concept':
@@ -189,6 +203,7 @@ function renderScreen(
             statement={screen.statement}
             isTrue={screen.isTrue}
             explanation={screen.explanation}
+            onWrongAnswer={onWrongAnswer}
           />
         </div>
       );
@@ -202,6 +217,7 @@ function renderScreen(
             options={screen.options}
             correctIndex={screen.correctIndex}
             explanation={screen.explanation}
+            onWrongAnswer={onWrongAnswer}
           />
         </div>
       );

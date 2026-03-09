@@ -9,9 +9,10 @@ interface TrueFalseChallengeProps {
   statement: string;
   isTrue: boolean;
   explanation: string;
+  onWrongAnswer?: () => void;
 }
 
-export const TrueFalseChallenge = ({ statement, isTrue, explanation }: TrueFalseChallengeProps) => {
+export const TrueFalseChallenge = ({ statement, isTrue, explanation, onWrongAnswer }: TrueFalseChallengeProps) => {
   const [answer, setAnswer] = useState<boolean | null>(null);
   const correct = answer === isTrue;
 
@@ -19,7 +20,7 @@ export const TrueFalseChallenge = ({ statement, isTrue, explanation }: TrueFalse
     if (answer !== null) return;
     setAnswer(val);
     if (val === isTrue) { playCorrect(); fireSmallConfetti(); }
-    else playIncorrect();
+    else { playIncorrect(); onWrongAnswer?.(); }
   };
 
   return (
