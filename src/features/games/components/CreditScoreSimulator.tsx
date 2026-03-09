@@ -150,7 +150,7 @@ const DECISIONS: Decision[] = [
   {
     id: "close-old", label: "Close your oldest credit card", icon: "🗑️", description: "Cancel your longest-held account",
     apply: (s) => {
-      const ns = { ...s, numAccounts: Math.max(1, s.numAccounts - 1), accountAge: Math.max(1, Math.round(s.accountAge * 0.6)), creditLimit: Math.max(1000, s.creditLimit - 3000), accountAge: s.accountAge + 1 };
+      const ns = { ...s, numAccounts: Math.max(1, s.numAccounts - 1), creditLimit: Math.max(1000, s.creditLimit - 3000), accountAge: Math.max(1, Math.round(s.accountAge * 0.6)) + 1 };
       ns.factors = updateFactors(ns);
       const newScore = calcFICOScore(ns.factors);
       const delta = newScore - s.score;
