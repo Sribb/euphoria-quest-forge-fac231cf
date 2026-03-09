@@ -6,7 +6,7 @@ import { useXPSystem } from "@/hooks/useXPSystem";
 import { playCorrect, playIncorrect } from "@/lib/soundEffects";
 import { fireSmallConfetti } from "@/lib/confetti";
 import { DragSortChallenge } from "../interactive/DragSortChallenge";
-import { SliderSimulator } from "../interactive/SliderSimulator";
+import { RiskReturnExplorer } from "../interactive/RiskReturnExplorer";
 
 // Slide 1: What Are Asset Classes?
 const WhatAreAssets = () => (
