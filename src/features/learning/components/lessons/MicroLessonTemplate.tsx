@@ -19,12 +19,15 @@ interface MicroLessonTemplateProps {
   hearts?: number;
   maxHearts?: number;
   onWrongAnswer?: () => void;
+  onCorrectAnswer?: () => void;
+  onPerfectLesson?: () => void;
 }
 
-export const MicroLessonTemplate = ({ lesson, onComplete, hearts, maxHearts, onWrongAnswer }: MicroLessonTemplateProps) => {
+export const MicroLessonTemplate = ({ lesson, onComplete, hearts, maxHearts, onWrongAnswer, onCorrectAnswer, onPerfectLesson }: MicroLessonTemplateProps) => {
   const [current, setCurrent] = useState(0);
   const [direction, setDirection] = useState(1);
   const [quizAnswers, setQuizAnswers] = useState<Record<string, number>>({});
+  const [wrongCount, setWrongCount] = useState(0);
 
   const screens = lesson.screens;
   const isLast = current === screens.length - 1;
