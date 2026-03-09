@@ -2,11 +2,13 @@ import { useState } from "react";
 import { Award, Trophy, Sparkles } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { CertificateCard, Certificate } from "@/features/certificates/components/CertificateCard";
 import { CertificateDetailDialog } from "@/features/certificates/components/CertificateDetailDialog";
+import { BadgesShowcase } from "@/features/badges/components/BadgesShowcase";
 
 interface CertificatesProps {
   onNavigate: (tab: string) => void;
@@ -16,6 +18,7 @@ const Certificates = ({ onNavigate }: CertificatesProps) => {
   const { user } = useAuth();
   const [selectedCertificate, setSelectedCertificate] = useState<Certificate | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [activeView, setActiveView] = useState<"badges" | "certificates">("badges");
 
   // Fetch user data
   const { data: profile } = useQuery({
