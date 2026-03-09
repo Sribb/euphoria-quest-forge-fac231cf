@@ -792,6 +792,75 @@ export type Database = {
           },
         ]
       }
+      daily_challenge_progress: {
+        Row: {
+          challenge_day: number
+          completed_at: string
+          id: string
+          is_correct: boolean
+          selected_answer: number
+          user_id: string
+          xp_earned: number
+        }
+        Insert: {
+          challenge_day: number
+          completed_at?: string
+          id?: string
+          is_correct: boolean
+          selected_answer: number
+          user_id: string
+          xp_earned?: number
+        }
+        Update: {
+          challenge_day?: number
+          completed_at?: string
+          id?: string
+          is_correct?: boolean
+          selected_answer?: number
+          user_id?: string
+          xp_earned?: number
+        }
+        Relationships: []
+      }
+      daily_challenge_streaks: {
+        Row: {
+          created_at: string
+          current_streak: number
+          id: string
+          last_completed_date: string | null
+          last_completed_day: number | null
+          longest_streak: number
+          total_completed: number
+          total_correct: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          current_streak?: number
+          id?: string
+          last_completed_date?: string | null
+          last_completed_day?: number | null
+          longest_streak?: number
+          total_completed?: number
+          total_correct?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          current_streak?: number
+          id?: string
+          last_completed_date?: string | null
+          last_completed_day?: number | null
+          longest_streak?: number
+          total_completed?: number
+          total_correct?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       data_deletion_requests: {
         Row: {
           cancelled_at: string | null
