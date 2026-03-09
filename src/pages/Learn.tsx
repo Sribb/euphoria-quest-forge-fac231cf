@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { LearningPathway } from "@/features/learning/components/LearningPathway";
-import { PathwaySelector } from "@/features/learning/components/PathwaySelector";
+import { SkillTreeMap } from "@/features/learning/components/SkillTreeMap";
 import { ThreePhaseLessonViewer } from "@/features/learning/components/ThreePhaseLessonViewer";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
