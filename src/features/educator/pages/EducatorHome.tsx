@@ -627,6 +627,11 @@ export const EducatorHome = ({ onNavigate }: EducatorHomeProps) => {
             </div>
           </div>
 
+          {/* Live Activity Dashboard */}
+          <div className="mt-6">
+            <LiveActivityDashboard classId={selectedClassId || undefined} />
+          </div>
+
           {/* Assignments Panel */}
           <div className="mt-6">
             <AssignmentsPanel classes={classes} />

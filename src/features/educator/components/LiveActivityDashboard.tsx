@@ -344,7 +344,7 @@ const StudentCard = ({ student, now, isStuckView }: StudentCardProps) => {
                 {student.profile?.display_name || "Unknown Student"}
               </p>
               {isStuck && (
-                <Badge variant="outline" className="text-amber-600 border-amber-300 bg-amber-50 text-xs">
+                <Badge variant="outline" className="text-destructive border-destructive/30 bg-destructive/5 text-xs">
                   <AlertTriangle className="w-3 h-3 mr-1" />
                   Inactive {minutesSinceActive}m
                 </Badge>
