@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { X, BookOpen, Trophy, LineChart } from "lucide-react";
+import { X, BookOpen, Trophy, LineChart, Zap } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
@@ -19,6 +19,8 @@ import { getMicroLesson } from "../data/allMicroLessons";
 import { useHearts } from "@/hooks/useHearts";
 import { HeartsDisplay } from "./HeartsDisplay";
 import { HeartsDepleted } from "./HeartsDepleted";
+import { useXPSystem } from "@/hooks/useXPSystem";
+import { XP_PER_CORRECT } from "@/hooks/useXPSystem";
 
 
 interface ThreePhaseLessonViewerProps {
