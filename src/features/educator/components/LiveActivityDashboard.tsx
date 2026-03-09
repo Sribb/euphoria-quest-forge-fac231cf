@@ -333,7 +333,7 @@ const StudentCard = ({ student, now, isStuckView }: StudentCardProps) => {
               {student.profile?.display_name?.[0]?.toUpperCase() || "?"}
             </div>
             <div className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-card ${
-              isStuck ? "bg-amber-500" : "bg-green-500"
+              isStuck ? "bg-destructive" : "bg-primary"
             }`} />
           </div>
 
