@@ -1,5 +1,6 @@
 import { BeginnerLessonTemplate, LessonSlide } from "../BeginnerLessonTemplate";
 import { DragSortChallenge } from "../../interactive/DragSortChallenge";
+import { CompoundGrowthExplorer } from "../../interactive/CompoundGrowthExplorer";
 
 export const PF8FinancialGoals = ({ onComplete }: { onComplete: () => void }) => {
   const slides: LessonSlide[] = [
@@ -17,6 +18,16 @@ export const PF8FinancialGoals = ({ onComplete }: { onComplete: () => void }) =>
             <div className="p-3 rounded-lg bg-muted/40"><strong>T</strong>ime-bound — set a deadline</div>
           </div>
         </div>
+      ),
+    },
+    {
+      id: "sim",
+      title: "Plan Your Goal",
+      content: (
+        <CompoundGrowthExplorer
+          title="🎯 Goal Growth Planner"
+          description="Set a savings goal, choose your monthly contribution, and see exactly when you'll hit your target."
+        />
       ),
     },
     {

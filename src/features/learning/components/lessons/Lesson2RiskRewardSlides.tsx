@@ -5,7 +5,7 @@ import { BeginnerLessonTemplate, LessonSlide } from "./BeginnerLessonTemplate";
 import { useXPSystem } from "@/hooks/useXPSystem";
 import { playCorrect, playIncorrect } from "@/lib/soundEffects";
 import { fireSmallConfetti } from "@/lib/confetti";
-import { SliderSimulator } from "../interactive/SliderSimulator";
+import { RiskReturnExplorer } from "../interactive/RiskReturnExplorer";
 import { DragSortChallenge } from "../interactive/DragSortChallenge";
 
 // Slide 1: What is Risk?
@@ -83,31 +83,12 @@ const RiskRewardTradeoff = () => (
 const RiskSimulator = () => (
   <div className="space-y-6">
     <p className="text-lg text-muted-foreground leading-relaxed">
-      See how risk affects your $1,000 investment over time:
+      Build a portfolio and see how risk and return change in real time:
     </p>
 
-    <SliderSimulator
-      title="⚖️ Risk-Reward Simulator"
-      description="Adjust the risk level to see potential outcomes:"
-      sliders={[
-        { id: "risk", label: "Risk Level", min: 1, max: 10, step: 1, defaultValue: 5, unit: "/10" },
-        { id: "years", label: "Time Horizon", min: 1, max: 30, step: 1, defaultValue: 10, unit: " yrs" },
-      ]}
-      calculateResult={(vals) => {
-        const baseReturn = vals.risk * 1.5;
-        const bestCase = 1000 * Math.pow(1 + baseReturn / 100, vals.years);
-        const worstCase = 1000 * Math.pow(1 - (vals.risk * 0.8) / 100, vals.years);
-        return {
-          primary: `$${Math.round(bestCase).toLocaleString()}`,
-          secondary: `Best case. Worst case: $${Math.round(worstCase).toLocaleString()}`,
-          insight:
-            vals.risk >= 7
-              ? "High risk = wide range of outcomes. Are you prepared for the downside?"
-              : vals.risk <= 3
-              ? "Very safe, but inflation may eat into your real returns."
-              : "A balanced approach — growth with manageable risk.",
-        };
-      }}
+    <RiskReturnExplorer
+      title="⚖️ Risk-Reward Explorer"
+      description="Allocate between bonds, stocks, and crypto to see the tradeoff between risk and potential return."
     />
   </div>
 );

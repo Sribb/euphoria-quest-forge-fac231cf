@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { BeginnerLessonTemplate, LessonSlide } from "../BeginnerLessonTemplate";
-import { SliderSimulator } from "../../interactive/SliderSimulator";
+import { CompoundGrowthExplorer } from "../../interactive/CompoundGrowthExplorer";
 
 export const PF1FinancialStartingPoint = ({ onComplete }: { onComplete: () => void }) => {
   const slides: LessonSlide[] = [
@@ -35,24 +35,11 @@ export const PF1FinancialStartingPoint = ({ onComplete }: { onComplete: () => vo
     },
     {
       id: "sim",
-      title: "Calculate Your Net Worth",
+      title: "See Your Savings Grow",
       content: (
-        <SliderSimulator
-          title="Net Worth Calculator"
-          description="Adjust to estimate your financial position"
-          sliders={[
-            { id: "savings", label: "Savings & Cash", min: 0, max: 50000, step: 500, defaultValue: 5000, unit: "$" },
-            { id: "investments", label: "Investments", min: 0, max: 100000, step: 1000, defaultValue: 2000, unit: "$" },
-            { id: "debt", label: "Total Debt", min: 0, max: 100000, step: 1000, defaultValue: 15000, unit: "$" },
-          ]}
-          calculateResult={(v) => {
-            const nw = v.savings + v.investments - v.debt;
-            return {
-              primary: `$${nw.toLocaleString()}`,
-              secondary: nw >= 0 ? "Positive net worth — great start!" : "Negative — focus on reducing debt first",
-              insight: nw < 0 ? "Most young adults start negative due to student loans. That's normal!" : "You're ahead of the curve!",
-            };
-          }}
+        <CompoundGrowthExplorer
+          title="💰 Savings Growth Visualizer"
+          description="Start with what you have today and see how even small monthly savings grow over time."
         />
       ),
     },

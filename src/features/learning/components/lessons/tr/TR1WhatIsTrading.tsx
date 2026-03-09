@@ -1,5 +1,6 @@
 import { BeginnerLessonTemplate, LessonSlide } from "../BeginnerLessonTemplate";
 import { DragSortChallenge } from "../../interactive/DragSortChallenge";
+import { SliderSimulator } from "../../interactive/SliderSimulator";
 
 export const TR1WhatIsTrading = ({ onComplete }: { onComplete: () => void }) => {
   const slides: LessonSlide[] = [
@@ -19,6 +20,28 @@ export const TR1WhatIsTrading = ({ onComplete }: { onComplete: () => void }) => 
             </div>
           </div>
         </div>
+      ),
+    },
+    {
+      id: "sim", title: "Profit & Loss Calculator", content: (
+        <SliderSimulator
+          title="📈 Trade P&L Calculator"
+          description="See how entry price, exit price, and position size affect your profit or loss"
+          sliders={[
+            { id: "entry", label: "Entry Price", min: 10, max: 500, step: 5, defaultValue: 100, unit: "$" },
+            { id: "exit", label: "Exit Price", min: 10, max: 500, step: 5, defaultValue: 115, unit: "$" },
+            { id: "shares", label: "Number of Shares", min: 1, max: 100, step: 1, defaultValue: 20 },
+          ]}
+          calculateResult={(v) => {
+            const pnl = (v.exit - v.entry) * v.shares;
+            const pctReturn = ((v.exit - v.entry) / v.entry * 100).toFixed(1);
+            return {
+              primary: `${pnl >= 0 ? "+" : ""}$${pnl.toLocaleString()} P&L`,
+              secondary: `${pctReturn}% return on $${(v.entry * v.shares).toLocaleString()} invested`,
+              insight: pnl > 0 ? "Profitable trade! But remember — not every trade wins." : pnl < 0 ? "Loss on this trade. Risk management would limit the damage." : "Break even — commissions would make this a small loss.",
+            };
+          }}
+        />
       ),
     },
     {

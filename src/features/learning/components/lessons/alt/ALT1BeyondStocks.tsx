@@ -1,5 +1,6 @@
 import { BeginnerLessonTemplate, LessonSlide } from "../BeginnerLessonTemplate";
 import { DragSortChallenge } from "../../interactive/DragSortChallenge";
+import { RiskReturnExplorer } from "../../interactive/RiskReturnExplorer";
 
 export const ALT1BeyondStocks = ({ onComplete }: { onComplete: () => void }) => {
   const slides: LessonSlide[] = [
@@ -15,6 +16,14 @@ export const ALT1BeyondStocks = ({ onComplete }: { onComplete: () => void }) => 
             <div className="p-3 rounded-lg bg-muted/40">🎨 Art & Collectibles</div>
           </div>
         </div>
+      ),
+    },
+    {
+      id: "sim", title: "Build an Alternative Portfolio", content: (
+        <RiskReturnExplorer
+          title="🌎 Portfolio Risk Explorer"
+          description="Mix traditional and alternative assets — watch how risk and return change in real time."
+        />
       ),
     },
     {

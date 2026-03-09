@@ -1,5 +1,6 @@
 import { BeginnerLessonTemplate, LessonSlide } from "../BeginnerLessonTemplate";
 import { DragSortChallenge } from "../../interactive/DragSortChallenge";
+import { SliderSimulator } from "../../interactive/SliderSimulator";
 
 export const CF4CashFlow = ({ onComplete }: { onComplete: () => void }) => {
   const slides: LessonSlide[] = [
@@ -15,6 +16,30 @@ export const CF4CashFlow = ({ onComplete }: { onComplete: () => void }) => {
             <div className="p-3 rounded-lg bg-muted/40">💳 <strong>Financing</strong> — debt & equity</div>
           </div>
         </div>
+      ),
+    },
+    {
+      id: "sim",
+      title: "Free Cash Flow Calculator",
+      content: (
+        <SliderSimulator
+          title="💵 Free Cash Flow"
+          description="Calculate FCF — the money a company has left after keeping the business running"
+          sliders={[
+            { id: "opCash", label: "Operating Cash Flow", min: 50000, max: 1000000, step: 25000, defaultValue: 400000, unit: "$" },
+            { id: "capex", label: "Capital Expenditures", min: 0, max: 500000, step: 25000, defaultValue: 150000, unit: "$" },
+            { id: "revenue", label: "Total Revenue", min: 200000, max: 2000000, step: 50000, defaultValue: 800000, unit: "$" },
+          ]}
+          calculateResult={(v) => {
+            const fcf = v.opCash - v.capex;
+            const fcfMargin = ((fcf / v.revenue) * 100).toFixed(1);
+            return {
+              primary: `$${fcf.toLocaleString()} Free Cash Flow`,
+              secondary: `FCF Margin: ${fcfMargin}% of revenue`,
+              insight: Number(fcfMargin) > 20 ? "Excellent FCF generation — cash cow!" : fcf < 0 ? "⚠️ Negative FCF — company is burning cash" : "Decent cash generation",
+            };
+          }}
+        />
       ),
     },
     {

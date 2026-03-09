@@ -6,7 +6,7 @@ import { useXPSystem } from "@/hooks/useXPSystem";
 import { playCorrect, playIncorrect } from "@/lib/soundEffects";
 import { fireSmallConfetti } from "@/lib/confetti";
 import { DragSortChallenge } from "../interactive/DragSortChallenge";
-import { SliderSimulator } from "../interactive/SliderSimulator";
+import { RiskReturnExplorer } from "../interactive/RiskReturnExplorer";
 
 // Slide 1: What Are Asset Classes?
 const WhatAreAssets = () => (
@@ -87,32 +87,12 @@ const WhyMix = () => (
 const MixSimulator = () => (
   <div className="space-y-6">
     <p className="text-lg text-muted-foreground leading-relaxed">
-      Try different mixes and see how they affect your portfolio:
+      Build your ideal asset mix and see the risk-return tradeoff:
     </p>
 
-    <SliderSimulator
+    <RiskReturnExplorer
       title="⚖️ Asset Mix Builder"
-      description="Adjust your stock percentage (the rest goes to bonds):"
-      sliders={[
-        { id: "stocks", label: "Stocks %", min: 0, max: 100, step: 10, defaultValue: 60, unit: "%" },
-        { id: "years", label: "Years", min: 5, max: 30, step: 5, defaultValue: 20, unit: " yrs" },
-      ]}
-      calculateResult={(vals) => {
-        const bonds = 100 - vals.stocks;
-        const avgReturn = (vals.stocks / 100) * 0.10 + (bonds / 100) * 0.04;
-        const worstYear = (vals.stocks / 100) * -0.40 + (bonds / 100) * 0.05;
-        const future = 10000 * Math.pow(1 + avgReturn, vals.years);
-        return {
-          primary: `$${Math.round(future).toLocaleString()}`,
-          secondary: `${vals.stocks}% stocks / ${bonds}% bonds • Worst year: ${(worstYear * 100).toFixed(0)}%`,
-          insight:
-            vals.stocks >= 80
-              ? "Aggressive! Great for young investors with decades to recover from crashes."
-              : vals.stocks <= 30
-              ? "Very conservative. Safe, but might not outpace inflation much."
-              : "Balanced approach — good growth with manageable risk.",
-        };
-      }}
+      description="Allocate between bonds, stocks, and crypto. Watch the expected return and volatility update in real time."
     />
   </div>
 );

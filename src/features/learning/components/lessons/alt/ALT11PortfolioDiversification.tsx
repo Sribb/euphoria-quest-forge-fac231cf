@@ -1,6 +1,7 @@
 import { BeginnerLessonTemplate, LessonSlide } from "../BeginnerLessonTemplate";
 import { DragSortChallenge } from "../../interactive/DragSortChallenge";
 import { SliderSimulator } from "../../interactive/SliderSimulator";
+import { RiskReturnExplorer } from "../../interactive/RiskReturnExplorer";
 
 export const ALT11PortfolioDiversification = ({ onComplete }: { onComplete: () => void }) => {
   const slides: LessonSlide[] = [
@@ -45,33 +46,11 @@ export const ALT11PortfolioDiversification = ({ onComplete }: { onComplete: () =
     },
     {
       id: "sim",
-      title: "Alternative Allocation Builder",
+      title: "Build Your Portfolio Mix",
       content: (
-        <SliderSimulator
-          title="Portfolio Mix Simulator"
-          description="See how adding alternatives affects your risk-return profile"
-          sliders={[
-            { id: "stocks", label: "Stocks Allocation", min: 0, max: 100, step: 5, defaultValue: 60, unit: "%" },
-            { id: "bonds", label: "Bonds Allocation", min: 0, max: 100, step: 5, defaultValue: 30, unit: "%" },
-            { id: "alts", label: "Alternatives Allocation", min: 0, max: 100, step: 5, defaultValue: 10, unit: "%" },
-          ]}
-          calculateResult={(v) => {
-            const total = v.stocks + v.bonds + v.alts;
-            const expectedReturn = (v.stocks * 10 + v.bonds * 4 + v.alts * 7) / Math.max(total, 1);
-            const risk = Math.sqrt(v.stocks * v.stocks * 0.16 * 0.16 + v.bonds * v.bonds * 0.04 * 0.04 + v.alts * v.alts * 0.12 * 0.12) / Math.max(total, 1) * 100;
-            const sharpe = risk > 0 ? ((expectedReturn - 2) / risk).toFixed(2) : "N/A";
-            return {
-              primary: `${expectedReturn.toFixed(1)}% expected return`,
-              secondary: total !== 100
-                ? `⚠️ Allocations total ${total}% — should be 100%`
-                : `Est. volatility: ${risk.toFixed(1)}% | Sharpe: ${sharpe}`,
-              insight: v.alts >= 15
-                ? "Solid alternative allocation — institutional investors often use 15-30%."
-                : v.alts > 0
-                  ? "Even a small alternatives allocation can reduce portfolio volatility."
-                  : "Consider adding 5-15% alternatives for better diversification.",
-            };
-          }}
+        <RiskReturnExplorer
+          title="🎯 Alternative Allocation Builder"
+          description="Mix bonds, stocks, and crypto to see risk-return tradeoffs — imagine crypto as your 'alternatives' bucket."
         />
       ),
     },
