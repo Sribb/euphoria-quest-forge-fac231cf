@@ -10,6 +10,7 @@ interface TrueFalseChallengeProps {
   isTrue: boolean;
   explanation: string;
   onWrongAnswer?: () => void;
+  onCorrectAnswer?: () => void;
 }
 
 export const TrueFalseChallenge = ({ statement, isTrue, explanation, onWrongAnswer }: TrueFalseChallengeProps) => {
