@@ -76,6 +76,10 @@ const Dashboard = ({ onNavigate, onStockSearch }: DashboardProps) => {
         </motion.div>
 
         <motion.div variants={fadeUp}>
+          <StreakCard />
+        </motion.div>
+
+        <motion.div variants={fadeUp}>
           <QuickOverviewGrid onNavigate={onNavigate} />
         </motion.div>
 
