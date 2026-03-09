@@ -144,7 +144,8 @@ function renderScreen(
   screen: MicroScreen,
   quizAnswers: Record<string, number>,
   onQuizSelect: (id: string, opt: number, correct: number) => void,
-  onWrongAnswer: () => void
+  onWrongAnswer: () => void,
+  onCorrectAnswer: () => void
 ) {
   switch (screen.type) {
     case 'concept':
