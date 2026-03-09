@@ -2,6 +2,7 @@ import { useState } from "react";
 import { LearningPathway } from "@/features/learning/components/LearningPathway";
 import { PathwaySelector } from "@/features/learning/components/PathwaySelector";
 import { ThreePhaseLessonViewer } from "@/features/learning/components/ThreePhaseLessonViewer";
+import { LegendaryChallenge } from "@/features/learning/components/LegendaryChallenge";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -25,6 +26,7 @@ const Learn = ({ onNavigate, selectedLesson, onLessonSelect }: LearnProps) => {
   const { user } = useAuth();
   const { placementLesson } = useOnboarding();
   const [selectedPathway, setSelectedPathway] = useState<string | null>(null);
+  const [legendaryLessonId, setLegendaryLessonId] = useState<string | null>(null);
 
   const { data: lessons = [], isLoading, refetch } = useQuery({
     queryKey: ["lessons", user?.id, placementLesson],
@@ -43,6 +45,7 @@ const Learn = ({ onNavigate, selectedLesson, onLessonSelect }: LearnProps) => {
           completed: false,
           duration: `${lesson.duration_minutes} min`,
           is_locked: index !== 0,
+          legendary_completed: false,
         }));
       }
 
@@ -61,7 +64,6 @@ const Learn = ({ onNavigate, selectedLesson, onLessonSelect }: LearnProps) => {
         lessonsByPathway[pw].push(l);
       });
 
-      // Sort each pathway group by order_index
       Object.values(lessonsByPathway).forEach(group => 
         group.sort((a, b) => a.order_index - b.order_index)
       );
@@ -72,7 +74,6 @@ const Learn = ({ onNavigate, selectedLesson, onLessonSelect }: LearnProps) => {
         const isSkippedByPlacement = lesson.order_index < placementLesson && !isActuallyCompleted;
         const isCompleted = isActuallyCompleted || isSkippedByPlacement;
         
-        // Find previous lesson within the same pathway
         const pw = (lesson as any).pathway || 'default';
         const pathwayGroup = lessonsByPathway[pw] || [];
         const indexInPathway = pathwayGroup.findIndex(l => l.id === lesson.id);
@@ -93,12 +94,35 @@ const Learn = ({ onNavigate, selectedLesson, onLessonSelect }: LearnProps) => {
           skippedByPlacement: isSkippedByPlacement,
           duration: `${lesson.duration_minutes} min`,
           is_locked: !isUnlocked,
+          legendary_completed: (progress as any)?.legendary_completed || false,
         };
       });
     },
     retry: 2,
     staleTime: 30000,
   });
+
+  // Legendary challenge view
+  if (legendaryLessonId) {
+    const lesson = lessons.find(l => l.id === legendaryLessonId);
+    return (
+      <div className="fixed inset-0 bg-background/95 z-50 overflow-y-auto">
+        <div className="max-w-4xl mx-auto p-6">
+          <LegendaryChallenge
+            lessonId={legendaryLessonId}
+            lessonTitle={lesson?.title || "Lesson"}
+            onComplete={(passed, score) => {
+              if (passed) refetch();
+            }}
+            onClose={() => {
+              setLegendaryLessonId(null);
+              refetch();
+            }}
+          />
+        </div>
+      </div>
+    );
+  }
 
   if (selectedLesson) {
     return (
@@ -123,6 +147,7 @@ const Learn = ({ onNavigate, selectedLesson, onLessonSelect }: LearnProps) => {
           <LearningPathway
             lessons={filtered}
             onLessonSelect={onLessonSelect}
+            onLegendarySelect={(lessonId) => setLegendaryLessonId(lessonId)}
             completedCount={completedCount}
             totalCount={filtered.length}
             pathwayTitle={meta.title}
