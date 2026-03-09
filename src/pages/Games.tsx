@@ -5,6 +5,7 @@ import { TrendMasterGame } from "@/features/games/components/TrendMasterGame";
 import { AICompetitorGame } from "@/features/games/components/AICompetitorGame";
 import { MarketReactionGame } from "@/features/games/components/MarketReactionGame";
 import { BudgetBalancerGame } from "@/features/games/components/BudgetBalancerGame";
+import { BudgetSimulatorGame } from "@/features/games/components/BudgetSimulatorGame";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
