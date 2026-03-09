@@ -1,13 +1,12 @@
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Trophy, Users, Globe, Crown, ChevronUp, ChevronDown, Minus, Medal, Sparkles } from "lucide-react";
+import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import { Trophy, Users, Globe, Crown, ChevronUp, ChevronDown, Minus, Sparkles } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useLeaderboard, type LeaderboardScope, type LeaderboardEntry } from "../hooks/useLeaderboard";
 import { getDivisionMeta, anonymizeName, PROMOTION_ZONE, LEAGUE_SIZE, DEMOTION_ZONE, getWeekEnd } from "../constants";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
-import { useEffect, useState as useReactState } from "react";
 
 export function LeaderboardPanel() {
   const [scope, setScope] = useState<LeaderboardScope>("league");
