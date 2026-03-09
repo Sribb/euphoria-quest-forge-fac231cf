@@ -4,6 +4,7 @@ import { StreakCard } from "@/features/dashboard/components/StreakCard";
 import { SpacedRepetitionPanel } from "@/features/dashboard/components/SpacedRepetitionPanel";
 import { DailyChallengeCard } from "@/features/daily-challenge/components/DailyChallengeCard";
 import { LiveEconomicHeadlines } from "@/features/dashboard/components/LiveEconomicHeadlines";
+import { LeaderboardPanel } from "@/features/leaderboard/components/LeaderboardPanel";
 import { DailyRewardsModal } from "@/features/learning/components/DailyRewardsModal";
 import { SeasonalBanner } from "@/features/dashboard/components/SeasonalBanner";
 import { DailyPnLCard } from "@/features/dashboard/components/DailyPnLCard";
