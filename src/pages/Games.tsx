@@ -62,6 +62,17 @@ const games = [
     stats: "40+ Years",
   },
   {
+    id: "budget-sim",
+    title: "Budget Simulator",
+    description: "Live 12 months managing real budgets as a college grad, single parent, or trade worker. Handle surprise expenses and build savings.",
+    icon: CircleDollarSign,
+    color: "text-emerald-500",
+    bg: "bg-emerald-500/10",
+    badge: "New",
+    badgeColor: "bg-emerald-500/20 text-emerald-500",
+    stats: "12 Months",
+  },
+  {
     id: "ai-competitor",
     title: "AI Challenge",
     description: "Compete against 4 AI traders with unique strategies. Can you outperform Momentum Mike and Value Victor?",
