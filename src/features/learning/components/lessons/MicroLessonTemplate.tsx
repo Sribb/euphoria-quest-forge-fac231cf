@@ -217,6 +217,7 @@ function renderScreen(
             isTrue={screen.isTrue}
             explanation={screen.explanation}
             onWrongAnswer={onWrongAnswer}
+            onCorrectAnswer={onCorrectAnswer}
           />
         </div>
       );
