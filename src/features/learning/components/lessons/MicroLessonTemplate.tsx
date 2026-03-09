@@ -313,6 +313,36 @@ function renderScreen(
         </div>
       );
 
+    case 'prediction':
+      return (
+        <div className="space-y-4">
+          <PredictionChallenge
+            question={screen.question}
+            context={screen.context}
+            options={screen.options}
+            correctIndex={screen.correctIndex}
+            revealTitle={screen.revealTitle}
+            revealBody={screen.revealBody}
+            revealVisual={screen.revealVisual}
+            onWrongAnswer={onWrongAnswer}
+            onCorrectAnswer={onCorrectAnswer}
+          />
+        </div>
+      );
+
+    case 'reveal':
+      return (
+        <div className="space-y-4">
+          <RevealInsight
+            setup={screen.setup}
+            reveal={screen.reveal}
+            emoji={screen.emoji}
+            principle={screen.principle}
+            visual={screen.visual}
+          />
+        </div>
+      );
+
     case 'summary':
       return (
         <div className="space-y-4">
