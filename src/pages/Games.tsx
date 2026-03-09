@@ -96,6 +96,17 @@ const games = [
     badgeColor: "bg-sky-500/20 text-sky-500",
     stats: "4 Scenarios",
   },
+  {
+    id: "business-sim",
+    title: "Business Startup Simulator",
+    description: "Launch a food truck, boutique, or tutoring service with $10K. Make pricing, hiring, and marketing decisions over 18 months.",
+    icon: Store,
+    color: "text-orange-500",
+    bg: "bg-orange-500/10",
+    badge: "New",
+    badgeColor: "bg-orange-500/20 text-orange-500",
+    stats: "18 Months",
+  },
 ];
 
 const Games = ({ onNavigate }: GamesProps) => {
