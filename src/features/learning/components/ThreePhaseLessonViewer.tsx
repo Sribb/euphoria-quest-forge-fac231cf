@@ -168,11 +168,11 @@ export const ThreePhaseLessonViewer = ({ lessonId, onClose }: ThreePhaseLessonVi
 
   if (!lesson) return null;
 
-  // Check pathway-aware lesson map first
+  // Check for micro-lesson content first
   const pathway = lesson.pathway || 'investing';
-  const SlideComponent = LESSON_MAP[pathway]?.[lesson.order_index];
+  const microLesson = getMicroLesson(pathway, lesson.order_index);
 
-  if (SlideComponent) {
+  if (microLesson) {
     return (
       <div className="fixed inset-0 bg-background/95 z-50 overflow-y-auto">
         <div className="max-w-4xl mx-auto p-6">
@@ -186,39 +186,9 @@ export const ThreePhaseLessonViewer = ({ lessonId, onClose }: ThreePhaseLessonVi
             </Button>
           </div>
           <div className="animate-fade-in">
-            <SlideComponent
-              onComplete={async () => {
-                await updateProgress(100, true);
-                onClose();
-                toast.success(`${lesson.title} complete! 🎉`);
-              }}
-            />
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Data-driven StandardLessonTemplate fallback for lessons 12-25+
-  const lessonDef = getLessonDefinition(pathway, lesson.order_index);
-  if (lessonDef) {
-    return (
-      <div className="fixed inset-0 bg-background/95 z-50 overflow-y-auto">
-        <div className="max-w-4xl mx-auto p-6">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h1 className="text-3xl font-bold">{lesson.title}</h1>
-              <p className="text-muted-foreground mt-1">{lesson.description}</p>
-            </div>
-            <Button variant="ghost" size="icon" onClick={onClose}>
-              <X className="w-6 h-6" />
-            </Button>
-          </div>
-          <div className="animate-fade-in">
-            <StandardLessonTemplate
-              lesson={lessonDef}
+            <MicroLessonTemplate
+              lesson={microLesson}
               lessonTitle={lesson.title}
-              lessonId={lessonId}
               onComplete={async () => {
                 await updateProgress(100, true);
                 onClose();
