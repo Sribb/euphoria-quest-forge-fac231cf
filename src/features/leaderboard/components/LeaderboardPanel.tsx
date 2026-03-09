@@ -55,7 +55,7 @@ export function LeaderboardPanel() {
 function LeagueView() {
   const { entries, isLoading, leagueMeta } = useLeaderboard("league");
   const division = getDivisionMeta(leagueMeta?.division || "bronze");
-  const [weekCountdown, setWeekCountdown] = useReactState("");
+  const [weekCountdown, setWeekCountdown] = useState("");
 
   useEffect(() => {
     const update = () => {
