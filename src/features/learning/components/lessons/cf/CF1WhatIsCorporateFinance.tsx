@@ -1,5 +1,7 @@
 import { BeginnerLessonTemplate, LessonSlide } from "../BeginnerLessonTemplate";
 import { DragSortChallenge } from "../../interactive/DragSortChallenge";
+import { RiskReturnExplorer } from "../../interactive/RiskReturnExplorer";
+import { SliderSimulator } from "../../interactive/SliderSimulator";
 
 export const CF1WhatIsCorporateFinance = ({ onComplete }: { onComplete: () => void }) => {
   const slides: LessonSlide[] = [
@@ -14,6 +16,31 @@ export const CF1WhatIsCorporateFinance = ({ onComplete }: { onComplete: () => vo
             <p className="font-semibold text-sm">Three pillars: Investment decisions · Financing decisions · Dividend decisions</p>
           </div>
         </div>
+      ),
+    },
+    {
+      id: "sim",
+      title: "Capital Allocation Explorer",
+      content: (
+        <SliderSimulator
+          title="📊 Capital Allocation"
+          description="A company has $1M to allocate. See how different choices affect shareholder value."
+          sliders={[
+            { id: "rd", label: "R&D / New Products", min: 0, max: 100, step: 5, defaultValue: 30, unit: "%" },
+            { id: "buyback", label: "Share Buybacks", min: 0, max: 100, step: 5, defaultValue: 20, unit: "%" },
+            { id: "dividends", label: "Dividends", min: 0, max: 100, step: 5, defaultValue: 20, unit: "%" },
+            { id: "debt", label: "Debt Repayment", min: 0, max: 100, step: 5, defaultValue: 30, unit: "%" },
+          ]}
+          calculateResult={(v) => {
+            const total = v.rd + v.buyback + v.dividends + v.debt;
+            const growthScore = v.rd * 0.15 + v.buyback * 0.08 + v.dividends * 0.05 + v.debt * 0.03;
+            return {
+              primary: total === 100 ? `Growth Score: ${growthScore.toFixed(0)}/15` : `⚠️ Total: ${total}%`,
+              secondary: total === 100 ? `R&D drives highest long-term value` : `Must equal 100%`,
+              insight: v.rd >= 30 ? "Heavy R&D — this company is betting on growth!" : v.dividends >= 40 ? "High dividends — income investors love this." : "Balanced approach to capital allocation.",
+            };
+          }}
+        />
       ),
     },
     {
