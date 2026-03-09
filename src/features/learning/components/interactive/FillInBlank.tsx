@@ -8,9 +8,10 @@ interface FillInBlankProps {
   options: string[];
   correctIndex: number;
   explanation: string;
+  onWrongAnswer?: () => void;
 }
 
-export const FillInBlank = ({ sentence, options, correctIndex, explanation }: FillInBlankProps) => {
+export const FillInBlank = ({ sentence, options, correctIndex, explanation, onWrongAnswer }: FillInBlankProps) => {
   const [selected, setSelected] = useState<number | null>(null);
   const isCorrect = selected === correctIndex;
 
@@ -18,7 +19,7 @@ export const FillInBlank = ({ sentence, options, correctIndex, explanation }: Fi
     if (selected !== null) return;
     setSelected(i);
     if (i === correctIndex) { playCorrect(); fireSmallConfetti(); }
-    else playIncorrect();
+    else { playIncorrect(); onWrongAnswer?.(); }
   };
 
   const parts = sentence.split("___");
