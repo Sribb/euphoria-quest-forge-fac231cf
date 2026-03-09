@@ -211,7 +211,7 @@ function OverviewStep({ platforms, loading, onStart, onDelete }: {
               <div key={p.id} className="flex items-center justify-between p-3 rounded-lg bg-muted/30 border">
                 <div>
                   <div className="flex items-center gap-2">
-                    <CheckCircle className="w-4 h-4 text-emerald-500" />
+                    <CheckCircle className="w-4 h-4 text-primary" />
                     <span className="font-medium text-sm">{p.name}</span>
                   </div>
                   <p className="text-xs text-muted-foreground mt-1 font-mono">{p.issuer}</p>
