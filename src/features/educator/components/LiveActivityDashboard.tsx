@@ -14,8 +14,6 @@ import {
   Circle,
   Users,
   BookOpen,
-  Wifi,
-  WifiOff
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { formatDistanceToNow, differenceInMinutes } from "date-fns";
