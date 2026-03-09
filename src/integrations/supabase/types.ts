@@ -2652,6 +2652,51 @@ export type Database = {
           },
         ]
       }
+      weekly_leagues: {
+        Row: {
+          created_at: string
+          division: string
+          id: string
+          is_demoted: boolean
+          is_promoted: boolean
+          league_group: number
+          previous_rank: number | null
+          rank_in_league: number | null
+          updated_at: string
+          user_id: string
+          week_start: string
+          weekly_xp: number
+        }
+        Insert: {
+          created_at?: string
+          division?: string
+          id?: string
+          is_demoted?: boolean
+          is_promoted?: boolean
+          league_group?: number
+          previous_rank?: number | null
+          rank_in_league?: number | null
+          updated_at?: string
+          user_id: string
+          week_start: string
+          weekly_xp?: number
+        }
+        Update: {
+          created_at?: string
+          division?: string
+          id?: string
+          is_demoted?: boolean
+          is_promoted?: boolean
+          league_group?: number
+          previous_rank?: number | null
+          rank_in_league?: number | null
+          updated_at?: string
+          user_id?: string
+          week_start?: string
+          weekly_xp?: number
+        }
+        Relationships: []
+      }
       xp_level_thresholds: {
         Row: {
           created_at: string
