@@ -11,6 +11,8 @@ import { FillInBlank } from "../interactive/FillInBlank";
 import { MatchPairs } from "../interactive/MatchPairs";
 import { DragSortChallenge } from "../interactive/DragSortChallenge";
 import { SliderSimulator } from "../interactive/SliderSimulator";
+import { PredictionChallenge } from "../interactive/PredictionChallenge";
+import { RevealInsight } from "../interactive/RevealInsight";
 import { HeartsDisplay } from "../HeartsDisplay";
 
 interface MicroLessonTemplateProps {
@@ -308,6 +310,36 @@ function renderScreen(
           <h2 className="text-2xl font-black text-foreground">{screen.title}</h2>
           <p className="text-sm text-muted-foreground">Tap a term on the left, then its match on the right.</p>
           <MatchPairs pairs={screen.pairs} />
+        </div>
+      );
+
+    case 'prediction':
+      return (
+        <div className="space-y-4">
+          <PredictionChallenge
+            question={screen.question}
+            context={screen.context}
+            options={screen.options}
+            correctIndex={screen.correctIndex}
+            revealTitle={screen.revealTitle}
+            revealBody={screen.revealBody}
+            revealVisual={screen.revealVisual}
+            onWrongAnswer={onWrongAnswer}
+            onCorrectAnswer={onCorrectAnswer}
+          />
+        </div>
+      );
+
+    case 'reveal':
+      return (
+        <div className="space-y-4">
+          <RevealInsight
+            setup={screen.setup}
+            reveal={screen.reveal}
+            emoji={screen.emoji}
+            principle={screen.principle}
+            visual={screen.visual}
+          />
         </div>
       );
 

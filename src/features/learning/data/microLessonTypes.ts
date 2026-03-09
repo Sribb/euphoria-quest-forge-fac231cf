@@ -83,6 +83,30 @@ export interface MatchScreen extends MicroScreenBase {
   pairs: Array<{ left: string; right: string }>;
 }
 
+/** Prediction screen: pose a question, let students commit to an answer before revealing */
+export interface PredictionScreen extends MicroScreenBase {
+  type: 'prediction';
+  question: string;
+  context?: string; // Optional setup/framing
+  options: string[];
+  correctIndex: number;
+  revealTitle: string; // Shown after they pick
+  revealBody: string; // The "aha" explanation
+  revealVisual?: { type: 'stat'; value: string; label: string }
+    | { type: 'comparison'; left: { label: string; value: string }; right: { label: string; value: string } };
+}
+
+/** Reveal / "aha moment" screen: show a surprising insight with animation */
+export interface RevealScreen extends MicroScreenBase {
+  type: 'reveal';
+  setup: string; // What the student might expect
+  reveal: string; // The surprising truth
+  emoji?: string;
+  principle: string; // The underlying principle
+  visual?: { type: 'stat'; value: string; label: string }
+    | { type: 'comparison'; left: { label: string; value: string }; right: { label: string; value: string } };
+}
+
 /** Summary / takeaway screen */
 export interface SummaryScreen extends MicroScreenBase {
   type: 'summary';
@@ -100,6 +124,8 @@ export type MicroScreen =
   | SortScreen
   | SliderScreen
   | MatchScreen
+  | PredictionScreen
+  | RevealScreen
   | SummaryScreen;
 
 export interface MicroLessonDefinition {
