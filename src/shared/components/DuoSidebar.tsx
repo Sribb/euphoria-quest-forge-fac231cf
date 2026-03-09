@@ -36,6 +36,7 @@ const studentNavItems = [
   { id: "trade", label: "Practice", icon: Dumbbell },
   { id: "games", label: "Games", icon: Gamepad2 },
   { id: "rewards", label: "Rewards", icon: Gift },
+  { id: "shop", label: "Shop", icon: ShoppingBag },
   { id: "community", label: "Social", icon: Users },
   { id: "certificates", label: "Awards", icon: Award },
   { id: "profile", label: "Profile", icon: User },
