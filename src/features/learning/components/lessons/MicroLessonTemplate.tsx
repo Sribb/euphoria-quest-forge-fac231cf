@@ -11,6 +11,8 @@ import { FillInBlank } from "../interactive/FillInBlank";
 import { MatchPairs } from "../interactive/MatchPairs";
 import { DragSortChallenge } from "../interactive/DragSortChallenge";
 import { SliderSimulator } from "../interactive/SliderSimulator";
+import { PredictionChallenge } from "../interactive/PredictionChallenge";
+import { RevealInsight } from "../interactive/RevealInsight";
 import { HeartsDisplay } from "../HeartsDisplay";
 
 interface MicroLessonTemplateProps {
