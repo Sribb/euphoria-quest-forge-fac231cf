@@ -122,7 +122,12 @@ export const useXPSystem = () => {
     },
     onSuccess: (result: XPResult & { actualXP: number }) => {
       queryClient.invalidateQueries({ queryKey: ["user-xp-stats"] });
-      
+      queryClient.invalidateQueries({ queryKey: ["leaderboard"] });
+
+      // Track weekly league XP
+      if (user?.id) {
+        addWeeklyLeagueXP(user.id, result.actualXP).catch(() => {});
+      }
       if (result.leveled_up && levelThresholds) {
         const newLevelData = levelThresholds.find(l => l.level === result.new_level);
         const unlock = AVATAR_UNLOCKS[result.new_level];
