@@ -22,6 +22,12 @@ import { EducatorHome } from "@/features/educator/pages/EducatorHome";
 import { EducatorDashboard } from "@/features/educator/pages/EducatorDashboard";
 import { LtiSetupWizard } from "@/features/educator/components/LtiSetupWizard";
 import { DataDeletionPanel } from "@/features/educator/components/DataDeletionPanel";
+import {
+  AdminHub, SchoolAdminDashboard, DistrictExecutiveDashboard, UsageAnalytics,
+  LearningOutcomeReports, EquityAnalysis, TeacherActivityMonitoring, SchoolBenchmarks,
+  LicenseManagement, SSOConfiguration, RosteringConsole, ContentApproval,
+  DistrictAnnouncements, APIAccessManagement, CustomBranding, ComplianceReports,
+} from "@/features/admin";
 
 const Index = () => {
   const { hasEducatorAccess } = useEducatorRole();
