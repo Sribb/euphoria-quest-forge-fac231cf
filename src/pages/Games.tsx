@@ -94,6 +94,7 @@ const Games = ({ onNavigate }: GamesProps) => {
     "ai-competitor": <AICompetitorGame onClose={() => setActiveGame(null)} />,
     "market-reaction": <MarketReactionGame onClose={() => setActiveGame(null)} />,
     "budget-balancer": <BudgetBalancerGame onClose={() => setActiveGame(null)} />,
+    "budget-sim": <BudgetSimulatorGame onClose={() => setActiveGame(null)} />,
   };
 
   if (activeGame && gameComponents[activeGame]) {
