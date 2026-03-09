@@ -70,12 +70,17 @@ export const MicroLessonTemplate = ({ lesson, onComplete, hearts, maxHearts, onW
   const handleQuizSelect = (screenId: string, optIdx: number, correctIdx: number) => {
     if (quizAnswers[screenId] !== undefined) return;
     setQuizAnswers(prev => ({ ...prev, [screenId]: optIdx }));
-    if (optIdx === correctIdx) { playCorrect(); fireSmallConfetti(); }
-    else { playIncorrect(); onWrongAnswer?.(); }
+    if (optIdx === correctIdx) { playCorrect(); fireSmallConfetti(); onCorrectAnswer?.(); }
+    else { playIncorrect(); onWrongAnswer?.(); setWrongCount(c => c + 1); }
   };
 
   const handleInteractiveWrong = () => {
     onWrongAnswer?.();
+    setWrongCount(c => c + 1);
+  };
+
+  const handleInteractiveCorrect = () => {
+    onCorrectAnswer?.();
   };
 
   return (
