@@ -43,7 +43,7 @@ export const StreakCard = () => {
 
   const flameColor = streak.currentStreak >= 100 ? "text-destructive" :
     streak.currentStreak >= 30 ? "text-warning" :
-    streak.currentStreak >= 7 ? "text-orange-400" : "text-muted-foreground";
+    streak.currentStreak >= 7 ? "text-accent-foreground" : "text-muted-foreground";
 
   return (
     <>
