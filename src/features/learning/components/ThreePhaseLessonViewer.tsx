@@ -33,6 +33,7 @@ type Phase = 'learn' | 'challenge' | 'feedback';
 export const ThreePhaseLessonViewer = ({ lessonId, onClose }: ThreePhaseLessonViewerProps) => {
   const { user } = useAuth();
   const heartsSystem = useHearts();
+  const xpSystem = useXPSystem();
   const [showHeartsDepleted, setShowHeartsDepleted] = useState(false);
   const [lesson, setLesson] = useState<any>(null);
   const [phase, setPhase] = useState<Phase>('learn');
