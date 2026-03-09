@@ -328,7 +328,7 @@ const StudentCard = ({ student, now, isStuckView }: StudentCardProps) => {
           {/* Avatar / Status */}
           <div className="relative">
             <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-medium ${
-              isStuck ? "bg-destructive/20 text-destructive" : "bg-primary/20 text-primary"
+              isStuck ? "bg-destructive/20 text-destructive" : "bg-accent text-accent-foreground"
             }`}>
               {student.profile?.display_name?.[0]?.toUpperCase() || "?"}
             </div>
