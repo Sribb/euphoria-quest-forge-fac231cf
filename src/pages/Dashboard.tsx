@@ -77,6 +77,10 @@ const Dashboard = ({ onNavigate, onStockSearch }: DashboardProps) => {
         </motion.div>
 
         <motion.div variants={fadeUp}>
+          <DailyChallengeCard />
+        </motion.div>
+
+        <motion.div variants={fadeUp}>
           <StreakCard />
         </motion.div>
 
