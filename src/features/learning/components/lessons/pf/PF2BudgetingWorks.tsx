@@ -1,6 +1,6 @@
 import { BeginnerLessonTemplate, LessonSlide } from "../BeginnerLessonTemplate";
 import { DragSortChallenge } from "../../interactive/DragSortChallenge";
-import { SliderSimulator } from "../../interactive/SliderSimulator";
+import { BudgetImpactSimulator } from "../../interactive/BudgetImpactSimulator";
 
 export const PF2BudgetingWorks = ({ onComplete }: { onComplete: () => void }) => {
   const slides: LessonSlide[] = [
@@ -23,17 +23,10 @@ export const PF2BudgetingWorks = ({ onComplete }: { onComplete: () => void }) =>
       id: "sim",
       title: "Build Your Budget",
       content: (
-        <SliderSimulator
-          title="50/30/20 Budget Planner"
-          description="Enter your monthly income to see the breakdown"
-          sliders={[
-            { id: "income", label: "Monthly Income", min: 1000, max: 10000, step: 250, defaultValue: 4000, unit: "$" },
-          ]}
-          calculateResult={(v) => ({
-            primary: `Needs: $${(v.income * 0.5).toLocaleString()}`,
-            secondary: `Wants: $${(v.income * 0.3).toLocaleString()} · Savings: $${(v.income * 0.2).toLocaleString()}`,
-            insight: `Saving $${(v.income * 0.2).toLocaleString()}/mo = $${(v.income * 0.2 * 12).toLocaleString()}/year!`,
-          })}
+        <BudgetImpactSimulator
+          title="Interactive Budget Allocator"
+          description="Drag the sliders to allocate your $4,000 monthly income and watch the impact in real time."
+          monthlyIncome={4000}
         />
       ),
     },

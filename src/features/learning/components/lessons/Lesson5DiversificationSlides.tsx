@@ -6,6 +6,7 @@ import { useXPSystem } from "@/hooks/useXPSystem";
 import { playCorrect, playIncorrect } from "@/lib/soundEffects";
 import { fireSmallConfetti } from "@/lib/confetti";
 import { DragSortChallenge } from "../interactive/DragSortChallenge";
+import { RiskReturnExplorer } from "../interactive/RiskReturnExplorer";
 
 // Slide 1: Eggs in Baskets
 const EggsInBaskets = () => (
@@ -243,6 +244,7 @@ export const Lesson5DiversificationSlides = ({ onComplete }: Lesson5Props) => {
   const slides: LessonSlide[] = [
     { id: "eggs-baskets", title: "Don't Put All Your Eggs in One Basket", content: <EggsInBaskets /> },
     { id: "how-to", title: "How to Diversify", content: <HowToDiversify /> },
+    { id: "risk-explorer", title: "Build Your Portfolio Mix", content: <RiskReturnExplorer description="Allocate between bonds, stocks, and crypto — watch how risk and expected return shift in real time." /> },
     { id: "real-example", title: "A Real-World Example", content: <RealExample /> },
     { id: "quiz", title: "Quick Check ✍️", content: <DiversificationQuiz /> },
     { id: "takeaways", title: "Key Takeaways", content: <KeyTakeaways /> },

@@ -5,7 +5,7 @@ import { BeginnerLessonTemplate, LessonSlide } from "./BeginnerLessonTemplate";
 import { useXPSystem } from "@/hooks/useXPSystem";
 import { playCorrect, playIncorrect } from "@/lib/soundEffects";
 import { fireSmallConfetti } from "@/lib/confetti";
-import { SliderSimulator } from "../interactive/SliderSimulator";
+import { CompoundGrowthExplorer } from "../interactive/CompoundGrowthExplorer";
 
 // Slide 1: Simple vs Compound
 const SimpleVsCompound = () => (
@@ -98,31 +98,12 @@ const SnowballEffect = () => (
 const CompoundSimulator = () => (
   <div className="space-y-6">
     <p className="text-lg text-muted-foreground leading-relaxed">
-      Play with the numbers to see how compound interest works:
+      Play with the numbers and watch compound interest in action:
     </p>
 
-    <SliderSimulator
-      title="📈 Compound Interest Calculator"
-      description="Adjust the values and watch your money grow:"
-      sliders={[
-        { id: "initial", label: "Starting Amount", min: 100, max: 10000, step: 100, defaultValue: 1000, unit: "$" },
-        { id: "rate", label: "Annual Return", min: 1, max: 15, step: 0.5, defaultValue: 7, unit: "%" },
-        { id: "years", label: "Years Invested", min: 1, max: 40, step: 1, defaultValue: 20, unit: " yrs" },
-      ]}
-      calculateResult={(vals) => {
-        const future = vals.initial * Math.pow(1 + vals.rate / 100, vals.years);
-        const earned = future - vals.initial;
-        return {
-          primary: `$${Math.round(future).toLocaleString()}`,
-          secondary: `You earn $${Math.round(earned).toLocaleString()} in returns`,
-          insight:
-            vals.years >= 20
-              ? "Time is your biggest advantage — most growth happens in the later years!"
-              : vals.rate >= 10
-              ? "Higher returns accelerate growth, but come with more risk."
-              : "Even modest returns create significant wealth over time.",
-        };
-      }}
+    <CompoundGrowthExplorer
+      title="📈 Compound Interest Explorer"
+      description="Adjust starting amount, monthly contributions, return rate, and time — see the growth curve update instantly."
     />
   </div>
 );
