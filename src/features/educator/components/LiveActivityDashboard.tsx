@@ -59,10 +59,7 @@ export const LiveActivityDashboard = ({ classId }: Props) => {
     queryFn: async () => {
       let query = supabase
         .from("student_activity")
-        .select(`
-          *,
-          profile:profiles!student_activity_user_id_fkey(display_name, avatar_url)
-        `)
+        .select("*")
         .eq("is_online", true)
         .order("last_active_at", { ascending: false });
 
@@ -72,7 +69,20 @@ export const LiveActivityDashboard = ({ classId }: Props) => {
 
       const { data, error } = await query;
       if (error) throw error;
-      return (data || []) as StudentActivity[];
+
+      // Fetch profiles separately
+      const userIds = (data || []).map((a) => a.user_id);
+      const { data: profiles } = await supabase
+        .from("profiles")
+        .select("id, display_name, avatar_url")
+        .in("id", userIds);
+
+      const profileMap = new Map(profiles?.map((p) => [p.id, p]) || []);
+
+      return (data || []).map((activity) => ({
+        ...activity,
+        profile: profileMap.get(activity.user_id) || null,
+      })) as StudentActivity[];
     },
   });
 
