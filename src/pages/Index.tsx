@@ -22,6 +22,12 @@ import { EducatorHome } from "@/features/educator/pages/EducatorHome";
 import { EducatorDashboard } from "@/features/educator/pages/EducatorDashboard";
 import { LtiSetupWizard } from "@/features/educator/components/LtiSetupWizard";
 import { DataDeletionPanel } from "@/features/educator/components/DataDeletionPanel";
+import {
+  AdminHub, SchoolAdminDashboard, DistrictExecutiveDashboard, UsageAnalytics,
+  LearningOutcomeReports, EquityAnalysis, TeacherActivityMonitoring, SchoolBenchmarks,
+  LicenseManagement, SSOConfiguration, RosteringConsole, ContentApproval,
+  DistrictAnnouncements, APIAccessManagement, CustomBranding, ComplianceReports,
+} from "@/features/admin";
 
 const Index = () => {
   const { hasEducatorAccess } = useEducatorRole();
@@ -89,6 +95,38 @@ const Index = () => {
         return <LtiSetupWizard onBack={() => handleNavigate("educator")} />;
       case "educator-data-deletion":
         return <DataDeletionPanel onBack={() => handleNavigate("educator")} />;
+      case "admin-hub":
+        return <AdminHub onNavigate={handleNavigate} onBack={() => handleNavigate("educator")} />;
+      case "admin-school-dashboard":
+        return <SchoolAdminDashboard onBack={() => handleNavigate("admin-hub")} />;
+      case "admin-district-dashboard":
+        return <DistrictExecutiveDashboard onBack={() => handleNavigate("admin-hub")} />;
+      case "admin-usage-analytics":
+        return <UsageAnalytics onBack={() => handleNavigate("admin-hub")} />;
+      case "admin-learning-outcomes":
+        return <LearningOutcomeReports onBack={() => handleNavigate("admin-hub")} />;
+      case "admin-equity":
+        return <EquityAnalysis onBack={() => handleNavigate("admin-hub")} />;
+      case "admin-teacher-activity":
+        return <TeacherActivityMonitoring onBack={() => handleNavigate("admin-hub")} />;
+      case "admin-benchmarks":
+        return <SchoolBenchmarks onBack={() => handleNavigate("admin-hub")} />;
+      case "admin-licenses":
+        return <LicenseManagement onBack={() => handleNavigate("admin-hub")} />;
+      case "admin-sso":
+        return <SSOConfiguration onBack={() => handleNavigate("admin-hub")} />;
+      case "admin-rostering":
+        return <RosteringConsole onBack={() => handleNavigate("admin-hub")} />;
+      case "admin-content-approval":
+        return <ContentApproval onBack={() => handleNavigate("admin-hub")} />;
+      case "admin-announcements":
+        return <DistrictAnnouncements onBack={() => handleNavigate("admin-hub")} />;
+      case "admin-api":
+        return <APIAccessManagement onBack={() => handleNavigate("admin-hub")} />;
+      case "admin-branding":
+        return <CustomBranding onBack={() => handleNavigate("admin-hub")} />;
+      case "admin-compliance":
+        return <ComplianceReports onBack={() => handleNavigate("admin-hub")} />;
       case "dashboard":
         return <Dashboard onNavigate={handleNavigate} onStockSearch={() => setShowStockSearch(true)} />;
       case "feed":
