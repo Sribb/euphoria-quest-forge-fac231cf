@@ -5,7 +5,7 @@ import { BeginnerLessonTemplate, LessonSlide } from "./BeginnerLessonTemplate";
 import { useXPSystem } from "@/hooks/useXPSystem";
 import { playCorrect, playIncorrect } from "@/lib/soundEffects";
 import { fireSmallConfetti } from "@/lib/confetti";
-import { SliderSimulator } from "../interactive/SliderSimulator";
+import { CompoundGrowthExplorer } from "../interactive/CompoundGrowthExplorer";
 
 // Slide 1: Simple vs Compound
 const SimpleVsCompound = () => (
