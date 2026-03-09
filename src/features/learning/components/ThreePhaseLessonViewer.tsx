@@ -36,6 +36,7 @@ export const ThreePhaseLessonViewer = ({ lessonId, onClose }: ThreePhaseLessonVi
   const { user } = useAuth();
   const heartsSystem = useHearts();
   const xpSystem = useXPSystem();
+  const spacedRep = useSpacedRepetition();
   const [showHeartsDepleted, setShowHeartsDepleted] = useState(false);
   const [lesson, setLesson] = useState<any>(null);
   const [phase, setPhase] = useState<Phase>('learn');
