@@ -223,6 +223,11 @@ export const ThreePhaseLessonViewer = ({ lessonId, onClose }: ThreePhaseLessonVi
               onPerfectLesson={() => xpSystem.awardPerfectLesson()}
               onComplete={async () => {
                 xpSystem.awardLessonComplete();
+                // Register concepts for spaced repetition
+                const concepts = getConceptsForLesson(pathway, lesson.order_index);
+                if (concepts.length > 0) {
+                  spacedRep.registerConcepts({ lessonId: lesson.id, pathway, concepts });
+                }
                 await updateProgress(100, true);
                 onClose();
                 toast.success(`${lesson.title} complete! 🎉`);
