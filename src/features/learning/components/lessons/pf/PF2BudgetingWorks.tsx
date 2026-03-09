@@ -1,6 +1,6 @@
 import { BeginnerLessonTemplate, LessonSlide } from "../BeginnerLessonTemplate";
 import { DragSortChallenge } from "../../interactive/DragSortChallenge";
-import { SliderSimulator } from "../../interactive/SliderSimulator";
+import { BudgetImpactSimulator } from "../../interactive/BudgetImpactSimulator";
 
 export const PF2BudgetingWorks = ({ onComplete }: { onComplete: () => void }) => {
   const slides: LessonSlide[] = [
