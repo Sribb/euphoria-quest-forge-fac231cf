@@ -24,6 +24,7 @@ import { ClassEditDialog } from "../components/ClassEditDialog";
 import { RosterManagementPanel } from "../components/RosterManagementPanel";
 import { AssignmentsPanel } from "../components/AssignmentsPanel";
 import { TemplatesPanel } from "../components/TemplatesPanel";
+import { LiveActivityDashboard } from "../components/LiveActivityDashboard";
 import { useEducatorData } from "../hooks/useEducatorData";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
@@ -624,6 +625,11 @@ export const EducatorHome = ({ onNavigate }: EducatorHomeProps) => {
                 )}
               </AnimatePresence>
             </div>
+          </div>
+
+          {/* Live Activity Dashboard */}
+          <div className="mt-6">
+            <LiveActivityDashboard classId={selectedClass?.id || undefined} />
           </div>
 
           {/* Assignments Panel */}
