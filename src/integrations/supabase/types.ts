@@ -2132,27 +2132,45 @@ export type Database = {
         Row: {
           created_at: string
           current_streak: number
+          freeze_used_today: boolean
           id: string
           last_login_date: string | null
           longest_streak: number
+          milestone_100: boolean
+          milestone_30: boolean
+          milestone_365: boolean
+          milestone_7: boolean
+          streak_freezes: number
           updated_at: string
           user_id: string
         }
         Insert: {
           created_at?: string
           current_streak?: number
+          freeze_used_today?: boolean
           id?: string
           last_login_date?: string | null
           longest_streak?: number
+          milestone_100?: boolean
+          milestone_30?: boolean
+          milestone_365?: boolean
+          milestone_7?: boolean
+          streak_freezes?: number
           updated_at?: string
           user_id: string
         }
         Update: {
           created_at?: string
           current_streak?: number
+          freeze_used_today?: boolean
           id?: string
           last_login_date?: string | null
           longest_streak?: number
+          milestone_100?: boolean
+          milestone_30?: boolean
+          milestone_365?: boolean
+          milestone_7?: boolean
+          streak_freezes?: number
           updated_at?: string
           user_id?: string
         }
