@@ -342,117 +342,136 @@ const Certificates = ({ onNavigate }: CertificatesProps) => {
   };
 
   return (
-    <div className="min-h-screen space-y-6 md:space-y-8 pb-24 pt-4">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 animate-fade-in">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center shadow-glow animate-pulse">
-            <Award className="w-5 h-5 md:w-6 md:h-6 text-white" />
-          </div>
-          <div>
-            <h1 className="text-2xl md:text-3xl font-bold">Certificates</h1>
-            <p className="text-sm text-muted-foreground">Your journey to mastery</p>
-          </div>
-        </div>
-        <div className="flex items-center gap-2 px-3 md:px-4 py-1.5 md:py-2 bg-gradient-primary/10 border border-primary/20 rounded-full">
-          <Trophy className="w-4 h-4 md:w-5 md:h-5 text-primary" />
-          <span className="text-xs md:text-sm font-semibold">{totalEarned}/{totalCertificates} Earned</span>
-        </div>
-      </div>
+    <div className="min-h-screen pb-24 pt-4">
+      <Tabs value={activeView} onValueChange={(v) => setActiveView(v as "badges" | "certificates")}>
+        <TabsList className="mb-6">
+          <TabsTrigger value="badges" className="gap-2">
+            <span>🏅</span> Badges ({120})
+          </TabsTrigger>
+          <TabsTrigger value="certificates" className="gap-2">
+            <Award className="w-4 h-4" /> Certificates
+          </TabsTrigger>
+        </TabsList>
 
-      {/* Progress Overview */}
-      <Card className="p-6 bg-gradient-hero border-primary/20 animate-fade-in">
-        <div className="flex items-center gap-3 mb-4">
-          <Sparkles className="w-5 h-5 text-primary" />
-          <h3 className="text-lg font-bold">Overall Progress</h3>
-        </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="text-center p-4 bg-background/50 rounded-lg">
-            <p className="text-3xl font-bold text-emerald-500">{certificatesByTier.easy.filter(c => c.earned).length}</p>
-            <p className="text-sm text-muted-foreground">Easy Tier</p>
+        <TabsContent value="badges">
+          <BadgesShowcase />
+        </TabsContent>
+
+        <TabsContent value="certificates">
+          <div className="space-y-6 md:space-y-8">
+            {/* Header */}
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 animate-fade-in">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center shadow-glow animate-pulse">
+                  <Award className="w-5 h-5 md:w-6 md:h-6 text-white" />
+                </div>
+                <div>
+                  <h1 className="text-2xl md:text-3xl font-bold">Certificates</h1>
+                  <p className="text-sm text-muted-foreground">Your journey to mastery</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 px-3 md:px-4 py-1.5 md:py-2 bg-primary/10 border border-primary/20 rounded-full">
+                <Trophy className="w-4 h-4 md:w-5 md:h-5 text-primary" />
+                <span className="text-xs md:text-sm font-semibold">{totalEarned}/{totalCertificates} Earned</span>
+              </div>
+            </div>
+
+            {/* Progress Overview */}
+            <Card className="p-6 bg-gradient-to-r from-primary/5 to-primary/10 border-primary/20 animate-fade-in">
+              <div className="flex items-center gap-3 mb-4">
+                <Sparkles className="w-5 h-5 text-primary" />
+                <h3 className="text-lg font-bold">Overall Progress</h3>
+              </div>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="text-center p-4 bg-background/50 rounded-lg">
+                  <p className="text-3xl font-bold text-emerald-500">{certificatesByTier.easy.filter(c => c.earned).length}</p>
+                  <p className="text-sm text-muted-foreground">Easy Tier</p>
+                </div>
+                <div className="text-center p-4 bg-background/50 rounded-lg">
+                  <p className="text-3xl font-bold text-blue-500">{certificatesByTier.medium.filter(c => c.earned).length}</p>
+                  <p className="text-sm text-muted-foreground">Medium Tier</p>
+                </div>
+                <div className="text-center p-4 bg-background/50 rounded-lg">
+                  <p className="text-3xl font-bold text-purple-500">{certificatesByTier.hard.filter(c => c.earned).length}</p>
+                  <p className="text-sm text-muted-foreground">Hard Tier</p>
+                </div>
+                <div className="text-center p-4 bg-background/50 rounded-lg">
+                  <p className="text-3xl font-bold text-amber-500">{certificatesByTier.master.filter(c => c.earned).length}</p>
+                  <p className="text-sm text-muted-foreground">Master Tier</p>
+                </div>
+              </div>
+            </Card>
+
+            {/* Easy Tier */}
+            <div className="space-y-4 animate-fade-in">
+              <div className="flex items-center gap-3">
+                <Badge className="bg-gradient-to-r from-emerald-500 to-green-500 text-white">EASY TIER</Badge>
+                <span className="text-sm text-muted-foreground">
+                  {certificatesByTier.easy.filter(c => c.earned).length} / {certificatesByTier.easy.length} completed
+                </span>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {certificatesByTier.easy.map(cert => (
+                  <CertificateCard key={cert.id} certificate={cert} onClick={() => handleCertificateClick(cert)} />
+                ))}
+              </div>
+            </div>
+
+            {/* Medium Tier */}
+            <div className="space-y-4 animate-fade-in" style={{ animationDelay: "100ms" }}>
+              <div className="flex items-center gap-3">
+                <Badge className="bg-gradient-to-r from-blue-500 to-cyan-500 text-white">MEDIUM TIER</Badge>
+                <span className="text-sm text-muted-foreground">
+                  {certificatesByTier.medium.filter(c => c.earned).length} / {certificatesByTier.medium.length} completed
+                </span>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {certificatesByTier.medium.map(cert => (
+                  <CertificateCard key={cert.id} certificate={cert} onClick={() => handleCertificateClick(cert)} />
+                ))}
+              </div>
+            </div>
+
+            {/* Hard Tier */}
+            <div className="space-y-4 animate-fade-in" style={{ animationDelay: "200ms" }}>
+              <div className="flex items-center gap-3">
+                <Badge className="bg-gradient-to-r from-purple-500 to-pink-500 text-white">HARD TIER</Badge>
+                <span className="text-sm text-muted-foreground">
+                  {certificatesByTier.hard.filter(c => c.earned).length} / {certificatesByTier.hard.length} completed
+                </span>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {certificatesByTier.hard.map(cert => (
+                  <CertificateCard key={cert.id} certificate={cert} onClick={() => handleCertificateClick(cert)} />
+                ))}
+              </div>
+            </div>
+
+            {/* Master Tier */}
+            <div className="space-y-4 animate-fade-in" style={{ animationDelay: "300ms" }}>
+              <div className="flex items-center gap-3">
+                <Badge className="bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-glow">MASTER TIER</Badge>
+                <span className="text-sm text-muted-foreground">
+                  {certificatesByTier.master.filter(c => c.earned).length} / {certificatesByTier.master.length} completed
+                </span>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {certificatesByTier.master.map(cert => (
+                  <CertificateCard key={cert.id} certificate={cert} onClick={() => handleCertificateClick(cert)} />
+                ))}
+              </div>
+            </div>
+
+            {/* Detail Dialog */}
+            <CertificateDetailDialog
+              certificate={selectedCertificate}
+              open={dialogOpen}
+              onClose={() => setDialogOpen(false)}
+              onNavigate={onNavigate}
+            />
           </div>
-          <div className="text-center p-4 bg-background/50 rounded-lg">
-            <p className="text-3xl font-bold text-blue-500">{certificatesByTier.medium.filter(c => c.earned).length}</p>
-            <p className="text-sm text-muted-foreground">Medium Tier</p>
-          </div>
-          <div className="text-center p-4 bg-background/50 rounded-lg">
-            <p className="text-3xl font-bold text-purple-500">{certificatesByTier.hard.filter(c => c.earned).length}</p>
-            <p className="text-sm text-muted-foreground">Hard Tier</p>
-          </div>
-          <div className="text-center p-4 bg-background/50 rounded-lg">
-            <p className="text-3xl font-bold text-amber-500">{certificatesByTier.master.filter(c => c.earned).length}</p>
-            <p className="text-sm text-muted-foreground">Master Tier</p>
-          </div>
-        </div>
-      </Card>
-
-      {/* Easy Tier */}
-      <div className="space-y-4 animate-fade-in">
-        <div className="flex items-center gap-3">
-          <Badge className="bg-gradient-to-r from-emerald-500 to-green-500 text-white">EASY TIER</Badge>
-          <span className="text-sm text-muted-foreground">
-            {certificatesByTier.easy.filter(c => c.earned).length} / {certificatesByTier.easy.length} completed
-          </span>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {certificatesByTier.easy.map(cert => (
-            <CertificateCard key={cert.id} certificate={cert} onClick={() => handleCertificateClick(cert)} />
-          ))}
-        </div>
-      </div>
-
-      {/* Medium Tier */}
-      <div className="space-y-4 animate-fade-in" style={{ animationDelay: "100ms" }}>
-        <div className="flex items-center gap-3">
-          <Badge className="bg-gradient-to-r from-blue-500 to-cyan-500 text-white">MEDIUM TIER</Badge>
-          <span className="text-sm text-muted-foreground">
-            {certificatesByTier.medium.filter(c => c.earned).length} / {certificatesByTier.medium.length} completed
-          </span>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {certificatesByTier.medium.map(cert => (
-            <CertificateCard key={cert.id} certificate={cert} onClick={() => handleCertificateClick(cert)} />
-          ))}
-        </div>
-      </div>
-
-      {/* Hard Tier */}
-      <div className="space-y-4 animate-fade-in" style={{ animationDelay: "200ms" }}>
-        <div className="flex items-center gap-3">
-          <Badge className="bg-gradient-to-r from-purple-500 to-pink-500 text-white">HARD TIER</Badge>
-          <span className="text-sm text-muted-foreground">
-            {certificatesByTier.hard.filter(c => c.earned).length} / {certificatesByTier.hard.length} completed
-          </span>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {certificatesByTier.hard.map(cert => (
-            <CertificateCard key={cert.id} certificate={cert} onClick={() => handleCertificateClick(cert)} />
-          ))}
-        </div>
-      </div>
-
-      {/* Master Tier */}
-      <div className="space-y-4 animate-fade-in" style={{ animationDelay: "300ms" }}>
-        <div className="flex items-center gap-3">
-          <Badge className="bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-glow">MASTER TIER</Badge>
-          <span className="text-sm text-muted-foreground">
-            {certificatesByTier.master.filter(c => c.earned).length} / {certificatesByTier.master.length} completed
-          </span>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {certificatesByTier.master.map(cert => (
-            <CertificateCard key={cert.id} certificate={cert} onClick={() => handleCertificateClick(cert)} />
-          ))}
-        </div>
-      </div>
-
-      {/* Detail Dialog */}
-      <CertificateDetailDialog
-        certificate={selectedCertificate}
-        open={dialogOpen}
-        onClose={() => setDialogOpen(false)}
-        onNavigate={onNavigate}
-      />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };
