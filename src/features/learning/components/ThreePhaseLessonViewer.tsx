@@ -178,6 +178,13 @@ export const ThreePhaseLessonViewer = ({ lessonId, onClose }: ThreePhaseLessonVi
   const microLesson = getMicroLesson(pathway, lesson.order_index);
 
   if (microLesson) {
+    const handleWrongAnswer = async () => {
+      const remaining = await heartsSystem.loseHeart();
+      if (remaining <= 0) {
+        setShowHeartsDepleted(true);
+      }
+    };
+
     return (
       <div className="fixed inset-0 bg-background/95 z-50 overflow-y-auto">
         <div className="max-w-4xl mx-auto p-6">
@@ -186,13 +193,19 @@ export const ThreePhaseLessonViewer = ({ lessonId, onClose }: ThreePhaseLessonVi
               <h1 className="text-3xl font-bold">{lesson.title}</h1>
               <p className="text-muted-foreground mt-1">{lesson.description}</p>
             </div>
-            <Button variant="ghost" size="icon" onClick={onClose}>
-              <X className="w-6 h-6" />
-            </Button>
+            <div className="flex items-center gap-3">
+              <HeartsDisplay hearts={heartsSystem.hearts} maxHearts={heartsSystem.maxHearts} />
+              <Button variant="ghost" size="icon" onClick={onClose}>
+                <X className="w-6 h-6" />
+              </Button>
+            </div>
           </div>
           <div className="animate-fade-in">
             <MicroLessonTemplate
               lesson={microLesson}
+              hearts={heartsSystem.hearts}
+              maxHearts={heartsSystem.maxHearts}
+              onWrongAnswer={handleWrongAnswer}
               onComplete={async () => {
                 await updateProgress(100, true);
                 onClose();
@@ -201,6 +214,15 @@ export const ThreePhaseLessonViewer = ({ lessonId, onClose }: ThreePhaseLessonVi
             />
           </div>
         </div>
+        {showHeartsDepleted && (
+          <HeartsDepleted
+            onEarnHeart={heartsSystem.earnHeart}
+            onClose={() => { setShowHeartsDepleted(false); onClose(); }}
+            canEarnMore={heartsSystem.canEarnMore}
+            heartsEarnedToday={heartsSystem.heartsEarnedToday}
+            maxEarnPerDay={heartsSystem.maxEarnPerDay}
+          />
+        )}
       </div>
     );
   }
