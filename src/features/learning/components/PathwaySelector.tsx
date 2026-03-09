@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { TrendingUp, Building2, Wallet, BarChart3, Globe, BookOpen, ChevronRight, Search } from "lucide-react";
+import { TrendingUp, Building2, Wallet, BarChart3, Globe, BookOpen, ChevronRight, Search, Landmark, Briefcase, Megaphone } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
@@ -53,6 +53,30 @@ const PATHWAYS: PathwayInfo[] = [
     icon: Globe,
     gradient: "from-rose-500/10 to-pink-500/5",
     iconBg: "bg-rose-500",
+  },
+  {
+    id: "economics",
+    title: "Economics",
+    description: "Micro & macroeconomics — supply, demand, GDP, fiscal & monetary policy, and trade.",
+    icon: Landmark,
+    gradient: "from-cyan-500/10 to-sky-500/5",
+    iconBg: "bg-cyan-600",
+  },
+  {
+    id: "business",
+    title: "Business & Entrepreneurship",
+    description: "From idea to pitch — opportunity identification, business planning, and virtual business capstone.",
+    icon: Briefcase,
+    gradient: "from-amber-500/10 to-yellow-500/5",
+    iconBg: "bg-amber-600",
+  },
+  {
+    id: "marketing",
+    title: "Marketing Fundamentals",
+    description: "Consumer behavior, branding, digital marketing, and campaign creation project.",
+    icon: Megaphone,
+    gradient: "from-fuchsia-500/10 to-pink-500/5",
+    iconBg: "bg-fuchsia-600",
   },
 ];
 
