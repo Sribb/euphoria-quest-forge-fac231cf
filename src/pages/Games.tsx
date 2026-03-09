@@ -84,6 +84,17 @@ const games = [
     badgeColor: "bg-accent/20 text-accent",
     stats: "4 AI Opponents",
   },
+  {
+    id: "credit-sim",
+    title: "Credit Score Simulator",
+    description: "Build or destroy a FICO score over 24 months. Learn how payments, utilization, and inquiries affect your credit.",
+    icon: CreditCard,
+    color: "text-sky-500",
+    bg: "bg-sky-500/10",
+    badge: "New",
+    badgeColor: "bg-sky-500/20 text-sky-500",
+    stats: "4 Scenarios",
+  },
 ];
 
 const Games = ({ onNavigate }: GamesProps) => {
