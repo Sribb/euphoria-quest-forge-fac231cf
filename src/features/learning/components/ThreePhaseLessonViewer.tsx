@@ -16,6 +16,8 @@ import { LessonMasteryDashboard } from "./LessonMasteryDashboard";
 import { InteractiveLessonSimulation } from "./InteractiveLessonSimulation";
 import { MicroLessonTemplate } from "./lessons/MicroLessonTemplate";
 import { getMicroLesson } from "../data/allMicroLessons";
+import { useSpacedRepetition } from "@/hooks/useSpacedRepetition";
+import { getConceptsForLesson } from "../data/lessonConcepts";
 import { useHearts } from "@/hooks/useHearts";
 import { HeartsDisplay } from "./HeartsDisplay";
 import { HeartsDepleted } from "./HeartsDepleted";
@@ -34,6 +36,7 @@ export const ThreePhaseLessonViewer = ({ lessonId, onClose }: ThreePhaseLessonVi
   const { user } = useAuth();
   const heartsSystem = useHearts();
   const xpSystem = useXPSystem();
+  const spacedRep = useSpacedRepetition();
   const [showHeartsDepleted, setShowHeartsDepleted] = useState(false);
   const [lesson, setLesson] = useState<any>(null);
   const [phase, setPhase] = useState<Phase>('learn');
@@ -220,6 +223,11 @@ export const ThreePhaseLessonViewer = ({ lessonId, onClose }: ThreePhaseLessonVi
               onPerfectLesson={() => xpSystem.awardPerfectLesson()}
               onComplete={async () => {
                 xpSystem.awardLessonComplete();
+                // Register concepts for spaced repetition
+                const concepts = getConceptsForLesson(pathway, lesson.order_index);
+                if (concepts.length > 0) {
+                  spacedRep.registerConcepts({ lessonId: lesson.id, pathway, concepts });
+                }
                 await updateProgress(100, true);
                 onClose();
                 toast.success(`${lesson.title} complete! 🎉`);
