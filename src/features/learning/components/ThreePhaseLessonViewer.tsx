@@ -194,7 +194,14 @@ export const ThreePhaseLessonViewer = ({ lessonId, onClose }: ThreePhaseLessonVi
           <div className="flex items-center justify-between mb-6">
             <div>
               <h1 className="text-3xl font-bold">{lesson.title}</h1>
-              <p className="text-muted-foreground mt-1">{lesson.description}</p>
+              <div className="flex items-center gap-2 mt-1">
+                <p className="text-muted-foreground">{lesson.description}</p>
+                {xpSystem.isDoubleXP && (
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-warning/20 text-warning text-xs font-bold animate-pulse">
+                    <Zap className="w-3 h-3" /> 2x XP
+                  </span>
+                )}
+              </div>
             </div>
             <div className="flex items-center gap-3">
               <HeartsDisplay hearts={heartsSystem.hearts} maxHearts={heartsSystem.maxHearts} />
@@ -209,7 +216,10 @@ export const ThreePhaseLessonViewer = ({ lessonId, onClose }: ThreePhaseLessonVi
               hearts={heartsSystem.hearts}
               maxHearts={heartsSystem.maxHearts}
               onWrongAnswer={handleWrongAnswer}
+              onCorrectAnswer={() => xpSystem.awardCorrectAnswer()}
+              onPerfectLesson={() => xpSystem.awardPerfectLesson()}
               onComplete={async () => {
+                xpSystem.awardLessonComplete();
                 await updateProgress(100, true);
                 onClose();
                 toast.success(`${lesson.title} complete! 🎉`);
