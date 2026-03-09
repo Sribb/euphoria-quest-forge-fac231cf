@@ -101,6 +101,8 @@ const Index = () => {
         return <Games onNavigate={handleNavigate} />;
       case "rewards":
         return <Rewards onNavigate={handleNavigate} />;
+      case "shop":
+        return <CoinShop onNavigate={handleNavigate} />;
       case "community":
         return <Community onNavigate={handleNavigate} />;
       case "certificates":
