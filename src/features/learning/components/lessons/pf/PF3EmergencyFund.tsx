@@ -1,5 +1,5 @@
 import { BeginnerLessonTemplate, LessonSlide } from "../BeginnerLessonTemplate";
-import { SliderSimulator } from "../../interactive/SliderSimulator";
+import { CompoundGrowthExplorer } from "../../interactive/CompoundGrowthExplorer";
 
 export const PF3EmergencyFund = ({ onComplete }: { onComplete: () => void }) => {
   const slides: LessonSlide[] = [
@@ -18,20 +18,11 @@ export const PF3EmergencyFund = ({ onComplete }: { onComplete: () => void }) => 
     },
     {
       id: "sim",
-      title: "How Much Do You Need?",
+      title: "How Fast Can You Build It?",
       content: (
-        <SliderSimulator
-          title="Emergency Fund Calculator"
-          description="Calculate your ideal safety net"
-          sliders={[
-            { id: "expenses", label: "Monthly Expenses", min: 1000, max: 8000, step: 250, defaultValue: 3000, unit: "$" },
-            { id: "months", label: "Months of Coverage", min: 1, max: 12, step: 1, defaultValue: 4, unit: " mo" },
-          ]}
-          calculateResult={(v) => ({
-            primary: `$${(v.expenses * v.months).toLocaleString()}`,
-            secondary: `${v.months} months of coverage at $${v.expenses.toLocaleString()}/mo`,
-            insight: v.months < 3 ? "Aim for at least 3 months" : v.months >= 6 ? "Excellent cushion!" : "Solid target!",
-          })}
+        <CompoundGrowthExplorer
+          title="🛡️ Emergency Fund Builder"
+          description="Set your goal and monthly contribution — watch how quickly your safety net grows in a high-yield savings account."
         />
       ),
     },

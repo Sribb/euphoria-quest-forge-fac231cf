@@ -1,4 +1,6 @@
 import { BeginnerLessonTemplate, LessonSlide } from "../BeginnerLessonTemplate";
+import { BudgetImpactSimulator } from "../../interactive/BudgetImpactSimulator";
+import { CompoundGrowthExplorer } from "../../interactive/CompoundGrowthExplorer";
 import { DragSortChallenge } from "../../interactive/DragSortChallenge";
 import { SliderSimulator } from "../../interactive/SliderSimulator";
 
@@ -70,6 +72,16 @@ export const PF11DebtSnowball = ({ onComplete }: { onComplete: () => void }) => 
               insight: v.extra >= 200 ? "Aggressive payoff! You'll save thousands in interest." : "Even small extra payments compound over time.",
             };
           }}
+        />
+      ),
+    },
+    {
+      id: "redirect",
+      title: "After Debt: Redirect Your Money",
+      content: (
+        <CompoundGrowthExplorer
+          title="🚀 Post-Debt Growth"
+          description="Once debt is gone, redirect those payments into investing. See how that money grows!"
         />
       ),
     },

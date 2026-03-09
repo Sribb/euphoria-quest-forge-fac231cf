@@ -1,5 +1,5 @@
 import { BeginnerLessonTemplate, LessonSlide } from "../BeginnerLessonTemplate";
-import { SliderSimulator } from "../../interactive/SliderSimulator";
+import { BudgetImpactSimulator } from "../../interactive/BudgetImpactSimulator";
 
 export const PF9LifestyleInflation = ({ onComplete }: { onComplete: () => void }) => {
   const slides: LessonSlide[] = [
@@ -18,26 +18,12 @@ export const PF9LifestyleInflation = ({ onComplete }: { onComplete: () => void }
     },
     {
       id: "sim",
-      title: "Save Your Raise",
+      title: "Can You Resist the Creep?",
       content: (
-        <SliderSimulator
-          title="Raise Impact Calculator"
-          description="What happens if you save part of every raise?"
-          sliders={[
-            { id: "salary", label: "Current Salary", min: 40000, max: 150000, step: 5000, defaultValue: 60000, unit: "$" },
-            { id: "raise", label: "Annual Raise %", min: 1, max: 15, step: 1, defaultValue: 5, unit: "%" },
-            { id: "savePercent", label: "% of Raise You Save", min: 0, max: 100, step: 10, defaultValue: 50, unit: "%" },
-          ]}
-          calculateResult={(v) => {
-            const raiseAmount = v.salary * (v.raise / 100);
-            const saved = raiseAmount * (v.savePercent / 100);
-            const after10 = saved * ((Math.pow(1.07, 10) - 1) / 0.07);
-            return {
-              primary: `$${Math.round(saved).toLocaleString()}/year saved`,
-              secondary: `Invested at 7% → $${Math.round(after10).toLocaleString()} in 10 years`,
-              insight: v.savePercent >= 50 ? "Saving half your raise is a wealth-building superpower!" : "Try increasing the save percentage!",
-            };
-          }}
+        <BudgetImpactSimulator
+          title="🎯 Lifestyle Creep Simulator"
+          description="Imagine you just got a raise to $6,000/month. Allocate your budget — can you keep savings at 20%+?"
+          monthlyIncome={6000}
         />
       ),
     },
