@@ -107,6 +107,7 @@ const Games = ({ onNavigate }: GamesProps) => {
     "market-reaction": <MarketReactionGame onClose={() => setActiveGame(null)} />,
     "budget-balancer": <BudgetBalancerGame onClose={() => setActiveGame(null)} />,
     "budget-sim": <BudgetSimulatorGame onClose={() => setActiveGame(null)} />,
+    "credit-sim": <CreditScoreSimulator onClose={() => setActiveGame(null)} />,
   };
 
   if (activeGame && gameComponents[activeGame]) {
