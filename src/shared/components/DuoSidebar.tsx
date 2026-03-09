@@ -46,6 +46,7 @@ const studentNavItems = [
 const educatorNavItems = [
   { id: "educator", label: "Classes", icon: GraduationCap },
   { id: "educator-analytics", label: "Analytics", icon: BarChart3 },
+  { id: "admin-hub", label: "Admin", icon: Home },
   { id: "community", label: "Social", icon: Users },
   { id: "profile", label: "Profile", icon: User },
 ];
