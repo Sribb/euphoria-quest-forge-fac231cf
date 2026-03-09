@@ -1,4 +1,4 @@
-import { Trophy, Brain, Users, Coins, TrendingUp, Globe, Wallet, Gamepad2, Zap, Play, Star, Clock, CircleDollarSign } from "lucide-react";
+import { Trophy, Brain, Users, Coins, TrendingUp, Globe, Wallet, Gamepad2, Zap, Play, Star, Clock, CircleDollarSign, CreditCard } from "lucide-react";
 import { useState } from "react";
 import { LifeSimInvestorGame } from "@/features/games/components/LifeSimInvestorGame";
 import { TrendMasterGame } from "@/features/games/components/TrendMasterGame";
@@ -6,6 +6,7 @@ import { AICompetitorGame } from "@/features/games/components/AICompetitorGame";
 import { MarketReactionGame } from "@/features/games/components/MarketReactionGame";
 import { BudgetBalancerGame } from "@/features/games/components/BudgetBalancerGame";
 import { BudgetSimulatorGame } from "@/features/games/components/BudgetSimulatorGame";
+import { CreditScoreSimulator } from "@/features/games/components/CreditScoreSimulator";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -83,6 +84,17 @@ const games = [
     badgeColor: "bg-accent/20 text-accent",
     stats: "4 AI Opponents",
   },
+  {
+    id: "credit-sim",
+    title: "Credit Score Simulator",
+    description: "Build or destroy a FICO score over 24 months. Learn how payments, utilization, and inquiries affect your credit.",
+    icon: CreditCard,
+    color: "text-sky-500",
+    bg: "bg-sky-500/10",
+    badge: "New",
+    badgeColor: "bg-sky-500/20 text-sky-500",
+    stats: "4 Scenarios",
+  },
 ];
 
 const Games = ({ onNavigate }: GamesProps) => {
@@ -95,6 +107,7 @@ const Games = ({ onNavigate }: GamesProps) => {
     "market-reaction": <MarketReactionGame onClose={() => setActiveGame(null)} />,
     "budget-balancer": <BudgetBalancerGame onClose={() => setActiveGame(null)} />,
     "budget-sim": <BudgetSimulatorGame onClose={() => setActiveGame(null)} />,
+    "credit-sim": <CreditScoreSimulator onClose={() => setActiveGame(null)} />,
   };
 
   if (activeGame && gameComponents[activeGame]) {
