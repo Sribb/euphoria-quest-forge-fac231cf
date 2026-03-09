@@ -38,6 +38,10 @@ export const MicroLessonTemplate = ({ lesson, onComplete, hearts, maxHearts, onW
     if (isLast) {
       playLessonComplete();
       fireConfetti();
+      // Check for perfect lesson (no wrong answers)
+      if (wrongCount === 0) {
+        onPerfectLesson?.();
+      }
       setTimeout(() => onComplete(), 600);
       return;
     }
