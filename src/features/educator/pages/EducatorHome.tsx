@@ -629,7 +629,7 @@ export const EducatorHome = ({ onNavigate }: EducatorHomeProps) => {
 
           {/* Live Activity Dashboard */}
           <div className="mt-6">
-            <LiveActivityDashboard classId={selectedClassId || undefined} />
+            <LiveActivityDashboard classId={selectedClass?.id || undefined} />
           </div>
 
           {/* Assignments Panel */}
