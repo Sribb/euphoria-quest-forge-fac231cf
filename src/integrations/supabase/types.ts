@@ -2325,6 +2325,39 @@ export type Database = {
           },
         ]
       }
+      user_hearts: {
+        Row: {
+          created_at: string
+          hearts_earned_today: number
+          hearts_remaining: number
+          id: string
+          last_reset_date: string
+          max_hearts: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          hearts_earned_today?: number
+          hearts_remaining?: number
+          id?: string
+          last_reset_date?: string
+          max_hearts?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          hearts_earned_today?: number
+          hearts_remaining?: number
+          id?: string
+          last_reset_date?: string
+          max_hearts?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_lesson_progress: {
         Row: {
           challenge_history: Json | null
