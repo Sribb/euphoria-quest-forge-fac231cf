@@ -4,11 +4,12 @@ import { playCorrect, playIncorrect } from "@/lib/soundEffects";
 import { fireSmallConfetti } from "@/lib/confetti";
 
 interface FillInBlankProps {
-  sentence: string; // Use "___" for blank
+  sentence: string;
   options: string[];
   correctIndex: number;
   explanation: string;
   onWrongAnswer?: () => void;
+  onCorrectAnswer?: () => void;
 }
 
 export const FillInBlank = ({ sentence, options, correctIndex, explanation, onWrongAnswer }: FillInBlankProps) => {
