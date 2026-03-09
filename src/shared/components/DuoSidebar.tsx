@@ -19,6 +19,7 @@ import {
   Menu,
   X,
   PlayCircle,
+  ShoppingBag,
 } from "lucide-react";
 import { useState } from "react";
 import logo from "@/assets/euphoria-logo-button.png";
