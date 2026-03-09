@@ -188,7 +188,6 @@ export const ThreePhaseLessonViewer = ({ lessonId, onClose }: ThreePhaseLessonVi
           <div className="animate-fade-in">
             <MicroLessonTemplate
               lesson={microLesson}
-              lessonTitle={lesson.title}
               onComplete={async () => {
                 await updateProgress(100, true);
                 onClose();
