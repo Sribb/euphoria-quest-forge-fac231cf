@@ -16,6 +16,9 @@ import { LessonMasteryDashboard } from "./LessonMasteryDashboard";
 import { InteractiveLessonSimulation } from "./InteractiveLessonSimulation";
 import { MicroLessonTemplate } from "./lessons/MicroLessonTemplate";
 import { getMicroLesson } from "../data/allMicroLessons";
+import { useHearts } from "@/hooks/useHearts";
+import { HeartsDisplay } from "./HeartsDisplay";
+import { HeartsDepleted } from "./HeartsDepleted";
 
 
 interface ThreePhaseLessonViewerProps {
