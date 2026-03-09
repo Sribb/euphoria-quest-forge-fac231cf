@@ -15,6 +15,7 @@ import Community from "./Community";
 import Certificates from "./Certificates";
 import Rewards from "./Rewards";
 import Profile from "./Profile";
+import { CoinShop } from "@/features/shop/components/CoinShop";
 import StockSearch from "./StockSearch";
 import StockDetail from "./StockDetail";
 import { EducatorHome } from "@/features/educator/pages/EducatorHome";
@@ -100,6 +101,8 @@ const Index = () => {
         return <Games onNavigate={handleNavigate} />;
       case "rewards":
         return <Rewards onNavigate={handleNavigate} />;
+      case "shop":
+        return <CoinShop onNavigate={handleNavigate} />;
       case "community":
         return <Community onNavigate={handleNavigate} />;
       case "certificates":

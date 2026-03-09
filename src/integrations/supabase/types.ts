@@ -44,6 +44,36 @@ export type Database = {
         }
         Relationships: []
       }
+      active_powerups: {
+        Row: {
+          activated_at: string
+          created_at: string
+          expires_at: string
+          id: string
+          is_active: boolean
+          powerup_type: string
+          user_id: string
+        }
+        Insert: {
+          activated_at?: string
+          created_at?: string
+          expires_at: string
+          id?: string
+          is_active?: boolean
+          powerup_type: string
+          user_id: string
+        }
+        Update: {
+          activated_at?: string
+          created_at?: string
+          expires_at?: string
+          id?: string
+          is_active?: boolean
+          powerup_type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       ai_competitors: {
         Row: {
           capital: number
@@ -747,6 +777,39 @@ export type Database = {
           period_block?: string | null
           requires_coppa_consent?: boolean
           updated_at?: string
+        }
+        Relationships: []
+      }
+      coin_transactions: {
+        Row: {
+          amount: number
+          balance_after: number
+          created_at: string
+          description: string
+          id: string
+          item_id: string | null
+          transaction_type: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          balance_after?: number
+          created_at?: string
+          description: string
+          id?: string
+          item_id?: string | null
+          transaction_type: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          balance_after?: number
+          created_at?: string
+          description?: string
+          id?: string
+          item_id?: string | null
+          transaction_type?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -2512,6 +2575,48 @@ export type Database = {
           last_reset_date?: string
           max_hearts?: number
           updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_inventory: {
+        Row: {
+          acquired_at: string
+          created_at: string
+          id: string
+          is_active: boolean
+          item_id: string
+          item_type: string
+          metadata: Json
+          quantity: number
+          updated_at: string
+          used_at: string | null
+          user_id: string
+        }
+        Insert: {
+          acquired_at?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          item_id: string
+          item_type: string
+          metadata?: Json
+          quantity?: number
+          updated_at?: string
+          used_at?: string | null
+          user_id: string
+        }
+        Update: {
+          acquired_at?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          item_id?: string
+          item_type?: string
+          metadata?: Json
+          quantity?: number
+          updated_at?: string
+          used_at?: string | null
           user_id?: string
         }
         Relationships: []
