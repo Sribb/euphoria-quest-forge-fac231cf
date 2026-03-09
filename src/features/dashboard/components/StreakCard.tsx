@@ -23,11 +23,13 @@ export const StreakCard = () => {
   useEffect(() => {
     if (!streak.loading && !streak.checkedInToday && !hasCheckedIn) {
       setHasCheckedIn(true);
-      streak.checkIn().then(result => {
+      streak.checkIn().then(async result => {
         if (result?.newMilestone) {
           setShowMilestone(result.newMilestone);
           playMilestone();
           fireConfetti();
+          // Award a streak freeze at every milestone
+          await streak.earnFreeze();
         }
       });
     }
