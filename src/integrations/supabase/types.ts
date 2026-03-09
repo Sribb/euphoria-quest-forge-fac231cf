@@ -2629,6 +2629,9 @@ export type Database = {
           created_at: string
           id: string
           last_challenge_at: string | null
+          legendary_completed: boolean
+          legendary_completed_at: string | null
+          legendary_score: number | null
           lesson_id: string
           mastery_level: string | null
           progress: number
@@ -2645,6 +2648,9 @@ export type Database = {
           created_at?: string
           id?: string
           last_challenge_at?: string | null
+          legendary_completed?: boolean
+          legendary_completed_at?: string | null
+          legendary_score?: number | null
           lesson_id: string
           mastery_level?: string | null
           progress?: number
@@ -2661,6 +2667,9 @@ export type Database = {
           created_at?: string
           id?: string
           last_challenge_at?: string | null
+          legendary_completed?: boolean
+          legendary_completed_at?: string | null
+          legendary_score?: number | null
           lesson_id?: string
           mastery_level?: string | null
           progress?: number
