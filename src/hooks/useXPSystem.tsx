@@ -5,6 +5,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { playLevelUp, playReward } from "@/lib/soundEffects";
 import { fireConfetti } from "@/lib/confetti";
+import { addWeeklyLeagueXP } from "@/features/leaderboard/utils/addWeeklyLeagueXP";
 
 interface XPResult {
   old_xp: number;
