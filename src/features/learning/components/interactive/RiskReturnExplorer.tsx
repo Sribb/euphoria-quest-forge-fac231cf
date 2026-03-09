@@ -48,7 +48,7 @@ export const RiskReturnExplorer = ({
 
   // Monte Carlo-ish 10yr projection (5 scenarios)
   const scenarios = useMemo(() => {
-    const results: { year: number; [key: string]: number }[] = [];
+    const results: Array<Record<string, number>> = [];
     const seeds = [-1.5, -0.5, 0, 0.5, 1.5];
     for (let y = 0; y <= 10; y++) {
       const point: Record<string, number> = { year: y };
