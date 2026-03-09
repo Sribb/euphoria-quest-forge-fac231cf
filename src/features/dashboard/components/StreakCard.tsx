@@ -184,7 +184,7 @@ export const StreakCard = () => {
               <p className="text-sm text-muted-foreground">
                 You've learned for {showMilestone} days in a row. Incredible dedication!
               </p>
-              <div className="flex items-center justify-center gap-2 text-sm text-sky-400 font-bold">
+              <div className="flex items-center justify-center gap-2 text-sm text-primary font-bold">
                 <Snowflake className="w-4 h-4" />
                 +1 Streak Freeze earned!
               </div>
