@@ -4,21 +4,22 @@ import { playCorrect, playIncorrect } from "@/lib/soundEffects";
 import { fireSmallConfetti } from "@/lib/confetti";
 
 interface FillInBlankProps {
-  sentence: string; // Use "___" for blank
+  sentence: string;
   options: string[];
   correctIndex: number;
   explanation: string;
   onWrongAnswer?: () => void;
+  onCorrectAnswer?: () => void;
 }
 
-export const FillInBlank = ({ sentence, options, correctIndex, explanation, onWrongAnswer }: FillInBlankProps) => {
+export const FillInBlank = ({ sentence, options, correctIndex, explanation, onWrongAnswer, onCorrectAnswer }: FillInBlankProps) => {
   const [selected, setSelected] = useState<number | null>(null);
   const isCorrect = selected === correctIndex;
 
   const handleSelect = (i: number) => {
     if (selected !== null) return;
     setSelected(i);
-    if (i === correctIndex) { playCorrect(); fireSmallConfetti(); }
+    if (i === correctIndex) { playCorrect(); fireSmallConfetti(); onCorrectAnswer?.(); }
     else { playIncorrect(); onWrongAnswer?.(); }
   };
 

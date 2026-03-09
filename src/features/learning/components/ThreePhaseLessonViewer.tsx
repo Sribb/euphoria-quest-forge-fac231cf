@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { X, BookOpen, Trophy, LineChart } from "lucide-react";
+import { X, BookOpen, Trophy, LineChart, Zap } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
@@ -19,6 +19,8 @@ import { getMicroLesson } from "../data/allMicroLessons";
 import { useHearts } from "@/hooks/useHearts";
 import { HeartsDisplay } from "./HeartsDisplay";
 import { HeartsDepleted } from "./HeartsDepleted";
+import { useXPSystem } from "@/hooks/useXPSystem";
+import { XP_PER_CORRECT } from "@/hooks/useXPSystem";
 
 
 interface ThreePhaseLessonViewerProps {
@@ -31,6 +33,7 @@ type Phase = 'learn' | 'challenge' | 'feedback';
 export const ThreePhaseLessonViewer = ({ lessonId, onClose }: ThreePhaseLessonViewerProps) => {
   const { user } = useAuth();
   const heartsSystem = useHearts();
+  const xpSystem = useXPSystem();
   const [showHeartsDepleted, setShowHeartsDepleted] = useState(false);
   const [lesson, setLesson] = useState<any>(null);
   const [phase, setPhase] = useState<Phase>('learn');
@@ -191,7 +194,14 @@ export const ThreePhaseLessonViewer = ({ lessonId, onClose }: ThreePhaseLessonVi
           <div className="flex items-center justify-between mb-6">
             <div>
               <h1 className="text-3xl font-bold">{lesson.title}</h1>
-              <p className="text-muted-foreground mt-1">{lesson.description}</p>
+              <div className="flex items-center gap-2 mt-1">
+                <p className="text-muted-foreground">{lesson.description}</p>
+                {xpSystem.isDoubleXP && (
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-warning/20 text-warning text-xs font-bold animate-pulse">
+                    <Zap className="w-3 h-3" /> 2x XP
+                  </span>
+                )}
+              </div>
             </div>
             <div className="flex items-center gap-3">
               <HeartsDisplay hearts={heartsSystem.hearts} maxHearts={heartsSystem.maxHearts} />
@@ -206,7 +216,10 @@ export const ThreePhaseLessonViewer = ({ lessonId, onClose }: ThreePhaseLessonVi
               hearts={heartsSystem.hearts}
               maxHearts={heartsSystem.maxHearts}
               onWrongAnswer={handleWrongAnswer}
+              onCorrectAnswer={() => xpSystem.awardCorrectAnswer()}
+              onPerfectLesson={() => xpSystem.awardPerfectLesson()}
               onComplete={async () => {
+                xpSystem.awardLessonComplete();
                 await updateProgress(100, true);
                 onClose();
                 toast.success(`${lesson.title} complete! 🎉`);

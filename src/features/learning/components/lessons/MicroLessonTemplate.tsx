@@ -19,12 +19,15 @@ interface MicroLessonTemplateProps {
   hearts?: number;
   maxHearts?: number;
   onWrongAnswer?: () => void;
+  onCorrectAnswer?: () => void;
+  onPerfectLesson?: () => void;
 }
 
-export const MicroLessonTemplate = ({ lesson, onComplete, hearts, maxHearts, onWrongAnswer }: MicroLessonTemplateProps) => {
+export const MicroLessonTemplate = ({ lesson, onComplete, hearts, maxHearts, onWrongAnswer, onCorrectAnswer, onPerfectLesson }: MicroLessonTemplateProps) => {
   const [current, setCurrent] = useState(0);
   const [direction, setDirection] = useState(1);
   const [quizAnswers, setQuizAnswers] = useState<Record<string, number>>({});
+  const [wrongCount, setWrongCount] = useState(0);
 
   const screens = lesson.screens;
   const isLast = current === screens.length - 1;
@@ -35,6 +38,10 @@ export const MicroLessonTemplate = ({ lesson, onComplete, hearts, maxHearts, onW
     if (isLast) {
       playLessonComplete();
       fireConfetti();
+      // Check for perfect lesson (no wrong answers)
+      if (wrongCount === 0) {
+        onPerfectLesson?.();
+      }
       setTimeout(() => onComplete(), 600);
       return;
     }
@@ -63,12 +70,17 @@ export const MicroLessonTemplate = ({ lesson, onComplete, hearts, maxHearts, onW
   const handleQuizSelect = (screenId: string, optIdx: number, correctIdx: number) => {
     if (quizAnswers[screenId] !== undefined) return;
     setQuizAnswers(prev => ({ ...prev, [screenId]: optIdx }));
-    if (optIdx === correctIdx) { playCorrect(); fireSmallConfetti(); }
-    else { playIncorrect(); onWrongAnswer?.(); }
+    if (optIdx === correctIdx) { playCorrect(); fireSmallConfetti(); onCorrectAnswer?.(); }
+    else { playIncorrect(); onWrongAnswer?.(); setWrongCount(c => c + 1); }
   };
 
   const handleInteractiveWrong = () => {
     onWrongAnswer?.();
+    setWrongCount(c => c + 1);
+  };
+
+  const handleInteractiveCorrect = () => {
+    onCorrectAnswer?.();
   };
 
   return (
@@ -103,7 +115,7 @@ export const MicroLessonTemplate = ({ lesson, onComplete, hearts, maxHearts, onW
             transition={{ duration: 0.3, ease: "easeOut" }}
             className="w-full"
           >
-            {renderScreen(screen, quizAnswers, handleQuizSelect, handleInteractiveWrong)}
+            {renderScreen(screen, quizAnswers, handleQuizSelect, handleInteractiveWrong, handleInteractiveCorrect)}
           </motion.div>
         </AnimatePresence>
       </div>
@@ -132,7 +144,8 @@ function renderScreen(
   screen: MicroScreen,
   quizAnswers: Record<string, number>,
   onQuizSelect: (id: string, opt: number, correct: number) => void,
-  onWrongAnswer: () => void
+  onWrongAnswer: () => void,
+  onCorrectAnswer: () => void
 ) {
   switch (screen.type) {
     case 'concept':
@@ -204,6 +217,7 @@ function renderScreen(
             isTrue={screen.isTrue}
             explanation={screen.explanation}
             onWrongAnswer={onWrongAnswer}
+            onCorrectAnswer={onCorrectAnswer}
           />
         </div>
       );
@@ -218,6 +232,7 @@ function renderScreen(
             correctIndex={screen.correctIndex}
             explanation={screen.explanation}
             onWrongAnswer={onWrongAnswer}
+            onCorrectAnswer={onCorrectAnswer}
           />
         </div>
       );

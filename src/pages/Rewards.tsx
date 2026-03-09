@@ -1,10 +1,11 @@
-import { useXPSystem } from "@/hooks/useXPSystem";
+import { useXPSystem, AVATAR_UNLOCKS, XP_PER_CORRECT, XP_PERFECT_BONUS, XP_LESSON_COMPLETE } from "@/hooks/useXPSystem";
 import { useAuth } from "@/hooks/useAuth";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Trophy, Star, Zap, Gift, Lock, ChevronRight } from "lucide-react";
+import { Trophy, Star, Zap, Lock, ChevronRight, Flame, Gift, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { useState } from "react";
 
 interface RewardsProps {
   onNavigate: (tab: string) => void;
@@ -12,8 +13,9 @@ interface RewardsProps {
 
 const Rewards = ({ onNavigate }: RewardsProps) => {
   const { user } = useAuth();
-  const { userStats, levelThresholds, getXPProgress } = useXPSystem();
+  const { userStats, levelThresholds, getXPProgress, isDoubleXP, multiplier, getUnlockedAvatars, getNextAvatarUnlock } = useXPSystem();
   const xpProgress = getXPProgress();
+  const [showAllLevels, setShowAllLevels] = useState(false);
 
   const { data: streakData } = useQuery({
     queryKey: ["streak", user?.id],
@@ -44,39 +46,50 @@ const Rewards = ({ onNavigate }: RewardsProps) => {
   const currentLevel = userStats?.level || 1;
   const currentXP = userStats?.experience_points || 0;
   const currentTitle = levelThresholds?.find((l) => l.level === currentLevel)?.title || "Beginner";
+  const unlockedAvatars = getUnlockedAvatars();
+  const nextAvatar = getNextAvatarUnlock();
 
-  // Placeholder reward tiers - just the structure, no actual rewards yet
-  const rewardTiers = [
-    { level: 2, label: "Bronze", color: "from-amber-700 to-amber-500", unlocked: currentLevel >= 2 },
-    { level: 4, label: "Silver", color: "from-gray-400 to-gray-300", unlocked: currentLevel >= 4 },
-    { level: 6, label: "Gold", color: "from-yellow-500 to-yellow-300", unlocked: currentLevel >= 6 },
-    { level: 8, label: "Platinum", color: "from-cyan-400 to-blue-300", unlocked: currentLevel >= 8 },
-    { level: 10, label: "Diamond", color: "from-purple-500 to-pink-400", unlocked: currentLevel >= 10 },
-  ];
+  // Show levels around current level, or all
+  const visibleLevels = showAllLevels
+    ? levelThresholds
+    : levelThresholds?.filter(l => l.level <= currentLevel + 5 && l.level >= Math.max(1, currentLevel - 2));
+
+  const fadeUp = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0, transition: { duration: 0.4 } },
+  };
 
   return (
     <div className="space-y-8 pb-10">
       {/* Header */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="text-center"
-      >
-        <h1 className="text-3xl font-black text-foreground tracking-tight">Rewards</h1>
-        <p className="text-muted-foreground mt-1">Level up to unlock rewards</p>
+      <motion.div initial="hidden" animate="show" variants={fadeUp} className="text-center">
+        <h1 className="text-3xl font-black text-foreground tracking-tight">Rewards & Progression</h1>
+        <p className="text-muted-foreground mt-1">50 levels to conquer — earn XP with every correct answer</p>
       </motion.div>
 
+      {/* Double XP Banner */}
+      {isDoubleXP && (
+        <motion.div initial="hidden" animate="show" variants={fadeUp}
+          className="p-4 rounded-2xl bg-warning/10 border border-warning/30 flex items-center gap-3"
+        >
+          <div className="w-10 h-10 rounded-xl bg-warning/20 flex items-center justify-center">
+            <Zap className="w-6 h-6 text-warning" />
+          </div>
+          <div>
+            <p className="font-black text-foreground">🔥 Double XP Event Active!</p>
+            <p className="text-sm text-muted-foreground">All XP earned is multiplied by {multiplier}x</p>
+          </div>
+        </motion.div>
+      )}
+
       {/* XP & Level Card */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.05 }}
+      <motion.div initial="hidden" animate="show" variants={fadeUp}
         className="bg-card border border-border rounded-3xl p-6 space-y-5"
       >
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-glow-soft">
-              <span className="text-2xl font-black text-white">{currentLevel}</span>
+              <span className="text-2xl font-black text-primary-foreground">{currentLevel}</span>
             </div>
             <div>
               <h2 className="text-xl font-black text-foreground">{currentTitle}</h2>
@@ -105,27 +118,42 @@ const Rewards = ({ onNavigate }: RewardsProps) => {
           <div className="flex justify-between text-xs text-muted-foreground">
             <span>Level {currentLevel}</span>
             <span>{Math.round(xpProgress.percentage)}%</span>
-            <span>Level {currentLevel + 1}</span>
+            <span>Level {Math.min(currentLevel + 1, 50)}</span>
           </div>
         </div>
       </motion.div>
 
-      {/* Stats row */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1 }}
-        className="grid grid-cols-3 gap-3"
+      {/* XP Earning Rules */}
+      <motion.div initial="hidden" animate="show" variants={fadeUp}
+        className="bg-card border border-border rounded-3xl p-5 space-y-3"
       >
+        <h3 className="text-lg font-black text-foreground flex items-center gap-2">
+          <Sparkles className="w-5 h-5 text-primary" /> How to Earn XP
+        </h3>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          {[
+            { label: "Correct Answer", xp: `+${XP_PER_CORRECT}`, emoji: "✅", desc: "Per question" },
+            { label: "Lesson Complete", xp: `+${XP_LESSON_COMPLETE}`, emoji: "📘", desc: "Finish any lesson" },
+            { label: "Perfect Lesson", xp: `+${XP_PERFECT_BONUS}`, emoji: "⭐", desc: "Zero mistakes" },
+          ].map(item => (
+            <div key={item.label} className="p-3 rounded-2xl bg-muted/30 border border-border/50 text-center">
+              <span className="text-2xl">{item.emoji}</span>
+              <p className="text-lg font-black text-primary mt-1">{item.xp} XP</p>
+              <p className="text-xs font-bold text-foreground">{item.label}</p>
+              <p className="text-[10px] text-muted-foreground">{item.desc}</p>
+            </div>
+          ))}
+        </div>
+      </motion.div>
+
+      {/* Stats row */}
+      <motion.div initial="hidden" animate="show" variants={fadeUp} className="grid grid-cols-3 gap-3">
         {[
-          { icon: Star, label: "Streak", value: `${streakData?.current_streak || 0}d`, color: "text-warning" },
+          { icon: Flame, label: "Streak", value: `${streakData?.current_streak || 0}d`, color: "text-warning" },
           { icon: Trophy, label: "Lessons", value: lessonsCompleted || 0, color: "text-primary" },
-          { icon: Zap, label: "Total XP", value: currentXP.toLocaleString(), color: "text-accent" },
-        ].map((stat, i) => (
-          <div
-            key={stat.label}
-            className="bg-card border border-border rounded-2xl p-4 text-center"
-          >
+          { icon: Zap, label: "Total XP", value: currentXP.toLocaleString(), color: "text-accent-foreground" },
+        ].map((stat) => (
+          <div key={stat.label} className="bg-card border border-border rounded-2xl p-4 text-center">
             <stat.icon className={cn("w-6 h-6 mx-auto mb-1", stat.color)} />
             <p className="text-lg font-black text-foreground">{stat.value}</p>
             <p className="text-[11px] text-muted-foreground">{stat.label}</p>
@@ -133,18 +161,56 @@ const Rewards = ({ onNavigate }: RewardsProps) => {
         ))}
       </motion.div>
 
-      {/* Level thresholds */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.15 }}
-        className="space-y-3"
-      >
-        <h3 className="text-lg font-black text-foreground">Level Progression</h3>
+      {/* Unlocked Avatars */}
+      <motion.div initial="hidden" animate="show" variants={fadeUp} className="space-y-3">
+        <h3 className="text-lg font-black text-foreground flex items-center gap-2">
+          <Gift className="w-5 h-5 text-primary" /> Unlocked Items ({unlockedAvatars.length})
+        </h3>
+        <div className="flex flex-wrap gap-2">
+          {unlockedAvatars.map(item => (
+            <div
+              key={item.level}
+              className="flex items-center gap-2 px-3 py-2 rounded-xl bg-primary/10 border border-primary/20"
+            >
+              <span className="text-xl">{item.emoji}</span>
+              <div>
+                <p className="text-xs font-bold text-foreground">{item.name}</p>
+                <p className="text-[10px] text-muted-foreground">Lv.{item.level}</p>
+              </div>
+            </div>
+          ))}
+          {unlockedAvatars.length === 0 && (
+            <p className="text-sm text-muted-foreground">Reach Level 2 to unlock your first item!</p>
+          )}
+        </div>
+        {nextAvatar && (
+          <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-muted/30 border border-border/50">
+            <span className="text-xl opacity-40">{nextAvatar.emoji}</span>
+            <div>
+              <p className="text-xs font-bold text-muted-foreground">Next: {nextAvatar.name}</p>
+              <p className="text-[10px] text-muted-foreground">Unlock at Level {nextAvatar.level}</p>
+            </div>
+            <Lock className="w-4 h-4 text-muted-foreground ml-auto" />
+          </div>
+        )}
+      </motion.div>
+
+      {/* Level Progression */}
+      <motion.div initial="hidden" animate="show" variants={fadeUp} className="space-y-3">
+        <div className="flex items-center justify-between">
+          <h3 className="text-lg font-black text-foreground">Level Progression</h3>
+          <button
+            onClick={() => setShowAllLevels(!showAllLevels)}
+            className="text-xs font-bold text-primary hover:underline"
+          >
+            {showAllLevels ? "Show nearby" : "Show all 50"}
+          </button>
+        </div>
         <div className="space-y-2">
-          {levelThresholds?.map((threshold) => {
+          {visibleLevels?.map((threshold) => {
             const isUnlocked = currentLevel >= threshold.level;
             const isCurrent = currentLevel === threshold.level;
+            const avatarUnlock = AVATAR_UNLOCKS[threshold.level];
             return (
               <div
                 key={threshold.level}
@@ -169,56 +235,31 @@ const Rewards = ({ onNavigate }: RewardsProps) => {
                 >
                   {threshold.level}
                 </div>
-                <div className="flex-1">
+                <div className="flex-1 min-w-0">
                   <p className="font-black text-foreground text-sm">{threshold.title}</p>
-                  <p className="text-xs text-muted-foreground">{threshold.xp_required.toLocaleString()} XP required</p>
+                  <div className="flex items-center gap-2">
+                    <p className="text-xs text-muted-foreground">{threshold.xp_required.toLocaleString()} XP</p>
+                    {avatarUnlock && (
+                      <span className="text-xs text-primary font-medium">
+                        {avatarUnlock.emoji} {avatarUnlock.name}
+                      </span>
+                    )}
+                  </div>
                 </div>
                 {isUnlocked ? (
-                  <Star className="w-5 h-5 text-warning fill-warning" />
+                  <Star className="w-5 h-5 text-warning fill-warning flex-shrink-0" />
                 ) : (
-                  <Lock className="w-4 h-4 text-muted-foreground" />
+                  <Lock className="w-4 h-4 text-muted-foreground flex-shrink-0" />
                 )}
               </div>
             );
           })}
         </div>
-      </motion.div>
-
-      {/* Reward Tiers (coming soon) */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2 }}
-        className="space-y-3"
-      >
-        <h3 className="text-lg font-black text-foreground">Reward Tiers</h3>
-        <div className="space-y-2">
-          {rewardTiers.map((tier) => (
-            <div
-              key={tier.label}
-              className={cn(
-                "flex items-center gap-4 p-4 rounded-2xl border",
-                tier.unlocked ? "bg-card border-border" : "bg-muted/30 border-border/50 opacity-50"
-              )}
-            >
-              <div className={cn("w-10 h-10 rounded-xl bg-gradient-to-br flex items-center justify-center", tier.color)}>
-                <Gift className="w-5 h-5 text-white" />
-              </div>
-              <div className="flex-1">
-                <p className="font-black text-foreground text-sm">{tier.label} Tier</p>
-                <p className="text-xs text-muted-foreground">Reach Level {tier.level}</p>
-              </div>
-              {tier.unlocked ? (
-                <ChevronRight className="w-5 h-5 text-muted-foreground" />
-              ) : (
-                <Lock className="w-4 h-4 text-muted-foreground" />
-              )}
-            </div>
-          ))}
-        </div>
-        <p className="text-xs text-center text-muted-foreground pt-2">
-          Rewards coming soon — keep leveling up! 🚀
-        </p>
+        {!showAllLevels && (levelThresholds?.length || 0) > (visibleLevels?.length || 0) && (
+          <p className="text-xs text-center text-muted-foreground">
+            +{(levelThresholds?.length || 0) - (visibleLevels?.length || 0)} more levels
+          </p>
+        )}
       </motion.div>
     </div>
   );
