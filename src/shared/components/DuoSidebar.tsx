@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import logo from "@/assets/euphoria-logo-button.png";
+import { NotificationPanel } from "@/features/notifications/components/NotificationPanel";
 
 interface DuoSidebarProps {
   activeTab: string;
@@ -87,12 +88,15 @@ export const DuoSidebar = ({ activeTab, onTabChange }: DuoSidebarProps) => {
             <img src={logo} alt="Logo" className="w-8 h-8 object-contain" />
             <span className="text-base font-bold text-foreground">Euphoria</span>
           </div>
-          <button
-            onClick={() => setMobileOpen(!mobileOpen)}
-            className="p-2 rounded-xl hover:bg-muted transition-colors"
-          >
-            {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-          </button>
+          <div className="flex items-center gap-1">
+            <NotificationPanel onNavigate={onTabChange} />
+            <button
+              onClick={() => setMobileOpen(!mobileOpen)}
+              className="p-2 rounded-xl hover:bg-muted transition-colors"
+            >
+              {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </button>
+          </div>
         </header>
 
         {/* Mobile bottom tabs */}
@@ -165,10 +169,13 @@ export const DuoSidebar = ({ activeTab, onTabChange }: DuoSidebarProps) => {
   // Desktop: left sidebar
   return (
     <aside className="fixed left-0 top-0 bottom-0 w-[220px] bg-card border-r border-border z-navigation flex flex-col">
-      {/* Logo */}
-      <div className="flex items-center gap-2.5 px-5 py-5 border-b border-border">
-        <img src={logo} alt="Logo" className="w-9 h-9 object-contain" />
-        <span className="text-lg font-extrabold text-foreground tracking-tight">Euphoria</span>
+      {/* Logo + Notification bell */}
+      <div className="flex items-center justify-between px-5 py-5 border-b border-border">
+        <div className="flex items-center gap-2.5">
+          <img src={logo} alt="Logo" className="w-9 h-9 object-contain" />
+          <span className="text-lg font-extrabold text-foreground tracking-tight">Euphoria</span>
+        </div>
+        <NotificationPanel onNavigate={onTabChange} />
       </div>
 
       {/* Nav items */}
