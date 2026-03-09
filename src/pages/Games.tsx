@@ -7,6 +7,7 @@ import { MarketReactionGame } from "@/features/games/components/MarketReactionGa
 import { BudgetBalancerGame } from "@/features/games/components/BudgetBalancerGame";
 import { BudgetSimulatorGame } from "@/features/games/components/BudgetSimulatorGame";
 import { CreditScoreSimulator } from "@/features/games/components/CreditScoreSimulator";
+import { BusinessStartupSimulator } from "@/features/games/components/BusinessStartupSimulator";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
