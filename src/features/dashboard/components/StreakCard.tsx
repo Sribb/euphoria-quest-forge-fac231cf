@@ -76,7 +76,7 @@ export const StreakCard = () => {
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ delay: i * 0.1 }}
-                className="w-8 h-8 rounded-xl bg-sky-500/10 border border-sky-500/20 flex items-center justify-center"
+                className="w-8 h-8 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center"
               >
                 <Snowflake className="w-4 h-4 text-primary" />
               </motion.div>
