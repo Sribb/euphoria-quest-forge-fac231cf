@@ -182,8 +182,8 @@ export const PricingSection = () => {
                   tier.highlighted
                     ? "bg-gradient-to-b from-primary via-primary/50 to-primary/20 shadow-[0_0_40px_-8px_hsl(262_83%_58%/0.4)]"
                     : hoveredTier === i
-                    ? "bg-gradient-to-b from-[hsl(var(--border))] to-primary/20"
-                    : "bg-gradient-to-b from-[hsl(var(--border))] to-transparent"
+                    ? "bg-gradient-to-b from-[hsl(var(--border))] to-primary/20 shadow-[0_0_24px_-6px_hsl(262_83%_58%/0.2)]"
+                    : "bg-gradient-to-b from-[hsl(var(--border))]/40 to-transparent"
                 }`}
               >
                 {/* Badge */}
