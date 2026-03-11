@@ -200,7 +200,9 @@ export const PricingSection = () => {
                   className={`relative h-full rounded-2xl p-6 lg:p-7 flex flex-col transition-all duration-500 ${
                     tier.highlighted
                       ? "bg-[hsl(240_10%_5%)]"
-                      : "bg-[hsl(240_10%_6%)]"
+                      : hoveredTier === i
+                      ? "bg-[hsl(240_10%_7%)]"
+                      : "bg-[hsl(240_10%_6%)] opacity-75"
                   } ${hoveredTier === i ? "-translate-y-1" : ""}`}
                 >
                   {/* Hover glow overlay */}
