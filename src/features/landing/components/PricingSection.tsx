@@ -84,27 +84,6 @@ const tiers: PricingTier[] = [
     highlighted: true,
   },
   {
-    name: "Premium Student",
-    icon: Crown,
-    price: "$12.99",
-    period: "/mo",
-    originalPrice: "$19.99",
-    tagline: "For ambitious students who want every edge",
-    description: "Unlock exclusive tools used by top-performing learners.",
-    features: [
-      { text: "Everything in Pro Student", highlight: true },
-      { text: "Exclusive advanced simulations", highlight: true },
-      { text: "1-on-1 AI mentorship sessions", highlight: true },
-      { text: "Certification of completion", highlight: true },
-      { text: "Early access to new features", highlight: true },
-      { text: "Export portfolio reports", highlight: true },
-      { text: "Custom learning pathways", highlight: true },
-    ],
-    cta: "Upgrade to Premium",
-    ctaVariant: "outline",
-    highlighted: false,
-  },
-  {
     name: "Schools & Districts",
     icon: Building2,
     price: "Custom",
@@ -112,7 +91,7 @@ const tiers: PricingTier[] = [
     tagline: "Financial literacy at scale",
     description: "Empower every student in your school or district.",
     features: [
-      { text: "Everything in Premium", highlight: true },
+      { text: "Everything in Pro", highlight: true },
       { text: "Unlimited educator seats", highlight: true },
       { text: "Admin dashboard & analytics", highlight: true },
       { text: "SSO integration", highlight: true },
@@ -183,7 +162,7 @@ export const PricingSection = () => {
 
         {/* Pricing Grid */}
         <motion.div
-          className="grid md:grid-cols-2 lg:grid-cols-4 gap-5 items-stretch mb-20"
+          className="grid md:grid-cols-3 gap-5 items-stretch mb-20 max-w-5xl mx-auto"
           variants={stagger}
           initial="hidden"
           whileInView="show"
@@ -203,8 +182,8 @@ export const PricingSection = () => {
                   tier.highlighted
                     ? "bg-gradient-to-b from-primary via-primary/50 to-primary/20 shadow-[0_0_40px_-8px_hsl(262_83%_58%/0.4)]"
                     : hoveredTier === i
-                    ? "bg-gradient-to-b from-[hsl(var(--border))] to-primary/20"
-                    : "bg-gradient-to-b from-[hsl(var(--border))] to-transparent"
+                    ? "bg-gradient-to-b from-[hsl(var(--border))] to-primary/20 shadow-[0_0_24px_-6px_hsl(262_83%_58%/0.2)]"
+                    : "bg-gradient-to-b from-[hsl(var(--border))]/40 to-transparent"
                 }`}
               >
                 {/* Badge */}
@@ -221,7 +200,9 @@ export const PricingSection = () => {
                   className={`relative h-full rounded-2xl p-6 lg:p-7 flex flex-col transition-all duration-500 ${
                     tier.highlighted
                       ? "bg-[hsl(240_10%_5%)]"
-                      : "bg-[hsl(240_10%_6%)]"
+                      : hoveredTier === i
+                      ? "bg-[hsl(240_10%_7%)]"
+                      : "bg-[hsl(240_10%_6%)] opacity-75"
                   } ${hoveredTier === i ? "-translate-y-1" : ""}`}
                 >
                   {/* Hover glow overlay */}
