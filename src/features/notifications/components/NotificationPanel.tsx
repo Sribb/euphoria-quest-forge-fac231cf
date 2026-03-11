@@ -96,7 +96,7 @@ export const NotificationPanel = ({ onNavigate }: NotificationPanelProps) => {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -10, scale: 0.95 }}
             transition={{ duration: 0.15 }}
-            className="absolute right-0 top-12 w-[380px] max-h-[520px] bg-card border border-border rounded-2xl shadow-xl z-50 overflow-hidden"
+            className="absolute left-0 top-12 w-[380px] max-w-[calc(100vw-32px)] max-h-[520px] bg-card border border-border rounded-2xl shadow-xl z-50 overflow-hidden max-md:right-0 max-md:left-auto"
           >
             {/* Header */}
             <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-card">
