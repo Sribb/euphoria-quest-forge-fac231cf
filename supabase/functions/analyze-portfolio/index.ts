@@ -19,9 +19,9 @@ serve(async (req) => {
       });
     }
 
-    // Validate & sanitize holdings
     const sanitized = holdings.slice(0, 50).map((h: any) => ({
       ticker: String(h.ticker || "").toUpperCase().slice(0, 10).replace(/[^A-Z0-9.]/g, ""),
+      name: String(h.name || "").slice(0, 60),
       allocation: Math.max(0, Math.min(100, Number(h.allocation) || 0)),
     })).filter((h: any) => h.ticker.length > 0 && h.allocation > 0);
 
@@ -35,24 +35,34 @@ serve(async (req) => {
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
-    const holdingsList = sanitized.map((h: any) => `${h.ticker}: ${h.allocation}%`).join(", ");
+    const holdingsList = sanitized.map((h: any) => `${h.ticker} (${h.name}): ${h.allocation.toFixed(1)}%`).join("\n- ");
 
-    const systemPrompt = `You are a financial education assistant for a learning platform aimed at students. Your role is to analyze a user's portfolio allocation and provide GENERAL educational feedback about diversification.
+    const systemPrompt = `You are a financial education assistant for a learning platform aimed at students. Analyze a user's portfolio allocation and provide GENERAL educational feedback about diversification.
 
 CRITICAL LEGAL RULES — you MUST follow these:
 - NEVER recommend buying, selling, or holding any specific stock, ETF, or security.
 - NEVER say things like "you should buy AAPL" or "sell your TSLA".
-- ONLY give general diversification guidance like "you may want to diversify more across sectors" or "your portfolio is concentrated in one sector".
-- Always include a disclaimer that this is for educational purposes only and is NOT financial advice.
-- Focus on sector allocation, geographic diversification concepts, concentration risk, and general portfolio theory.
+- ONLY give general diversification guidance.
+- Always include a reminder that this is for educational purposes only and is NOT financial advice.
 
-When analyzing, identify:
-1. Which sectors the holdings likely belong to (Technology, Healthcare, Finance, Consumer, Energy, etc.)
-2. Whether the portfolio is concentrated or diversified across sectors
-3. General educational commentary on diversification principles
-4. A simple risk assessment (concentrated, moderate, well-diversified)
+FORMAT YOUR RESPONSE WITH THESE EXACT SECTIONS using markdown ## headers:
 
-Format your response in clear sections with headers. Use markdown formatting.`;
+## Portfolio Overview
+A brief 2-3 sentence summary of what you see in the portfolio.
+
+## Sector Breakdown
+Identify which sectors the holdings likely belong to (Technology, Healthcare, Finance, Consumer, Energy, etc.). List each sector and which tickers fall under it, with approximate combined allocation percentage.
+
+## Risk Assessment
+Rate the portfolio as one of: "High Concentration Risk", "Moderate Risk", or "Well-Diversified". Explain why in 2-3 sentences.
+
+## Diversification Feedback
+Give 2-3 specific educational tips about how the portfolio's diversification could be improved in general terms. Use bullet points.
+
+## Key Takeaway
+One clear, memorable sentence summarizing the main insight about this portfolio.
+
+Keep each section concise — 2-4 sentences max. Be direct and educational.`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -66,7 +76,7 @@ Format your response in clear sections with headers. Use markdown formatting.`;
           { role: "system", content: systemPrompt },
           {
             role: "user",
-            content: `Please analyze this portfolio allocation and provide educational feedback on diversification:\n\nHoldings: ${holdingsList}\n\nTotal allocation: ${sanitized.reduce((s: number, h: any) => s + h.allocation, 0)}%`,
+            content: `Please analyze this portfolio allocation and provide educational feedback on diversification:\n\nHoldings:\n- ${holdingsList}\n\nTotal allocation: ${sanitized.reduce((s: number, h: any) => s + h.allocation, 0).toFixed(1)}%`,
           },
         ],
         stream: true,
@@ -76,21 +86,18 @@ Format your response in clear sections with headers. Use markdown formatting.`;
     if (!response.ok) {
       if (response.status === 429) {
         return new Response(JSON.stringify({ error: "Rate limit exceeded. Please try again in a moment." }), {
-          status: 429,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
       if (response.status === 402) {
         return new Response(JSON.stringify({ error: "AI service credits depleted. Please try again later." }), {
-          status: 402,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
       const t = await response.text();
       console.error("AI gateway error:", response.status, t);
       return new Response(JSON.stringify({ error: "AI analysis failed. Please try again." }), {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
@@ -100,8 +107,7 @@ Format your response in clear sections with headers. Use markdown formatting.`;
   } catch (e) {
     console.error("analyze-portfolio error:", e);
     return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Unknown error" }), {
-      status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
 });
