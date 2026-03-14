@@ -3,29 +3,35 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { PieChart, Plus, Trash2, Sparkles, AlertTriangle, Loader2 } from "lucide-react";
+import { PieChart, Plus, Trash2, Sparkles, Loader2, DollarSign, Hash } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import ReactMarkdown from "react-markdown";
 import { toast } from "sonner";
+import { TickerAutocomplete } from "./TickerAutocomplete";
+import { AnalysisResults } from "./AnalysisResults";
 
 interface Holding {
   id: string;
   ticker: string;
-  allocation: string;
+  name: string;
+  inputMode: "shares" | "dollars";
+  value: string; // shares count or dollar amount
 }
 
 const ANALYZE_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/analyze-portfolio`;
 
 export const PortfolioAnalyzer = () => {
   const [holdings, setHoldings] = useState<Holding[]>([
-    { id: crypto.randomUUID(), ticker: "", allocation: "" },
+    { id: crypto.randomUUID(), ticker: "", name: "", inputMode: "dollars", value: "" },
   ]);
   const [analysis, setAnalysis] = useState("");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   const addHolding = () => {
     if (holdings.length >= 25) return;
-    setHoldings((prev) => [...prev, { id: crypto.randomUUID(), ticker: "", allocation: "" }]);
+    setHoldings((prev) => [
+      ...prev,
+      { id: crypto.randomUUID(), ticker: "", name: "", inputMode: "dollars", value: "" },
+    ]);
   };
 
   const removeHolding = (id: string) => {
@@ -33,28 +39,36 @@ export const PortfolioAnalyzer = () => {
     setHoldings((prev) => prev.filter((h) => h.id !== id));
   };
 
-  const updateHolding = (id: string, field: "ticker" | "allocation", value: string) => {
+  const updateTicker = (id: string, symbol: string, name: string) => {
+    setHoldings((prev) => prev.map((h) => (h.id === id ? { ...h, ticker: symbol, name } : h)));
+  };
+
+  const updateValue = (id: string, val: string) => {
+    const sanitized = val.replace(/[^0-9.]/g, "").slice(0, 12);
+    setHoldings((prev) => prev.map((h) => (h.id === id ? { ...h, value: sanitized } : h)));
+  };
+
+  const toggleMode = (id: string) => {
     setHoldings((prev) =>
       prev.map((h) =>
-        h.id === id
-          ? {
-              ...h,
-              [field]:
-                field === "ticker"
-                  ? value.toUpperCase().replace(/[^A-Z0-9.]/g, "").slice(0, 10)
-                  : value.replace(/[^0-9.]/g, "").slice(0, 6),
-            }
-          : h
+        h.id === id ? { ...h, inputMode: h.inputMode === "shares" ? "dollars" : "shares", value: "" } : h
       )
     );
   };
 
-  const totalAllocation = holdings.reduce((s, h) => s + (parseFloat(h.allocation) || 0), 0);
+  // Calculate allocation percentages from dollar amounts / share values
+  const totalValue = holdings.reduce((s, h) => s + (parseFloat(h.value) || 0), 0);
+
+  const getAllocation = (h: Holding) => {
+    const v = parseFloat(h.value) || 0;
+    if (totalValue === 0) return 0;
+    return (v / totalValue) * 100;
+  };
 
   const analyze = useCallback(async () => {
-    const valid = holdings.filter((h) => h.ticker && parseFloat(h.allocation) > 0);
+    const valid = holdings.filter((h) => h.ticker && parseFloat(h.value) > 0);
     if (valid.length === 0) {
-      toast.error("Add at least one holding with a ticker and allocation %.");
+      toast.error("Add at least one holding with a ticker and amount.");
       return;
     }
 
@@ -62,15 +76,21 @@ export const PortfolioAnalyzer = () => {
     setAnalysis("");
 
     try {
+      const holdingsData = valid.map((h) => ({
+        ticker: h.ticker,
+        name: h.name,
+        allocation: getAllocation(h),
+        inputMode: h.inputMode,
+        rawValue: parseFloat(h.value),
+      }));
+
       const resp = await fetch(ANALYZE_URL, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
         },
-        body: JSON.stringify({
-          holdings: valid.map((h) => ({ ticker: h.ticker, allocation: parseFloat(h.allocation) })),
-        }),
+        body: JSON.stringify({ holdings: holdingsData }),
       });
 
       if (!resp.ok) {
@@ -120,7 +140,7 @@ export const PortfolioAnalyzer = () => {
     } finally {
       setIsAnalyzing(false);
     }
-  }, [holdings]);
+  }, [holdings, totalValue]);
 
   return (
     <div className="space-y-6">
@@ -131,39 +151,50 @@ export const PortfolioAnalyzer = () => {
           <h3 className="text-xl font-bold">Portfolio Analyzer</h3>
         </div>
         <p className="text-sm text-muted-foreground mb-6">
-          Enter your holdings below and let AI analyze your portfolio diversification.
+          Enter your holdings and let AI evaluate your diversification. Enter dollar amounts or share quantities.
         </p>
 
         {/* Holdings List */}
         <div className="space-y-3 mb-4">
-          <div className="grid grid-cols-[1fr_100px_40px] gap-3 text-xs font-medium text-muted-foreground px-1">
+          <div className="grid grid-cols-[1fr_44px_120px_40px] gap-2 text-xs font-medium text-muted-foreground px-1">
             <span>Ticker / Symbol</span>
-            <span>Allocation %</span>
+            <span />
+            <span className="text-right">Amount</span>
             <span />
           </div>
 
           <AnimatePresence initial={false}>
-            {holdings.map((h, i) => (
+            {holdings.map((h) => (
               <motion.div
                 key={h.id}
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: "auto" }}
                 exit={{ opacity: 0, height: 0 }}
-                className="grid grid-cols-[1fr_100px_40px] gap-3 items-center"
+                className="grid grid-cols-[1fr_44px_120px_40px] gap-2 items-center"
               >
-                <Input
-                  placeholder="e.g. AAPL"
+                <TickerAutocomplete
                   value={h.ticker}
-                  onChange={(e) => updateHolding(h.id, "ticker", e.target.value)}
-                  className="font-mono"
-                  maxLength={10}
+                  onChange={(symbol, name) => updateTicker(h.id, symbol, name)}
                 />
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => toggleMode(h.id)}
+                  className="text-muted-foreground hover:text-foreground h-10 w-10"
+                  title={h.inputMode === "dollars" ? "Switch to shares" : "Switch to dollars"}
+                >
+                  {h.inputMode === "dollars" ? (
+                    <DollarSign className="w-4 h-4" />
+                  ) : (
+                    <Hash className="w-4 h-4" />
+                  )}
+                </Button>
                 <Input
-                  placeholder="%"
-                  value={h.allocation}
-                  onChange={(e) => updateHolding(h.id, "allocation", e.target.value)}
-                  className="text-right"
-                  maxLength={6}
+                  placeholder={h.inputMode === "dollars" ? "$0.00" : "Shares"}
+                  value={h.value}
+                  onChange={(e) => updateValue(h.id, e.target.value)}
+                  className="text-right text-sm"
+                  maxLength={12}
                 />
                 <Button
                   variant="ghost"
@@ -179,24 +210,26 @@ export const PortfolioAnalyzer = () => {
           </AnimatePresence>
         </div>
 
-        {/* Total & Add */}
-        <div className="flex items-center justify-between mb-6">
+        {/* Allocation preview badges */}
+        {totalValue > 0 && (
+          <div className="flex flex-wrap gap-2 mb-4 px-1">
+            {holdings
+              .filter((h) => h.ticker && parseFloat(h.value) > 0)
+              .map((h) => (
+                <Badge key={h.id} variant="outline" className="text-xs bg-muted/50">
+                  {h.ticker}: {getAllocation(h).toFixed(1)}%
+                </Badge>
+              ))}
+          </div>
+        )}
+
+        {/* Add + Analyze */}
+        <div className="flex items-center justify-between mb-4">
           <Button variant="outline" size="sm" onClick={addHolding} disabled={holdings.length >= 25}>
             <Plus className="w-4 h-4 mr-1" /> Add Holding
           </Button>
-          <Badge
-            variant="outline"
-            className={
-              Math.abs(totalAllocation - 100) < 0.01
-                ? "bg-success/10 text-success border-success/30"
-                : "bg-warning/10 text-warning border-warning/30"
-            }
-          >
-            Total: {totalAllocation.toFixed(1)}%
-          </Badge>
         </div>
 
-        {/* Analyze Button */}
         <Button
           className="w-full gap-2"
           size="lg"
@@ -219,26 +252,7 @@ export const PortfolioAnalyzer = () => {
       <AnimatePresence>
         {analysis && (
           <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
-            <Card className="p-6">
-              <div className="flex items-center gap-2 mb-4">
-                <Sparkles className="w-5 h-5 text-primary" />
-                <h3 className="text-lg font-bold">AI Analysis</h3>
-              </div>
-
-              <div className="prose prose-sm prose-invert max-w-none [&_h1]:text-lg [&_h2]:text-base [&_h3]:text-sm [&_p]:text-muted-foreground [&_li]:text-muted-foreground [&_strong]:text-foreground">
-                <ReactMarkdown>{analysis}</ReactMarkdown>
-              </div>
-
-              {/* Disclaimer */}
-              <div className="mt-6 flex items-start gap-2 p-3 rounded-lg bg-warning/5 border border-warning/20">
-                <AlertTriangle className="w-4 h-4 text-warning mt-0.5 shrink-0" />
-                <p className="text-xs text-warning/80">
-                  <strong className="text-warning">Educational Only.</strong> This analysis is for
-                  learning purposes and does NOT constitute financial advice. Always consult a
-                  qualified financial advisor before making investment decisions.
-                </p>
-              </div>
-            </Card>
+            <AnalysisResults analysis={analysis} isStreaming={isAnalyzing} />
           </motion.div>
         )}
       </AnimatePresence>
