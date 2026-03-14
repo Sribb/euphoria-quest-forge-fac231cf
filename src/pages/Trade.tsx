@@ -1,6 +1,7 @@
-import { TrendingUp, Brain, BarChart3, Zap } from "lucide-react";
+import { TrendingUp, Brain, BarChart3, Zap, PieChart } from "lucide-react";
 import { InteractiveAIMarket } from "@/features/trading/components/InteractiveAIMarket";
 import { PortfolioOverview } from "@/features/trading/components/PortfolioOverview";
+import { PortfolioAnalyzer } from "@/features/trading/components/PortfolioAnalyzer";
 import { AssetAllocation } from "@/features/trading/components/AssetAllocation";
 import { TransactionHistory } from "@/features/trading/components/TransactionHistory";
 import { StockTrading } from "@/features/trading/components/StockTrading";
@@ -48,7 +49,7 @@ const Trade = ({ onNavigate, onStockSearch }: TradeProps) => {
 
       {/* Tabs */}
       <Tabs defaultValue="overview" className="w-full">
-        <TabsList className="grid w-full grid-cols-3 mb-6 bg-muted/50 backdrop-blur-sm">
+        <TabsList className="grid w-full grid-cols-4 mb-6 bg-muted/50 backdrop-blur-sm">
           <TabsTrigger value="overview" className="gap-2 text-xs sm:text-sm">
             <BarChart3 className="w-4 h-4" />
             Overview
@@ -60,6 +61,10 @@ const Trade = ({ onNavigate, onStockSearch }: TradeProps) => {
           <TabsTrigger value="trade" className="gap-2 text-xs sm:text-sm">
             <Zap className="w-4 h-4" />
             Trade
+          </TabsTrigger>
+          <TabsTrigger value="analyze" className="gap-2 text-xs sm:text-sm">
+            <PieChart className="w-4 h-4" />
+            Analyze
           </TabsTrigger>
         </TabsList>
 
@@ -75,6 +80,10 @@ const Trade = ({ onNavigate, onStockSearch }: TradeProps) => {
 
         <TabsContent value="trade">
           <StockTrading />
+        </TabsContent>
+
+        <TabsContent value="analyze">
+          <PortfolioAnalyzer />
         </TabsContent>
       </Tabs>
     </motion.div>
