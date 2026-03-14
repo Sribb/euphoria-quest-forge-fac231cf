@@ -49,7 +49,7 @@ const Trade = ({ onNavigate, onStockSearch }: TradeProps) => {
 
       {/* Tabs */}
       <Tabs defaultValue="overview" className="w-full">
-        <TabsList className="grid w-full grid-cols-3 mb-6 bg-muted/50 backdrop-blur-sm">
+        <TabsList className="grid w-full grid-cols-4 mb-6 bg-muted/50 backdrop-blur-sm">
           <TabsTrigger value="overview" className="gap-2 text-xs sm:text-sm">
             <BarChart3 className="w-4 h-4" />
             Overview
@@ -61,6 +61,10 @@ const Trade = ({ onNavigate, onStockSearch }: TradeProps) => {
           <TabsTrigger value="trade" className="gap-2 text-xs sm:text-sm">
             <Zap className="w-4 h-4" />
             Trade
+          </TabsTrigger>
+          <TabsTrigger value="analyze" className="gap-2 text-xs sm:text-sm">
+            <PieChart className="w-4 h-4" />
+            Analyze
           </TabsTrigger>
         </TabsList>
 
@@ -76,6 +80,10 @@ const Trade = ({ onNavigate, onStockSearch }: TradeProps) => {
 
         <TabsContent value="trade">
           <StockTrading />
+        </TabsContent>
+
+        <TabsContent value="analyze">
+          <PortfolioAnalyzer />
         </TabsContent>
       </Tabs>
     </motion.div>
