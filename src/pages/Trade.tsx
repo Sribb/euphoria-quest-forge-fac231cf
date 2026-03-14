@@ -1,6 +1,7 @@
-import { TrendingUp, Brain, BarChart3, Zap } from "lucide-react";
+import { TrendingUp, Brain, BarChart3, Zap, PieChart } from "lucide-react";
 import { InteractiveAIMarket } from "@/features/trading/components/InteractiveAIMarket";
 import { PortfolioOverview } from "@/features/trading/components/PortfolioOverview";
+import { PortfolioAnalyzer } from "@/features/trading/components/PortfolioAnalyzer";
 import { AssetAllocation } from "@/features/trading/components/AssetAllocation";
 import { TransactionHistory } from "@/features/trading/components/TransactionHistory";
 import { StockTrading } from "@/features/trading/components/StockTrading";
