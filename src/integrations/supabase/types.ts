@@ -2861,6 +2861,48 @@ export type Database = {
           },
         ]
       }
+      user_certificates: {
+        Row: {
+          category: string
+          certificate_type: string
+          created_at: string
+          credential_id: string
+          description: string
+          id: string
+          issued_at: string
+          metadata: Json
+          tier: string
+          title: string
+          user_id: string
+        }
+        Insert: {
+          category?: string
+          certificate_type: string
+          created_at?: string
+          credential_id?: string
+          description?: string
+          id?: string
+          issued_at?: string
+          metadata?: Json
+          tier?: string
+          title: string
+          user_id: string
+        }
+        Update: {
+          category?: string
+          certificate_type?: string
+          created_at?: string
+          credential_id?: string
+          description?: string
+          id?: string
+          issued_at?: string
+          metadata?: Json
+          tier?: string
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_hearts: {
         Row: {
           created_at: string
