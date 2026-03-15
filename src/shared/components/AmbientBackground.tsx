@@ -1,8 +1,8 @@
 import { useEffect, useRef } from "react";
 
 /**
- * Subtle animated ambient background with floating violet orbs and micro-particles.
- * Psychologically warm & inviting — creates depth without distraction.
+ * Subtle animated ambient background with rising micro-star particles.
+ * Matches the Auth page particle style for visual consistency.
  */
 export const AmbientBackground = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -17,44 +17,47 @@ export const AmbientBackground = () => {
     let w = 0;
     let h = 0;
 
+    type P = { x: number; y: number; vx: number; vy: number; o: number; r: number };
+    let particles: P[] = [];
+
+    const makeParticle = (): P => ({
+      x: Math.random() * w,
+      y: Math.random() * h,
+      vx: (Math.random() - 0.5) * 0.06,
+      vy: -(Math.random() * 0.15 + 0.02),
+      o: Math.random() * 0.5 + 0.15,
+      r: Math.random() * 0.8 + 0.4,
+    });
+
     const resize = () => {
       w = canvas.width = window.innerWidth;
       h = canvas.height = window.innerHeight;
+      // Re-init particles on resize
+      const count = Math.floor((w * h) / 5000);
+      particles = Array.from({ length: count }, makeParticle);
     };
     resize();
     window.addEventListener("resize", resize);
 
-
-    // Micro particles — subtle dots
-    const dots = Array.from({ length: 140 }, () => ({
-      x: Math.random() * w,
-      y: Math.random() * h,
-      r: Math.random() * 1.5 + 0.4,
-      vy: -(Math.random() * 0.15 + 0.03),
-      vx: (Math.random() - 0.5) * 0.06,
-      alpha: Math.random() * 0.45 + 0.1,
-    }));
-
     const draw = () => {
       ctx.clearRect(0, 0, w, h);
-
-      // Draw micro particles
-      for (const d of dots) {
-        d.x += d.vx;
-        d.y += d.vy;
-        if (d.y < -5) {
-          d.y = h + 5;
-          d.x = Math.random() * w;
+      for (const p of particles) {
+        p.x += p.vx;
+        p.y += p.vy;
+        if (p.y < -5) {
+          p.y = h + Math.random() * 40;
+          p.x = Math.random() * w;
+          p.o = Math.random() * 0.5 + 0.15;
+          p.r = Math.random() * 0.8 + 0.4;
         }
-        if (d.x < -5) d.x = w + 5;
-        if (d.x > w + 5) d.x = -5;
+        if (p.x < -5) p.x = w + 5;
+        if (p.x > w + 5) p.x = -5;
 
-        ctx.fillStyle = `hsla(0, 0%, 80%, ${d.alpha})`;
+        ctx.fillStyle = `hsla(0, 0%, 80%, ${p.o})`;
         ctx.beginPath();
-        ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
         ctx.fill();
       }
-
       raf = requestAnimationFrame(draw);
     };
 

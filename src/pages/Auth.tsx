@@ -33,7 +33,7 @@ function ParticleCanvas() {
     };
     setSize();
 
-    type P = { x: number; y: number; v: number; o: number };
+    type P = { x: number; y: number; v: number; o: number; r: number };
     let ps: P[] = [];
     let raf = 0;
 
@@ -42,6 +42,7 @@ function ParticleCanvas() {
       y: Math.random() * canvas.height,
       v: Math.random() * 0.15 + 0.02,
       o: Math.random() * 0.5 + 0.15,
+      r: Math.random() * 0.8 + 0.4,
     });
 
     const init = () => {
@@ -59,11 +60,11 @@ function ParticleCanvas() {
           p.y = canvas.height + Math.random() * 40;
           p.v = Math.random() * 0.15 + 0.02;
           p.o = Math.random() * 0.5 + 0.15;
+          p.r = Math.random() * 0.8 + 0.4;
         }
-        // Neutral white micro-stars
         ctx.fillStyle = `hsla(0, 0%, 80%, ${p.o})`;
         ctx.beginPath();
-        ctx.arc(p.x, p.y, Math.random() * 0.8 + 0.4, 0, Math.PI * 2);
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
         ctx.fill();
       });
       raf = requestAnimationFrame(draw);
@@ -353,12 +354,12 @@ const Auth = () => {
 
       {/* Animated accent grid lines */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden" style={{ zIndex: 1 }}>
-        <div className="absolute top-[25%] left-0 w-full h-px bg-primary/[0.15] origin-left" style={{ animation: "drawX 3s ease-out 0.5s both" }} />
-        <div className="absolute top-[50%] left-0 w-full h-px bg-primary/[0.10] origin-left" style={{ animation: "drawX 3s ease-out 1s both" }} />
-        <div className="absolute top-[75%] left-0 w-full h-px bg-primary/[0.15] origin-left" style={{ animation: "drawX 3s ease-out 1.5s both" }} />
-        <div className="absolute left-[25%] top-0 w-px h-full bg-primary/[0.12] origin-top" style={{ animation: "drawY 3s ease-out 0.8s both" }} />
-        <div className="absolute left-[50%] top-0 w-px h-full bg-primary/[0.10] origin-top" style={{ animation: "drawY 3s ease-out 1.3s both" }} />
-        <div className="absolute left-[75%] top-0 w-px h-full bg-primary/[0.12] origin-top" style={{ animation: "drawY 3s ease-out 1.8s both" }} />
+        <div className="absolute top-[25%] left-0 w-full h-px bg-primary/[0.22] origin-left" style={{ animation: "drawX 3s ease-out 0.5s both" }} />
+        <div className="absolute top-[50%] left-0 w-full h-px bg-primary/[0.16] origin-left" style={{ animation: "drawX 3s ease-out 1s both" }} />
+        <div className="absolute top-[75%] left-0 w-full h-px bg-primary/[0.22] origin-left" style={{ animation: "drawX 3s ease-out 1.5s both" }} />
+        <div className="absolute left-[25%] top-0 w-px h-full bg-primary/[0.18] origin-top" style={{ animation: "drawY 3s ease-out 0.8s both" }} />
+        <div className="absolute left-[50%] top-0 w-px h-full bg-primary/[0.16] origin-top" style={{ animation: "drawY 3s ease-out 1.3s both" }} />
+        <div className="absolute left-[75%] top-0 w-px h-full bg-primary/[0.18] origin-top" style={{ animation: "drawY 3s ease-out 1.8s both" }} />
       </div>
 
       {/* Particles */}
