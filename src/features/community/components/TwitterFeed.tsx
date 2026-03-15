@@ -1,18 +1,16 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
-import {
-  MessageSquare, Heart, Repeat2, Share, Bookmark, BarChart3,
-  Loader2, Image as ImageIcon, Smile, MapPin,
-} from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
-import { formatDistanceToNow } from "date-fns";
+import { Loader2, Image as ImageIcon, Smile, MapPin } from "lucide-react";
+import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { PostCard } from "./PostCard";
 
 const FEED_TABS = ["For You", "Following", "Trending"] as const;
 type FeedTab = (typeof FEED_TABS)[number];
@@ -22,6 +20,32 @@ export const TwitterFeed = () => {
   const queryClient = useQueryClient();
   const [newPostContent, setNewPostContent] = useState("");
   const [activeTab, setActiveTab] = useState<FeedTab>("For You");
+
+  // Realtime subscription for posts, likes, comments, reposts
+  useEffect(() => {
+    const channel = supabase
+      .channel("social-feed-realtime")
+      .on("postgres_changes", { event: "*", schema: "public", table: "posts" }, () => {
+        queryClient.invalidateQueries({ queryKey: ["community-posts"] });
+      })
+      .on("postgres_changes", { event: "*", schema: "public", table: "likes" }, () => {
+        queryClient.invalidateQueries({ queryKey: ["community-posts"] });
+        queryClient.invalidateQueries({ queryKey: ["user-likes"] });
+      })
+      .on("postgres_changes", { event: "*", schema: "public", table: "comments" }, () => {
+        queryClient.invalidateQueries({ queryKey: ["community-posts"] });
+        queryClient.invalidateQueries({ queryKey: ["comments"] });
+      })
+      .on("postgres_changes", { event: "*", schema: "public", table: "reposts" }, () => {
+        queryClient.invalidateQueries({ queryKey: ["community-posts"] });
+        queryClient.invalidateQueries({ queryKey: ["user-reposts"] });
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient]);
 
   // Fetch posts
   const { data: posts, isLoading } = useQuery({
@@ -51,6 +75,34 @@ export const TwitterFeed = () => {
     enabled: !!user?.id,
   });
 
+  // Fetch user's reposts
+  const { data: userReposts } = useQuery({
+    queryKey: ["user-reposts", user?.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("reposts")
+        .select("post_id")
+        .eq("user_id", user?.id!);
+      if (error) throw error;
+      return new Set(data.map((r: any) => r.post_id));
+    },
+    enabled: !!user?.id,
+  });
+
+  // Fetch user's bookmarks
+  const { data: userBookmarks } = useQuery({
+    queryKey: ["user-bookmarks", user?.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("bookmarks")
+        .select("post_id")
+        .eq("user_id", user?.id!);
+      if (error) throw error;
+      return new Set(data.map((b: any) => b.post_id));
+    },
+    enabled: !!user?.id,
+  });
+
   // Create post
   const createPostMutation = useMutation({
     mutationFn: async () => {
@@ -69,34 +121,6 @@ export const TwitterFeed = () => {
     },
     onError: () => toast.error("Failed to post"),
   });
-
-  // Like/unlike
-  const toggleLikeMutation = useMutation({
-    mutationFn: async (postId: string) => {
-      const liked = userLikes?.has(postId);
-      if (liked) {
-        await supabase.from("likes").delete().eq("post_id", postId).eq("user_id", user?.id!);
-      } else {
-        await supabase.from("likes").insert({ post_id: postId, user_id: user?.id! });
-      }
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["user-likes"] });
-      queryClient.invalidateQueries({ queryKey: ["community-posts"] });
-    },
-  });
-
-  const formatHandle = (profile: any) => {
-    if (profile?.username) return `@${profile.username}`;
-    if (profile?.display_name) return `@${profile.display_name.toLowerCase().replace(/\s+/g, "")}`;
-    return "@user";
-  };
-
-  const formatCount = (n: number) => {
-    if (n >= 1000000) return `${(n / 1000000).toFixed(1)}M`;
-    if (n >= 1000) return `${(n / 1000).toFixed(1)}K`;
-    return n.toString();
-  };
 
   return (
     <div className="max-w-[600px] mx-auto">
@@ -176,113 +200,16 @@ export const TwitterFeed = () => {
           <p className="text-muted-foreground text-[15px]">No posts yet. Be the first to share something!</p>
         </div>
       ) : (
-        <AnimatePresence>
-          {posts?.map((post: any, i: number) => (
-            <motion.article
-              key={post.id}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: i * 0.03 }}
-              className="border-b border-border px-4 py-3 hover:bg-muted/30 transition-colors cursor-pointer"
-            >
-              <div className="flex gap-3">
-                {/* Avatar */}
-                <Avatar className="w-10 h-10 shrink-0">
-                  <AvatarFallback
-                    className="font-semibold text-sm text-primary-foreground"
-                    style={{ backgroundColor: post.profiles?.avatar_url || "hsl(263 84% 58%)" }}
-                  >
-                    {post.profiles?.display_name?.[0]?.toUpperCase() || "U"}
-                  </AvatarFallback>
-                </Avatar>
-
-                {/* Content */}
-                <div className="flex-1 min-w-0">
-                  {/* Header line */}
-                  <div className="flex items-center gap-1 mb-0.5">
-                    <span className="font-bold text-[15px] text-foreground truncate">
-                      {post.profiles?.display_name || "Anonymous"}
-                    </span>
-                    <span className="text-muted-foreground text-[13px] truncate">
-                      {formatHandle(post.profiles)}
-                    </span>
-                    <span className="text-muted-foreground text-[13px]">·</span>
-                    <span className="text-muted-foreground text-[13px] shrink-0">
-                      {formatDistanceToNow(new Date(post.created_at), { addSuffix: false })}
-                    </span>
-                  </div>
-
-                  {/* Post body */}
-                  <p className="text-[15px] leading-[1.45] text-foreground whitespace-pre-wrap mb-0.5">
-                    {post.content}
-                  </p>
-
-                  {post.image_url && (
-                    <img
-                      src={post.image_url}
-                      alt="Post media"
-                      className="mt-3 rounded-2xl border border-border max-h-80 object-cover w-full"
-                    />
-                  )}
-
-                  {/* Interaction bar */}
-                  <div className="flex items-center justify-between mt-2 -ml-2 max-w-[425px]">
-                    {/* Reply */}
-                    <button className="group flex items-center gap-1.5 text-muted-foreground hover:text-primary transition-colors">
-                      <div className="p-1.5 rounded-full group-hover:bg-primary/10 transition-colors">
-                        <MessageSquare className="w-[17px] h-[17px]" />
-                      </div>
-                      <span className="text-[13px]">{post.comments_count || ""}</span>
-                    </button>
-
-                    {/* Repost */}
-                    <button className="group flex items-center gap-1.5 text-muted-foreground hover:text-success transition-colors">
-                      <div className="p-1.5 rounded-full group-hover:bg-success/10 transition-colors">
-                        <Repeat2 className="w-[17px] h-[17px]" />
-                      </div>
-                      <span className="text-[13px]"></span>
-                    </button>
-
-                    {/* Like */}
-                    <button
-                      onClick={(e) => { e.stopPropagation(); toggleLikeMutation.mutate(post.id); }}
-                      className={cn(
-                        "group flex items-center gap-1.5 transition-colors",
-                        userLikes?.has(post.id) ? "text-destructive" : "text-muted-foreground hover:text-destructive"
-                      )}
-                    >
-                      <div className={cn(
-                        "p-1.5 rounded-full transition-colors",
-                        userLikes?.has(post.id) ? "bg-destructive/10" : "group-hover:bg-destructive/10"
-                      )}>
-                        <Heart className={cn("w-[17px] h-[17px]", userLikes?.has(post.id) && "fill-current")} />
-                      </div>
-                      <span className="text-[13px]">{post.likes_count ? formatCount(post.likes_count) : ""}</span>
-                    </button>
-
-                    {/* Views */}
-                    <button className="group flex items-center gap-1.5 text-muted-foreground hover:text-primary transition-colors">
-                      <div className="p-1.5 rounded-full group-hover:bg-primary/10 transition-colors">
-                        <BarChart3 className="w-[17px] h-[17px]" />
-                      </div>
-                      <span className="text-[13px]">{formatCount(Math.floor(Math.random() * 500) + 10)}</span>
-                    </button>
-
-                    {/* Bookmark & Share */}
-                    <div className="flex items-center">
-                      <button className="group p-1.5 rounded-full text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors">
-                        <Bookmark className="w-[17px] h-[17px]" />
-                      </button>
-                      <button className="group p-1.5 rounded-full text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors">
-                        <Share className="w-[17px] h-[17px]" />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </motion.article>
-          ))}
-        </AnimatePresence>
+        posts?.map((post: any, i: number) => (
+          <PostCard
+            key={post.id}
+            post={post}
+            index={i}
+            userLikes={userLikes}
+            userReposts={userReposts}
+            userBookmarks={userBookmarks}
+          />
+        ))
       )}
     </div>
   );
