@@ -283,7 +283,7 @@ export const IMessageChat = () => {
         .eq("id", request.conversation_id);
 
       if (request.intro_message) {
-        await supabase.from("direct_messages").insert({
+        await db.from("direct_messages").insert({
           sender_id: request.sender_id,
           receiver_id: request.recipient_id,
           content: request.intro_message,
