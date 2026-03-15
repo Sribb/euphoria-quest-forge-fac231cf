@@ -152,7 +152,7 @@ export const PricingSection = () => {
 
         {/* Pricing Grid */}
         <motion.div
-          className="grid md:grid-cols-3 gap-5 items-stretch mb-20 max-w-5xl mx-auto"
+          className="grid md:grid-cols-3 gap-5 items-stretch mb-20 max-w-5xl mx-auto py-6"
           variants={stagger}
           initial="hidden"
           whileInView="show"
