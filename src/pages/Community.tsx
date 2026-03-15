@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { IMessageChat } from "@/features/community/components/IMessageChat";
+import { TwitterFeed } from "@/features/community/components/TwitterFeed";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,22 +8,18 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { TwitterFeed } from "@/features/community/components/TwitterFeed";
 import {
-  MessageSquare, Heart, Send, Plus, Users, Image as ImageIcon,
-  Loader2, Smile, GraduationCap, Copy, Trash2, UserMinus
+  MessageSquare, Send, Plus, Users,
+  Loader2, GraduationCap, Copy, Trash2, UserMinus
 } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
 import { useEducatorRole } from "@/features/educator/hooks/useEducatorRole";
 import { useClassManagement } from "@/features/educator/hooks/useClassManagement";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { formatDistanceToNow } from "date-fns";
 
 interface CommunityProps {
   onNavigate: (tab: string) => void;
