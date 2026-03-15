@@ -91,7 +91,7 @@ const BentoCard = () => {
   }, [activeTab.id]);
 
   return (
-    <div className="w-full max-w-4xl mx-auto">
+    <div className="w-full max-w-4xl mx-auto relative z-10">
       <div className="flex flex-col gap-4">
         {/* Header */}
         <div className="flex flex-col gap-1 px-1">
