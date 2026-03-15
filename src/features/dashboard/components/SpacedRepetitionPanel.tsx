@@ -124,14 +124,14 @@ export const SpacedRepetitionPanel = () => {
                   className="flex-1 border-destructive/40 text-destructive hover:bg-destructive/10"
                   onClick={() => handleSelfAssess(false)}
                 >
-                  Forgot 😬
+                  Forgot
                 </Button>
                 <Button
                   size="sm"
                   className="flex-1 bg-success text-success-foreground hover:bg-success/90"
                   onClick={() => handleSelfAssess(true)}
                 >
-                  Got it! ✅
+                  Got it!
                 </Button>
               </div>
             )}
@@ -156,7 +156,7 @@ export const SpacedRepetitionPanel = () => {
                 <div className="min-w-0">
                   <p className="text-sm font-medium text-foreground truncate">{item.concept_label}</p>
                   <p className="text-[11px] text-muted-foreground">
-                    {item.is_cracked ? "⚠️ Cracked — needs review" : `Next: ${item.interval_days}d interval`}
+                    {item.is_cracked ? "Cracked — needs review" : `Next: ${item.interval_days}d interval`}
                   </p>
                 </div>
               </div>

@@ -72,7 +72,7 @@ const WhyMoneyLosesValue = () => {
             className="flex items-center justify-between p-4 rounded-xl bg-muted/40 border border-border"
           >
             <div className="flex items-center gap-3">
-              <span className="text-2xl">{item.emoji}</span>
+              <span className="font-medium text-foreground">{item.year}</span>
               <span className="font-medium text-foreground">{item.year}</span>
             </div>
             <span className="font-bold text-foreground text-lg">{item.price}</span>

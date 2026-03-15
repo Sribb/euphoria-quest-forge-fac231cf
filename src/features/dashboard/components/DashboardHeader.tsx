@@ -35,7 +35,7 @@ export const DashboardHeader = () => {
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.4 }}
         >
-          <p className="text-sm text-muted-foreground font-medium">{greeting} 👋</p>
+          <p className="text-sm text-muted-foreground font-medium">{greeting}</p>
           <h1 className="text-2xl md:text-3xl font-bold text-foreground tracking-tight">
             {displayName}
           </h1>

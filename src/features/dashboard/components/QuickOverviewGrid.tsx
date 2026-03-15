@@ -192,7 +192,6 @@ export const QuickOverviewGrid = ({ onNavigate }: QuickOverviewGridProps) => {
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center py-4">
-            <p className="text-2xl mb-1">🎉</p>
             <p className="text-sm font-medium text-muted-foreground">All caught up!</p>
           </div>
         )}

@@ -29,7 +29,7 @@ export const TapToReveal = ({ cards }: TapToRevealProps) => {
         >
           {!revealed.has(i) ? (
             <div className="flex flex-col items-center justify-center gap-2 text-center">
-              {card.emoji && <span className="text-3xl">{card.emoji}</span>}
+              {/* emoji hidden */}
               <span className="font-semibold text-foreground text-base">{card.front}</span>
               <span className="text-xs text-muted-foreground mt-1">Tap to reveal</span>
             </div>

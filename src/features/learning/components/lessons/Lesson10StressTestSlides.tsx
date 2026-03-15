@@ -30,7 +30,7 @@ const WhatIsStressTest = () => (
           className="p-4 rounded-xl bg-muted/40 border border-border"
         >
           <div className="flex items-center gap-3 mb-2">
-            <span className="text-xl">{item.emoji}</span>
+            <div className="w-7 h-7 rounded-lg bg-primary/10 flex-shrink-0" />
             <h3 className="font-bold text-foreground">{item.event}</h3>
           </div>
           <div className="flex gap-4 text-sm mb-2">
@@ -108,7 +108,7 @@ const WhatToDoInCrash = () => {
             }`}
           >
             <div className="flex items-center gap-3">
-              <span className="text-xl">{item.emoji}</span>
+              <div className="w-7 h-7 rounded-lg bg-primary/10 flex-shrink-0" />
               <span className="font-bold text-foreground">{item.rule}</span>
             </div>
             {revealed.includes(i) && (
