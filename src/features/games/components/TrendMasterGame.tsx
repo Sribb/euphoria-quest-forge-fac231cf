@@ -262,6 +262,7 @@ export const TrendMasterGame = ({ onClose }: TrendMasterGameProps) => {
     setSelectedAnswer(null);
     setShowFeedback(false);
     setShowHint(false);
+    setWrongAttempts([]);
   };
 
   const toggleHint = () => {
