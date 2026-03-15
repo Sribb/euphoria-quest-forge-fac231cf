@@ -65,7 +65,14 @@ export const IMessageChat = ({ initialConversationId }: IMessageChatProps = {}) 
   const [activeTab, setActiveTab] = useState<"messages" | "requests">("messages");
   const [typingPartner, setTypingPartner] = useState(false);
   const [failedMessages, setFailedMessages] = useState<Set<string>>(new Set());
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [pendingFile, setPendingFile] = useState<File | null>(null);
+  const [pendingFilePreview, setPendingFilePreview] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastTypingBroadcast = useRef(0);
   // Sync initialConversationId prop
