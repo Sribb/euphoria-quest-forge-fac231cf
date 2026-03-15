@@ -57,12 +57,14 @@ function ParticleCanvas() {
         if (p.y < 0) {
           p.x = Math.random() * canvas.width;
           p.y = canvas.height + Math.random() * 40;
-          p.v = Math.random() * 0.25 + 0.05;
-          p.o = Math.random() * 0.25 + 0.08;
+          p.v = Math.random() * 0.15 + 0.02;
+          p.o = Math.random() * 0.5 + 0.15;
         }
-        // Violet particles
-        ctx.fillStyle = `rgba(124,58,237,${p.o})`;
-        ctx.fillRect(p.x, p.y, 0.7, 2.2);
+        // Neutral white micro-stars
+        ctx.fillStyle = `hsla(0, 0%, 80%, ${p.o})`;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, Math.random() * 0.8 + 0.4, 0, Math.PI * 2);
+        ctx.fill();
       });
       raf = requestAnimationFrame(draw);
     };
