@@ -63,6 +63,7 @@ const tiers: PricingTier[] = [
     price: "$9.99",
     annualPrice: "$99.99",
     period: "/mo",
+    annualPeriod: "/yr",
     originalPrice: "$12.99",
     tagline: "The fastest path to financial confidence",
     description: "Everything you need to go from beginner to confident investor.",
