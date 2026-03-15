@@ -69,9 +69,8 @@ const Index = () => {
     setActiveTab("trade");
   };
 
-  // Dashboard has its own nav, hide sidebar for it
-  const isDashboard = activeTab === "dashboard";
-  const showSidebar = !isDashboard;
+  // Sidebar always visible
+  const showSidebar = true;
 
   const renderContent = () => {
     if (selectedStock) {
@@ -162,18 +161,10 @@ const Index = () => {
 
       {showSidebar && <DuoSidebar activeTab={activeTab} onTabChange={handleNavigate} />}
 
-      <main className={
-        isDashboard
-          ? "flex-1 w-full"
-          : `flex-1 ${isMobile ? 'pt-16 pb-20 px-4' : 'ml-[220px] px-6 py-6'}`
-      }>
-        {isDashboard ? (
-          renderContent()
-        ) : (
-          <div className="max-w-6xl mx-auto animate-fade-in" key={activeTab}>
-            {renderContent()}
-          </div>
-        )}
+      <main className={`flex-1 ${isMobile ? 'pt-16 pb-20 px-4' : 'ml-[220px] px-6 py-6'}`}>
+        <div className="max-w-6xl mx-auto animate-fade-in" key={activeTab}>
+          {renderContent()}
+        </div>
       </main>
 
       <GlobalAIAssistant />

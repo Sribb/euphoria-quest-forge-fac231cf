@@ -199,17 +199,12 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
     setActiveView("home");
   };
 
-  const handleMenuOpen = () => {
-    onNavigate("profile");
-  };
-
   return (
     <div className="min-h-screen w-full bg-background">
       {/* Top Nav */}
       <CourseTopNav
         activeView={activeView}
         onViewChange={setActiveView}
-        onMenuOpen={handleMenuOpen}
       />
 
       {activeView === "courses" ? (
