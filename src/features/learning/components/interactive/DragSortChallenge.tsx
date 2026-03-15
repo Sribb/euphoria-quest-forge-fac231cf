@@ -4,6 +4,7 @@ import { GripVertical, CheckCircle2, XCircle, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { playCorrect, playIncorrect, playClick } from "@/lib/soundEffects";
 import { fireSmallConfetti } from "@/lib/confetti";
+import { stripEmoji } from "@/lib/stripEmoji";
 
 interface DragSortItem {
   id: string;
