@@ -61,7 +61,7 @@ const tiers: PricingTier[] = [
     name: "Pro Student",
     icon: Zap,
     price: "$9.99",
-    annualPrice: "$7.99",
+    annualPrice: "$99.99",
     period: "/mo",
     originalPrice: "$12.99",
     tagline: "The fastest path to financial confidence",
