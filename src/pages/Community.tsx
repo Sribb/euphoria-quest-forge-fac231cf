@@ -28,7 +28,7 @@ interface CommunityProps {
 const Community = ({ onNavigate }: CommunityProps) => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
-  const [newPostContent, setNewPostContent] = useState("");
+  const [classCode, setClassCode] = useState("");
   const [classCode, setClassCode] = useState("");
   const [newClassName, setNewClassName] = useState("");
   const [newClassDesc, setNewClassDesc] = useState("");
