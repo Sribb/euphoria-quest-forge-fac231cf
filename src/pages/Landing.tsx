@@ -270,12 +270,7 @@ const Landing = () => {
           scenic gradient bg, single CTA, product screenshot
       ═══════════════════════════════════════════════════════ */}
       <section className="relative pt-28 pb-4 md:pt-36 md:pb-8 overflow-hidden">
-        {/* Atmospheric gradient background — like Cluely's landscape */}
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute inset-0 bg-gradient-to-b from-[hsl(var(--primary)/0.06)] via-background to-background" />
-          <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-[radial-gradient(circle,hsl(var(--primary)/0.08),transparent_60%)] blur-3xl" />
-          <div className="absolute top-20 right-1/4 w-[500px] h-[500px] bg-[radial-gradient(circle,hsl(var(--accent)/0.06),transparent_60%)] blur-3xl" />
-        </div>
+        {/* Clean background — no gradient orbs */}
 
         <div className="max-w-6xl mx-auto px-6 relative z-10">
           <div className="text-center max-w-3xl mx-auto">
@@ -441,6 +436,23 @@ const Landing = () => {
                 <p className="text-sm text-muted-foreground font-normal">{s.desc}</p>
               </div>
             ))}
+          </motion.div>
+
+          {/* CTA Button */}
+          <motion.div
+            className="text-center mt-14"
+            initial={{ opacity: 0, y: 12 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.3 }}
+          >
+            <Button
+              size="lg"
+              onClick={() => navigate("/auth?signup=true")}
+              className="px-10 py-3.5 bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl font-medium text-base shadow-md hover:shadow-lg hover:shadow-primary/20 transition-all duration-200"
+            >
+              Start Now <ArrowRight className="w-4 h-4 ml-2" />
+            </Button>
           </motion.div>
         </div>
       </section>

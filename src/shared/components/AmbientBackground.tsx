@@ -26,13 +26,13 @@ export const AmbientBackground = () => {
 
 
     // Micro particles — subtle dots
-    const dots = Array.from({ length: 60 }, () => ({
+    const dots = Array.from({ length: 140 }, () => ({
       x: Math.random() * w,
       y: Math.random() * h,
-      r: Math.random() * 1.2 + 0.3,
-      vy: -(Math.random() * 0.2 + 0.05),
-      vx: (Math.random() - 0.5) * 0.08,
-      alpha: Math.random() * 0.25 + 0.05,
+      r: Math.random() * 1.5 + 0.4,
+      vy: -(Math.random() * 0.15 + 0.03),
+      vx: (Math.random() - 0.5) * 0.06,
+      alpha: Math.random() * 0.45 + 0.1,
     }));
 
     const draw = () => {
@@ -49,7 +49,7 @@ export const AmbientBackground = () => {
         if (d.x < -5) d.x = w + 5;
         if (d.x > w + 5) d.x = -5;
 
-        ctx.fillStyle = `hsla(263, 70%, 70%, ${d.alpha})`;
+        ctx.fillStyle = `hsla(0, 0%, 80%, ${d.alpha})`;
         ctx.beginPath();
         ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
         ctx.fill();
