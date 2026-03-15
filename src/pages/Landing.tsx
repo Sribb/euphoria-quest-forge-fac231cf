@@ -277,15 +277,6 @@ const Landing = () => {
 
         <div className="max-w-6xl mx-auto px-6 relative z-10">
           <div className="text-center max-w-3xl mx-auto">
-            {/* Uppercase label */}
-            <motion.p
-              className="text-[11px] font-medium text-primary uppercase tracking-[0.18em] mb-8"
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-            >
-              Investing Simulator for Students
-            </motion.p>
 
             {/* Large serif headline — mirrors Cluely's EB Garamond 80px hero */}
             <motion.h1
