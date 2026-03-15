@@ -382,8 +382,8 @@ const Landing = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            {/* Connector line behind the cards */}
-            <div className="absolute top-14 left-[12%] right-[12%] h-px bg-border/60" />
+            {/* Connector line behind the dots */}
+            <div className="absolute top-[90px] left-[12%] right-[12%] h-px bg-border/60" />
 
             {steps.map((s, i) => (
               <motion.div
@@ -395,11 +395,13 @@ const Landing = () => {
                 transition={{ delay: i * 0.1 }}
               >
                 {/* Large ghosted number */}
-                <p className="font-display text-7xl font-medium text-primary/10 leading-none mb-5 select-none">
+                <p className="font-display text-7xl font-medium text-primary/10 leading-none select-none">
                   {s.num}
                 </p>
-                {/* Dot on the connector line */}
-                <div className="absolute top-[56px] left-1/2 -translate-x-1/2 w-2.5 h-2.5 rounded-full bg-primary/40 ring-4 ring-background" />
+                {/* Dot below the number */}
+                <div className="relative my-4 flex justify-center">
+                  <div className="w-2.5 h-2.5 rounded-full bg-primary/40 ring-4 ring-background" />
+                </div>
                 <h3 className="text-base font-medium text-foreground mb-2">{s.title}</h3>
                 <p className="text-sm text-muted-foreground font-normal leading-relaxed">{s.desc}</p>
               </motion.div>
