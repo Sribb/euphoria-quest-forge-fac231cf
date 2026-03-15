@@ -49,25 +49,7 @@ export const CourseTopNav = ({ activeView, onViewChange }: CourseTopNavProps) =>
       <div className="flex items-center justify-between px-6 h-16 border-b border-border/40">
         {/* Left: Logo + tabs */}
         <div className="flex items-center gap-8">
-          <nav className="flex items-center gap-1">
-            {(["home", "courses"] as const).map((view) => (
-              <button
-                key={view}
-                onClick={() => onViewChange(view)}
-                className={cn(
-                  "relative px-4 py-2 text-sm font-bold capitalize transition-colors",
-                  activeView === view
-                    ? "text-primary"
-                    : "text-muted-foreground hover:text-foreground"
-                )}
-              >
-                {view}
-                {activeView === view && (
-                  <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-8 h-[3px] rounded-full bg-primary" />
-                )}
-              </button>
-            ))}
-          </nav>
+          <span className="text-sm font-bold text-foreground">Home</span>
         </div>
 
         {/* Right: Stats pills + menu */}

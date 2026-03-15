@@ -2160,6 +2160,42 @@ export type Database = {
           },
         ]
       }
+      pathway_progress: {
+        Row: {
+          completed: boolean | null
+          completed_at: string | null
+          course_id: string
+          created_at: string | null
+          id: string
+          lesson_number: number
+          score: number | null
+          user_id: string
+          xp_earned: number | null
+        }
+        Insert: {
+          completed?: boolean | null
+          completed_at?: string | null
+          course_id: string
+          created_at?: string | null
+          id?: string
+          lesson_number: number
+          score?: number | null
+          user_id: string
+          xp_earned?: number | null
+        }
+        Update: {
+          completed?: boolean | null
+          completed_at?: string | null
+          course_id?: string
+          created_at?: string | null
+          id?: string
+          lesson_number?: number
+          score?: number | null
+          user_id?: string
+          xp_earned?: number | null
+        }
+        Relationships: []
+      }
       pattern_insights: {
         Row: {
           category: string
