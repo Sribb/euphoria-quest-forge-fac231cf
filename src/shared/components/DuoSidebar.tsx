@@ -15,7 +15,7 @@ import {
   Users,
   GraduationCap,
   BarChart3,
-  Gift,
+  
   Menu,
   X,
   PlayCircle,
