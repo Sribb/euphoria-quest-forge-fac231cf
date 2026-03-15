@@ -419,34 +419,7 @@ export const IMessageChat = ({ initialConversationId }: IMessageChatProps = {}) 
       }, async (payload: any) => {
         queryClient.invalidateQueries({ queryKey: ["conversation-messages"] });
         queryClient.invalidateQueries({ queryKey: ["conversations"] });
-
-        // Create notification for incoming messages (not from self, not currently viewing)
-        const msg = payload.new;
-        if (msg && msg.receiver_id === user.id && msg.sender_id !== user.id) {
-          // Don't notify if user is currently viewing this conversation
-          if (msg.conversation_id === activeConversationId) return;
-
-          // Look up sender name
-          const { data: senderProfile } = await supabase
-            .from("profiles")
-            .select("display_name")
-            .eq("id", msg.sender_id)
-            .single();
-
-          const senderName = senderProfile?.display_name || "Someone";
-          const preview = msg.content?.length > 60 ? msg.content.substring(0, 60) + "…" : msg.content;
-
-          await (supabase as any).from("notifications").insert({
-            user_id: user.id,
-            title: `${senderName} sent you a message`,
-            message: preview,
-            notification_type: "message",
-            category: "info",
-            icon: "💬",
-            action_url: `community?conversation=${msg.conversation_id}`,
-            is_read: false,
-          });
-        }
+        queryClient.invalidateQueries({ queryKey: ["notifications"] });
       })
       .on("postgres_changes", {
         event: "UPDATE",
