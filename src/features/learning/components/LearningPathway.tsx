@@ -74,7 +74,7 @@ export const LearningPathway = ({
       </div>
 
       {/* Sticky header */}
-      <div className="sticky top-0 z-30 bg-background/80 backdrop-blur-xl border-b border-border/50">
+      <div className="sticky top-0 z-30 bg-background/60 backdrop-blur-2xl border-b border-border/30">
         <div className="max-w-2xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-3">
