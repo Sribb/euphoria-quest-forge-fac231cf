@@ -46,7 +46,7 @@ export const AIInsightReactor = () => {
   };
 
   const handleTrade = () => {
-    console.log("Trade executed:", { symbol, orderType, quantity, price });
+    // Trade execution handled by parent component
   };
 
   return (

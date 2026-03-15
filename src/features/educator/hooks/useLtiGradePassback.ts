@@ -28,7 +28,7 @@ export const useLtiGradePassback = () => {
         return { success: false, error };
       }
 
-      console.log("LTI grade synced:", data);
+      // Grade synced successfully
       return { success: true, data };
     } catch (err) {
       console.error("LTI grade passback failed:", err);
