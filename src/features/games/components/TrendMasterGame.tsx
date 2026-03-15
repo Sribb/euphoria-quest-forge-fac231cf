@@ -223,23 +223,26 @@ export const TrendMasterGame = ({ onClose }: TrendMasterGameProps) => {
 
   const scenario = scenarios[currentQuestion];
 
+  const [wrongAttempts, setWrongAttempts] = useState<string[]>([]);
+
   const handleAnswer = (answer: string) => {
     if (showFeedback) return;
+    if (wrongAttempts.includes(answer)) return;
     
     setSelectedAnswer(answer);
-    setShowFeedback(true);
     
     if (answer === scenario.correctAnswer) {
-      const xpGain = 100 + (streak * 25);
-      setScore(score + 1);
+      setShowFeedback(true);
+      const xpGain = wrongAttempts.length === 0 ? 100 + (streak * 25) : 50;
+      setScore(wrongAttempts.length === 0 ? score + 1 : score);
       setTotalXP(totalXP + xpGain);
-      setStreak(streak + 1);
+      setStreak(wrongAttempts.length === 0 ? streak + 1 : 0);
       setShowCelebration(true);
       setTimeout(() => setShowCelebration(false), 2000);
       toast.success(`Correct! +${xpGain} XP`, { duration: 3000 });
     } else {
+      setWrongAttempts([...wrongAttempts, answer]);
       setStreak(0);
-      toast.error("Not quite right. Review the explanation!");
     }
   };
 
