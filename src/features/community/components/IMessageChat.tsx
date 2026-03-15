@@ -66,6 +66,12 @@ export const IMessageChat = ({ initialConversationId }: IMessageChatProps = {}) 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastTypingBroadcast = useRef(0);
+  // Sync initialConversationId prop
+  useEffect(() => {
+    if (initialConversationId) {
+      setActiveConversationId(initialConversationId);
+    }
+  }, [initialConversationId]);
 
   // ── Fetch conversations ──
   const { data: conversations = [], isLoading: convosLoading } = useQuery({
