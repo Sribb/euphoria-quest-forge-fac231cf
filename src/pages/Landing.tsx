@@ -361,19 +361,6 @@ const Landing = () => {
       <section className="py-24 md:py-32">
         <div className="max-w-6xl mx-auto px-6">
           <motion.div
-            className="text-center mb-16"
-            variants={fadeUp}
-            initial="hidden"
-            whileInView="show"
-            viewport={{ once: true }}
-          >
-            <p className="text-[11px] font-medium text-primary uppercase tracking-[0.18em] mb-4">
-              Platform Preview
-            </p>
-            <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-medium text-foreground">
-              See it in action
-            </h2>
-          </motion.div>
           <motion.div
             initial={{ opacity: 0, y: 32 }}
             whileInView={{ opacity: 1, y: 0 }}
