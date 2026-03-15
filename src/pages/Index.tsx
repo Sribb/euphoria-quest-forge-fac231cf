@@ -13,7 +13,6 @@ import Trade from "./Trade";
 import Games from "./Games";
 import Community from "./Community";
 import Certificates from "./Certificates";
-
 import Profile from "./Profile";
 import { CoinShop } from "@/features/shop/components/CoinShop";
 import StockSearch from "./StockSearch";
@@ -46,9 +45,7 @@ const Index = () => {
   const handleWelcomeComplete = (navigateTo?: string) => {
     localStorage.setItem("euphoria_welcome_seen", "true");
     setShowWelcome(false);
-    if (navigateTo) {
-      setActiveTab(navigateTo);
-    }
+    if (navigateTo) setActiveTab(navigateTo);
   };
 
   const handleNavigate = (tab: string) => {
@@ -71,6 +68,10 @@ const Index = () => {
     setShowStockSearch(false);
     setActiveTab("trade");
   };
+
+  // Dashboard has its own nav, hide sidebar for it
+  const isDashboard = activeTab === "dashboard";
+  const showSidebar = !isDashboard;
 
   const renderContent = () => {
     if (selectedStock) {
@@ -158,12 +159,23 @@ const Index = () => {
       <AnimatePresence>
         {showWelcome && <PersonalizedWelcomeOverlay onComplete={handleWelcomeComplete} />}
       </AnimatePresence>
-      <DuoSidebar activeTab={activeTab} onTabChange={handleNavigate} />
-      <main className={`flex-1 ${isMobile ? 'pt-16 pb-20 px-4' : 'ml-[220px] px-6 py-6'}`}>
-        <div className="max-w-6xl mx-auto animate-fade-in" key={activeTab}>
-          {renderContent()}
-        </div>
+
+      {showSidebar && <DuoSidebar activeTab={activeTab} onTabChange={handleNavigate} />}
+
+      <main className={
+        isDashboard
+          ? "flex-1 w-full"
+          : `flex-1 ${isMobile ? 'pt-16 pb-20 px-4' : 'ml-[220px] px-6 py-6'}`
+      }>
+        {isDashboard ? (
+          renderContent()
+        ) : (
+          <div className="max-w-6xl mx-auto animate-fade-in" key={activeTab}>
+            {renderContent()}
+          </div>
+        )}
       </main>
+
       <GlobalAIAssistant />
     </div>
   );
