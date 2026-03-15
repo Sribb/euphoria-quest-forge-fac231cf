@@ -69,7 +69,7 @@ const Index = () => {
     setActiveTab("trade");
   };
 
-  // Sidebar always visible
+  // Always show sidebar
   const showSidebar = true;
 
   const renderContent = () => {
