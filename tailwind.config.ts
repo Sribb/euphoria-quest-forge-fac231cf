@@ -16,6 +16,7 @@ export default {
       fontFamily: {
         sans: ['"DM Sans"', "system-ui", "sans-serif"],
         heading: ['"Syne"', "system-ui", "sans-serif"],
+        display: ['"EB Garamond"', "Georgia", "serif"],
       },
       colors: {
         border: "hsl(var(--border))",
