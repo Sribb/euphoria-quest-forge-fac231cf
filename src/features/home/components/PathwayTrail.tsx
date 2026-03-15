@@ -69,7 +69,7 @@ export const PathwayTrail = ({
   return (
     <div className="relative pb-32">
       {/* Light content area */}
-      <div className="rounded-3xl bg-[hsl(var(--card))] border border-border/40 p-8 md:p-12">
+      <div className="p-8 md:p-12">
         {lessons.map((lesson, index) => {
           const isNext = index === firstUnlockedIncomplete;
           const isChallengeLevel = (index + 1) % 10 === 0;

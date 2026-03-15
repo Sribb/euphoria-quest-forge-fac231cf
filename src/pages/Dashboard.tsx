@@ -203,7 +203,7 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
   };
 
   return (
-    <div className="min-h-screen w-full bg-background">
+    <div className="min-h-screen w-full">
       {/* Top Nav */}
       <CourseTopNav
         activeView={activeView}
