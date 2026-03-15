@@ -58,7 +58,7 @@ const LessonsPreview = () => (
       </div>
     </div>
     <div className="bg-muted/30 rounded-xl p-5 ring-1 ring-border/50">
-      <p className="text-sm font-medium mb-3">📊 Scenario: You have $10,000 to invest</p>
+      <p className="text-sm font-medium mb-3">Scenario: You have $10,000 to invest</p>
       <p className="text-xs text-muted-foreground mb-4">The market just dropped 15%. What's your move?</p>
       <div className="grid grid-cols-2 gap-2">
         {["Buy the dip", "Hold position", "Sell everything", "Hedge with bonds"].map((opt) => (
