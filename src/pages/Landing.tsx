@@ -350,21 +350,6 @@ const Landing = () => {
       ═══════════════════════════════════════════════════════ */}
       <FeatureShowcase />
 
-      {/* ═══════════════════════════════════════════════════════
-          PLATFORM PREVIEW — Bento Card
-      ═══════════════════════════════════════════════════════ */}
-      <section className="py-24 md:py-32">
-        <div className="max-w-6xl mx-auto px-6">
-          <motion.div
-            initial={{ opacity: 0, y: 32 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-          >
-            <BentoCard />
-          </motion.div>
-        </div>
-      </section>
 
       {/* ═══════════════════════════════════════════════════════
           HOW IT WORKS — Horizontal timeline (Cluely-style steps)
