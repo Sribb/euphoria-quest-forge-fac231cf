@@ -149,7 +149,7 @@ const Index = () => {
       case "shop":
         return <CoinShop onNavigate={handleNavigate} />;
       case "community":
-        return <Community onNavigate={handleNavigate} />;
+        return <Community onNavigate={handleNavigate} initialConversationId={pendingConversationId} />;
       case "certificates":
         return <Certificates onNavigate={handleNavigate} />;
       case "profile":
