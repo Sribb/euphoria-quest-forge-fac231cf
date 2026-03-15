@@ -94,13 +94,6 @@ export const CourseTopNav = ({ activeView, onViewChange }: CourseTopNavProps) =>
             <Heart className="w-4 h-4 text-emerald-500 fill-emerald-500" />
             <span className="text-xs font-bold text-emerald-500">{energy}</span>
           </div>
-
-          <button
-            onClick={onMenuOpen}
-            className="ml-2 p-2 rounded-xl hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
-          >
-            <Menu className="w-5 h-5" />
-          </button>
         </div>
       </div>
 
