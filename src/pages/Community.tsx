@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
+import { IMessageChat } from "@/features/community/components/IMessageChat";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,8 +13,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
-  MessageSquare, Heart, Send, Plus, Users, Hash, Image as ImageIcon,
-  Search, MoreHorizontal, Loader2, Smile, GraduationCap, Copy, Trash2, UserMinus
+  MessageSquare, Heart, Send, Plus, Users, Image as ImageIcon,
+  Loader2, Smile, GraduationCap, Copy, Trash2, UserMinus
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useEducatorRole } from "@/features/educator/hooks/useEducatorRole";
@@ -30,15 +31,11 @@ const Community = ({ onNavigate }: CommunityProps) => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [newPostContent, setNewPostContent] = useState("");
-  const [activeConversation, setActiveConversation] = useState<string | null>(null);
-  const [dmMessage, setDmMessage] = useState("");
-  const [searchQuery, setSearchQuery] = useState("");
   const [classCode, setClassCode] = useState("");
   const [newClassName, setNewClassName] = useState("");
   const [newClassDesc, setNewClassDesc] = useState("");
   const [newClassMax, setNewClassMax] = useState("");
   const [showCreateClass, setShowCreateClass] = useState(false);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
   const { hasEducatorAccess } = useEducatorRole();
   const { classes, isLoading: classesLoading, createClass, deleteClass, removeStudent } = useClassManagement();
 
@@ -70,72 +67,6 @@ const Community = ({ onNavigate }: CommunityProps) => {
     enabled: !!user?.id,
   });
 
-  // Fetch DM conversations
-  const { data: dmConversations } = useQuery({
-    queryKey: ["dm-conversations", user?.id],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("direct_messages")
-        .select("*")
-        .or(`sender_id.eq.${user?.id},receiver_id.eq.${user?.id}`)
-        .order("created_at", { ascending: false });
-      if (error) throw error;
-
-      // Group by conversation partner and fetch their profiles
-      const convos = new Map<string, any>();
-      const partnerIds = new Set<string>();
-      data?.forEach((msg: any) => {
-        const partnerId = msg.sender_id === user?.id ? msg.receiver_id : msg.sender_id;
-        partnerIds.add(partnerId);
-        if (!convos.has(partnerId)) {
-          convos.set(partnerId, {
-            partnerId,
-            partnerName: "User",
-            partnerAvatar: "#9b87f5",
-            lastMessage: msg.content,
-            lastMessageAt: msg.created_at,
-            unread: msg.receiver_id === user?.id && !msg.is_read,
-          });
-        }
-      });
-
-      // Fetch partner profiles
-      if (partnerIds.size > 0) {
-        const { data: profiles } = await supabase
-          .from("profiles")
-          .select("id, display_name, avatar_url")
-          .in("id", Array.from(partnerIds));
-        profiles?.forEach((p: any) => {
-          const convo = convos.get(p.id);
-          if (convo) {
-            convo.partnerName = p.display_name || "User";
-            convo.partnerAvatar = p.avatar_url || "#9b87f5";
-          }
-        });
-      }
-
-      return Array.from(convos.values());
-    },
-    enabled: !!user?.id,
-  });
-
-  // Fetch messages for active conversation
-  const { data: activeMessages } = useQuery({
-    queryKey: ["dm-messages", activeConversation],
-    queryFn: async () => {
-      if (!activeConversation) return [];
-      const { data, error } = await supabase
-        .from("direct_messages")
-        .select("*")
-        .or(
-          `and(sender_id.eq.${user?.id},receiver_id.eq.${activeConversation}),and(sender_id.eq.${activeConversation},receiver_id.eq.${user?.id})`
-        )
-        .order("created_at", { ascending: true });
-      if (error) throw error;
-      return data;
-    },
-    enabled: !!activeConversation && !!user?.id,
-  });
 
   // Fetch student's joined classes
   const { data: studentClasses } = useQuery({
@@ -245,46 +176,6 @@ const Community = ({ onNavigate }: CommunityProps) => {
     },
   });
 
-  // Send DM
-  const sendDmMutation = useMutation({
-    mutationFn: async () => {
-      if (!dmMessage.trim() || !activeConversation) return;
-      const { error } = await supabase.from("direct_messages").insert({
-        sender_id: user?.id!,
-        receiver_id: activeConversation,
-        content: dmMessage.trim(),
-      });
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      setDmMessage("");
-      queryClient.invalidateQueries({ queryKey: ["dm-messages"] });
-      queryClient.invalidateQueries({ queryKey: ["dm-conversations"] });
-    },
-    onError: () => toast.error("Failed to send message"),
-  });
-
-  // Realtime subscriptions
-  useEffect(() => {
-    if (!user?.id) return;
-
-    const dmChannel = supabase
-      .channel("dm-realtime")
-      .on("postgres_changes", { event: "INSERT", schema: "public", table: "direct_messages" }, () => {
-        queryClient.invalidateQueries({ queryKey: ["dm-messages"] });
-        queryClient.invalidateQueries({ queryKey: ["dm-conversations"] });
-      })
-      .subscribe();
-
-    return () => { supabase.removeChannel(dmChannel); };
-  }, [user?.id, queryClient]);
-
-  // Auto-scroll messages
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [activeMessages]);
-
-  const activePartner = dmConversations?.find((c) => c.partnerId === activeConversation);
 
   return (
     <div className="space-y-4 pt-2 pb-20">
@@ -430,122 +321,8 @@ const Community = ({ onNavigate }: CommunityProps) => {
         </TabsContent>
 
         {/* DMs Tab */}
-        <TabsContent value="dms" className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 min-h-[500px]">
-            {/* Conversation list */}
-            <Card className="p-3 border-border md:col-span-1">
-              <div className="flex items-center gap-2 mb-3">
-                <Search className="w-4 h-4 text-muted-foreground" />
-                <Input
-                  placeholder="Search conversations..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="h-8 text-sm bg-background/50"
-                />
-              </div>
-              <ScrollArea className="h-[400px]">
-                {dmConversations?.length === 0 ? (
-                  <div className="text-center py-8 text-muted-foreground text-sm">
-                    <Send className="w-8 h-8 mx-auto mb-2 opacity-50" />
-                    No messages yet
-                  </div>
-                ) : (
-                  dmConversations?.map((convo) => (
-                    <button
-                      key={convo.partnerId}
-                      onClick={() => setActiveConversation(convo.partnerId)}
-                      className={`w-full flex items-center gap-3 p-3 rounded-lg text-left transition-colors ${
-                        activeConversation === convo.partnerId
-                          ? "bg-primary/10 border border-primary/20"
-                          : "hover:bg-muted/50"
-                      }`}
-                    >
-                      <Avatar className="w-9 h-9">
-                        <AvatarFallback
-                          className="text-white font-bold text-sm"
-                          style={{ backgroundColor: convo.partnerAvatar || "#9b87f5" }}
-                        >
-                          {convo.partnerName?.[0]?.toUpperCase() || "?"}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center justify-between">
-                          <span className="font-medium text-sm truncate">{convo.partnerName || "User"}</span>
-                          {convo.unread && <div className="w-2 h-2 rounded-full bg-primary" />}
-                        </div>
-                        <p className="text-xs text-muted-foreground truncate">{convo.lastMessage}</p>
-                      </div>
-                    </button>
-                  ))
-                )}
-              </ScrollArea>
-            </Card>
-
-            {/* Message area */}
-            <Card className="p-4 border-border md:col-span-2 flex flex-col">
-              {activeConversation ? (
-                <>
-                  <div className="flex items-center gap-3 pb-3 border-b border-border mb-3">
-                    <Avatar className="w-8 h-8">
-                      <AvatarFallback
-                        className="text-white font-bold text-sm"
-                        style={{ backgroundColor: activePartner?.partnerAvatar || "#9b87f5" }}
-                      >
-                        {activePartner?.partnerName?.[0]?.toUpperCase() || "?"}
-                      </AvatarFallback>
-                    </Avatar>
-                    <span className="font-semibold">{activePartner?.partnerName || "User"}</span>
-                  </div>
-                  <ScrollArea className="flex-1 h-[350px] pr-3">
-                    <div className="space-y-3">
-                      {activeMessages?.map((msg: any) => (
-                        <div
-                          key={msg.id}
-                          className={`flex ${msg.sender_id === user?.id ? "justify-end" : "justify-start"}`}
-                        >
-                          <div
-                            className={`max-w-[75%] px-4 py-2 rounded-2xl text-sm ${
-                              msg.sender_id === user?.id
-                                ? "bg-primary text-primary-foreground rounded-br-md"
-                                : "bg-muted rounded-bl-md"
-                            }`}
-                          >
-                            {msg.content}
-                          </div>
-                        </div>
-                      ))}
-                      <div ref={messagesEndRef} />
-                    </div>
-                  </ScrollArea>
-                  <div className="flex gap-2 mt-3 pt-3 border-t border-border">
-                    <Input
-                      placeholder="Type a message..."
-                      value={dmMessage}
-                      onChange={(e) => setDmMessage(e.target.value)}
-                      onKeyDown={(e) => e.key === "Enter" && sendDmMutation.mutate()}
-                      className="bg-background/50"
-                    />
-                    <Button
-                      onClick={() => sendDmMutation.mutate()}
-                      disabled={!dmMessage.trim() || sendDmMutation.isPending}
-                      className="bg-gradient-primary shadow-glow"
-                      size="icon"
-                    >
-                      <Send className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </>
-              ) : (
-                <div className="flex-1 flex items-center justify-center text-muted-foreground">
-                  <div className="text-center">
-                    <Send className="w-12 h-12 mx-auto mb-3 opacity-30" />
-                    <p className="font-medium">Select a conversation</p>
-                    <p className="text-sm">Or start a new one from a user's profile</p>
-                  </div>
-                </div>
-              )}
-            </Card>
-          </div>
+        <TabsContent value="dms">
+          <IMessageChat />
         </TabsContent>
 
         {/* Classes Tab */}
