@@ -1210,6 +1210,17 @@ export const IMessageChat = ({ initialConversationId }: IMessageChatProps = {}) 
           </div>
         </DialogContent>
       </Dialog>
+
+      <DeleteConversationDialog
+        open={showDeleteDialog}
+        onOpenChange={setShowDeleteDialog}
+        onConfirm={() => {
+          if (activeConversationId) {
+            deleteConversationMutation.mutate(activeConversationId);
+          }
+          setShowDeleteDialog(false);
+        }}
+      />
     </>
   );
 };
