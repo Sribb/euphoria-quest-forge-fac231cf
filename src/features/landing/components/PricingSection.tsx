@@ -303,23 +303,6 @@ export const PricingSection = () => {
           </div>
         </motion.div>
 
-        {/* Pull quote */}
-        <motion.div
-          className="text-center max-w-[640px] mx-auto"
-          variants={fadeUp}
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true }}
-        >
-          <p className="font-display text-xl font-medium text-foreground mb-3 leading-relaxed">
-            "Students using Euphoria scored{" "}
-            <span className="text-primary">34% higher</span>{" "}
-            on financial literacy assessments."
-          </p>
-          <p className="text-xs text-muted-foreground">
-            Based on pilot data from 200+ classrooms · Spring 2026
-          </p>
-        </motion.div>
       </div>
     </section>
   );

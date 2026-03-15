@@ -475,6 +475,28 @@ const Landing = () => {
       </section>
 
       {/* ═══════════════════════════════════════════════════════
+          SOCIAL PROOF STAT — between testimonials & pricing
+      ═══════════════════════════════════════════════════════ */}
+      <section className="py-20 md:py-28">
+        <motion.div
+          className="text-center max-w-[900px] mx-auto px-6"
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, ease: [0.22, 0.61, 0.36, 1] }}
+          viewport={{ once: true }}
+        >
+          <p className="font-display text-3xl sm:text-4xl md:text-5xl font-medium text-foreground leading-snug">
+            "Students using Euphoria scored{" "}
+            <span className="text-primary">34% higher</span>{" "}
+            on financial literacy assessments."
+          </p>
+          <p className="text-sm text-muted-foreground mt-5">
+            Based on pilot data from 200+ classrooms · Spring 2026
+          </p>
+        </motion.div>
+      </section>
+
+      {/*
           PRICING
       ═══════════════════════════════════════════════════════ */}
       <PricingSection />
