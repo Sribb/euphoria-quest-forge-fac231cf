@@ -279,6 +279,7 @@ export const TrendMasterGame = ({ onClose }: TrendMasterGameProps) => {
     setShowFeedback(false);
     setGameComplete(false);
     setShowHint(false);
+    setWrongAttempts([]);
   };
 
   // Tutorial Screen
