@@ -352,7 +352,7 @@ export const IMessageChat = () => {
   // ── Delete message ──
   const deleteMessageMutation = useMutation({
     mutationFn: async (messageId: string) => {
-      const { error } = await supabase
+      const { error } = await db
         .from("direct_messages")
         .delete()
         .eq("id", messageId)
