@@ -134,6 +134,7 @@ const App = () => (
                 </ProtectedRoute>
               }
             />
+            <Route path="/verify/:credentialId" element={<Suspense fallback={null}><VerifyCertificate /></Suspense>} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
