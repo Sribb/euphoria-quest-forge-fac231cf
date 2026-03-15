@@ -52,7 +52,7 @@ export const CoinShop = ({ onNavigate }: CoinShopProps) => {
             <ShoppingBag className="w-5 h-5 md:w-6 md:h-6 text-white" />
           </div>
           <div>
-            <h1 className="text-2xl md:text-3xl font-bold">EuphoriaCoins Shop</h1>
+            <h1 className="text-2xl md:text-3xl font-bold">Euphorium Shop</h1>
             <p className="text-sm text-muted-foreground">Spend your hard-earned coins on upgrades</p>
           </div>
         </div>
