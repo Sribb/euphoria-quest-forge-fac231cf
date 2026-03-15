@@ -49,7 +49,7 @@ const features = [
 const LessonsPreview = () => (
   <div className="space-y-4">
     <div className="flex items-center gap-3 mb-6">
-      <div className="w-10 h-10 rounded-xl bg-primary/15 flex items-center justify-center">
+      <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
         <BookOpen className="w-5 h-5 text-primary" />
       </div>
       <div>
@@ -57,12 +57,12 @@ const LessonsPreview = () => (
         <p className="text-xs text-muted-foreground">Intermediate · 12 min</p>
       </div>
     </div>
-    <div className="bg-muted/30 rounded-xl p-5 border border-white/[0.07]">
+    <div className="bg-muted/30 rounded-xl p-5 ring-1 ring-border/50">
       <p className="text-sm font-medium mb-3">📊 Scenario: You have $10,000 to invest</p>
       <p className="text-xs text-muted-foreground mb-4">The market just dropped 15%. What's your move?</p>
       <div className="grid grid-cols-2 gap-2">
         {["Buy the dip", "Hold position", "Sell everything", "Hedge with bonds"].map((opt) => (
-          <div key={opt} className="px-3 py-2.5 rounded-lg bg-card border border-white/[0.07] text-xs font-medium hover:border-primary/40 transition-colors cursor-pointer text-center">
+          <div key={opt} className="px-3 py-2.5 rounded-lg bg-card ring-1 ring-border/50 text-xs font-medium hover:ring-primary/40 transition-all cursor-pointer text-center">
             {opt}
           </div>
         ))}
@@ -109,15 +109,15 @@ const MarketPreview = () => {
         ))}
       </div>
       <div className="grid grid-cols-3 gap-2">
-        <div className="bg-muted/30 rounded-lg p-2.5 border border-white/[0.07] text-center">
+        <div className="bg-muted/30 rounded-lg p-2.5 ring-1 ring-border/50 text-center">
           <p className="text-[10px] text-muted-foreground">Volume</p>
           <p className="text-xs font-medium">52.3M</p>
         </div>
-        <div className="bg-muted/30 rounded-lg p-2.5 border border-white/[0.07] text-center">
+        <div className="bg-muted/30 rounded-lg p-2.5 ring-1 ring-border/50 text-center">
           <p className="text-[10px] text-muted-foreground">P/E Ratio</p>
           <p className="text-xs font-medium">28.4</p>
         </div>
-        <div className="bg-muted/30 rounded-lg p-2.5 border border-white/[0.07] text-center">
+        <div className="bg-muted/30 rounded-lg p-2.5 ring-1 ring-border/50 text-center">
           <p className="text-[10px] text-muted-foreground">Mkt Cap</p>
           <p className="text-xs font-medium">2.89T</p>
         </div>
@@ -138,7 +138,7 @@ const GamesPreview = () => (
       { name: "You", score: "10,890", rank: 3, change: "+5", highlight: true },
       { name: "Sam P.", score: "9,750", rank: 4, change: "-2" },
     ].map((p) => (
-      <div key={p.name} className={`flex items-center justify-between p-3 rounded-xl border transition-colors ${p.highlight ? "bg-primary/10 border-primary/30" : "bg-muted/20 border-white/[0.07]"}`}>
+      <div key={p.name} className={`flex items-center justify-between p-3 rounded-xl ring-1 transition-colors ${p.highlight ? "bg-primary/10 ring-primary/30" : "bg-muted/20 ring-border/50"}`}>
         <div className="flex items-center gap-3">
           <span className={`text-sm font-medium w-6 text-center ${p.rank === 1 ? "text-warning" : "text-muted-foreground"}`}>#{p.rank}</span>
           <span className="text-sm font-medium">{p.name}</span>
@@ -155,7 +155,7 @@ const GamesPreview = () => (
 const CoachPreview = () => (
   <div className="space-y-4">
     <div className="flex items-center gap-3 mb-2">
-      <div className="w-9 h-9 rounded-full bg-primary/15 flex items-center justify-center">
+      <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center">
         <Brain className="w-4 h-4 text-primary" />
       </div>
       <div>
@@ -163,7 +163,7 @@ const CoachPreview = () => (
         <p className="text-[10px] text-muted-foreground">Analyzing your portfolio…</p>
       </div>
     </div>
-    <div className="bg-muted/30 rounded-xl p-4 border border-white/[0.07] space-y-3">
+    <div className="bg-muted/30 rounded-xl p-4 ring-1 ring-border/50 space-y-3">
       <div className="flex items-start gap-2">
         <Zap className="w-4 h-4 text-warning mt-0.5 flex-shrink-0" />
         <p className="text-xs leading-relaxed"><span className="font-medium">Insight:</span> Your portfolio is 78% tech stocks. Consider diversifying into healthcare or consumer staples to reduce sector risk.</p>
@@ -174,15 +174,15 @@ const CoachPreview = () => (
       </div>
     </div>
     <div className="flex gap-2">
-      <div className="flex-1 bg-success/10 border border-success/20 rounded-lg p-3 text-center">
+      <div className="flex-1 bg-success/10 ring-1 ring-success/20 rounded-lg p-3 text-center">
         <p className="text-lg font-bold text-success">A-</p>
         <p className="text-[10px] text-muted-foreground">Risk Score</p>
       </div>
-      <div className="flex-1 bg-primary/10 border border-primary/20 rounded-lg p-3 text-center">
+      <div className="flex-1 bg-primary/10 ring-1 ring-primary/20 rounded-lg p-3 text-center">
         <p className="text-lg font-bold text-primary">87%</p>
         <p className="text-[10px] text-muted-foreground">Accuracy</p>
       </div>
-      <div className="flex-1 bg-warning/10 border border-warning/20 rounded-lg p-3 text-center">
+      <div className="flex-1 bg-warning/10 ring-1 ring-warning/20 rounded-lg p-3 text-center">
         <p className="text-lg font-bold text-warning">14</p>
         <p className="text-[10px] text-muted-foreground">Tips Given</p>
       </div>
@@ -197,22 +197,22 @@ const EducatorPreview = () => (
       <span className="text-[10px] bg-success/10 text-success px-2 py-1 rounded-full font-medium">24 Active</span>
     </div>
     <div className="grid grid-cols-2 gap-3">
-      <div className="bg-muted/30 rounded-xl p-3.5 border border-white/[0.07]">
+      <div className="bg-muted/30 rounded-xl p-3.5 ring-1 ring-border/50">
         <p className="text-[10px] text-muted-foreground mb-1">Avg. Completion</p>
         <p className="text-xl font-bold">73%</p>
-        <div className="w-full h-[3px] bg-white/[0.1] rounded-full mt-2 overflow-hidden">
+        <div className="w-full h-[3px] bg-muted rounded-full mt-2 overflow-hidden">
           <motion.div className="h-full bg-primary rounded-full" initial={{ width: 0 }} animate={{ width: "73%" }} transition={{ duration: 1, delay: 0.3 }} />
         </div>
       </div>
-      <div className="bg-muted/30 rounded-xl p-3.5 border border-white/[0.07]">
+      <div className="bg-muted/30 rounded-xl p-3.5 ring-1 ring-border/50">
         <p className="text-[10px] text-muted-foreground mb-1">Avg. Quiz Score</p>
         <p className="text-xl font-bold">82%</p>
-        <div className="w-full h-[3px] bg-white/[0.1] rounded-full mt-2 overflow-hidden">
+        <div className="w-full h-[3px] bg-muted rounded-full mt-2 overflow-hidden">
           <motion.div className="h-full bg-success rounded-full" initial={{ width: 0 }} animate={{ width: "82%" }} transition={{ duration: 1, delay: 0.4 }} />
         </div>
       </div>
     </div>
-    <div className="bg-destructive/5 border border-destructive/20 rounded-xl p-3">
+    <div className="bg-destructive/5 ring-1 ring-destructive/20 rounded-xl p-3">
       <p className="text-[10px] font-medium text-destructive mb-1.5">⚠ 3 Students Need Attention</p>
       <p className="text-[10px] text-muted-foreground">Behind pace on Lessons 4–6. Consider assigning review exercises.</p>
     </div>
@@ -226,9 +226,9 @@ const XPPreview = () => (
         <p className="text-sm font-medium text-foreground">Level 14 — Market Strategist</p>
         <p className="text-xs text-muted-foreground">2,340 / 3,000 XP to Level 15</p>
       </div>
-      <div className="w-10 h-10 rounded-full bg-primary/15 flex items-center justify-center text-sm font-bold text-primary">14</div>
+      <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-sm font-bold text-primary">14</div>
     </div>
-    <div className="w-full h-[3px] bg-white/[0.1] rounded-full overflow-hidden">
+    <div className="w-full h-[3px] bg-muted rounded-full overflow-hidden">
       <motion.div className="h-full bg-primary rounded-full relative" initial={{ width: 0 }} animate={{ width: "78%" }} transition={{ duration: 1.2 }}>
         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer" />
       </motion.div>
@@ -240,7 +240,7 @@ const XPPreview = () => (
         { icon: Trophy, label: "Lesson Ace", xp: "+100 XP", color: "text-primary" },
         { icon: Star, label: "First Trade", xp: "+75 XP", color: "text-success" },
       ].map((a) => (
-        <div key={a.label} className="flex items-center justify-between p-2.5 rounded-lg bg-muted/20 border border-white/[0.07]">
+        <div key={a.label} className="flex items-center justify-between p-2.5 rounded-lg bg-muted/20 ring-1 ring-border/50">
           <div className="flex items-center gap-2.5">
             <a.icon className={`w-4 h-4 ${a.color}`} />
             <span className="text-xs font-medium">{a.label}</span>
@@ -254,6 +254,11 @@ const XPPreview = () => (
 
 const previewComponents = [LessonsPreview, MarketPreview, GamesPreview, CoachPreview, EducatorPreview, XPPreview];
 
+/* ═══════════════════════════════════════════════════════
+   Cluely-style: Feature card grid (top) + interactive 
+   preview panel (bottom), replacing old split layout.
+   Cards use rounded-2xl, ring-1, shadow-sm like Cluely.
+═══════════════════════════════════════════════════════ */
 export const FeatureShowcase = () => {
   const [active, setActive] = useState(0);
   const [autoPlay, setAutoPlay] = useState(true);
@@ -276,129 +281,111 @@ export const FeatureShowcase = () => {
   const activeFeature = features[active];
 
   return (
-    <section id="features" className="py-28 md:py-36 relative overflow-x-hidden">
-      <div className="max-w-7xl mx-auto px-6 relative z-10">
-        {/* Section Header — left-aligned */}
+    <section id="features" className="py-24 md:py-32 relative overflow-x-hidden">
+      <div className="max-w-6xl mx-auto px-6 relative z-10">
+        {/* Section Header — centered like Cluely */}
         <motion.div
-          className="mb-20 max-w-xl"
+          className="text-center mb-16"
           initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
-          <p className="text-[11px] font-medium text-primary uppercase tracking-[0.15em] mb-4">Features</p>
-          <h2 className="font-heading text-4xl md:text-5xl font-bold text-foreground mb-5 leading-[1.08]">
+          <p className="text-[11px] font-medium text-primary uppercase tracking-[0.18em] mb-4">Features</p>
+          <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-medium text-foreground mb-5 leading-[1.08]">
             Everything you need to master investing
           </h2>
-          <p className="text-muted-foreground text-base md:text-lg leading-relaxed max-w-[480px]">
+          <p className="text-muted-foreground text-base md:text-lg leading-relaxed max-w-[520px] mx-auto">
             From interactive lessons to AI-powered trading — gamified for maximum retention.
           </p>
         </motion.div>
 
-        {/* Split Layout */}
+        {/* Feature Card Grid — Cluely-style cards */}
         <motion.div
-          className="grid lg:grid-cols-[380px_1fr] gap-8 lg:gap-12 items-start"
+          className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-16"
           initial={{ opacity: 0, y: 32 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.2 }}
+          transition={{ duration: 0.6, delay: 0.1 }}
         >
-          {/* Left: Feature List — left-border selection */}
-          <div className="space-y-1">
-            {features.map((f, i) => {
-              const isActive = i === active;
-              return (
-                <motion.button
-                  key={i}
-                  onClick={() => handleSelect(i)}
-                  className={`w-full text-left p-4 rounded-lg transition-all duration-300 relative ${
-                    isActive
-                      ? "border-l-2 border-l-primary bg-[hsl(263_70%_50%/0.06)]"
-                      : "border-l-2 border-l-transparent hover:bg-white/[0.02]"
-                  }`}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  <div className="flex items-center gap-4">
-                    <div className={`w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 transition-all duration-300 ${
-                      isActive ? "bg-transparent" : "bg-transparent"
-                    }`}>
-                      <f.icon className={`w-[18px] h-[18px] transition-colors duration-300 ${isActive ? "text-foreground" : "text-muted-foreground"}`} />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className={`text-sm font-medium transition-colors duration-300 ${isActive ? "text-foreground" : "text-muted-foreground"}`}>
-                        {f.title}
-                      </p>
-                      <AnimatePresence>
-                        {isActive && (
-                          <motion.p
-                            className="text-[11px] text-muted-foreground mt-0.5"
-                            initial={{ height: 0, opacity: 0 }}
-                            animate={{ height: "auto", opacity: 1 }}
-                            exit={{ height: 0, opacity: 0 }}
-                            transition={{ duration: 0.2 }}
-                          >
-                            {f.subtitle}
-                          </motion.p>
-                        )}
-                      </AnimatePresence>
-                    </div>
-                  </div>
+          {features.map((f, i) => {
+            const isActive = i === active;
+            return (
+              <motion.button
+                key={i}
+                onClick={() => handleSelect(i)}
+                className={`relative text-left p-6 rounded-2xl ring-1 transition-all duration-300 group ${
+                  isActive
+                    ? "ring-primary/40 bg-primary/[0.04] shadow-md shadow-primary/5"
+                    : "ring-border/50 bg-card hover:ring-border hover:shadow-sm"
+                }`}
+                whileTap={{ scale: 0.98 }}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.06 }}
+              >
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center mb-4 transition-colors duration-300 ${
+                  isActive ? "bg-primary/10" : "bg-muted/60"
+                }`}>
+                  <f.icon className={`w-5 h-5 transition-colors duration-300 ${
+                    isActive ? "text-primary" : "text-muted-foreground group-hover:text-foreground"
+                  }`} />
+                </div>
+                <h3 className={`text-sm font-medium mb-1 transition-colors duration-300 ${
+                  isActive ? "text-foreground" : "text-foreground"
+                }`}>
+                  {f.title}
+                </h3>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  {f.description}
+                </p>
 
-                  {/* Expandable description */}
-                  <AnimatePresence>
-                    {isActive && (
-                      <motion.p
-                        className="text-xs text-muted-foreground leading-relaxed pl-[52px] pr-4 mt-2"
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: "auto", opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.25 }}
-                      >
-                        {f.description}
-                      </motion.p>
-                    )}
-                  </AnimatePresence>
+                {/* Active indicator bar */}
+                {isActive && autoPlay && (
+                  <motion.div
+                    className="absolute bottom-0 left-4 right-4 h-[2px] bg-primary/60 rounded-full"
+                    initial={{ width: "0%" }}
+                    animate={{ width: "100%" }}
+                    transition={{ duration: 5, ease: "linear" }}
+                    key={`progress-${active}`}
+                  />
+                )}
+              </motion.button>
+            );
+          })}
+        </motion.div>
 
-                  {/* Auto-play progress bar */}
-                  {isActive && autoPlay && (
-                    <motion.div
-                      className="absolute bottom-0 left-0 h-[2px] bg-primary"
-                      initial={{ width: "0%" }}
-                      animate={{ width: "100%" }}
-                      transition={{ duration: 5, ease: "linear" }}
-                      key={`progress-${active}`}
-                    />
-                  )}
-                </motion.button>
-              );
-            })}
-          </div>
-
-          {/* Right: Preview Panel */}
-          <div className="relative">
-            <div className="rounded-xl bg-card border border-white/[0.07] p-6 md:p-8 min-h-[420px] relative overflow-hidden">
-              {/* Top bar — muted dots */}
-              <div className="flex items-center gap-1.5 mb-6">
-                <div className="w-2 h-2 rounded-full bg-destructive/50" />
-                <div className="w-2 h-2 rounded-full bg-warning/50" />
-                <div className="w-2 h-2 rounded-full bg-success/50" />
-                <span className="ml-3 text-[10px] text-muted-foreground/50 font-medium">{activeFeature.title}</span>
-              </div>
-
-              {/* Animated content */}
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={active}
-                  initial={{ opacity: 0, x: 20, scale: 0.98 }}
-                  animate={{ opacity: 1, x: 0, scale: 1 }}
-                  exit={{ opacity: 0, x: -20, scale: 0.98 }}
-                  transition={{ duration: 0.35, ease: [0.25, 0.46, 0.45, 0.94] }}
-                  className="relative z-10"
-                >
-                  <ActivePreview />
-                </motion.div>
-              </AnimatePresence>
+        {/* Interactive Preview Panel — like Cluely's product screenshot area */}
+        <motion.div
+          className="max-w-3xl mx-auto"
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.3 }}
+        >
+          <div className="rounded-2xl bg-card ring-1 ring-border/50 shadow-lg p-6 md:p-8 min-h-[380px] relative overflow-hidden">
+            {/* macOS dots */}
+            <div className="flex items-center gap-1.5 mb-6">
+              <div className="w-2.5 h-2.5 rounded-full bg-destructive/50" />
+              <div className="w-2.5 h-2.5 rounded-full bg-warning/50" />
+              <div className="w-2.5 h-2.5 rounded-full bg-success/50" />
+              <span className="ml-3 text-[10px] text-muted-foreground/50 font-medium">{activeFeature.title}</span>
             </div>
+
+            {/* Animated content */}
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={active}
+                initial={{ opacity: 0, x: 20, scale: 0.98 }}
+                animate={{ opacity: 1, x: 0, scale: 1 }}
+                exit={{ opacity: 0, x: -20, scale: 0.98 }}
+                transition={{ duration: 0.35, ease: [0.25, 0.46, 0.45, 0.94] }}
+                className="relative z-10"
+              >
+                <ActivePreview />
+              </motion.div>
+            </AnimatePresence>
           </div>
         </motion.div>
       </div>
