@@ -259,37 +259,3 @@ All colors MUST be HSL.
     animation: shimmer 2s infinite;
   }
 }
-
-/* Wipe animation for cinematic landing page */
-@property --mask-position {
-  syntax: '<percentage>';
-  inherits: false;
-  initial-value: -100%;
-}
-
-@keyframes wipeAnimation {
-  0%   { --mask-position: -100%; }
-  100% { --mask-position: 120%; }
-}
-
-.wipe-section {
-  --mask-position: -100%;
-  -webkit-mask-image: linear-gradient(
-    160deg,
-    black var(--mask-position),
-    transparent calc(var(--mask-position) + 80%),
-    transparent
-  );
-  mask-image: linear-gradient(
-    160deg,
-    black var(--mask-position),
-    transparent calc(var(--mask-position) + 80%),
-    transparent
-  );
-  animation: 4s cubic-bezier(0, 0.55, 0.45, 1) forwards wipeAnimation;
-  animation-play-state: paused;
-}
-
-.wipe-section.visible {
-  animation-play-state: running;
-}

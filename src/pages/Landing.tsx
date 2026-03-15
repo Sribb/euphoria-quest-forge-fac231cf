@@ -1,523 +1,439 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "@/hooks/useAuth";
-import {
-  BookOpen, BarChart3, Target, Trophy, Bot, Settings, Search, Zap,
-  ArrowUpRight, Plus, Minus,
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { 
+  TrendingUp, Brain, Sparkles, Users, 
+  BookOpen, Gamepad2, Award, ChevronDown,
+  GraduationCap, Shield, Star, Check, ArrowRight,
+  Trophy, Target
 } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { motion, useScroll, useTransform } from "framer-motion";
+import { FeatureShowcase } from "@/features/landing/components/FeatureShowcase";
+import { PricingSection } from "@/features/landing/components/PricingSection";
+import logo from "@/assets/euphoria-logo-button.png";
+const TYPEWRITER_LINES = [
+  { text: "Master the Markets.", gradient: false },
+  { text: "Learn with Euphoria.", gradient: true },
+];
 
-const NAV_LINKS = ["Today", "How It Works", "Pricing", "Updates", "FAQ"];
+const TypewriterHeadline = () => {
+  const [lineIndex, setLineIndex] = useState(0);
+  const [charIndex, setCharIndex] = useState(0);
+  const [done, setDone] = useState(false);
+
+  useEffect(() => {
+    if (done) return;
+    const line = TYPEWRITER_LINES[lineIndex];
+    if (charIndex < line.text.length) {
+      const t = setTimeout(() => setCharIndex((c) => c + 1), 45);
+      return () => clearTimeout(t);
+    }
+    // line finished
+    if (lineIndex < TYPEWRITER_LINES.length - 1) {
+      const t = setTimeout(() => {
+        setLineIndex((l) => l + 1);
+        setCharIndex(0);
+      }, 350);
+      return () => clearTimeout(t);
+    }
+    setDone(true);
+  }, [charIndex, lineIndex, done]);
+
+  return (
+    <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold leading-[1.1] tracking-tight mb-6">
+      {TYPEWRITER_LINES.map((line, i) => {
+        const visible =
+          i < lineIndex
+            ? line.text
+            : i === lineIndex
+            ? line.text.slice(0, charIndex)
+            : "";
+        const showCursor = !done && i === lineIndex;
+        return (
+          <span key={i} className="block">
+            {line.gradient ? (
+              <span className="bg-gradient-to-r from-primary via-violet-400 to-fuchsia-400 bg-clip-text text-transparent">
+                {visible}
+              </span>
+            ) : (
+              visible
+            )}
+            {showCursor && (
+              <span className="inline-block w-[3px] h-[1em] bg-primary ml-1 animate-pulse align-middle" />
+            )}
+          </span>
+        );
+      })}
+    </h1>
+  );
+};
+
+const HeroImage = () => {
+  const ref = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
+  const rotateX = useTransform(scrollYProgress, [0, 0.5, 1], [25, 0, -5]);
+  const scale = useTransform(scrollYProgress, [0, 0.5], [0.9, 1]);
+  const opacity = useTransform(scrollYProgress, [0, 0.3], [0.4, 1]);
+  const y = useTransform(scrollYProgress, [0, 0.5], [60, 0]);
+
+  return (
+    <div ref={ref} className="max-w-5xl mx-auto" style={{ perspective: "1200px" }}>
+      <motion.div
+        style={{ rotateX, scale, opacity, y }}
+        className="relative"
+      >
+        {/* Glow behind */}
+        <div className="absolute -inset-4 bg-[radial-gradient(ellipse_at_center,hsl(262_83%_58%/0.15),transparent_70%)] rounded-3xl blur-2xl" />
+        
+        <div className="relative rounded-xl border border-border/50 bg-card/80 shadow-2xl overflow-hidden">
+          {/* Browser chrome */}
+          <div className="flex items-center gap-2 px-4 py-3 bg-muted/50 border-b border-border/30">
+            <div className="flex gap-1.5">
+              <div className="w-2.5 h-2.5 rounded-full bg-[hsl(0_60%_50%)]" />
+              <div className="w-2.5 h-2.5 rounded-full bg-[hsl(45_70%_55%)]" />
+              <div className="w-2.5 h-2.5 rounded-full bg-[hsl(142_60%_45%)]" />
+            </div>
+            <div className="flex-1 flex justify-center">
+              <div className="bg-background/60 rounded-md px-4 py-1 text-[11px] text-muted-foreground font-mono">
+                app.euphoria.finance
+              </div>
+            </div>
+          </div>
+          
+          {/* Dashboard demo video */}
+          <div className="relative">
+            <video
+              ref={(el) => { if (el) el.playbackRate = 2; }}
+              src="/videos/dashboard-demo.mov"
+              autoPlay
+              loop
+              muted
+              playsInline
+              className="w-full h-auto block"
+            />
+          </div>
+        </div>
+
+        {/* Caption below screenshot */}
+        <p className="text-center text-sm md:text-base text-muted-foreground mt-6 font-bold tracking-wide">
+          The easiest way to learn how to invest.
+        </p>
+      </motion.div>
+    </div>
+  );
+};
 
 const Landing = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [openFaq, setOpenFaq] = useState<number | null>(null);
-  const [navVisible, setNavVisible] = useState(false);
-  const [activeFilter, setActiveFilter] = useState("All");
 
   useEffect(() => {
     if (user) navigate("/app");
   }, [user, navigate]);
 
-  // Nav fade-in
-  useEffect(() => {
-    const t = setTimeout(() => setNavVisible(true), 100);
-    return () => clearTimeout(t);
-  }, []);
+  const features = [
+    { icon: BookOpen, title: "25+ Interactive Lessons", description: "Hands-on simulations where you learn by making real decisions.", color: "text-primary", bg: "bg-primary/10" },
+    { icon: TrendingUp, title: "AI Market Simulation", description: "Trade with AI-driven events, news, and dynamic pricing.", color: "text-success", bg: "bg-success/10" },
+    { icon: Gamepad2, title: "Investment Games", description: "Master investing through play, competition, and strategy.", color: "text-warning", bg: "bg-warning/10" },
+    { icon: Brain, title: "AI Coach", description: "Personalized feedback on every trade and decision.", color: "text-accent", bg: "bg-accent/10" },
+    { icon: GraduationCap, title: "Educator Tools", description: "Create classes, track progress, and manage learning at scale.", color: "text-primary", bg: "bg-primary/10" },
+    { icon: Award, title: "XP & Levels", description: "Earn XP, unlock badges, and compete on leaderboards.", color: "text-success", bg: "bg-success/10" },
+  ];
 
-  // Wipe animation observer
-  useEffect(() => {
-    const sections = document.querySelectorAll(".wipe-section");
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add("visible");
-          }
-        });
-      },
-      { threshold: 0.1 }
-    );
-    sections.forEach((s) => observer.observe(s));
-    return () => observer.disconnect();
-  }, []);
+  const steps = [
+    { num: "01", title: "Take the Placement Quiz", desc: "20 scenario-based questions find your level instantly.", icon: Target },
+    { num: "02", title: "Learn by Doing", desc: "Every lesson is a simulation. Make choices, see real results.", icon: Sparkles },
+    { num: "03", title: "Trade & Compete", desc: "Paper-trade with AI events. Test strategies risk-free.", icon: TrendingUp },
+    { num: "04", title: "Level Up", desc: "Earn XP, maintain streaks, grow your skills.", icon: Trophy },
+  ];
 
-  const scrollTo = (id: string) => {
-    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
-  };
+  const pricing: never[] = [];
 
   const faqs = [
-    { q: "Is Euphoria free for students?", a: "Yes. Full access to all lessons, games, the AI market simulator, and portfolio tracking — completely free. No credit card required." },
-    { q: "How is this different from other finance apps?", a: "Euphoria teaches through simulation, not textbooks. Every lesson is a scenario where you make decisions and see consequences. It's Duolingo meets Robinhood." },
-    { q: "Can I use this in my classroom?", a: "Absolutely. The Schools plan lets you create classes with join codes, track individual progress, identify struggling learners, and export analytics." },
+    { q: "Is Euphoria actually free for students?", a: "Yes! Full access to all lessons, games, the AI market simulator, and portfolio tracking — completely free. No credit card required." },
+    { q: "How is this different from other apps?", a: "Euphoria teaches through simulation, not textbooks. Every lesson is a scenario where you make decisions and see consequences. It's Duolingo meets Robinhood." },
+    { q: "Can I use this in my classroom?", a: "Absolutely. The Educator plan lets you create classes with join codes, track individual progress, identify struggling learners, and export analytics." },
     { q: "Is the trading simulation realistic?", a: "Our AI engine generates realistic price movements, news events, and market scenarios. You'll experience bull runs, crashes, and breaking news — without real money." },
     { q: "What age group is this for?", a: "Designed for high school students (14+) through adult learners. The placement quiz adapts to your level." },
   ];
 
-  const lessons = [
-    { title: "How the Fed Affects Your Portfolio", date: "Updated Mar 2026", time: "8 min read" },
-    { title: "Options 101: Calls, Puts, and Greeks", date: "Updated Feb 2026", time: "12 min read" },
-    { title: "Reading an Earnings Report", date: "Updated Jan 2026", time: "6 min read" },
-    { title: "Dollar-Cost Averaging Explained", date: "Updated Mar 2026", time: "5 min read" },
-    { title: "Crypto Fundamentals: Beyond the Hype", date: "Updated Feb 2026", time: "10 min read" },
+  const testimonials = [
+    { quote: "My students went from 'finance is boring' to fighting over trading scores. Euphoria changed how I teach.", author: "Ms. Rodriguez", role: "AP Economics Teacher" },
+    { quote: "I learned more in two weeks than a semester of finance class. The simulations make everything click.", author: "Jake T.", role: "College Sophomore" },
+    { quote: "Finally, a platform where my kids learn about money without risking any. The games are brilliant.", author: "Sarah M.", role: "Parent of 2" },
+    { quote: "This is hands-down the best tool I've seen for teaching young investors. I recommend Euphoria to every client with kids heading to college.", author: "Connor Shepard", role: "Lead Advisor, Wealth Management Firm" },
+    { quote: "As a CFP, I've tried dozens of financial literacy platforms. Euphoria is the only one that actually gets students engaged and retaining what they learn.", author: "Sam Rodriguez", role: "CFP & Wealth Management Firm Owner" },
   ];
 
-  const filters = ["All", "Stocks", "Options", "Crypto", "Macro"];
-
-  const dockIcons = [BookOpen, BarChart3, Target, Trophy, Bot, Settings, Search, Zap];
-
-  const muted = "rgba(255,255,255,0.45)";
-  const borderSub = "rgba(255,255,255,0.08)";
-  const accent = "#6166DC";
+  const fadeUp = { hidden: { opacity: 0, y: 24 }, show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] as const } } };
+  const stagger = { hidden: {}, show: { transition: { staggerChildren: 0.08 } } };
 
   return (
-    <div style={{ background: "#000", color: "#fff", fontFamily: "'Inter', system-ui, sans-serif", fontWeight: 300 }} className="min-h-screen overflow-x-hidden">
-      {/* ─── NAV ─── */}
-      <nav
-        style={{
-          position: "fixed", top: 0, left: 0, right: 0, zIndex: 100,
-          background: "rgba(0,0,0,0.8)", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)",
-          opacity: navVisible ? 1 : 0, transition: "opacity 600ms ease",
-        }}
-      >
-        <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 24px", height: 56, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <span style={{ fontSize: 16, fontWeight: 400, letterSpacing: "-0.02em" }}>Euphoria</span>
-            <span style={{ width: 6, height: 6, borderRadius: "50%", background: accent, display: "inline-block" }} />
+    <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
+      {/* Nav */}
+      <nav className="fixed top-0 w-full z-50 backdrop-blur-md bg-background/85 border-b border-border/40">
+        <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <img src={logo} alt="Euphoria" className="w-8 h-8 object-contain" />
+            <span className="text-lg font-bold tracking-tight">Euphoria</span>
           </div>
-          <div className="hidden md:flex" style={{ gap: 28, alignItems: "center" }}>
-            {NAV_LINKS.map((link) => (
+          <div className="hidden md:flex items-center gap-8">
+            {["Features", "How It Works", "Pricing", "FAQ"].map((item) => (
               <a
-                key={link}
-                href={`#${link.toLowerCase().replace(/\s+/g, "-")}`}
-                onClick={(e) => { e.preventDefault(); scrollTo(link.toLowerCase().replace(/\s+/g, "-")); }}
-                style={{ fontSize: 13, color: "rgba(255,255,255,0.55)", textDecoration: "none", transition: "color 200ms" }}
-                onMouseEnter={(e) => (e.currentTarget.style.color = "#fff")}
-                onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.55)")}
+                key={item}
+                href={`#${item.toLowerCase().replace(/\s+/g, "-")}`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  document.getElementById(item.toLowerCase().replace(/\s+/g, "-"))?.scrollIntoView({ behavior: "smooth" });
+                }}
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
               >
-                {link}
+                {item}
               </a>
             ))}
+            <a
+              href="/legal"
+              onClick={(e) => { e.preventDefault(); navigate("/legal"); }}
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Legal
+            </a>
           </div>
-          <button
-            onClick={() => navigate("/auth?signup=true")}
-            style={{
-              fontSize: 12, padding: "6px 14px", borderRadius: 20,
-              background: "#fff", color: "#000", border: "none", cursor: "pointer",
-              fontWeight: 500,
-            }}
-          >
-            Try Euphoria
-          </button>
+          <div className="flex items-center gap-3">
+            <Button variant="ghost" size="sm" onClick={() => navigate("/auth")}>Log in</Button>
+            <Button
+              size="sm"
+              onClick={() => navigate("/auth?signup=true")}
+              className="bg-gradient-primary shadow-glow-soft hover:shadow-glow hover:-translate-y-0.5 transition-all duration-200 font-semibold"
+            >
+              Sign up free
+            </Button>
+          </div>
         </div>
       </nav>
 
-      {/* ─── SECTION 1: HERO ─── */}
-      <section className="wipe-section" style={{ padding: "160px 0 128px" }}>
-        <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 24px" }}>
-          <p style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "0.15em", color: accent, marginBottom: 24 }}>
-            Euphoria
-          </p>
-          <h1 style={{ fontSize: "clamp(48px, 6vw, 72px)", fontWeight: 300, lineHeight: 1.1, marginBottom: 24 }}>
-            Make better<br />investors.
-          </h1>
-          <p style={{ fontSize: 16, color: muted, maxWidth: 580, lineHeight: 1.6, marginBottom: 64 }}>
-            We turn complex markets, gated knowledge, and noisy finance into instant learning — clear simulations, a beautiful interface — so anyone can build real wealth, without feeling overwhelmed.
-          </p>
-
-          {/* 3-column screenshot grid */}
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20 }}>
-            {[
-              { label: "Interactive lessons", mockContent: "Lesson 4: Reading Charts" },
-              { label: "Live leaderboards", mockContent: "🏆 Leaderboard — Top 10" },
-              { label: "Market simulations", mockContent: "AI Market — Live Trading" },
-            ].map((item) => (
-              <div key={item.label}>
-                <div
-                  style={{
-                    aspectRatio: "4/3", background: "#0a0a0a",
-                    border: `1px solid ${borderSub}`, borderRadius: 8,
-                    display: "flex", alignItems: "center", justifyContent: "center",
-                    padding: 24,
-                  }}
-                >
-                  <span style={{ fontSize: 13, color: "rgba(255,255,255,0.3)", textAlign: "center" }}>{item.mockContent}</span>
-                </div>
-                <p style={{ fontSize: 13, color: muted, marginTop: 12, textAlign: "center" }}>{item.label}</p>
+      {/* Hero */}
+      <section className="relative pt-32 pb-8 md:pt-40 md:pb-16 overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,hsl(262_83%_58%/0.08),transparent_60%)]" />
+        
+        <div className="max-w-6xl mx-auto px-6 relative z-10">
+          <div className="text-center max-w-3xl mx-auto mb-20">
+            <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+              <div className="inline-flex items-center gap-2 bg-primary/8 border border-primary/15 rounded-full px-4 py-1.5 mb-6">
+                <span className="text-xs font-medium text-primary">The #1 investing simulator for students</span>
               </div>
-            ))}
-          </div>
-        </div>
-      </section>
+            </motion.div>
 
-      {/* ─── SECTION 2: FROM OVERWHELMING ─── */}
-      <section id="today" className="wipe-section" style={{ padding: "128px 0" }}>
-        <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 24px" }}>
-          <h2 style={{ fontSize: "clamp(40px, 4.5vw, 56px)", fontWeight: 300, lineHeight: 1.15, marginBottom: 64 }}>
-            From overwhelming<br />to effortless.
-          </h2>
+            <TypewriterHeadline />
 
-          <div style={{ display: "flex", gap: 64, alignItems: "flex-start", flexWrap: "wrap" }}>
-            {/* Icon dock */}
-            <div style={{ display: "flex", gap: 12 }}>
-              {dockIcons.map((Icon, i) => (
-                <div
-                  key={i}
-                  style={{
-                    width: 48, height: 48, borderRadius: "50%",
-                    background: "#111", border: "1px solid rgba(255,255,255,0.1)",
-                    display: "flex", alignItems: "center", justifyContent: "center",
-                  }}
-                >
-                  <Icon size={18} color="rgba(255,255,255,0.5)" />
-                </div>
-              ))}
-            </div>
-
-            {/* Feature descriptions */}
-            <div style={{ flex: 1, minWidth: 260, display: "flex", flexDirection: "column", gap: 24 }}>
-              {[
-                { name: "Lesson Library", desc: "25+ interactive lessons that teach through real-world scenarios." },
-                { name: "AI Simulator", desc: "Trade against AI competitors with dynamic pricing and news." },
-                { name: "Leaderboard", desc: "Compete with classmates and climbers worldwide." },
-              ].map((f) => (
-                <div key={f.name}>
-                  <p style={{ fontSize: 14, color: "#fff", marginBottom: 4, fontWeight: 400 }}>{f.name}</p>
-                  <p style={{ fontSize: 14, color: muted, lineHeight: 1.5 }}>{f.desc}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ─── SECTION 3: LEARN BY DOING ─── */}
-      <section id="how-it-works" className="wipe-section" style={{ padding: "128px 0", textAlign: "center" }}>
-        <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 24px" }}>
-          <p style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "0.15em", color: accent, marginBottom: 24 }}>
-            Learn by doing
-          </p>
-          <h2 style={{ fontSize: "clamp(48px, 6vw, 72px)", fontWeight: 300, lineHeight: 1.1, marginBottom: 48 }}>
-            Markets in<br />real time.
-          </h2>
-
-          <img
-            src="https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=800&q=80"
-            alt="Focused trader"
-            style={{
-              maxWidth: 500, width: "100%", margin: "0 auto 40px", display: "block",
-              filter: "grayscale(0.3) brightness(0.8)", borderRadius: 4,
-            }}
-          />
-
-          <p style={{ fontSize: 16, color: muted, maxWidth: 480, margin: "0 auto", lineHeight: 1.6 }}>
-            We sync Euphoria with live market data and let you practice in real conditions — without making costly real-world mistakes.
-          </p>
-        </div>
-      </section>
-
-      {/* ─── SECTION 4: COMPLEX DATA SIMPLIFIED ─── */}
-      <section className="wipe-section" style={{ padding: "128px 0" }}>
-        <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 24px" }}>
-          <h2 style={{ fontSize: "clamp(40px, 4.5vw, 56px)", fontWeight: 300, lineHeight: 1.15, marginBottom: 20 }}>
-            Complex markets,<br />simplified.
-          </h2>
-          <p style={{ fontSize: 16, color: muted, maxWidth: 520, lineHeight: 1.6, marginBottom: 48 }}>
-            We surface only what matters — lesson progress, simulated P&L, market context — so you can focus on learning, not decoding data.
-          </p>
-
-          {/* Monitor frame */}
-          <div
-            style={{
-              background: "#0a0a0a", border: `1px solid ${borderSub}`,
-              borderRadius: 12, padding: 32, marginBottom: 32,
-              minHeight: 320, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center",
-            }}
-          >
-            <div style={{ width: "100%", maxWidth: 600 }}>
-              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 24 }}>
-                <span style={{ fontSize: 14, color: "rgba(255,255,255,0.6)" }}>Dashboard Overview</span>
-                <span style={{ fontSize: 12, color: "rgba(255,255,255,0.3)" }}>Last 7 days</span>
-              </div>
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16, marginBottom: 24 }}>
-                {[
-                  { label: "Lessons Done", value: "18/25" },
-                  { label: "Sim P&L", value: "+$2,340" },
-                  { label: "XP Earned", value: "4,200" },
-                ].map((s) => (
-                  <div key={s.label} style={{ padding: 16, background: "rgba(255,255,255,0.03)", borderRadius: 8 }}>
-                    <p style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", marginBottom: 4 }}>{s.label}</p>
-                    <p style={{ fontSize: 20, fontWeight: 400 }}>{s.value}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Progress bar */}
-          <div style={{ maxWidth: 400 }}>
-            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
-              <span style={{ fontSize: 12, color: muted }}>Course completion</span>
-              <span style={{ fontSize: 12, color: muted }}>78%</span>
-            </div>
-            <div style={{ height: 4, background: "#111", borderRadius: 2 }}>
-              <div style={{ width: "78%", height: "100%", background: accent, borderRadius: 2 }} />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ─── SECTION 5: TWO-COLUMN FEATURES ─── */}
-      <section className="wipe-section" style={{ padding: "128px 0" }}>
-        <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 24px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 80 }}>
-          {/* Left: CMD+K */}
-          <div>
-            <p style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "0.15em", color: muted, marginBottom: 16 }}>
-              Keyboard shortcut
-            </p>
-            <h3 style={{ fontSize: 32, fontWeight: 300, marginBottom: 16, lineHeight: 1.2 }}>At your command.</h3>
-            <p style={{ fontSize: 14, color: muted, lineHeight: 1.6, marginBottom: 32 }}>
-              Hit ⌘K anywhere in Euphoria to search lessons, jump to simulations, or ask the AI tutor — instantly.
-            </p>
-            <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
-              <div style={{
-                padding: "12px 24px", background: "transparent",
-                border: "1px solid rgba(255,255,255,0.15)", borderRadius: 8,
-                fontSize: 14, fontFamily: "monospace",
-              }}>
-                ⌘&nbsp;&nbsp;command
-              </div>
-              <div style={{
-                padding: "12px 20px", background: "transparent",
-                border: "1px solid rgba(255,255,255,0.15)", borderRadius: 8,
-                fontSize: 14, fontFamily: "monospace",
-              }}>
-                K
-              </div>
-            </div>
-          </div>
-
-          {/* Right: Weekly digest */}
-          <div>
-            <p style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "0.15em", color: muted, marginBottom: 16 }}>
-              Weekly digest
-            </p>
-            <h3 style={{ fontSize: 32, fontWeight: 300, marginBottom: 16, lineHeight: 1.2 }}>Weekly insights.</h3>
-            <p style={{ fontSize: 14, color: muted, lineHeight: 1.6, marginBottom: 32 }}>
-              Every Sunday, Euphoria sends you a digest of what moved markets, what you learned, and what to study next.
-            </p>
-            <div style={{
-              padding: 20, background: "transparent",
-              border: `1px solid ${borderSub}`, borderRadius: 8,
-            }}>
-              <p style={{ fontSize: 12, color: "rgba(255,255,255,0.6)", marginBottom: 12, fontWeight: 400 }}>📬 Your Weekly Recap</p>
-              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                <p style={{ fontSize: 12, color: muted }}>✦ S&P 500 rose 2.3% — 3 lessons explain why</p>
-                <p style={{ fontSize: 12, color: muted }}>✦ You completed 4 lessons (+800 XP)</p>
-                <p style={{ fontSize: 12, color: muted }}>✦ Next up: Options Fundamentals</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ─── SECTION 6: KNOWLEDGE YOU CAN TRUST ─── */}
-      <section id="updates" className="wipe-section" style={{ padding: "128px 0" }}>
-        <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 24px" }}>
-          <h2 style={{ fontSize: "clamp(40px, 4.5vw, 56px)", fontWeight: 300, lineHeight: 1.15, marginBottom: 20, textAlign: "center" }}>
-            Knowledge you<br />can trust.
-          </h2>
-          <p style={{ fontSize: 16, color: muted, textAlign: "center", maxWidth: 480, margin: "0 auto 48px", lineHeight: 1.6 }}>
-            Every lesson is reviewed by finance professionals and updated when markets change. No outdated textbooks. No fluff.
-          </p>
-
-          {/* Lesson feed */}
-          <div style={{ marginBottom: 32 }}>
-            {lessons.map((lesson, i) => (
-              <div
-                key={i}
-                style={{
-                  display: "flex", justifyContent: "space-between", alignItems: "center",
-                  padding: "20px 0",
-                  borderBottom: `1px solid rgba(255,255,255,0.07)`,
-                  cursor: "pointer", transition: "opacity 200ms",
-                }}
-                onMouseEnter={(e) => (e.currentTarget.style.opacity = "1")}
-                onMouseLeave={(e) => (e.currentTarget.style.opacity = "0.7")}
-              >
-                <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                  <span style={{ fontSize: 16 }}>📘</span>
-                  <div>
-                    <p style={{ fontSize: 14, fontWeight: 400, marginBottom: 2 }}>{lesson.title}</p>
-                    <p style={{ fontSize: 12, color: muted }}>{lesson.date} · {lesson.time}</p>
-                  </div>
-                </div>
-                <ArrowUpRight size={16} color="rgba(255,255,255,0.3)" />
-              </div>
-            ))}
-          </div>
-
-          {/* Filter tabs */}
-          <div style={{ display: "flex", gap: 8 }}>
-            {filters.map((f) => (
-              <button
-                key={f}
-                onClick={() => setActiveFilter(f)}
-                style={{
-                  fontSize: 12, padding: "6px 14px", borderRadius: 20,
-                  background: "transparent", color: activeFilter === f ? "#fff" : muted,
-                  border: activeFilter === f ? "1px solid rgba(255,255,255,0.3)" : "1px solid rgba(255,255,255,0.1)",
-                  cursor: "pointer", transition: "all 200ms",
-                }}
-              >
-                {f}
-              </button>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ─── SECTION 7: PRICING ─── */}
-      <section id="pricing" className="wipe-section" style={{ padding: "128px 0" }}>
-        <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 24px" }}>
-          <p style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "0.15em", color: accent, marginBottom: 24 }}>
-            Pricing
-          </p>
-          <h2 style={{ fontSize: "clamp(40px, 4.5vw, 56px)", fontWeight: 300, lineHeight: 1.15, marginBottom: 48 }}>
-            Invest in yourself.
-          </h2>
-
-          {[
-            { name: "Basic", price: "Free", cta: "Get started →", desc: "Everything to begin. 10 lessons, quiz mode, 5 levels.", highlight: false },
-            { name: "Pro Student", price: "$9.99 / mo", cta: "Start free trial →", desc: "Unlimited lessons, AI simulator, all courses, XP system.", highlight: true },
-            { name: "Schools", price: "Custom", cta: "Contact us →", desc: "Unlimited seats, LMS integrations, teacher dashboard.", highlight: false },
-          ].map((tier) => (
-            <div
-              key={tier.name}
-              style={{
-                display: "flex", justifyContent: "space-between", alignItems: "center",
-                padding: "24px 0", paddingLeft: tier.highlight ? 20 : 0,
-                borderBottom: `1px solid ${borderSub}`,
-                borderLeft: tier.highlight ? `2px solid ${accent}` : "none",
-                background: tier.highlight ? "rgba(97,102,220,0.04)" : "transparent",
-              }}
+            <motion.p 
+              className="text-base md:text-lg text-muted-foreground max-w-xl mx-auto mb-8"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.6, delay: 0.25 }}
             >
-              <div>
-                <div style={{ display: "flex", alignItems: "baseline", gap: 16, marginBottom: 4 }}>
-                  <span style={{ fontSize: 16, fontWeight: 400 }}>{tier.name}</span>
-                  <span style={{ fontSize: 14, color: muted }}>{tier.price}</span>
+              Interactive lessons, AI-powered simulations, and gamified challenges — without risking a single dollar.
+            </motion.p>
+
+            <motion.div 
+              className="flex flex-col sm:flex-row gap-3 justify-center"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+            >
+              <Button size="lg" onClick={() => navigate("/auth?signup=true")} className="px-8 bg-gradient-primary shadow-glow-soft hover:shadow-glow hover:-translate-y-0.5 transition-all duration-200 font-semibold text-base">
+                Start Learning Free <ArrowRight className="w-4 h-4 ml-2" />
+              </Button>
+              <Button size="lg" variant="outline" onClick={() => document.getElementById("how-it-works")?.scrollIntoView({ behavior: "smooth" })}>
+                See How It Works
+              </Button>
+            </motion.div>
+
+            <motion.div 
+              className="mt-10 flex flex-wrap items-center justify-center gap-6 text-muted-foreground"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.6 }}
+            >
+              <div className="flex items-center gap-1.5">
+                <Users className="w-4 h-4" />
+                <span className="text-xs font-medium">10,000+ students</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <Star className="w-4 h-4 text-warning fill-warning" />
+                <span className="text-xs font-medium">4.9/5 rating</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <Shield className="w-4 h-4" />
+                <span className="text-xs font-medium">100% risk-free</span>
+              </div>
+            </motion.div>
+          </div>
+
+          {/* Dashboard Preview with 3D Perspective Scroll */}
+          <HeroImage />
+        </div>
+      </section>
+
+      {/* Features */}
+      <FeatureShowcase />
+
+      {/* How It Works */}
+      <section id="how-it-works" className="py-20 md:py-28 bg-muted/20">
+        <div className="max-w-4xl mx-auto px-6">
+          <motion.div className="text-center mb-14" variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}>
+            <p className="text-xs font-semibold text-primary uppercase tracking-widest mb-3">How It Works</p>
+            <h2 className="text-3xl md:text-4xl font-bold">Start in 4 steps</h2>
+          </motion.div>
+
+          <motion.div className="grid sm:grid-cols-2 gap-5" variants={stagger} initial="hidden" whileInView="show" viewport={{ once: true }}>
+            {steps.map((s, i) => (
+              <motion.div key={i} variants={fadeUp}>
+                <Card className="p-5 h-full border-border/40 bg-card/50 hover:border-primary/25 transition-colors">
+                  <div className="flex items-start gap-4">
+                    <div className="w-10 h-10 rounded-lg bg-gradient-primary flex items-center justify-center flex-shrink-0">
+                      <s.icon className="w-5 h-5 text-primary-foreground" />
+                    </div>
+                    <div>
+                      <span className="text-[10px] font-bold text-primary uppercase tracking-widest">Step {s.num}</span>
+                      <h3 className="text-sm font-semibold mt-0.5 mb-1">{s.title}</h3>
+                      <p className="text-xs text-muted-foreground leading-relaxed">{s.desc}</p>
+                    </div>
+                  </div>
+                </Card>
+              </motion.div>
+            ))}
+          </motion.div>
+        </div>
+      </section>
+
+      <section className="py-20 md:py-28 overflow-hidden">
+        <div className="max-w-6xl mx-auto px-6">
+          <motion.div className="text-center mb-14" variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}>
+            <p className="text-xs font-semibold text-primary uppercase tracking-widest mb-3">Testimonials</p>
+            <h2 className="text-3xl md:text-4xl font-bold">Loved by students & professionals</h2>
+          </motion.div>
+        </div>
+
+        {/* Infinite scrolling marquee */}
+        <div className="relative">
+          <div className="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-background to-transparent z-10 pointer-events-none" />
+          <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-background to-transparent z-10 pointer-events-none" />
+          
+          <div className="flex gap-5 animate-[marquee_35s_linear_infinite] hover:[animation-play-state:paused] w-max">
+            {[...testimonials, ...testimonials].map((t, i) => (
+              <Card key={i} className="p-5 border-border/40 bg-card/50 w-[340px] flex-shrink-0">
+                <div className="flex gap-0.5 mb-3">
+                  {[...Array(5)].map((_, j) => (
+                    <Star key={j} className="w-3.5 h-3.5 text-warning fill-warning" />
+                  ))}
                 </div>
-                <p style={{ fontSize: 13, color: muted }}>{tier.desc}</p>
-              </div>
-              <button
-                onClick={() => navigate(tier.name === "Schools" ? "/legal" : "/auth?signup=true")}
-                style={{
-                  fontSize: 13, color: "#fff", background: "transparent",
-                  border: "none", cursor: "pointer", whiteSpace: "nowrap",
-                  transition: "color 200ms",
-                }}
-                onMouseEnter={(e) => (e.currentTarget.style.color = accent)}
-                onMouseLeave={(e) => (e.currentTarget.style.color = "#fff")}
-              >
-                {tier.cta}
-              </button>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ─── SECTION 8: FAQ ─── */}
-      <section id="faq" className="wipe-section" style={{ padding: "128px 0" }}>
-        <div style={{ maxWidth: 700, margin: "0 auto", padding: "0 24px" }}>
-          <h2 style={{ fontSize: "clamp(36px, 4vw, 48px)", fontWeight: 300, lineHeight: 1.15, marginBottom: 48 }}>
-            Common questions
-          </h2>
-
-          {faqs.map((faq, i) => (
-            <div key={i} style={{ borderBottom: `1px solid ${borderSub}` }}>
-              <button
-                onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                style={{
-                  width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center",
-                  padding: "20px 0", background: "transparent", border: "none",
-                  color: "#fff", cursor: "pointer", textAlign: "left", fontSize: 15, fontWeight: 400,
-                }}
-              >
-                {faq.q}
-                {openFaq === i ? <Minus size={16} color={muted} /> : <Plus size={16} color={muted} />}
-              </button>
-              <div
-                style={{
-                  maxHeight: openFaq === i ? 200 : 0,
-                  overflow: "hidden",
-                  transition: "max-height 300ms ease",
-                }}
-              >
-                <p style={{ fontSize: 14, color: muted, lineHeight: 1.6, paddingBottom: 20 }}>
-                  {faq.a}
-                </p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ─── FOOTER CTA ─── */}
-      <section className="wipe-section" style={{ padding: "128px 0", textAlign: "center" }}>
-        <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 24px" }}>
-          <h2 style={{ fontSize: "clamp(48px, 5.5vw, 64px)", fontWeight: 300, lineHeight: 1.1, marginBottom: 32 }}>
-            Ready to start<br />investing?
-          </h2>
-          <a
-            href="/auth?signup=true"
-            onClick={(e) => { e.preventDefault(); navigate("/auth?signup=true"); }}
-            style={{
-              fontSize: 16, color: "#fff", textDecoration: "none",
-              transition: "color 200ms",
-            }}
-            onMouseEnter={(e) => (e.currentTarget.style.color = accent)}
-            onMouseLeave={(e) => (e.currentTarget.style.color = "#fff")}
-          >
-            Create free account →
-          </a>
-        </div>
-      </section>
-
-      {/* ─── FOOTER ─── */}
-      <footer style={{ borderTop: `1px solid ${borderSub}`, padding: "64px 0 48px" }}>
-        <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 24px" }}>
-          <div style={{ display: "grid", gridTemplateColumns: "1.5fr 1fr 1fr 1fr 1fr", gap: 40, marginBottom: 48 }}>
-            <div>
-              <span style={{ fontSize: 16, fontWeight: 400 }}>Euphoria</span>
-              <span style={{ width: 5, height: 5, borderRadius: "50%", background: accent, display: "inline-block", marginLeft: 6, verticalAlign: "middle" }} />
-            </div>
-            {[
-              { title: "Product", links: ["Features", "Pricing", "Updates", "FAQ"] },
-              { title: "For Students", links: ["Get Started", "Simulator", "Games", "Leaderboard"] },
-              { title: "Resources", links: ["Blog", "Help Center", "Community", "API"] },
-              { title: "Legal", links: ["Privacy", "Terms", "COPPA", "DPA"] },
-            ].map((col) => (
-              <div key={col.title}>
-                <p style={{ fontSize: 12, color: "rgba(255,255,255,0.6)", marginBottom: 16, fontWeight: 400 }}>{col.title}</p>
-                {col.links.map((link) => (
-                  <a
-                    key={link}
-                    href="#"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      if (["Privacy", "Terms", "COPPA", "DPA"].includes(link)) navigate("/legal");
-                    }}
-                    style={{ display: "block", fontSize: 13, color: muted, textDecoration: "none", marginBottom: 10, transition: "color 200ms" }}
-                    onMouseEnter={(e) => (e.currentTarget.style.color = "#fff")}
-                    onMouseLeave={(e) => (e.currentTarget.style.color = muted)}
-                  >
-                    {link}
-                  </a>
-                ))}
-              </div>
+                <p className="text-sm text-foreground leading-relaxed mb-4">"{t.quote}"</p>
+                <div className="border-t border-border/30 pt-3">
+                  <p className="text-xs font-semibold">{t.author}</p>
+                  <p className="text-[11px] text-muted-foreground">{t.role}</p>
+                </div>
+              </Card>
             ))}
           </div>
-          <p style={{ fontSize: 12, color: "rgba(255,255,255,0.3)" }}>© 2026 Euphoria. All rights reserved.</p>
+        </div>
+      </section>
+
+      {/* Pricing */}
+      <PricingSection />
+
+      {/* FAQ */}
+      <section id="faq" className="py-20 md:py-28">
+        <div className="max-w-2xl mx-auto px-6">
+          <motion.div className="text-center mb-14" variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}>
+            <p className="text-xs font-semibold text-primary uppercase tracking-widest mb-3">FAQ</p>
+            <h2 className="text-3xl md:text-4xl font-bold">Common questions</h2>
+          </motion.div>
+
+          <motion.div className="space-y-2" variants={stagger} initial="hidden" whileInView="show" viewport={{ once: true }}>
+            {faqs.map((faq, i) => (
+              <motion.div key={i} variants={fadeUp}>
+                <button
+                  onClick={() => setOpenFaq(openFaq === i ? null : i)}
+                  className="w-full text-left p-4 rounded-lg border border-border/40 bg-card/50 hover:border-primary/25 transition-colors"
+                >
+                  <div className="flex items-center justify-between gap-4">
+                    <h3 className="text-sm font-medium">{faq.q}</h3>
+                    <ChevronDown className={`w-4 h-4 text-muted-foreground flex-shrink-0 transition-transform duration-200 ${openFaq === i ? "rotate-180" : ""}`} />
+                  </div>
+                  {openFaq === i && (
+                    <motion.p 
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      className="text-xs text-muted-foreground leading-relaxed mt-3 pt-3 border-t border-border/20"
+                    >
+                      {faq.a}
+                    </motion.p>
+                  )}
+                </button>
+              </motion.div>
+            ))}
+          </motion.div>
+        </div>
+      </section>
+
+      {/* CTA */}
+      <section className="py-20 md:py-28 relative">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,hsl(262_83%_58%/0.06),transparent_60%)]" />
+        <div className="max-w-2xl mx-auto px-6 text-center relative z-10">
+          <motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Ready to start investing?</h2>
+            <p className="text-muted-foreground mb-8">Join thousands of students learning through simulation.</p>
+            <Button size="lg" onClick={() => navigate("/auth?signup=true")} className="px-10 bg-gradient-primary shadow-glow-soft hover:shadow-glow hover:-translate-y-0.5 transition-all duration-200 font-semibold">
+              Create Free Account <ArrowRight className="w-4 h-4 ml-2" />
+            </Button>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="border-t border-border/30 py-10 bg-muted/10">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="grid sm:grid-cols-4 gap-8 mb-8">
+            <div>
+              <div className="flex items-center gap-2 mb-3">
+                <img src={logo} alt="Euphoria" className="w-7 h-7 object-contain" />
+                <span className="text-sm font-bold">Euphoria</span>
+              </div>
+              <p className="text-xs text-muted-foreground leading-relaxed">The gamified investing simulator for students and educators.</p>
+            </div>
+            <div>
+              <h4 className="text-xs font-semibold mb-2">Product</h4>
+              <ul className="space-y-1.5">
+                {["Features", "Pricing", "FAQ"].map((l) => (
+                  <li key={l}><a href={`#${l.toLowerCase()}`} className="text-xs text-muted-foreground hover:text-foreground transition-colors">{l}</a></li>
+                ))}
+              </ul>
+            </div>
+            <div>
+              <h4 className="text-xs font-semibold mb-2">For Educators</h4>
+              <ul className="space-y-1.5">
+                <li><a href="#pricing" className="text-xs text-muted-foreground hover:text-foreground transition-colors">Classroom Plans</a></li>
+                <li><a href="#how-it-works" className="text-xs text-muted-foreground hover:text-foreground transition-colors">How It Works</a></li>
+                <li><a href="/ferpa" className="text-xs text-muted-foreground hover:text-foreground transition-colors">FERPA Compliance</a></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="text-xs font-semibold mb-2">Legal</h4>
+              <ul className="space-y-1.5">
+                <li><a href="/privacy" className="text-xs text-muted-foreground hover:text-foreground transition-colors">Privacy Policy</a></li>
+                <li><a href="/terms" className="text-xs text-muted-foreground hover:text-foreground transition-colors">Terms of Service</a></li>
+                <li><a href="/ferpa" className="text-xs text-muted-foreground hover:text-foreground transition-colors">FERPA Compliance</a></li>
+              </ul>
+            </div>
+          </div>
+          <div className="border-t border-border/30 pt-6 flex flex-col sm:flex-row justify-between items-center gap-3">
+            <p className="text-[11px] text-muted-foreground">© 2026 Euphoria. All rights reserved.</p>
+            <p className="text-[11px] text-muted-foreground">Not financial advice. For educational purposes only.</p>
+          </div>
         </div>
       </footer>
     </div>
