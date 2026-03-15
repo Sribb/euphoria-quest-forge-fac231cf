@@ -108,7 +108,7 @@ const WhatToDoInCrash = () => {
             }`}
           >
             <div className="flex items-center gap-3">
-              <span className="text-xl">{item.emoji}</span>
+              <div className="w-7 h-7 rounded-lg bg-primary/10 flex-shrink-0" />
               <span className="font-bold text-foreground">{item.rule}</span>
             </div>
             {revealed.includes(i) && (

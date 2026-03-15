@@ -60,7 +60,7 @@ const TypesOfMoats = () => (
           transition={{ delay: i * 0.1 }}
           className="flex items-center gap-4 p-4 rounded-xl bg-muted/40 border border-border"
         >
-          <span className="text-2xl">{item.emoji}</span>
+          <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0" />
           <div className="flex-1">
             <h3 className="font-bold text-foreground">{item.name}</h3>
             <p className="text-sm text-muted-foreground">{item.desc}</p>

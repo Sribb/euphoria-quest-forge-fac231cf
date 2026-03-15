@@ -97,7 +97,7 @@ const KeyRatios = () => (
           className="p-5 rounded-xl bg-muted/40 border border-border"
         >
           <div className="flex items-center gap-2 mb-2">
-            <span className="text-xl">{item.emoji}</span>
+            <div className="w-7 h-7 rounded-lg bg-primary/10 flex-shrink-0" />
             <h3 className="font-bold text-foreground">{item.name}</h3>
           </div>
           <p className="text-xs font-mono bg-muted/50 p-2 rounded-lg text-muted-foreground mb-2">{item.formula}</p>
