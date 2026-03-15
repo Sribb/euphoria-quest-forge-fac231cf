@@ -223,23 +223,26 @@ export const TrendMasterGame = ({ onClose }: TrendMasterGameProps) => {
 
   const scenario = scenarios[currentQuestion];
 
+  const [wrongAttempts, setWrongAttempts] = useState<string[]>([]);
+
   const handleAnswer = (answer: string) => {
     if (showFeedback) return;
+    if (wrongAttempts.includes(answer)) return;
     
     setSelectedAnswer(answer);
-    setShowFeedback(true);
     
     if (answer === scenario.correctAnswer) {
-      const xpGain = 100 + (streak * 25);
-      setScore(score + 1);
+      setShowFeedback(true);
+      const xpGain = wrongAttempts.length === 0 ? 100 + (streak * 25) : 50;
+      setScore(wrongAttempts.length === 0 ? score + 1 : score);
       setTotalXP(totalXP + xpGain);
-      setStreak(streak + 1);
+      setStreak(wrongAttempts.length === 0 ? streak + 1 : 0);
       setShowCelebration(true);
       setTimeout(() => setShowCelebration(false), 2000);
       toast.success(`Correct! +${xpGain} XP`, { duration: 3000 });
     } else {
+      setWrongAttempts([...wrongAttempts, answer]);
       setStreak(0);
-      toast.error("Not quite right. Review the explanation!");
     }
   };
 
@@ -249,6 +252,7 @@ export const TrendMasterGame = ({ onClose }: TrendMasterGameProps) => {
       setSelectedAnswer(null);
       setShowFeedback(false);
       setShowHint(false);
+      setWrongAttempts([]);
     } else {
       setGameComplete(true);
     }
@@ -258,6 +262,7 @@ export const TrendMasterGame = ({ onClose }: TrendMasterGameProps) => {
     setSelectedAnswer(null);
     setShowFeedback(false);
     setShowHint(false);
+    setWrongAttempts([]);
   };
 
   const toggleHint = () => {
@@ -274,6 +279,7 @@ export const TrendMasterGame = ({ onClose }: TrendMasterGameProps) => {
     setShowFeedback(false);
     setGameComplete(false);
     setShowHint(false);
+    setWrongAttempts([]);
   };
 
   // Tutorial Screen
@@ -576,40 +582,41 @@ export const TrendMasterGame = ({ onClose }: TrendMasterGameProps) => {
             {/* Answer Cards */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
               {scenario.options.map((option, idx) => {
-                const isSelected = selectedAnswer === option;
                 const isCorrect = option === scenario.correctAnswer;
-                const showResult = showFeedback && isSelected;
+                const isWrong = wrongAttempts.includes(option);
+                const isCorrectlySelected = showFeedback && isCorrect;
                 
                 return (
                   <Card
                     key={option}
-                    onClick={() => !showFeedback && handleAnswer(option)}
-                    className={`p-6 cursor-pointer smooth-transition hover-lift relative overflow-hidden ${
-                      isSelected && !showFeedback ? "ring-2 ring-primary shadow-glow" : ""
+                    onClick={() => handleAnswer(option)}
+                    className={`p-6 smooth-transition relative overflow-hidden ${
+                      isWrong ? "opacity-50 cursor-not-allowed bg-destructive/10 border-destructive/30" : ""
                     } ${
-                      showResult && isCorrect ? "bg-gradient-to-br from-green-500/20 to-teal-500/20 border-green-500/50 shadow-glow" : ""
+                      isCorrectlySelected ? "bg-gradient-to-br from-green-500/20 to-teal-500/20 border-green-500/50 shadow-glow cursor-default" : ""
                     } ${
-                      showResult && !isCorrect ? "bg-destructive/10 border-destructive/50" : ""
-                    } ${
-                      !showFeedback ? "hover:border-primary/50" : ""
+                      !isWrong && !showFeedback ? "cursor-pointer hover-lift hover:border-primary/50" : ""
                     }`}
                     style={{ animationDelay: `${idx * 50}ms` }}
                   >
                     <div className="relative z-10">
                       <div className="flex items-center justify-between mb-2">
                         <span className="text-sm font-medium text-muted-foreground">Option {idx + 1}</span>
-                        {showResult && (
-                          <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                            isCorrect ? "bg-green-500/20 text-green-400" : "bg-destructive/20 text-destructive"
-                          }`}>
-                            {isCorrect ? "✓" : "✗"}
+                        {isWrong && (
+                          <div className="w-8 h-8 rounded-full flex items-center justify-center bg-destructive/20 text-destructive">
+                            ✗
+                          </div>
+                        )}
+                        {isCorrectlySelected && (
+                          <div className="w-8 h-8 rounded-full flex items-center justify-center bg-green-500/20 text-green-400">
+                            ✓
                           </div>
                         )}
                       </div>
                       <p className="font-bold text-lg">{option}</p>
                     </div>
                     
-                    {!showFeedback && (
+                    {!showFeedback && !isWrong && (
                       <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 hover:opacity-100 smooth-transition" />
                     )}
                   </Card>
@@ -617,28 +624,35 @@ export const TrendMasterGame = ({ onClose }: TrendMasterGameProps) => {
               })}
             </div>
 
-            {/* Feedback Section */}
+            {/* Wrong Attempt Feedback */}
+            {wrongAttempts.length > 0 && !showFeedback && (
+              <Card className="p-6 animate-fade-in border-2 bg-gradient-to-br from-destructive/10 to-destructive/5 border-destructive/30">
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 rounded-full flex items-center justify-center bg-destructive/20 text-destructive">
+                    <Trophy className="w-6 h-6" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-bold text-xl mb-2">Not Quite Right</h3>
+                    <p className="text-muted-foreground leading-relaxed">
+                      {wrongAttempts.length === 1
+                        ? `"${wrongAttempts[0]}" isn't the pattern here. Look more carefully at the price action — study the highs, lows, and overall direction. Try again!`
+                        : `You've eliminated ${wrongAttempts.length} options. Focus on the remaining choices and look at the chart's key features.`}
+                    </p>
+                  </div>
+                </div>
+              </Card>
+            )}
+
+            {/* Correct Answer Feedback */}
             {showFeedback && (
-              <Card className={`p-6 animate-fade-in border-2 ${
-                selectedAnswer === scenario.correctAnswer 
-                  ? "bg-gradient-to-br from-green-500/10 to-teal-500/10 border-green-500/30" 
-                  : "bg-gradient-to-br from-destructive/10 to-destructive/5 border-destructive/30"
-              }`}>
+              <Card className="p-6 animate-fade-in border-2 bg-gradient-to-br from-green-500/10 to-teal-500/10 border-green-500/30">
                 <div className="flex items-start gap-4 mb-4">
-                  <div className={`w-12 h-12 rounded-full flex items-center justify-center ${
-                    selectedAnswer === scenario.correctAnswer 
-                      ? "bg-green-500/20 text-green-400" 
-                      : "bg-destructive/20 text-destructive"
-                  }`}>
-                    {selectedAnswer === scenario.correctAnswer ? (
-                      <Award className="w-6 h-6" />
-                    ) : (
-                      <Trophy className="w-6 h-6" />
-                    )}
+                  <div className="w-12 h-12 rounded-full flex items-center justify-center bg-green-500/20 text-green-400">
+                    <Award className="w-6 h-6" />
                   </div>
                   <div className="flex-1">
                     <h3 className="font-bold text-xl mb-2">
-                      {selectedAnswer === scenario.correctAnswer ? "Correct!" : "Not Quite Right"}
+                      {wrongAttempts.length === 0 ? "Correct!" : "You Got It!"}
                     </h3>
                     <p className="text-muted-foreground leading-relaxed">{scenario.explanation}</p>
                   </div>
