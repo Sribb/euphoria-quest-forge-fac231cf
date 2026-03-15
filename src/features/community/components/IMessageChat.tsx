@@ -331,7 +331,7 @@ export const IMessageChat = () => {
         ? activeConvo.participant_two
         : activeConvo.participant_one;
 
-      const { error } = await supabase.from("direct_messages").insert({
+      const { error } = await db.from("direct_messages").insert({
         sender_id: user.id,
         receiver_id: receiverId,
         content: dmMessage.trim(),
