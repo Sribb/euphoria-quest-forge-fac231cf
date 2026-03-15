@@ -164,7 +164,7 @@ export const PricingSection = () => {
               }`}
             >
               Annually
-              <span className="ml-1.5 text-[10px] text-primary font-medium">Save 20%</span>
+              <span className="ml-1.5 text-[10px] text-primary font-medium">Save 17%</span>
             </button>
           </div>
         </motion.div>
