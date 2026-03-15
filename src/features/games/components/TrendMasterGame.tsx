@@ -671,7 +671,6 @@ export const TrendMasterGame = ({ onClose }: TrendMasterGameProps) => {
                 </Button>
               </Card>
             )}
-            )}
           </div>
         </div>
       </div>
