@@ -455,7 +455,7 @@ export const IMessageChat = ({ initialConversationId }: IMessageChatProps = {}) 
       .subscribe();
 
     return () => { supabase.removeChannel(channel); };
-  }, [user?.id, queryClient, activeConversationId]);
+  }, [user?.id, queryClient]);
 
   // ── Typing indicator via presence ──
   useEffect(() => {
