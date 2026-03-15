@@ -25,6 +25,7 @@ interface PricingTier {
   price: string;
   annualPrice?: string;
   period: string;
+  annualPeriod?: string;
   originalPrice?: string;
   tagline: string;
   description: string;
