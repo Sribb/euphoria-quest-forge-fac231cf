@@ -582,40 +582,41 @@ export const TrendMasterGame = ({ onClose }: TrendMasterGameProps) => {
             {/* Answer Cards */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
               {scenario.options.map((option, idx) => {
-                const isSelected = selectedAnswer === option;
                 const isCorrect = option === scenario.correctAnswer;
-                const showResult = showFeedback && isSelected;
+                const isWrong = wrongAttempts.includes(option);
+                const isCorrectlySelected = showFeedback && isCorrect;
                 
                 return (
                   <Card
                     key={option}
-                    onClick={() => !showFeedback && handleAnswer(option)}
-                    className={`p-6 cursor-pointer smooth-transition hover-lift relative overflow-hidden ${
-                      isSelected && !showFeedback ? "ring-2 ring-primary shadow-glow" : ""
+                    onClick={() => handleAnswer(option)}
+                    className={`p-6 smooth-transition relative overflow-hidden ${
+                      isWrong ? "opacity-50 cursor-not-allowed bg-destructive/10 border-destructive/30" : ""
                     } ${
-                      showResult && isCorrect ? "bg-gradient-to-br from-green-500/20 to-teal-500/20 border-green-500/50 shadow-glow" : ""
+                      isCorrectlySelected ? "bg-gradient-to-br from-green-500/20 to-teal-500/20 border-green-500/50 shadow-glow cursor-default" : ""
                     } ${
-                      showResult && !isCorrect ? "bg-destructive/10 border-destructive/50" : ""
-                    } ${
-                      !showFeedback ? "hover:border-primary/50" : ""
+                      !isWrong && !showFeedback ? "cursor-pointer hover-lift hover:border-primary/50" : ""
                     }`}
                     style={{ animationDelay: `${idx * 50}ms` }}
                   >
                     <div className="relative z-10">
                       <div className="flex items-center justify-between mb-2">
                         <span className="text-sm font-medium text-muted-foreground">Option {idx + 1}</span>
-                        {showResult && (
-                          <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                            isCorrect ? "bg-green-500/20 text-green-400" : "bg-destructive/20 text-destructive"
-                          }`}>
-                            {isCorrect ? "✓" : "✗"}
+                        {isWrong && (
+                          <div className="w-8 h-8 rounded-full flex items-center justify-center bg-destructive/20 text-destructive">
+                            ✗
+                          </div>
+                        )}
+                        {isCorrectlySelected && (
+                          <div className="w-8 h-8 rounded-full flex items-center justify-center bg-green-500/20 text-green-400">
+                            ✓
                           </div>
                         )}
                       </div>
                       <p className="font-bold text-lg">{option}</p>
                     </div>
                     
-                    {!showFeedback && (
+                    {!showFeedback && !isWrong && (
                       <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 hover:opacity-100 smooth-transition" />
                     )}
                   </Card>
