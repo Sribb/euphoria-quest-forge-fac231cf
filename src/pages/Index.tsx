@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
+import { AppTopBar } from "@/shared/components/AppTopBar";
+import { AppSidebar } from "@/shared/components/AppSidebar";
 import { DuoSidebar } from "@/shared/components/DuoSidebar";
 import { PersonalizedWelcomeOverlay } from "@/shared/components/PersonalizedWelcomeOverlay";
 import { AnimatePresence } from "framer-motion";
 import { GlobalAIAssistant } from "@/shared/components/GlobalAIAssistant";
-import { AmbientBackground } from "@/shared/components/AmbientBackground";
 import { useEducatorRole } from "@/features/educator/hooks/useEducatorRole";
 import { useIsMobile } from "@/hooks/use-mobile";
 import Dashboard from "./Dashboard";
@@ -49,7 +50,12 @@ const Index = () => {
   };
 
   const handleNavigate = (tab: string) => {
-    setActiveTab(tab);
+    // Map "messages" to community with messages tab active
+    if (tab === "messages") {
+      setActiveTab("community");
+    } else {
+      setActiveTab(tab);
+    }
     setShowStockSearch(false);
     setSelectedStock(null);
   };
@@ -68,9 +74,6 @@ const Index = () => {
     setShowStockSearch(false);
     setActiveTab("trade");
   };
-
-  // Always show sidebar
-  const showSidebar = true;
 
   const renderContent = () => {
     if (selectedStock) {
@@ -153,16 +156,35 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex relative">
-      <AmbientBackground />
+    <div className="min-h-screen bg-background">
       <AnimatePresence>
         {showWelcome && <PersonalizedWelcomeOverlay onComplete={handleWelcomeComplete} />}
       </AnimatePresence>
 
-      {showSidebar && <DuoSidebar activeTab={activeTab} onTabChange={handleNavigate} />}
+      {/* Desktop: new top bar + sidebar */}
+      {!isMobile && (
+        <>
+          <AppTopBar onNavigate={handleNavigate} />
+          <AppSidebar activeTab={activeTab} onTabChange={handleNavigate} />
+        </>
+      )}
 
-      <main className={`flex-1 ${isMobile ? 'pt-16 pb-20 px-4' : 'ml-[220px] px-6 py-6'}`}>
-        <div className="max-w-6xl mx-auto animate-fade-in" key={activeTab}>
+      {/* Mobile: keep existing bottom tab bar */}
+      {isMobile && <DuoSidebar activeTab={activeTab} onTabChange={handleNavigate} />}
+
+      <main
+        className={
+          isMobile
+            ? "pt-16 pb-20 px-4"
+            : ""
+        }
+        style={!isMobile ? { marginLeft: 240, paddingTop: 60 } : undefined}
+      >
+        <div
+          className="animate-fade-in"
+          style={!isMobile ? { padding: 32 } : undefined}
+          key={activeTab}
+        >
           {renderContent()}
         </div>
       </main>
