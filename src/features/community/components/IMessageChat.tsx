@@ -803,11 +803,7 @@ export const IMessageChat = ({ initialConversationId }: IMessageChatProps = {}) 
                       </p>
                     </div>
                     <button
-                      onClick={() => {
-                        if (confirm("Delete this conversation?")) {
-                          deleteConversationMutation.mutate(activeConversationId);
-                        }
-                      }}
+                      onClick={() => setShowDeleteDialog(true)}
                       className="p-2 rounded-lg hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors cursor-pointer"
                     >
                       <X className="w-4 h-4" />
