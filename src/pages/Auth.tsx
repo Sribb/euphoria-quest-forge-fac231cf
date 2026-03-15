@@ -40,13 +40,13 @@ function ParticleCanvas() {
     const make = (): P => ({
       x: Math.random() * canvas.width,
       y: Math.random() * canvas.height,
-      v: Math.random() * 0.25 + 0.05,
-      o: Math.random() * 0.25 + 0.08,
+      v: Math.random() * 0.15 + 0.02,
+      o: Math.random() * 0.5 + 0.15,
     });
 
     const init = () => {
       ps = [];
-      const count = Math.floor((canvas.width * canvas.height) / 10000);
+      const count = Math.floor((canvas.width * canvas.height) / 5000);
       for (let i = 0; i < count; i++) ps.push(make());
     };
 
@@ -57,12 +57,14 @@ function ParticleCanvas() {
         if (p.y < 0) {
           p.x = Math.random() * canvas.width;
           p.y = canvas.height + Math.random() * 40;
-          p.v = Math.random() * 0.25 + 0.05;
-          p.o = Math.random() * 0.25 + 0.08;
+          p.v = Math.random() * 0.15 + 0.02;
+          p.o = Math.random() * 0.5 + 0.15;
         }
-        // Violet particles
-        ctx.fillStyle = `rgba(124,58,237,${p.o})`;
-        ctx.fillRect(p.x, p.y, 0.7, 2.2);
+        // Neutral white micro-stars
+        ctx.fillStyle = `hsla(0, 0%, 80%, ${p.o})`;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, Math.random() * 0.8 + 0.4, 0, Math.PI * 2);
+        ctx.fill();
       });
       raf = requestAnimationFrame(draw);
     };
@@ -349,16 +351,14 @@ const Auth = () => {
         }}
       />
 
-      {/* Animated accent grid lines */}
+      {/* Subtle accent grid lines — low opacity so they don't look blocky */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden" style={{ zIndex: 1 }}>
-        {/* Horizontal lines */}
-        <div className="absolute top-[25%] left-0 w-full h-px bg-primary/20 origin-left" style={{ animation: "drawX 3s ease-out 0.5s both" }} />
-        <div className="absolute top-[50%] left-0 w-full h-px bg-primary/15 origin-left" style={{ animation: "drawX 3s ease-out 1s both" }} />
-        <div className="absolute top-[75%] left-0 w-full h-px bg-primary/10 origin-left" style={{ animation: "drawX 3s ease-out 1.5s both" }} />
-        {/* Vertical lines */}
-        <div className="absolute left-[25%] top-0 w-px h-full bg-primary/15 origin-top" style={{ animation: "drawY 3s ease-out 0.8s both" }} />
-        <div className="absolute left-[50%] top-0 w-px h-full bg-primary/10 origin-top" style={{ animation: "drawY 3s ease-out 1.3s both" }} />
-        <div className="absolute left-[75%] top-0 w-px h-full bg-primary/15 origin-top" style={{ animation: "drawY 3s ease-out 1.8s both" }} />
+        <div className="absolute top-[25%] left-0 w-full h-px bg-primary/[0.06] origin-left" style={{ animation: "drawX 3s ease-out 0.5s both" }} />
+        <div className="absolute top-[50%] left-0 w-full h-px bg-primary/[0.04] origin-left" style={{ animation: "drawX 3s ease-out 1s both" }} />
+        <div className="absolute top-[75%] left-0 w-full h-px bg-primary/[0.06] origin-left" style={{ animation: "drawX 3s ease-out 1.5s both" }} />
+        <div className="absolute left-[25%] top-0 w-px h-full bg-primary/[0.05] origin-top" style={{ animation: "drawY 3s ease-out 0.8s both" }} />
+        <div className="absolute left-[50%] top-0 w-px h-full bg-primary/[0.04] origin-top" style={{ animation: "drawY 3s ease-out 1.3s both" }} />
+        <div className="absolute left-[75%] top-0 w-px h-full bg-primary/[0.05] origin-top" style={{ animation: "drawY 3s ease-out 1.8s both" }} />
       </div>
 
       {/* Particles */}
@@ -371,7 +371,7 @@ const Auth = () => {
           className="flex items-center gap-2 text-foreground/70 hover:text-foreground transition-colors"
         >
           <img src={euphoriaLogo} alt="Euphoria" className="w-8 h-8 object-contain" />
-          <span className="text-sm font-semibold tracking-wide text-foreground/90">EUPHORIA</span>
+          <span className="text-base font-extrabold text-foreground tracking-tight">Euphoria</span>
         </button>
         <button
           onClick={() => navigate("/")}
