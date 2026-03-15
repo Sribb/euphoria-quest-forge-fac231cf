@@ -12,6 +12,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { TwitterFeed } from "@/features/community/components/TwitterFeed";
 import {
   MessageSquare, Heart, Send, Plus, Users, Image as ImageIcon,
   Loader2, Smile, GraduationCap, Copy, Trash2, UserMinus
