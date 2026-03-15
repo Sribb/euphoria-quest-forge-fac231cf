@@ -109,7 +109,7 @@ export function useCoinShop() {
     },
     onError: (err: Error) => {
       if (err.message === "Not enough coins") {
-        toast.error("Not enough EuphoriaCoins!", { description: "Complete lessons and challenges to earn more." });
+        toast.error("Not enough Euphorium!", { description: "Complete lessons and challenges to earn more." });
       } else {
         toast.error("Purchase failed", { description: err.message });
       }

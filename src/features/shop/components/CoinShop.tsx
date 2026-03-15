@@ -52,7 +52,7 @@ export const CoinShop = ({ onNavigate }: CoinShopProps) => {
             <ShoppingBag className="w-5 h-5 md:w-6 md:h-6 text-white" />
           </div>
           <div>
-            <h1 className="text-2xl md:text-3xl font-bold">EuphoriaCoins Shop</h1>
+            <h1 className="text-2xl md:text-3xl font-bold">Euphorium Shop</h1>
             <p className="text-sm text-muted-foreground">Spend your hard-earned coins on upgrades</p>
           </div>
         </div>
@@ -96,7 +96,7 @@ export const CoinShop = ({ onNavigate }: CoinShopProps) => {
       <Card className="p-4 bg-gradient-to-r from-emerald-500/5 to-emerald-500/10 border-emerald-500/20 animate-fade-in">
         <h3 className="font-bold text-sm mb-3 flex items-center gap-2">
           <Sparkles className="w-4 h-4 text-emerald-400" />
-          How to Earn EuphoriaCoins
+          How to Earn Euphorium
         </h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           {[
