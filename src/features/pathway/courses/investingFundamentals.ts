@@ -90,7 +90,7 @@ const lessons = [
     c('⚖️','Mutual vs Index Funds','Mutual funds pool money from investors to buy a portfolio of assets. Index funds are a type of mutual fund that passively tracks a market index.'),
     tr('Key Differences',[['Active Management','Fund manager picks stocks, higher fees'],['Passive Management','Tracks an index, lower fees'],['Expense Ratio','Annual fee as % of investment'],['Benchmark','Index the fund tries to match or beat']]),
     fb('An index fund passively tracks a market ___.',['index','manager','prediction','trend'],0),
-    q('Why do most actively managed funds underperform index funds?','Bad luck','Higher fees and difficulty beating the market consistently','They invest in bad stocks','They don\'t try',1,'Studies show ~80% of active funds underperform their benchmark after fees.'),
+    q('Why do most actively managed funds underperform index funds?',['Bad luck','Higher fees and difficulty beating the market consistently','They invest in bad stocks','They don\'t try'],1,'Studies show ~80% of active funds underperform their benchmark after fees.'),
     ds('Order from lowest to highest typical fees:',['Index Fund (0.03%)','ETF (0.10%)','Actively Managed Mutual Fund (0.75%)','Hedge Fund (2%)']),
     sc('You\'re choosing between a fund with 0.03% fees and one with 1.00% fees, both tracking the S&P 500. Over 30 years on $10,000:',[
       {label:'Pick the 0.03% fund',outcome:'After 30 years at 10% return: ~$164,000 vs ~$132,000. The low-fee fund earns you $32,000 more!',correct:true},
