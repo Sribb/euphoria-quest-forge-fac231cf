@@ -31,15 +31,11 @@ const Community = ({ onNavigate }: CommunityProps) => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [newPostContent, setNewPostContent] = useState("");
-  const [activeConversation, setActiveConversation] = useState<string | null>(null);
-  const [dmMessage, setDmMessage] = useState("");
-  const [searchQuery, setSearchQuery] = useState("");
   const [classCode, setClassCode] = useState("");
   const [newClassName, setNewClassName] = useState("");
   const [newClassDesc, setNewClassDesc] = useState("");
   const [newClassMax, setNewClassMax] = useState("");
   const [showCreateClass, setShowCreateClass] = useState(false);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
   const { hasEducatorAccess } = useEducatorRole();
   const { classes, isLoading: classesLoading, createClass, deleteClass, removeStudent } = useClassManagement();
 
