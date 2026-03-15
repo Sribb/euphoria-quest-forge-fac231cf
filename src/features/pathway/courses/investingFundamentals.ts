@@ -28,7 +28,7 @@ const lessons = [
     tr('Stock Basics',[['Share','One unit of stock ownership'],['Shareholder','Person who owns stock'],['Ticker','Short code identifying a stock (e.g., AAPL)'],['Exchange','Marketplace where stocks trade']]),
     fb('When you buy a stock, you become a partial ___ of the company.',['owner','employee','creditor','manager'],0),
     vi('Imagine a company worth $1 billion with 1 billion shares outstanding.','What is the price per share?',['$1','$10','$100','$1,000'],0),
-    q('Why do companies issue stock?','To raise money for growth','To pay employees','To reduce taxes','To buy other companies',0,'Companies sell shares to raise capital for operations and expansion.'),
+    q('Why do companies issue stock?',['To raise money for growth','To pay employees','To reduce taxes','To buy other companies'],0,'Companies sell shares to raise capital for operations and expansion.'),
     tf([{s:'Owning stock means you own part of a company',a:true},{s:'All stocks pay dividends',a:false},{s:'Stock prices can go to zero',a:true}]),
     sc('A company you own stock in reports record earnings. What likely happens to the stock price?',[
       {label:'Price increases',outcome:'Strong earnings typically drive stock prices up as investors value the company higher.',correct:true},
