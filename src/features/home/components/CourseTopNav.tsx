@@ -97,12 +97,6 @@ export const CourseTopNav = ({ activeView, onViewChange }: CourseTopNavProps) =>
         </div>
       </div>
 
-      {/* Pro banner (show for free users) */}
-      <div className="flex items-center justify-center gap-3 px-6 py-2.5 bg-gradient-to-r from-primary/30 via-primary/20 to-primary/30 border-b border-primary/10">
-        <Gem className="w-4 h-4 text-primary" />
-        <span className="text-xs text-foreground/80">Subscribe to <strong className="text-foreground">Euphoria Pro</strong> and unlock all courses</span>
-        <button className="text-xs font-bold text-primary hover:underline">Go Pro →</button>
-      </div>
     </div>
   );
 };
