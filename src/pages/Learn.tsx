@@ -141,7 +141,7 @@ const Learn = ({ onNavigate, selectedLesson, onLessonSelect }: LearnProps) => {
   }
 
   if (selectedPathway) {
-    const filtered = lessons.filter(l => (l as any).pathway === selectedPathway);
+    const filtered = lessons.filter(l => l.pathway === selectedPathway);
     const completedCount = filtered.filter(l => l.completed).length;
     const meta = PATHWAY_META[selectedPathway] || { title: selectedPathway, color: "" };
 
