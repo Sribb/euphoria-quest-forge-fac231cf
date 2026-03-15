@@ -16,6 +16,9 @@ import { cn } from "@/lib/utils";
 import { format, isToday, isYesterday } from "date-fns";
 import { useIsMobile } from "@/hooks/use-mobile";
 
+// Helper for tables not yet in auto-generated types
+const db = supabase as any;
+
 type ConversationStatus = "pending" | "active";
 type RequestStatus = "pending" | "accepted" | "declined";
 
