@@ -14,7 +14,8 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ['"Nunito"', "system-ui", "sans-serif"],
+        sans: ['"DM Sans"', "system-ui", "sans-serif"],
+        heading: ['"Syne"', "system-ui", "sans-serif"],
       },
       colors: {
         border: "hsl(var(--border))",

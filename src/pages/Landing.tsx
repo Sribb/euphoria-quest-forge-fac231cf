@@ -1,74 +1,12 @@
-import { useEffect, useState, useRef, useMemo } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { 
-  TrendingUp, Brain, Sparkles, Users, 
-  BookOpen, Gamepad2, Award, ChevronDown,
-  GraduationCap, Shield, Star, Check, ArrowRight,
-  Trophy, Target
-} from "lucide-react";
+import { ChevronDown, ArrowRight, Star } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { FeatureShowcase } from "@/features/landing/components/FeatureShowcase";
 import { PricingSection } from "@/features/landing/components/PricingSection";
 import logo from "@/assets/euphoria-logo-button.png";
-const TYPEWRITER_LINES = [
-  { text: "Master the Markets.", gradient: false },
-  { text: "Learn with Euphoria.", gradient: true },
-];
-
-const TypewriterHeadline = () => {
-  const [lineIndex, setLineIndex] = useState(0);
-  const [charIndex, setCharIndex] = useState(0);
-  const [done, setDone] = useState(false);
-
-  useEffect(() => {
-    if (done) return;
-    const line = TYPEWRITER_LINES[lineIndex];
-    if (charIndex < line.text.length) {
-      const t = setTimeout(() => setCharIndex((c) => c + 1), 45);
-      return () => clearTimeout(t);
-    }
-    // line finished
-    if (lineIndex < TYPEWRITER_LINES.length - 1) {
-      const t = setTimeout(() => {
-        setLineIndex((l) => l + 1);
-        setCharIndex(0);
-      }, 350);
-      return () => clearTimeout(t);
-    }
-    setDone(true);
-  }, [charIndex, lineIndex, done]);
-
-  return (
-    <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold leading-[1.1] tracking-tight mb-6">
-      {TYPEWRITER_LINES.map((line, i) => {
-        const visible =
-          i < lineIndex
-            ? line.text
-            : i === lineIndex
-            ? line.text.slice(0, charIndex)
-            : "";
-        const showCursor = !done && i === lineIndex;
-        return (
-          <span key={i} className="block">
-            {line.gradient ? (
-              <span className="bg-gradient-to-r from-primary via-violet-400 to-fuchsia-400 bg-clip-text text-transparent">
-                {visible}
-              </span>
-            ) : (
-              visible
-            )}
-            {showCursor && (
-              <span className="inline-block w-[3px] h-[1em] bg-primary ml-1 animate-pulse align-middle" />
-            )}
-          </span>
-        );
-      })}
-    </h1>
-  );
-};
 
 const HeroImage = () => {
   const ref = useRef<HTMLDivElement>(null);
@@ -80,20 +18,17 @@ const HeroImage = () => {
 
   return (
     <div ref={ref} className="max-w-5xl mx-auto" style={{ perspective: "1200px" }}>
-      <motion.div
-        style={{ rotateX, scale, opacity, y }}
-        className="relative"
-      >
-        {/* Glow behind */}
-        <div className="absolute -inset-4 bg-[radial-gradient(ellipse_at_center,hsl(262_83%_58%/0.15),transparent_70%)] rounded-3xl blur-2xl" />
-        
-        <div className="relative rounded-xl border border-border/50 bg-card/80 shadow-2xl overflow-hidden">
+      <motion.div style={{ rotateX, scale, opacity, y }} className="relative">
+        {/* Radial glow BEHIND the mockup */}
+        <div className="absolute -inset-8 bg-[radial-gradient(ellipse_60%_40%_at_50%_100%,hsl(263_70%_50%/0.12),transparent_70%)] pointer-events-none" />
+
+        <div className="relative rounded-xl border border-white/[0.07] bg-card shadow-[0_32px_64px_rgba(0,0,0,0.5)] overflow-hidden">
           {/* Browser chrome */}
-          <div className="flex items-center gap-2 px-4 py-3 bg-muted/50 border-b border-border/30">
+          <div className="flex items-center gap-2 px-4 py-3 bg-muted/50 border-b border-white/[0.07]">
             <div className="flex gap-1.5">
-              <div className="w-2.5 h-2.5 rounded-full bg-[hsl(0_60%_50%)]" />
-              <div className="w-2.5 h-2.5 rounded-full bg-[hsl(45_70%_55%)]" />
-              <div className="w-2.5 h-2.5 rounded-full bg-[hsl(142_60%_45%)]" />
+              <div className="w-2 h-2 rounded-full bg-[hsl(0_40%_45%)]" />
+              <div className="w-2 h-2 rounded-full bg-[hsl(45_50%_45%)]" />
+              <div className="w-2 h-2 rounded-full bg-[hsl(142_40%_40%)]" />
             </div>
             <div className="flex-1 flex justify-center">
               <div className="bg-background/60 rounded-md px-4 py-1 text-[11px] text-muted-foreground font-mono">
@@ -101,8 +36,6 @@ const HeroImage = () => {
               </div>
             </div>
           </div>
-          
-          {/* Dashboard demo video */}
           <div className="relative">
             <video
               ref={(el) => { if (el) el.playbackRate = 2; }}
@@ -115,11 +48,6 @@ const HeroImage = () => {
             />
           </div>
         </div>
-
-        {/* Caption below screenshot */}
-        <p className="text-center text-sm md:text-base text-muted-foreground mt-6 font-bold tracking-wide">
-          The easiest way to learn how to invest.
-        </p>
       </motion.div>
     </div>
   );
@@ -129,28 +57,24 @@ const Landing = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
     if (user) navigate("/app");
   }, [user, navigate]);
 
-  const features = [
-    { icon: BookOpen, title: "25+ Interactive Lessons", description: "Hands-on simulations where you learn by making real decisions.", color: "text-primary", bg: "bg-primary/10" },
-    { icon: TrendingUp, title: "AI Market Simulation", description: "Trade with AI-driven events, news, and dynamic pricing.", color: "text-success", bg: "bg-success/10" },
-    { icon: Gamepad2, title: "Investment Games", description: "Master investing through play, competition, and strategy.", color: "text-warning", bg: "bg-warning/10" },
-    { icon: Brain, title: "AI Coach", description: "Personalized feedback on every trade and decision.", color: "text-accent", bg: "bg-accent/10" },
-    { icon: GraduationCap, title: "Educator Tools", description: "Create classes, track progress, and manage learning at scale.", color: "text-primary", bg: "bg-primary/10" },
-    { icon: Award, title: "XP & Levels", description: "Earn XP, unlock badges, and compete on leaderboards.", color: "text-success", bg: "bg-success/10" },
-  ];
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   const steps = [
-    { num: "01", title: "Take the Placement Quiz", desc: "20 scenario-based questions find your level instantly.", icon: Target },
-    { num: "02", title: "Learn by Doing", desc: "Every lesson is a simulation. Make choices, see real results.", icon: Sparkles },
-    { num: "03", title: "Trade & Compete", desc: "Paper-trade with AI events. Test strategies risk-free.", icon: TrendingUp },
-    { num: "04", title: "Level Up", desc: "Earn XP, maintain streaks, grow your skills.", icon: Trophy },
+    { num: "01", title: "Take the Placement Quiz", desc: "20 scenario-based questions find your level instantly." },
+    { num: "02", title: "Learn by Doing", desc: "Every lesson is a simulation. Make choices, see real results." },
+    { num: "03", title: "Trade & Compete", desc: "Paper-trade with AI events. Test strategies risk-free." },
+    { num: "04", title: "Level Up", desc: "Earn XP, maintain streaks, grow your skills." },
   ];
-
-  const pricing: never[] = [];
 
   const faqs = [
     { q: "Is Euphoria actually free for students?", a: "Yes! Full access to all lessons, games, the AI market simulator, and portfolio tracking — completely free. No credit card required." },
@@ -169,16 +93,15 @@ const Landing = () => {
   ];
 
   const fadeUp = { hidden: { opacity: 0, y: 24 }, show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] as const } } };
-  const stagger = { hidden: {}, show: { transition: { staggerChildren: 0.08 } } };
 
   return (
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
-      {/* Nav */}
-      <nav className="fixed top-0 w-full z-50 backdrop-blur-md bg-background/85 border-b border-border/40">
+      {/* ── Navbar ── */}
+      <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${scrolled ? "bg-[hsl(240_12%_4%/0.8)] backdrop-blur-xl border-b border-white/[0.07]" : "bg-transparent"}`}>
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            <img src={logo} alt="Euphoria" className="w-8 h-8 object-contain" />
-            <span className="text-lg font-bold tracking-tight">Euphoria</span>
+          <div className="flex items-center gap-2">
+            <img src={logo} alt="Euphoria" className="w-7 h-7 object-contain" />
+            <span className="font-heading text-base font-bold tracking-tight text-foreground">Euphoria</span>
           </div>
           <div className="hidden md:flex items-center gap-8">
             {["Features", "How It Works", "Pricing", "FAQ"].map((item) => (
@@ -189,7 +112,7 @@ const Landing = () => {
                   e.preventDefault();
                   document.getElementById(item.toLowerCase().replace(/\s+/g, "-"))?.scrollIntoView({ behavior: "smooth" });
                 }}
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors font-medium"
               >
                 {item}
               </a>
@@ -197,17 +120,19 @@ const Landing = () => {
             <a
               href="/legal"
               onClick={(e) => { e.preventDefault(); navigate("/legal"); }}
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors font-medium"
             >
               Legal
             </a>
           </div>
           <div className="flex items-center gap-3">
-            <Button variant="ghost" size="sm" onClick={() => navigate("/auth")}>Log in</Button>
+            <Button variant="ghost" size="sm" onClick={() => navigate("/auth")} className="text-muted-foreground hover:text-foreground font-medium">
+              Log in
+            </Button>
             <Button
               size="sm"
               onClick={() => navigate("/auth?signup=true")}
-              className="bg-gradient-primary shadow-glow-soft hover:shadow-glow hover:-translate-y-0.5 transition-all duration-200 font-semibold"
+              className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg px-5 font-medium"
             >
               Sign up free
             </Button>
@@ -215,22 +140,34 @@ const Landing = () => {
         </div>
       </nav>
 
-      {/* Hero */}
+      {/* ── Hero ── */}
       <section className="relative pt-32 pb-8 md:pt-40 md:pb-16 overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,hsl(262_83%_58%/0.08),transparent_60%)]" />
-        
         <div className="max-w-6xl mx-auto px-6 relative z-10">
           <div className="text-center max-w-3xl mx-auto mb-20">
-            <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-              <div className="inline-flex items-center gap-2 bg-primary/8 border border-primary/15 rounded-full px-4 py-1.5 mb-6">
-                <span className="text-xs font-medium text-primary">The #1 investing simulator for students</span>
-              </div>
-            </motion.div>
+            {/* Uppercase label — no pill */}
+            <motion.p
+              className="text-[11px] font-medium text-primary uppercase tracking-[0.15em] mb-8"
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              Investing Simulator for Students
+            </motion.p>
 
-            <TypewriterHeadline />
+            {/* Static two-line headline */}
+            <motion.h1
+              className="font-heading text-5xl sm:text-6xl md:text-7xl font-bold leading-[1.1] tracking-tight mb-6"
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+            >
+              <span className="block text-foreground">Master the Markets.</span>
+              <span className="block text-primary">Learn with Euphoria.</span>
+            </motion.h1>
 
-            <motion.p 
-              className="text-base md:text-lg text-muted-foreground max-w-xl mx-auto mb-8"
+            {/* Subheadline */}
+            <motion.p
+              className="text-lg text-muted-foreground max-w-[560px] mx-auto mb-10 font-normal"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.6, delay: 0.25 }}
@@ -238,201 +175,235 @@ const Landing = () => {
               Interactive lessons, AI-powered simulations, and gamified challenges — without risking a single dollar.
             </motion.p>
 
-            <motion.div 
-              className="flex flex-col sm:flex-row gap-3 justify-center"
+            {/* CTA buttons */}
+            <motion.div
+              className="flex flex-col sm:flex-row gap-3 justify-center mb-10"
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.4 }}
             >
-              <Button size="lg" onClick={() => navigate("/auth?signup=true")} className="px-8 bg-gradient-primary shadow-glow-soft hover:shadow-glow hover:-translate-y-0.5 transition-all duration-200 font-semibold text-base">
+              <Button
+                size="lg"
+                onClick={() => navigate("/auth?signup=true")}
+                className="px-7 py-3.5 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg font-medium text-base hover:scale-[1.02] hover:shadow-[0_0_24px_hsl(263_70%_50%/0.4)] transition-all duration-200"
+              >
                 Start Learning Free <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
-              <Button size="lg" variant="outline" onClick={() => document.getElementById("how-it-works")?.scrollIntoView({ behavior: "smooth" })}>
+              <Button
+                size="lg"
+                variant="outline"
+                onClick={() => document.getElementById("how-it-works")?.scrollIntoView({ behavior: "smooth" })}
+                className="px-7 py-3.5 bg-transparent border border-white/[0.15] hover:border-white/[0.35] text-foreground rounded-lg font-medium text-base transition-all duration-200"
+              >
                 See How It Works
               </Button>
             </motion.div>
 
-            <motion.div 
-              className="mt-10 flex flex-wrap items-center justify-center gap-6 text-muted-foreground"
+            {/* Social proof — text only with · separators */}
+            <motion.p
+              className="text-[13px] text-[hsl(240_4%_32%)] font-normal"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.6 }}
             >
-              <div className="flex items-center gap-1.5">
-                <Users className="w-4 h-4" />
-                <span className="text-xs font-medium">10,000+ students</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <Star className="w-4 h-4 text-warning fill-warning" />
-                <span className="text-xs font-medium">4.9/5 rating</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <Shield className="w-4 h-4" />
-                <span className="text-xs font-medium">100% risk-free</span>
-              </div>
-            </motion.div>
+              10,000+ students · 4.9/5 rating · 100% risk-free
+            </motion.p>
           </div>
 
-          {/* Dashboard Preview with 3D Perspective Scroll */}
           <HeroImage />
         </div>
       </section>
 
-      {/* Features */}
+      {/* ── Features ── */}
       <FeatureShowcase />
 
-      {/* How It Works */}
-      <section id="how-it-works" className="py-20 md:py-28 bg-muted/20">
-        <div className="max-w-4xl mx-auto px-6">
-          <motion.div className="text-center mb-14" variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}>
-            <p className="text-xs font-semibold text-primary uppercase tracking-widest mb-3">How It Works</p>
-            <h2 className="text-3xl md:text-4xl font-bold">Start in 4 steps</h2>
+      {/* ── How It Works — Horizontal Timeline ── */}
+      <section id="how-it-works" className="py-20 md:py-28">
+        <div className="max-w-5xl mx-auto px-6">
+          <motion.div className="mb-16" variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}>
+            <p className="text-[11px] font-medium text-primary uppercase tracking-[0.15em] mb-4">How It Works</p>
+            <h2 className="font-heading text-4xl md:text-5xl font-bold text-foreground">Start in 4 steps</h2>
           </motion.div>
 
-          <motion.div className="grid sm:grid-cols-2 gap-5" variants={stagger} initial="hidden" whileInView="show" viewport={{ once: true }}>
+          {/* Desktop: horizontal timeline */}
+          <motion.div
+            className="hidden md:grid grid-cols-4 gap-0 relative"
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            {/* Connector line */}
+            <div className="absolute top-10 left-[12.5%] right-[12.5%] h-px bg-white/[0.08]" />
+
             {steps.map((s, i) => (
-              <motion.div key={i} variants={fadeUp}>
-                <Card className="p-5 h-full border-border/40 bg-card/50 hover:border-primary/25 transition-colors">
-                  <div className="flex items-start gap-4">
-                    <div className="w-10 h-10 rounded-lg bg-gradient-primary flex items-center justify-center flex-shrink-0">
-                      <s.icon className="w-5 h-5 text-primary-foreground" />
-                    </div>
-                    <div>
-                      <span className="text-[10px] font-bold text-primary uppercase tracking-widest">Step {s.num}</span>
-                      <h3 className="text-sm font-semibold mt-0.5 mb-1">{s.title}</h3>
-                      <p className="text-xs text-muted-foreground leading-relaxed">{s.desc}</p>
-                    </div>
-                  </div>
-                </Card>
-              </motion.div>
+              <div key={i} className="relative px-4 text-center">
+                {/* Ghosted number */}
+                <p className="font-heading text-7xl font-bold text-[hsl(263_70%_50%/0.15)] leading-none mb-4 select-none">
+                  {s.num}
+                </p>
+                <h3 className="text-base font-medium text-foreground mb-2">{s.title}</h3>
+                <p className="text-sm text-muted-foreground font-normal">{s.desc}</p>
+              </div>
+            ))}
+          </motion.div>
+
+          {/* Mobile: vertical with left border */}
+          <motion.div
+            className="md:hidden border-l border-[hsl(263_70%_50%/0.2)] ml-4 space-y-10"
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            {steps.map((s, i) => (
+              <div key={i} className="relative pl-8">
+                <p className="font-heading text-5xl font-bold text-[hsl(263_70%_50%/0.15)] leading-none mb-2 select-none">
+                  {s.num}
+                </p>
+                <h3 className="text-base font-medium text-foreground mb-1">{s.title}</h3>
+                <p className="text-sm text-muted-foreground font-normal">{s.desc}</p>
+              </div>
             ))}
           </motion.div>
         </div>
       </section>
 
-      <section className="py-20 md:py-28 overflow-hidden">
+      {/* ── Testimonials — Static masonry grid ── */}
+      <section className="py-20 md:py-28">
         <div className="max-w-6xl mx-auto px-6">
-          <motion.div className="text-center mb-14" variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}>
-            <p className="text-xs font-semibold text-primary uppercase tracking-widest mb-3">Testimonials</p>
-            <h2 className="text-3xl md:text-4xl font-bold">Loved by students & professionals</h2>
+          <motion.div className="mb-16" variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}>
+            <p className="text-[11px] font-medium text-primary uppercase tracking-[0.15em] mb-4">Testimonials</p>
+            <h2 className="font-heading text-4xl md:text-5xl font-bold text-foreground">Loved by students & professionals</h2>
           </motion.div>
-        </div>
 
-        {/* Infinite scrolling marquee */}
-        <div className="relative">
-          <div className="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-background to-transparent z-10 pointer-events-none" />
-          <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-background to-transparent z-10 pointer-events-none" />
-          
-          <div className="flex gap-5 animate-[marquee_35s_linear_infinite] hover:[animation-play-state:paused] w-max">
-            {[...testimonials, ...testimonials].map((t, i) => (
-              <Card key={i} className="p-5 border-border/40 bg-card/50 w-[340px] flex-shrink-0">
-                <div className="flex gap-0.5 mb-3">
+          {/* Masonry-ish columns */}
+          <div className="columns-1 sm:columns-2 lg:columns-3 gap-5 space-y-5">
+            {testimonials.map((t, i) => (
+              <motion.div
+                key={i}
+                className="break-inside-avoid bg-card border border-white/[0.07] rounded-xl p-6"
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.05, duration: 0.4 }}
+              >
+                <div className="flex gap-0.5 mb-4">
                   {[...Array(5)].map((_, j) => (
-                    <Star key={j} className="w-3.5 h-3.5 text-warning fill-warning" />
+                    <Star key={j} className="w-3.5 h-3.5 text-[hsl(45_93%_47%)] fill-[hsl(45_93%_47%)]" />
                   ))}
                 </div>
-                <p className="text-sm text-foreground leading-relaxed mb-4">"{t.quote}"</p>
-                <div className="border-t border-border/30 pt-3">
-                  <p className="text-xs font-semibold">{t.author}</p>
-                  <p className="text-[11px] text-muted-foreground">{t.role}</p>
+                <p className="text-[15px] text-[hsl(240_5%_83%)] leading-[1.7] mb-5 font-normal">"{t.quote}"</p>
+                <div>
+                  <p className="text-sm font-medium text-foreground">{t.author}</p>
+                  <p className="text-[13px] text-muted-foreground">{t.role}</p>
                 </div>
-              </Card>
+              </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Pricing */}
+      {/* ── Pricing ── */}
       <PricingSection />
 
-      {/* FAQ */}
+      {/* ── FAQ ── */}
       <section id="faq" className="py-20 md:py-28">
-        <div className="max-w-2xl mx-auto px-6">
-          <motion.div className="text-center mb-14" variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}>
-            <p className="text-xs font-semibold text-primary uppercase tracking-widest mb-3">FAQ</p>
-            <h2 className="text-3xl md:text-4xl font-bold">Common questions</h2>
+        <div className="max-w-[680px] mx-auto px-6">
+          <motion.div className="mb-14" variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}>
+            <p className="text-[11px] font-medium text-primary uppercase tracking-[0.15em] mb-4">FAQ</p>
+            <h2 className="font-heading text-4xl md:text-5xl font-bold text-foreground">Common questions</h2>
           </motion.div>
 
-          <motion.div className="space-y-2" variants={stagger} initial="hidden" whileInView="show" viewport={{ once: true }}>
+          <div className="space-y-0">
             {faqs.map((faq, i) => (
-              <motion.div key={i} variants={fadeUp}>
+              <motion.div
+                key={i}
+                className="border-b border-white/[0.08]"
+                initial={{ opacity: 0, y: 12 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.05 }}
+              >
                 <button
                   onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                  className="w-full text-left p-4 rounded-lg border border-border/40 bg-card/50 hover:border-primary/25 transition-colors"
+                  className="w-full text-left py-5 hover:bg-white/[0.02] transition-colors flex items-center justify-between gap-4"
                 >
-                  <div className="flex items-center justify-between gap-4">
-                    <h3 className="text-sm font-medium">{faq.q}</h3>
-                    <ChevronDown className={`w-4 h-4 text-muted-foreground flex-shrink-0 transition-transform duration-200 ${openFaq === i ? "rotate-180" : ""}`} />
-                  </div>
-                  {openFaq === i && (
-                    <motion.p 
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: "auto" }}
-                      className="text-xs text-muted-foreground leading-relaxed mt-3 pt-3 border-t border-border/20"
-                    >
-                      {faq.a}
-                    </motion.p>
-                  )}
+                  <h3 className="text-base font-medium text-foreground">{faq.q}</h3>
+                  <ChevronDown className={`w-4 h-4 text-muted-foreground flex-shrink-0 transition-transform duration-200 ${openFaq === i ? "rotate-180" : ""}`} />
                 </button>
+                {openFaq === i && (
+                  <motion.p
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    className="text-[15px] text-muted-foreground leading-relaxed pb-5 font-normal"
+                  >
+                    {faq.a}
+                  </motion.p>
+                )}
               </motion.div>
             ))}
-          </motion.div>
+          </div>
         </div>
       </section>
 
-      {/* CTA */}
+      {/* ── Final CTA ── */}
       <section className="py-20 md:py-28 relative">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,hsl(262_83%_58%/0.06),transparent_60%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_50%_60%_at_50%_50%,hsl(263_70%_50%/0.08),transparent_70%)] pointer-events-none" />
         <div className="max-w-2xl mx-auto px-6 text-center relative z-10">
           <motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}>
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Ready to start investing?</h2>
-            <p className="text-muted-foreground mb-8">Join thousands of students learning through simulation.</p>
-            <Button size="lg" onClick={() => navigate("/auth?signup=true")} className="px-10 bg-gradient-primary shadow-glow-soft hover:shadow-glow hover:-translate-y-0.5 transition-all duration-200 font-semibold">
+            <h2 className="font-heading text-4xl md:text-[3.5rem] font-bold text-foreground mb-5 leading-[1.1]">Ready to start investing?</h2>
+            <p className="text-lg text-muted-foreground mb-10 font-normal">Join thousands of students learning through simulation.</p>
+            <Button
+              size="lg"
+              onClick={() => navigate("/auth?signup=true")}
+              className="px-10 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg font-medium text-base hover:scale-[1.02] hover:shadow-[0_0_24px_hsl(263_70%_50%/0.4)] transition-all duration-200"
+            >
               Create Free Account <ArrowRight className="w-4 h-4 ml-2" />
             </Button>
           </motion.div>
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="border-t border-border/30 py-10 bg-muted/10">
+      {/* ── Footer ── */}
+      <footer className="border-t border-white/[0.07] py-10">
         <div className="max-w-6xl mx-auto px-6">
           <div className="grid sm:grid-cols-4 gap-8 mb-8">
             <div>
               <div className="flex items-center gap-2 mb-3">
-                <img src={logo} alt="Euphoria" className="w-7 h-7 object-contain" />
-                <span className="text-sm font-bold">Euphoria</span>
+                <img src={logo} alt="Euphoria" className="w-6 h-6 object-contain" />
+                <span className="text-sm font-medium text-foreground">Euphoria</span>
               </div>
-              <p className="text-xs text-muted-foreground leading-relaxed">The gamified investing simulator for students and educators.</p>
+              <p className="text-[13px] text-[hsl(240_4%_32%)] leading-relaxed font-normal">The gamified investing simulator for students and educators.</p>
             </div>
             <div>
-              <h4 className="text-xs font-semibold mb-2">Product</h4>
+              <h4 className="text-[13px] font-medium text-[hsl(240_4%_32%)] mb-2">Product</h4>
               <ul className="space-y-1.5">
                 {["Features", "Pricing", "FAQ"].map((l) => (
-                  <li key={l}><a href={`#${l.toLowerCase()}`} className="text-xs text-muted-foreground hover:text-foreground transition-colors">{l}</a></li>
+                  <li key={l}><a href={`#${l.toLowerCase()}`} className="text-[13px] text-[hsl(240_4%_32%)] hover:text-foreground transition-colors">{l}</a></li>
                 ))}
               </ul>
             </div>
             <div>
-              <h4 className="text-xs font-semibold mb-2">For Educators</h4>
+              <h4 className="text-[13px] font-medium text-[hsl(240_4%_32%)] mb-2">For Educators</h4>
               <ul className="space-y-1.5">
-                <li><a href="#pricing" className="text-xs text-muted-foreground hover:text-foreground transition-colors">Classroom Plans</a></li>
-                <li><a href="#how-it-works" className="text-xs text-muted-foreground hover:text-foreground transition-colors">How It Works</a></li>
-                <li><a href="/ferpa" className="text-xs text-muted-foreground hover:text-foreground transition-colors">FERPA Compliance</a></li>
+                <li><a href="#pricing" className="text-[13px] text-[hsl(240_4%_32%)] hover:text-foreground transition-colors">Classroom Plans</a></li>
+                <li><a href="#how-it-works" className="text-[13px] text-[hsl(240_4%_32%)] hover:text-foreground transition-colors">How It Works</a></li>
+                <li><a href="/ferpa" className="text-[13px] text-[hsl(240_4%_32%)] hover:text-foreground transition-colors">FERPA Compliance</a></li>
               </ul>
             </div>
             <div>
-              <h4 className="text-xs font-semibold mb-2">Legal</h4>
+              <h4 className="text-[13px] font-medium text-[hsl(240_4%_32%)] mb-2">Legal</h4>
               <ul className="space-y-1.5">
-                <li><a href="/privacy" className="text-xs text-muted-foreground hover:text-foreground transition-colors">Privacy Policy</a></li>
-                <li><a href="/terms" className="text-xs text-muted-foreground hover:text-foreground transition-colors">Terms of Service</a></li>
-                <li><a href="/ferpa" className="text-xs text-muted-foreground hover:text-foreground transition-colors">FERPA Compliance</a></li>
+                <li><a href="/privacy" className="text-[13px] text-[hsl(240_4%_32%)] hover:text-foreground transition-colors">Privacy Policy</a></li>
+                <li><a href="/terms" className="text-[13px] text-[hsl(240_4%_32%)] hover:text-foreground transition-colors">Terms of Service</a></li>
+                <li><a href="/ferpa" className="text-[13px] text-[hsl(240_4%_32%)] hover:text-foreground transition-colors">FERPA Compliance</a></li>
               </ul>
             </div>
           </div>
-          <div className="border-t border-border/30 pt-6 flex flex-col sm:flex-row justify-between items-center gap-3">
-            <p className="text-[11px] text-muted-foreground">© 2026 Euphoria. All rights reserved.</p>
-            <p className="text-[11px] text-muted-foreground">Not financial advice. For educational purposes only.</p>
+          <div className="border-t border-white/[0.07] pt-6 flex flex-col sm:flex-row justify-between items-center gap-3">
+            <p className="text-[13px] text-[hsl(240_4%_32%)]">© 2026 Euphoria. All rights reserved.</p>
+            <p className="text-[13px] text-[hsl(240_4%_32%)]">Not financial advice. For educational purposes only.</p>
           </div>
         </div>
       </footer>
