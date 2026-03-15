@@ -11,9 +11,20 @@ All colors MUST be HSL.
   cursor: default !important;
 }
 
+img, svg, canvas, video, picture {
+  cursor: default !important;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
 a, button, [role="button"], input, textarea, select, label[for], summary,
 [tabindex]:not([tabindex="-1"]), .cursor-pointer {
   cursor: pointer !important;
+}
+
+a img, button img, [role="button"] img {
+  pointer-events: auto;
 }
 
 input[type="text"], input[type="email"], input[type="password"],
