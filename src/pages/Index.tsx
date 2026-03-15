@@ -36,6 +36,7 @@ const Index = () => {
   const [selectedStock, setSelectedStock] = useState<string | null>(null);
   const [showStockSearch, setShowStockSearch] = useState(false);
   const [showWelcome, setShowWelcome] = useState(false);
+  const [pendingConversationId, setPendingConversationId] = useState<string | null>(null);
 
   useEffect(() => {
     const seen = localStorage.getItem("euphoria_welcome_seen");
