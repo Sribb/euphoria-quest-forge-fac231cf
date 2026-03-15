@@ -236,7 +236,7 @@ export const TrendMasterGame = ({ onClose }: TrendMasterGameProps) => {
       setStreak(streak + 1);
       setShowCelebration(true);
       setTimeout(() => setShowCelebration(false), 2000);
-      toast.success(`Correct! +${xpGain} XP 🎉`, { duration: 3000 });
+      toast.success(`Correct! +${xpGain} XP`, { duration: 3000 });
     } else {
       setStreak(0);
       toast.error("Not quite right. Review the explanation!");
