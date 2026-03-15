@@ -24,16 +24,6 @@ export const AmbientBackground = () => {
     resize();
     window.addEventListener("resize", resize);
 
-    // Floating orbs — large soft glows
-    const orbs = Array.from({ length: 4 }, (_, i) => ({
-      x: Math.random() * w,
-      y: Math.random() * h,
-      r: 180 + Math.random() * 220,
-      vx: (Math.random() - 0.5) * 0.15,
-      vy: (Math.random() - 0.5) * 0.12,
-      hue: i % 2 === 0 ? 263 : 280, // primary vs accent
-      alpha: 0.025 + Math.random() * 0.015,
-    }));
 
     // Micro particles — subtle dots
     const dots = Array.from({ length: 60 }, () => ({
