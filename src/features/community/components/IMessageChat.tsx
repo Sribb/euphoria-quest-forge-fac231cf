@@ -194,13 +194,25 @@ export const IMessageChat = () => {
   useEffect(() => {
     if (!activeConversationId || !user?.id) return;
     const markRead = async () => {
+      // Mark messages as read
       await db
         .from("direct_messages")
         .update({ is_read: true } as any)
         .eq("conversation_id", activeConversationId)
         .eq("receiver_id", user.id)
         .eq("is_read", false);
+
+      // Mark corresponding message notifications as read
+      await (supabase as any)
+        .from("notifications")
+        .update({ is_read: true, read_at: new Date().toISOString() })
+        .eq("user_id", user.id)
+        .eq("notification_type", "message")
+        .eq("is_read", false)
+        .like("action_url", `%conversation=${activeConversationId}%`);
+
       queryClient.invalidateQueries({ queryKey: ["conversations"] });
+      queryClient.invalidateQueries({ queryKey: ["notifications"] });
     };
     markRead();
   }, [activeConversationId, activeMessages?.length, user?.id, queryClient]);
