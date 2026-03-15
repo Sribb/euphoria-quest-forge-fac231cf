@@ -33,7 +33,7 @@ function ParticleCanvas() {
     };
     setSize();
 
-    type P = { x: number; y: number; v: number; o: number };
+    type P = { x: number; y: number; v: number; o: number; r: number };
     let ps: P[] = [];
     let raf = 0;
 
@@ -42,6 +42,7 @@ function ParticleCanvas() {
       y: Math.random() * canvas.height,
       v: Math.random() * 0.15 + 0.02,
       o: Math.random() * 0.5 + 0.15,
+      r: Math.random() * 0.8 + 0.4,
     });
 
     const init = () => {
@@ -59,11 +60,11 @@ function ParticleCanvas() {
           p.y = canvas.height + Math.random() * 40;
           p.v = Math.random() * 0.15 + 0.02;
           p.o = Math.random() * 0.5 + 0.15;
+          p.r = Math.random() * 0.8 + 0.4;
         }
-        // Neutral white micro-stars
         ctx.fillStyle = `hsla(0, 0%, 80%, ${p.o})`;
         ctx.beginPath();
-        ctx.arc(p.x, p.y, Math.random() * 0.8 + 0.4, 0, Math.PI * 2);
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
         ctx.fill();
       });
       raf = requestAnimationFrame(draw);
