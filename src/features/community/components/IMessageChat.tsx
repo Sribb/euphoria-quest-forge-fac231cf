@@ -540,6 +540,51 @@ export const IMessageChat = ({ initialConversationId }: IMessageChatProps = {}) 
   // ── Helpers ──
   const activeConvo = conversations.find(c => c.id === activeConversationId);
 
+  // Parse file attachments in message content
+  const renderMessageContent = (content: string) => {
+    const fileRegex = /\[file:(.+?)\]\((.+?)\)/g;
+    const parts: React.ReactNode[] = [];
+    let lastIndex = 0;
+    let match;
+
+    while ((match = fileRegex.exec(content)) !== null) {
+      if (match.index > lastIndex) {
+        parts.push(content.slice(lastIndex, match.index));
+      }
+      const fileName = match[1];
+      const fileUrl = match[2];
+      const isImage = /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(fileName);
+
+      parts.push(
+        <div key={match.index} className="mt-1.5">
+          {isImage ? (
+            <a href={fileUrl} target="_blank" rel="noopener noreferrer" className="block cursor-pointer">
+              <img src={fileUrl} alt={fileName} className="max-w-[240px] rounded-lg pointer-events-auto" />
+            </a>
+          ) : (
+            <a
+              href={fileUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 px-3 py-2 rounded-lg bg-background/20 hover:bg-background/30 transition-colors cursor-pointer"
+            >
+              <FileText className="w-4 h-4 shrink-0" />
+              <span className="text-xs truncate flex-1">{fileName}</span>
+              <Download className="w-3.5 h-3.5 shrink-0 opacity-60" />
+            </a>
+          )}
+        </div>
+      );
+      lastIndex = match.index + match[0].length;
+    }
+
+    if (lastIndex < content.length) {
+      parts.push(content.slice(lastIndex));
+    }
+
+    return parts.length > 0 ? parts : content;
+  };
+
   const filteredConvos = conversations.filter(c =>
     c.partner?.display_name?.toLowerCase().includes(searchQuery.toLowerCase())
   );
