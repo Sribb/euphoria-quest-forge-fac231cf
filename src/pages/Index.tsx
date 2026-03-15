@@ -137,8 +137,6 @@ const Index = () => {
         return <Trade onNavigate={handleNavigate} onStockSearch={() => setShowStockSearch(true)} />;
       case "games":
         return <Games onNavigate={handleNavigate} />;
-      case "rewards":
-        return <Rewards onNavigate={handleNavigate} />;
       case "shop":
         return <CoinShop onNavigate={handleNavigate} />;
       case "community":
