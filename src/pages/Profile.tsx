@@ -228,10 +228,6 @@ const Profile = ({ onNavigate }: ProfileProps) => {
               />
             </div>
 
-            <BadgeShowcaseRow
-              badges={badges}
-              onViewAll={() => setActiveTab("achievements")}
-            />
 
             <RecentActivity items={recentItems} />
           </div>
