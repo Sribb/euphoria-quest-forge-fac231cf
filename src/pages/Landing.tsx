@@ -59,6 +59,7 @@ const Landing = () => {
   const { user } = useAuth();
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [scrolled, setScrolled] = useState(false);
+  const [testimonialIdx, setTestimonialIdx] = useState(0);
 
   useEffect(() => {
     if (user) navigate("/app");
