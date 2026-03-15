@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useOnboarding } from "@/hooks/useOnboarding";
-import { useBadgeProgress } from "@/features/badges/hooks/useBadgeProgress";
+
 import { formatDollar } from "@/lib/formatters";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
