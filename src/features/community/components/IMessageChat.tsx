@@ -115,7 +115,7 @@ export const IMessageChat = () => {
     queryKey: ["message-requests-incoming", user?.id],
     queryFn: async () => {
       if (!user?.id) return [];
-      const { data, error } = await supabase
+      const { data, error } = await db
         .from("message_requests")
         .select("*")
         .eq("recipient_id", user.id)
