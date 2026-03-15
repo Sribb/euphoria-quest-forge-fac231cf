@@ -194,7 +194,7 @@ export const IMessageChat = () => {
   useEffect(() => {
     if (!activeConversationId || !user?.id) return;
     const markRead = async () => {
-      await supabase
+      await db
         .from("direct_messages")
         .update({ is_read: true } as any)
         .eq("conversation_id", activeConversationId)
