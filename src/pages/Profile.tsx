@@ -24,7 +24,6 @@ interface ProfileProps {
 const TABS = [
   { id: "profile" as const, label: "Profile", icon: User },
   { id: "settings" as const, label: "Settings", icon: SettingsIcon },
-  { id: "achievements" as const, label: "Achievements", icon: Trophy },
 ] as const;
 
 type TabId = (typeof TABS)[number]["id"];
