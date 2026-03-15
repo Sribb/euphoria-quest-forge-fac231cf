@@ -855,6 +855,39 @@ export type Database = {
           },
         ]
       }
+      conversations: {
+        Row: {
+          created_at: string
+          id: string
+          last_message_at: string | null
+          last_message_content: string | null
+          participant_one: string
+          participant_two: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          last_message_at?: string | null
+          last_message_content?: string | null
+          participant_one: string
+          participant_two: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          last_message_at?: string | null
+          last_message_content?: string | null
+          participant_one?: string
+          participant_two?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       daily_challenge_progress: {
         Row: {
           challenge_day: number
@@ -995,6 +1028,7 @@ export type Database = {
       direct_messages: {
         Row: {
           content: string
+          conversation_id: string | null
           created_at: string
           id: string
           is_read: boolean | null
@@ -1003,6 +1037,7 @@ export type Database = {
         }
         Insert: {
           content: string
+          conversation_id?: string | null
           created_at?: string
           id?: string
           is_read?: boolean | null
@@ -1011,13 +1046,22 @@ export type Database = {
         }
         Update: {
           content?: string
+          conversation_id?: string | null
           created_at?: string
           id?: string
           is_read?: boolean | null
           receiver_id?: string
           sender_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "direct_messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       dpa_records: {
         Row: {
@@ -1705,6 +1749,47 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      message_requests: {
+        Row: {
+          conversation_id: string
+          created_at: string
+          id: string
+          intro_message: string | null
+          recipient_id: string
+          sender_id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          conversation_id: string
+          created_at?: string
+          id?: string
+          intro_message?: string | null
+          recipient_id: string
+          sender_id: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          conversation_id?: string
+          created_at?: string
+          id?: string
+          intro_message?: string | null
+          recipient_id?: string
+          sender_id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "message_requests_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       news_cache: {
         Row: {
