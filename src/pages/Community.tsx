@@ -110,42 +110,6 @@ const Community = ({ onNavigate }: CommunityProps) => {
     onError: () => toast.error("Failed to leave class"),
   });
 
-  // Create post
-  const createPostMutation = useMutation({
-    mutationFn: async () => {
-      if (!newPostContent.trim()) return;
-      const { error } = await supabase.from("posts").insert({
-        user_id: user?.id!,
-        content: newPostContent.trim(),
-        category: "general",
-      });
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      setNewPostContent("");
-      queryClient.invalidateQueries({ queryKey: ["community-posts"] });
-      toast.success("Post shared!");
-    },
-    onError: () => toast.error("Failed to create post"),
-  });
-
-  // Like/unlike
-  const toggleLikeMutation = useMutation({
-    mutationFn: async (postId: string) => {
-      const liked = userLikes?.has(postId);
-      if (liked) {
-        await supabase.from("likes").delete().eq("post_id", postId).eq("user_id", user?.id!);
-      } else {
-        await supabase.from("likes").insert({ post_id: postId, user_id: user?.id! });
-      }
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["user-likes"] });
-      queryClient.invalidateQueries({ queryKey: ["community-posts"] });
-    },
-  });
-
-
   return (
     <div className="space-y-4 pt-2 pb-20">
       <div className="flex items-center gap-3 animate-fade-in">
