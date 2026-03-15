@@ -10,7 +10,7 @@ interface CourseTopNavProps {
   onViewChange: (view: "home" | "courses") => void;
 }
 
-export const CourseTopNav = ({ activeView, onViewChange, onMenuOpen }: CourseTopNavProps) => {
+export const CourseTopNav = ({ activeView, onViewChange }: CourseTopNavProps) => {
   const { user } = useAuth();
 
   const { data: profile } = useQuery({
