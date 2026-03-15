@@ -36,6 +36,7 @@ const Index = () => {
   const [selectedStock, setSelectedStock] = useState<string | null>(null);
   const [showStockSearch, setShowStockSearch] = useState(false);
   const [showWelcome, setShowWelcome] = useState(false);
+  const [pendingConversationId, setPendingConversationId] = useState<string | null>(null);
 
   useEffect(() => {
     const seen = localStorage.getItem("euphoria_welcome_seen");
@@ -49,7 +50,15 @@ const Index = () => {
   };
 
   const handleNavigate = (tab: string) => {
-    setActiveTab(tab);
+    // Handle "community?conversation=xxx" pattern
+    if (tab.startsWith("community?conversation=")) {
+      const conversationId = tab.split("conversation=")[1];
+      setPendingConversationId(conversationId);
+      setActiveTab("community");
+    } else {
+      setPendingConversationId(null);
+      setActiveTab(tab);
+    }
     setShowStockSearch(false);
     setSelectedStock(null);
   };
@@ -140,7 +149,7 @@ const Index = () => {
       case "shop":
         return <CoinShop onNavigate={handleNavigate} />;
       case "community":
-        return <Community onNavigate={handleNavigate} />;
+        return <Community onNavigate={handleNavigate} initialConversationId={pendingConversationId} />;
       case "certificates":
         return <Certificates onNavigate={handleNavigate} />;
       case "profile":

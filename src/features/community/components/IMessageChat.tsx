@@ -45,11 +45,15 @@ interface MessageRequest {
   sender?: { display_name: string; avatar_url: string | null };
 }
 
-export const IMessageChat = () => {
+interface IMessageChatProps {
+  initialConversationId?: string | null;
+}
+
+export const IMessageChat = ({ initialConversationId }: IMessageChatProps = {}) => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const isMobile = useIsMobile();
-  const [activeConversationId, setActiveConversationId] = useState<string | null>(null);
+  const [activeConversationId, setActiveConversationId] = useState<string | null>(initialConversationId || null);
   const [dmMessage, setDmMessage] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [showNewMessage, setShowNewMessage] = useState(false);
@@ -62,6 +66,12 @@ export const IMessageChat = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastTypingBroadcast = useRef(0);
+  // Sync initialConversationId prop
+  useEffect(() => {
+    if (initialConversationId) {
+      setActiveConversationId(initialConversationId);
+    }
+  }, [initialConversationId]);
 
   // ── Fetch conversations ──
   const { data: conversations = [], isLoading: convosLoading } = useQuery({
@@ -194,13 +204,25 @@ export const IMessageChat = () => {
   useEffect(() => {
     if (!activeConversationId || !user?.id) return;
     const markRead = async () => {
+      // Mark messages as read
       await db
         .from("direct_messages")
         .update({ is_read: true } as any)
         .eq("conversation_id", activeConversationId)
         .eq("receiver_id", user.id)
         .eq("is_read", false);
+
+      // Mark corresponding message notifications as read
+      await (supabase as any)
+        .from("notifications")
+        .update({ is_read: true, read_at: new Date().toISOString() })
+        .eq("user_id", user.id)
+        .eq("notification_type", "message")
+        .eq("is_read", false)
+        .like("action_url", `%conversation=${activeConversationId}%`);
+
       queryClient.invalidateQueries({ queryKey: ["conversations"] });
+      queryClient.invalidateQueries({ queryKey: ["notifications"] });
     };
     markRead();
   }, [activeConversationId, activeMessages?.length, user?.id, queryClient]);
@@ -391,7 +413,24 @@ export const IMessageChat = () => {
     const channel = supabase
       .channel("messaging-realtime")
       .on("postgres_changes", {
-        event: "*",
+        event: "INSERT",
+        schema: "public",
+        table: "direct_messages",
+      }, async (payload: any) => {
+        queryClient.invalidateQueries({ queryKey: ["conversation-messages"] });
+        queryClient.invalidateQueries({ queryKey: ["conversations"] });
+        queryClient.invalidateQueries({ queryKey: ["notifications"] });
+      })
+      .on("postgres_changes", {
+        event: "UPDATE",
+        schema: "public",
+        table: "direct_messages",
+      }, () => {
+        queryClient.invalidateQueries({ queryKey: ["conversation-messages"] });
+        queryClient.invalidateQueries({ queryKey: ["conversations"] });
+      })
+      .on("postgres_changes", {
+        event: "DELETE",
         schema: "public",
         table: "direct_messages",
       }, () => {
@@ -770,10 +809,10 @@ export const IMessageChat = () => {
                             transition={{ duration: 0.15 }}
                             className={cn("flex mb-0.5 group", isMine ? "justify-end" : "justify-start")}
                           >
-                            <div className="relative">
+                            <div className="relative max-w-[75%]">
                               <div
                                 className={cn(
-                                  "max-w-[75%] px-4 py-2.5 text-[14px] leading-relaxed",
+                                  "px-4 py-2.5 text-[14px] leading-relaxed break-words overflow-hidden whitespace-pre-wrap",
                                   isMine
                                     ? "bg-primary text-primary-foreground rounded-[20px] rounded-br-[6px]"
                                     : "bg-muted/40 backdrop-blur-sm text-foreground rounded-[20px] rounded-bl-[6px] border border-border/10"

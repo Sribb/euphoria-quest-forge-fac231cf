@@ -58,8 +58,16 @@ export const NotificationPanel = ({ onNavigate }: NotificationPanelProps) => {
       markAsRead(notification.id);
     }
     if (notification.action_url && onNavigate) {
-      const tab = notification.action_url.replace("/", "");
-      onNavigate(tab);
+      // Parse action_url like "community?conversation=xxx"
+      const [tab, queryString] = notification.action_url.replace("/", "").split("?");
+      const params = new URLSearchParams(queryString || "");
+      const conversationId = params.get("conversation");
+      
+      if (conversationId) {
+        onNavigate(`community?conversation=${conversationId}`);
+      } else {
+        onNavigate(tab);
+      }
       setIsOpen(false);
     }
   };
