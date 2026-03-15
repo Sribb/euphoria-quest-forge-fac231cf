@@ -164,6 +164,7 @@ const Landing = () => {
 
   return (
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
+      <AmbientBackground />
 
       {/* ═══════════════════════════════════════════════════════
           NAVBAR — transparent → sticky blur on scroll
