@@ -137,7 +137,7 @@ const Rewards = ({ onNavigate }: RewardsProps) => {
             { label: "Perfect Lesson", xp: `+${XP_PERFECT_BONUS}`, desc: "Zero mistakes" },
           ].map(item => (
             <div key={item.label} className="p-3 rounded-2xl bg-muted/30 border border-border/50 text-center">
-              <span className="text-2xl">{item.emoji}</span>
+              <div className="w-8 h-8 rounded-lg bg-primary/10 mx-auto" />
               <p className="text-lg font-black text-primary mt-1">{item.xp} XP</p>
               <p className="text-xs font-bold text-foreground">{item.label}</p>
               <p className="text-[10px] text-muted-foreground">{item.desc}</p>

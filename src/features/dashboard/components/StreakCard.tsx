@@ -189,7 +189,7 @@ export const StreakCard = () => {
                 +1 Streak Freeze earned!
               </div>
               <Button onClick={() => { playClick(); setShowMilestone(null); }} className="w-full rounded-xl">
-                Keep Going! 🔥
+                Keep Going!
               </Button>
             </motion.div>
           </motion.div>

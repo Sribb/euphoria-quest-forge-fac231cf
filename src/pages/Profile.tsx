@@ -529,7 +529,7 @@ const Profile = ({
                   </p>
                   <div className="p-3 bg-amber-500/10 border border-amber-500/20 rounded-lg">
                     <p className="text-amber-600 dark:text-amber-400 font-medium text-sm">
-                      ⚠️ Warning: Your level can go <strong>down</strong> as well as up!
+                      Warning: Your level can go <strong>down</strong> as well as up!
                     </p>
                     <p className="text-amber-600/80 dark:text-amber-400/80 text-sm mt-1">
                       If you score lower than before, you may have fewer lessons unlocked than you currently do.
