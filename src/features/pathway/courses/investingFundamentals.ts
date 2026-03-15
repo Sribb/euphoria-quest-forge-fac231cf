@@ -167,7 +167,7 @@ const lessons = [
       {prompt:'Total shares after 3 months: 10 + 20 + 12.5 = ?',options:['40','42.5','45','50'],correct:1}
     ]),
     fb('DCA means investing a ___ amount at regular intervals.',['fixed','random','increasing','variable'],0),
-    q('Why is DCA effective?','It guarantees profits','It removes the need to time the market','It only works in bull markets','It eliminates all risk',1,'DCA removes emotion and timing from investing decisions.'),
+    q('Why is DCA effective?',['It guarantees profits','It removes the need to time the market','It only works in bull markets','It eliminates all risk'],1,'DCA removes emotion and timing from investing decisions.'),
     tf([{s:'DCA means you should try to time market lows',a:false},{s:'With DCA, falling prices let you buy more shares',a:true},{s:'DCA works best with lump sum investing',a:false}]),
     sc('The market dropped 20% this month. You DCA $500/month. What do you do?',[
       {label:'Invest $500 as planned — you\'re buying at a discount!',outcome:'Correct! DCA means sticking to the plan. Lower prices mean more shares per dollar.',correct:true},
