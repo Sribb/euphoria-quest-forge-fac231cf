@@ -156,7 +156,8 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex">
+    <div className="min-h-screen bg-background flex relative">
+      <AmbientBackground />
       <AnimatePresence>
         {showWelcome && <PersonalizedWelcomeOverlay onComplete={handleWelcomeComplete} />}
       </AnimatePresence>
