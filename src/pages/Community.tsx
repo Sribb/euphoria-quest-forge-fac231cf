@@ -123,7 +123,7 @@ const Community = ({ onNavigate, initialConversationId }: CommunityProps) => {
         </div>
       </div>
 
-      <Tabs defaultValue="feed" className="w-full">
+      <Tabs defaultValue={initialConversationId ? "dms" : "feed"} className="w-full">
         <TabsList className="grid w-full grid-cols-3 mb-4">
           <TabsTrigger value="feed" className="text-xs md:text-sm">
             <MessageSquare className="w-4 h-4 mr-1" /> Feed
@@ -143,7 +143,7 @@ const Community = ({ onNavigate, initialConversationId }: CommunityProps) => {
 
         {/* DMs Tab */}
         <TabsContent value="dms">
-          <IMessageChat />
+          <IMessageChat initialConversationId={initialConversationId} />
         </TabsContent>
 
         {/* Classes Tab */}
