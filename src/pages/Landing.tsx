@@ -7,6 +7,7 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import { FeatureShowcase } from "@/features/landing/components/FeatureShowcase";
 import { PricingSection } from "@/features/landing/components/PricingSection";
 import SectionWithMockup from "@/components/ui/section-with-mockup";
+import BentoCard from "@/components/ui/bento-card";
 import logo from "@/assets/euphoria-logo-button.png";
 import landingLessons from "@/assets/landing-interactive-lessons-2.png";
 import landingIntro from "@/assets/landing-intro-investing.png";
