@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { ProtectedRoute } from "@/shared/components/ProtectedRoute";
 import Landing from "./pages/Landing";
+import { SpiralDemo } from "./pages/SpiralDemo";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Terms from "./pages/Terms";
@@ -102,6 +103,7 @@ const App = () => (
             <Route path="/legal" element={<Legal />} />
             <Route path="/parent-consent" element={<ParentConsent />} />
             <Route path="/legal/dpa" element={<DpaPortal />} />
+            <Route path="/launch" element={<SpiralDemo />} />
             <Route
               path="/role-selection"
               element={
