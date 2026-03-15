@@ -7,6 +7,20 @@ All colors MUST be HSL.
 */
 
 @layer base {
+  * {
+    cursor: default;
+  }
+
+  a, button, [role="button"], input, textarea, select, label[for], summary,
+  [tabindex]:not([tabindex="-1"]) {
+    cursor: pointer;
+  }
+
+  input[type="text"], input[type="email"], input[type="password"],
+  input[type="search"], input[type="url"], input[type="tel"],
+  input[type="number"], textarea {
+    cursor: text;
+  }
   :root {
     --background: 0 0% 98%;
     --foreground: 240 10% 10%;
