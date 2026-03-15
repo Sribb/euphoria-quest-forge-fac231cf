@@ -117,7 +117,7 @@ const lessons = [
     fb('Compound interest means earning interest on your ___.',['interest','principal only','debt','salary'],0),
     vi('A chart shows $1,000 growing to $17,449 over 30 years at 10% annually.','What drove most of the growth?',['The original $1,000','Annual contributions','Compound interest on reinvested returns','Inflation'],2),
     sl('If you invest $100/month at 8% for 30 years, approximately how much will you have?',50000,250000,150030,'$'),
-    q('What is the Rule of 72?','Divide 72 by return rate to estimate doubling time','A tax rule','A bond maturity rule','A trading strategy',0,'72 ÷ rate = years to double. At 8%, money doubles in ~9 years.'),
+    q('What is the Rule of 72?',['Divide 72 by return rate to estimate doubling time','A tax rule','A bond maturity rule','A trading strategy'],0,'72 ÷ rate = years to double. At 8%, money doubles in ~9 years.'),
     tf([{s:'$1,000 at 10% for 30 years grows to over $17,000',a:true},{s:'Simple interest grows faster than compound interest',a:false},{s:'Starting early matters more than investing larger amounts later',a:true}]),
     sc('You\'re 25. A friend says "I\'ll start investing at 35 — I have time." What do you tell them?',[
       {label:'Starting 10 years earlier could mean 2-3x more at retirement',outcome:'Correct! At 10% return, $5,000/year from 25-65 = ~$2.4M vs starting at 35 = ~$900K. That decade costs over $1.5M!',correct:true},
