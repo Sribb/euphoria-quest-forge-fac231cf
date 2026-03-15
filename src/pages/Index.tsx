@@ -13,7 +13,7 @@ import Trade from "./Trade";
 import Games from "./Games";
 import Community from "./Community";
 import Certificates from "./Certificates";
-import Rewards from "./Rewards";
+
 import Profile from "./Profile";
 import { CoinShop } from "@/features/shop/components/CoinShop";
 import StockSearch from "./StockSearch";
