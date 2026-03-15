@@ -1,4 +1,4 @@
-import { Flame, Gem, Heart, Menu } from "lucide-react";
+import { Flame, Gem, Heart } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
 import { useQuery } from "@tanstack/react-query";
@@ -8,7 +8,6 @@ import logo from "@/assets/euphoria-logo-button.png";
 interface CourseTopNavProps {
   activeView: "home" | "courses";
   onViewChange: (view: "home" | "courses") => void;
-  onMenuOpen: () => void;
 }
 
 export const CourseTopNav = ({ activeView, onViewChange, onMenuOpen }: CourseTopNavProps) => {
