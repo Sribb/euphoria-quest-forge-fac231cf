@@ -242,9 +242,6 @@ const Profile = ({ onNavigate }: ProfileProps) => {
           />
         )}
 
-        {activeTab === "achievements" && (
-          <AchievementsTab />
-        )}
       </motion.div>
     </div>
   );
