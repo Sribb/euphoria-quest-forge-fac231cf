@@ -44,7 +44,7 @@ const ThreeStatements = () => (
           className="p-5 rounded-xl bg-muted/40 border border-border"
         >
           <div className="flex items-center gap-3 mb-2">
-            <span className="text-2xl">{item.emoji}</span>
+            <div className="w-8 h-8 rounded-lg bg-primary/10 flex-shrink-0" />
             <div>
               <h3 className="font-bold text-foreground">{item.name}</h3>
               <p className="text-xs text-muted-foreground">{item.subtitle}</p>
