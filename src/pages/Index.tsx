@@ -50,7 +50,15 @@ const Index = () => {
   };
 
   const handleNavigate = (tab: string) => {
-    setActiveTab(tab);
+    // Handle "community?conversation=xxx" pattern
+    if (tab.startsWith("community?conversation=")) {
+      const conversationId = tab.split("conversation=")[1];
+      setPendingConversationId(conversationId);
+      setActiveTab("community");
+    } else {
+      setPendingConversationId(null);
+      setActiveTab(tab);
+    }
     setShowStockSearch(false);
     setSelectedStock(null);
   };
