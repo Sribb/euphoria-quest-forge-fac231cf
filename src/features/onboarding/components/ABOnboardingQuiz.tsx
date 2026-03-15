@@ -12,6 +12,7 @@ import { RiskComfortStep } from "./steps/RiskComfortStep";
 import { LearningStyleStep } from "./steps/LearningStyleStep";
 import { TopicInterestStep } from "./steps/TopicInterestStep";
 import { TimeCommitmentStep } from "./steps/TimeCommitmentStep";
+import { InvestmentQuizStep } from "./steps/InvestmentQuizStep";
 
 interface StepDef {
   name: string;
@@ -29,9 +30,10 @@ export const ABOnboardingQuiz = ({ onComplete, isRetake = false }: Props) => {
   const analytics = useABOnboardingAnalytics();
   const [variant, setVariant] = useState<ABVariant | null>(null);
   const [currentStep, setCurrentStep] = useState(0);
-  const [direction, setDirection] = useState(1); // 1=forward, -1=back
+  const [direction, setDirection] = useState(1);
   const [isFinishing, setIsFinishing] = useState(false);
   const [showCompletion, setShowCompletion] = useState(false);
+  const [showInvestmentQuiz, setShowInvestmentQuiz] = useState(false);
   const quizStartTime = useRef(Date.now());
 
   // Step state
@@ -84,7 +86,6 @@ export const ABOnboardingQuiz = ({ onComplete, isRetake = false }: Props) => {
   const step = steps[currentStep];
   const progress = ((currentStep + 1) / totalSteps) * 100;
 
-  // Track step start on step change
   useEffect(() => {
     analytics.trackStepStart();
   }, [currentStep, analytics.trackStepStart]);
@@ -97,31 +98,12 @@ export const ABOnboardingQuiz = ({ onComplete, isRetake = false }: Props) => {
       setDirection(1);
       setCurrentStep((s) => s + 1);
     } else {
-      // Done — show completion screen
-      setShowCompletion(true);
+      // Personalization done → show investment quiz
       const totalTime = Date.now() - quizStartTime.current;
       await analytics.markComplete(variant, totalTime);
-
-      // Calculate placement based on responses
-      const placementLesson = calculatePlacement();
-      const score = Math.round((placementLesson / 25) * 100);
-
-      setIsFinishing(true);
-      // Brief delay for the "personalizing" feel
-      await new Promise((r) => setTimeout(r, 2200));
-      
-      // Collect all quiz preferences to save
-      const quizPreferences: Record<string, unknown> = {
-        financial_goal: financialGoal,
-        risk_level: riskLevel,
-        learning_style: learningStyle,
-        ...(topics.length > 0 && { topics }),
-        ...(timeCommitment !== null && { time_commitment: timeCommitment }),
-      };
-      
-      await onComplete(score, placementLesson, quizPreferences);
+      setShowInvestmentQuiz(true);
     }
-  }, [variant, step, currentStep, totalSteps, analytics, onComplete]);
+  }, [variant, step, currentStep, totalSteps, analytics]);
 
   const handleBack = () => {
     if (currentStep > 0) {
@@ -130,28 +112,36 @@ export const ABOnboardingQuiz = ({ onComplete, isRetake = false }: Props) => {
     }
   };
 
-  const calculatePlacement = (): number => {
-    // Placement logic based on risk comfort + goals
-    let lesson = 1;
+  // Score → placement mapping (investing pathway only)
+  const scorePlacementMap: Record<number, number> = {
+    0: 1,
+    1: 1,
+    2: 1,
+    3: 5,
+    4: 15,
+    5: 20,
+  };
 
-    // Risk level drives core placement
-    if (riskLevel !== null) {
-      if (riskLevel >= 67) lesson = 15;
-      else if (riskLevel >= 33) lesson = 8;
-      else lesson = 3;
-    }
+  const handleInvestmentQuizComplete = async (score: number) => {
+    setShowCompletion(true);
+    setIsFinishing(true);
 
-    // Goals can nudge
-    if (financialGoal === "grow_wealth") lesson = Math.min(25, lesson + 3);
-    else if (financialGoal === "manage_debt") lesson = Math.max(1, lesson - 1);
+    const placementLesson = scorePlacementMap[score] ?? 1;
+    const normalizedScore = Math.round((score / 5) * 100);
 
-    // Time commitment can push higher (variant B only)
-    if (timeCommitment && timeCommitment >= 30) lesson = Math.min(25, lesson + 2);
+    await new Promise((r) => setTimeout(r, 2200));
 
-    // Topic expertise signal
-    if (topics.length >= 4) lesson = Math.min(25, lesson + 2);
+    const quizPreferences: Record<string, unknown> = {
+      financial_goal: financialGoal,
+      risk_level: riskLevel,
+      learning_style: learningStyle,
+      ...(topics.length > 0 && { topics }),
+      ...(timeCommitment !== null && { time_commitment: timeCommitment }),
+      investment_quiz_score: score,
+      investing_placement_lesson: placementLesson,
+    };
 
-    return Math.max(1, Math.min(25, lesson));
+    await onComplete(normalizedScore, placementLesson, quizPreferences);
   };
 
   const slideVariants = {
@@ -186,7 +176,7 @@ export const ABOnboardingQuiz = ({ onComplete, isRetake = false }: Props) => {
           <div>
             <h2 className="text-2xl font-bold">Personalizing your plan…</h2>
             <p className="text-muted-foreground mt-2">
-              Building a custom learning path based on your preferences
+              Building a custom learning path based on your results
             </p>
           </div>
           <div className="flex justify-center gap-1.5">
@@ -200,6 +190,19 @@ export const ABOnboardingQuiz = ({ onComplete, isRetake = false }: Props) => {
             ))}
           </div>
         </motion.div>
+      </div>
+    );
+  }
+
+  // Investment knowledge quiz phase
+  if (showInvestmentQuiz) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-background via-background to-primary/5 flex items-center justify-center p-4 sm:p-6">
+        <div className="max-w-xl w-full">
+          <Card className="p-6 sm:p-8 bg-card/80 backdrop-blur-sm border-primary/20">
+            <InvestmentQuizStep onComplete={handleInvestmentQuizComplete} />
+          </Card>
+        </div>
       </div>
     );
   }
@@ -256,7 +259,7 @@ export const ABOnboardingQuiz = ({ onComplete, isRetake = false }: Props) => {
                   ) : (
                     <>
                       <Sparkles className="w-5 h-5" />
-                      Finish & Get My Plan
+                      Continue to Knowledge Check
                     </>
                   )}
                 </Button>
