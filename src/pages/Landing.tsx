@@ -88,12 +88,20 @@ const Landing = () => {
     { q: "What age group is this for?", a: "Designed for high school students (14+) through adult learners. The placement quiz adapts to your level." },
   ];
 
-  const testimonials = [
+  const topRowTestimonials = [
     { quote: "My students went from 'finance is boring' to fighting over trading scores. Euphoria changed how I teach.", author: "Ms. Rodriguez", role: "AP Economics Teacher" },
     { quote: "I learned more in two weeks than a semester of finance class. The simulations make everything click.", author: "Jake T.", role: "College Sophomore" },
     { quote: "Finally, a platform where my kids learn about money without risking any. The games are brilliant.", author: "Sarah M.", role: "Parent of 2" },
+    { quote: "The AI coach caught gaps in my knowledge I didn't even know I had. Worth every penny.", author: "David L.", role: "Graduate Student" },
+    { quote: "We rolled Euphoria out to 3 schools. Student engagement is through the roof.", author: "Dr. Patel", role: "District Curriculum Director" },
+  ];
+
+  const bottomRowTestimonials = [
     { quote: "This is hands-down the best tool I've seen for teaching young investors. I recommend Euphoria to every client with kids heading to college.", author: "Connor Shepard", role: "Lead Advisor, Wealth Management Firm" },
     { quote: "As a CFP, I've tried dozens of financial literacy platforms. Euphoria is the only one that actually gets students engaged and retaining what they learn.", author: "Sam Rodriguez", role: "CFP & Wealth Management Firm Owner" },
+    { quote: "I went from not knowing what a stock was to confidently managing a simulated portfolio. Euphoria made it fun.", author: "Priya K.", role: "High School Senior" },
+    { quote: "The streak system keeps me coming back every day. I've learned more here than any textbook.", author: "Marcus W.", role: "College Freshman" },
+    { quote: "Our teachers love the dashboard. Real-time student progress without extra grading work.", author: "Lisa Chen", role: "School Administrator" },
   ];
 
   const fadeUp = { hidden: { opacity: 0, y: 24 }, show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] as const } } };
