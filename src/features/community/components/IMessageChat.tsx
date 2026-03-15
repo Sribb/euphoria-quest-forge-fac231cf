@@ -9,12 +9,14 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Badge } from "@/components/ui/badge";
 import {
   Search, Send, ArrowLeft, Plus, Smile, Paperclip, Loader2, MessageSquare,
-  Check, CheckCheck, X, UserPlus, AlertCircle, RotateCcw,
+  Check, CheckCheck, X, UserPlus, AlertCircle, RotateCcw, FileText, Image as ImageIcon, Download,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { format, isToday, isYesterday } from "date-fns";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { EmojiPicker } from "./EmojiPicker";
+import { DeleteConversationDialog } from "./DeleteConversationDialog";
 
 // Helper for tables not yet in auto-generated types
 const db = supabase as any;
