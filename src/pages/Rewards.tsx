@@ -76,7 +76,7 @@ const Rewards = ({ onNavigate }: RewardsProps) => {
             <Zap className="w-6 h-6 text-warning" />
           </div>
           <div>
-            <p className="font-black text-foreground">🔥 Double XP Event Active!</p>
+            <p className="font-black text-foreground">Double XP Event Active!</p>
             <p className="text-sm text-muted-foreground">All XP earned is multiplied by {multiplier}x</p>
           </div>
         </motion.div>
