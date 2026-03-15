@@ -491,7 +491,7 @@ export const TrendMasterGame = ({ onClose }: TrendMasterGameProps) => {
       {/* Celebration Overlay with Confetti Effect */}
       {showCelebration && (
         <div className="fixed inset-0 pointer-events-none flex items-center justify-center z-[60]">
-          <div className="text-9xl animate-scale-in">🎉</div>
+          <div className="text-9xl animate-scale-in">✓</div>
           <div className="absolute inset-0 overflow-hidden">
             {Array.from({ length: 50 }).map((_, i) => (
               <div
