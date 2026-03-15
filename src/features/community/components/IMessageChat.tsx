@@ -9,12 +9,14 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Badge } from "@/components/ui/badge";
 import {
   Search, Send, ArrowLeft, Plus, Smile, Paperclip, Loader2, MessageSquare,
-  Check, CheckCheck, X, UserPlus, AlertCircle, RotateCcw,
+  Check, CheckCheck, X, UserPlus, AlertCircle, RotateCcw, FileText, Image as ImageIcon, Download,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { format, isToday, isYesterday } from "date-fns";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { EmojiPicker } from "./EmojiPicker";
+import { DeleteConversationDialog } from "./DeleteConversationDialog";
 
 // Helper for tables not yet in auto-generated types
 const db = supabase as any;
@@ -63,7 +65,14 @@ export const IMessageChat = ({ initialConversationId }: IMessageChatProps = {}) 
   const [activeTab, setActiveTab] = useState<"messages" | "requests">("messages");
   const [typingPartner, setTypingPartner] = useState(false);
   const [failedMessages, setFailedMessages] = useState<Set<string>>(new Set());
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [pendingFile, setPendingFile] = useState<File | null>(null);
+  const [pendingFilePreview, setPendingFilePreview] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastTypingBroadcast = useRef(0);
   // Sync initialConversationId prop
@@ -342,10 +351,10 @@ export const IMessageChat = ({ initialConversationId }: IMessageChatProps = {}) 
     onError: () => toast.error("Failed to decline request"),
   });
 
-  // ── Send message ──
+  // ── Send message (with optional file) ──
   const sendMessageMutation = useMutation({
     mutationFn: async () => {
-      if (!dmMessage.trim() || !activeConversationId || !user?.id) return;
+      if ((!dmMessage.trim() && !pendingFile) || !activeConversationId || !user?.id) return;
       const activeConvo = conversations.find(c => c.id === activeConversationId);
       if (!activeConvo) throw new Error("Conversation not found");
 
@@ -353,20 +362,47 @@ export const IMessageChat = ({ initialConversationId }: IMessageChatProps = {}) 
         ? activeConvo.participant_two
         : activeConvo.participant_one;
 
+      let content = dmMessage.trim();
+
+      // Upload file if present
+      if (pendingFile) {
+        setIsUploading(true);
+        const ext = pendingFile.name.split(".").pop();
+        const path = `${user.id}/${Date.now()}-${pendingFile.name}`;
+        const { error: uploadErr } = await supabase.storage
+          .from("message-attachments")
+          .upload(path, pendingFile);
+        if (uploadErr) throw uploadErr;
+
+        const { data: urlData } = supabase.storage
+          .from("message-attachments")
+          .getPublicUrl(path);
+
+        const fileUrl = urlData.publicUrl;
+        const fileMeta = `[file:${pendingFile.name}](${fileUrl})`;
+        content = content ? `${content}\n${fileMeta}` : fileMeta;
+        setIsUploading(false);
+      }
+
+      if (!content) return;
+
       const { error } = await db.from("direct_messages").insert({
         sender_id: user.id,
         receiver_id: receiverId,
-        content: dmMessage.trim(),
+        content,
         conversation_id: activeConversationId,
       });
       if (error) throw error;
     },
     onSuccess: () => {
       setDmMessage("");
+      setPendingFile(null);
+      setPendingFilePreview(null);
       queryClient.invalidateQueries({ queryKey: ["conversation-messages"] });
       queryClient.invalidateQueries({ queryKey: ["conversations"] });
     },
     onError: () => {
+      setIsUploading(false);
       toast.error("Failed to send. Tap to retry.");
     },
   });
@@ -503,6 +539,51 @@ export const IMessageChat = ({ initialConversationId }: IMessageChatProps = {}) 
 
   // ── Helpers ──
   const activeConvo = conversations.find(c => c.id === activeConversationId);
+
+  // Parse file attachments in message content
+  const renderMessageContent = (content: string) => {
+    const fileRegex = /\[file:(.+?)\]\((.+?)\)/g;
+    const parts: React.ReactNode[] = [];
+    let lastIndex = 0;
+    let match;
+
+    while ((match = fileRegex.exec(content)) !== null) {
+      if (match.index > lastIndex) {
+        parts.push(content.slice(lastIndex, match.index));
+      }
+      const fileName = match[1];
+      const fileUrl = match[2];
+      const isImage = /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(fileName);
+
+      parts.push(
+        <div key={match.index} className="mt-1.5">
+          {isImage ? (
+            <a href={fileUrl} target="_blank" rel="noopener noreferrer" className="block cursor-pointer">
+              <img src={fileUrl} alt={fileName} className="max-w-[240px] rounded-lg pointer-events-auto" />
+            </a>
+          ) : (
+            <a
+              href={fileUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 px-3 py-2 rounded-lg bg-background/20 hover:bg-background/30 transition-colors cursor-pointer"
+            >
+              <FileText className="w-4 h-4 shrink-0" />
+              <span className="text-xs truncate flex-1">{fileName}</span>
+              <Download className="w-3.5 h-3.5 shrink-0 opacity-60" />
+            </a>
+          )}
+        </div>
+      );
+      lastIndex = match.index + match[0].length;
+    }
+
+    if (lastIndex < content.length) {
+      parts.push(content.slice(lastIndex));
+    }
+
+    return parts.length > 0 ? parts : content;
+  };
 
   const filteredConvos = conversations.filter(c =>
     c.partner?.display_name?.toLowerCase().includes(searchQuery.toLowerCase())
@@ -767,11 +848,7 @@ export const IMessageChat = ({ initialConversationId }: IMessageChatProps = {}) 
                       </p>
                     </div>
                     <button
-                      onClick={() => {
-                        if (confirm("Delete this conversation?")) {
-                          deleteConversationMutation.mutate(activeConversationId);
-                        }
-                      }}
+                      onClick={() => setShowDeleteDialog(true)}
                       className="p-2 rounded-lg hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors cursor-pointer"
                     >
                       <X className="w-4 h-4" />
@@ -818,7 +895,7 @@ export const IMessageChat = ({ initialConversationId }: IMessageChatProps = {}) 
                                     : "bg-muted/40 backdrop-blur-sm text-foreground rounded-[20px] rounded-bl-[6px] border border-border/10"
                                 )}
                               >
-                                {item.content}
+                                {renderMessageContent(item.content)}
                               </div>
                               {/* Delete button (own messages) */}
                               {isMine && (
@@ -870,12 +947,59 @@ export const IMessageChat = ({ initialConversationId }: IMessageChatProps = {}) 
 
                   {/* Input bar */}
                   <div className="px-4 py-3 border-t border-border/15 bg-card/30 backdrop-blur-xl">
+                    {/* File preview */}
+                    {pendingFile && (
+                      <div className="max-w-2xl mx-auto mb-2 flex items-center gap-2 px-3 py-2 rounded-xl bg-muted/30 border border-border/20">
+                        {pendingFilePreview ? (
+                          <img src={pendingFilePreview} alt="Preview" className="w-12 h-12 rounded-lg object-cover pointer-events-auto" />
+                        ) : (
+                          <div className="w-12 h-12 rounded-lg bg-muted/40 flex items-center justify-center">
+                            <FileText className="w-5 h-5 text-muted-foreground" />
+                          </div>
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs font-medium text-foreground truncate">{pendingFile.name}</p>
+                          <p className="text-[10px] text-muted-foreground">{(pendingFile.size / 1024).toFixed(1)} KB</p>
+                        </div>
+                        <button
+                          onClick={() => { setPendingFile(null); setPendingFilePreview(null); }}
+                          className="p-1 rounded-full hover:bg-muted/40 text-muted-foreground cursor-pointer"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+                    )}
                     <div className="flex items-end gap-2 max-w-2xl mx-auto">
-                      <button className="p-2 rounded-full hover:bg-muted/30 transition-colors text-muted-foreground/60 hover:text-muted-foreground cursor-pointer shrink-0 mb-0.5">
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/*,.pdf,.doc,.docx,.txt,.xls,.xlsx,.ppt,.pptx"
+                        className="hidden"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (!file) return;
+                          if (file.size > 10 * 1024 * 1024) {
+                            toast.error("File must be under 10MB");
+                            return;
+                          }
+                          setPendingFile(file);
+                          if (file.type.startsWith("image/")) {
+                            setPendingFilePreview(URL.createObjectURL(file));
+                          } else {
+                            setPendingFilePreview(null);
+                          }
+                          e.target.value = "";
+                        }}
+                      />
+                      <button
+                        onClick={() => fileInputRef.current?.click()}
+                        className="p-2 rounded-full hover:bg-muted/30 transition-colors text-muted-foreground/60 hover:text-muted-foreground cursor-pointer shrink-0 mb-0.5"
+                      >
                         <Paperclip className="w-5 h-5" />
                       </button>
-                      <div className="flex-1 flex items-end gap-2 bg-muted/30 backdrop-blur-sm rounded-[22px] border border-border/15 px-4 py-2">
+                      <div className="flex-1 flex items-end gap-2 bg-muted/30 backdrop-blur-sm rounded-[22px] border border-border/15 px-4 py-2 relative">
                         <textarea
+                          ref={textareaRef}
                           value={dmMessage}
                           onChange={(e) => {
                             setDmMessage(e.target.value);
@@ -889,7 +1013,7 @@ export const IMessageChat = ({ initialConversationId }: IMessageChatProps = {}) 
                           }}
                           placeholder="Message"
                           rows={1}
-                          className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground/40 focus:outline-none resize-none min-h-[20px] max-h-[120px] leading-relaxed"
+                          className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground/40 focus:outline-none resize-none min-h-[20px] max-h-[120px] leading-relaxed scrollbar-hide"
                           style={{ height: "20px" }}
                           onInput={(e) => {
                             const t = e.currentTarget;
@@ -897,21 +1021,46 @@ export const IMessageChat = ({ initialConversationId }: IMessageChatProps = {}) 
                             t.style.height = Math.min(t.scrollHeight, 120) + "px";
                           }}
                         />
-                        <button className="p-1 rounded-full hover:bg-muted/30 transition-colors text-muted-foreground/60 hover:text-muted-foreground cursor-pointer shrink-0">
-                          <Smile className="w-5 h-5" />
-                        </button>
+                        <div className="relative shrink-0">
+                          <button
+                            onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                            className="p-1 rounded-full hover:bg-muted/30 transition-colors text-muted-foreground/60 hover:text-muted-foreground cursor-pointer"
+                          >
+                            <Smile className="w-5 h-5" />
+                          </button>
+                          {showEmojiPicker && (
+                            <EmojiPicker
+                              onSelect={(emoji) => {
+                                const ta = textareaRef.current;
+                                if (ta) {
+                                  const start = ta.selectionStart;
+                                  const end = ta.selectionEnd;
+                                  const newVal = dmMessage.slice(0, start) + emoji + dmMessage.slice(end);
+                                  setDmMessage(newVal);
+                                  setTimeout(() => {
+                                    ta.focus();
+                                    ta.selectionStart = ta.selectionEnd = start + emoji.length;
+                                  }, 0);
+                                } else {
+                                  setDmMessage(prev => prev + emoji);
+                                }
+                              }}
+                              onClose={() => setShowEmojiPicker(false)}
+                            />
+                          )}
+                        </div>
                       </div>
                       <button
                         onClick={() => sendMessageMutation.mutate()}
-                        disabled={!dmMessage.trim() || sendMessageMutation.isPending}
+                        disabled={(!dmMessage.trim() && !pendingFile) || sendMessageMutation.isPending || isUploading}
                         className={cn(
                           "w-9 h-9 rounded-full flex items-center justify-center transition-all duration-200 shrink-0 mb-0.5 cursor-pointer",
-                          dmMessage.trim()
+                          (dmMessage.trim() || pendingFile)
                             ? "bg-primary text-primary-foreground shadow-md shadow-primary/20 hover:shadow-lg scale-100"
                             : "bg-muted/30 text-muted-foreground/30 cursor-not-allowed"
                         )}
                       >
-                        {sendMessageMutation.isPending ? (
+                        {(sendMessageMutation.isPending || isUploading) ? (
                           <Loader2 className="w-4 h-4 animate-spin" />
                         ) : (
                           <Send className="w-4 h-4 ml-0.5" />
@@ -1061,6 +1210,17 @@ export const IMessageChat = ({ initialConversationId }: IMessageChatProps = {}) 
           </div>
         </DialogContent>
       </Dialog>
+
+      <DeleteConversationDialog
+        open={showDeleteDialog}
+        onOpenChange={setShowDeleteDialog}
+        onConfirm={() => {
+          if (activeConversationId) {
+            deleteConversationMutation.mutate(activeConversationId);
+          }
+          setShowDeleteDialog(false);
+        }}
+      />
     </>
   );
 };
