@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Award, CheckCircle2, ArrowRight, Lock, Download, Share2, Linkedin, Copy, ExternalLink, Check } from "lucide-react";
+import { Award, CheckCircle2, ArrowRight, Lock, Download, Share2, Linkedin, Copy, ExternalLink, Check, Shield } from "lucide-react";
 import { Certificate } from "./CertificateCard";
 import { ProfessionalCertificate } from "./ProfessionalCertificate";
 import { downloadCertificatePDF, generateLinkedInShareUrl, generateVerificationUrl } from "../utils/certificateUtils";
