@@ -7,6 +7,7 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import { FeatureShowcase } from "@/features/landing/components/FeatureShowcase";
 import { PricingSection } from "@/features/landing/components/PricingSection";
 import SectionWithMockup from "@/components/ui/section-with-mockup";
+import BentoCard from "@/components/ui/bento-card";
 import logo from "@/assets/euphoria-logo-button.png";
 import landingLessons from "@/assets/landing-interactive-lessons-2.png";
 import landingIntro from "@/assets/landing-intro-investing.png";
@@ -229,7 +230,18 @@ const Landing = () => {
       {/* ── Features ── */}
       <FeatureShowcase />
 
-
+      {/* ── Bento Card — Interactive Platform Preview ── */}
+      <section className="py-20 md:py-28">
+        <div className="max-w-6xl mx-auto px-6">
+          <motion.div className="mb-14" variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}>
+            <p className="text-[11px] font-medium text-primary uppercase tracking-[0.15em] mb-4">Platform Preview</p>
+            <h2 className="font-heading text-4xl md:text-5xl font-bold text-foreground">See it in action</h2>
+          </motion.div>
+          <motion.div initial={{ opacity: 0, y: 32 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
+            <BentoCard />
+          </motion.div>
+        </div>
+      </section>
       {/* ── How It Works — Horizontal Timeline ── */}
       <section id="how-it-works" className="py-20 md:py-28">
         <div className="max-w-5xl mx-auto px-6">
