@@ -215,7 +215,7 @@ const lessons = [
     tr('Account Types',[['Brokerage','Taxable, no restrictions, flexible'],['401(k)','Employer-sponsored, pre-tax, $23,000 limit'],['Roth IRA','After-tax contributions, tax-free growth'],['Traditional IRA','Pre-tax contributions, taxed at withdrawal']]),
     ds('Order of recommended account priority:',['Max employer 401(k) match','Max Roth IRA','Max remaining 401(k)','Taxable brokerage']),
     fb('A Roth IRA is funded with ___ money, so withdrawals in retirement are tax-free.',['after-tax','pre-tax','borrowed','employer'],0),
-    q('What is an employer match?','A bonus','Free money your employer adds to your 401(k)','A type of stock','A loan from your employer',1,'If your employer matches 50% up to 6%, that\'s an immediate 50% return!'),
+    q('What is an employer match?',['A bonus','Free money your employer adds to your 401(k)','A type of stock','A loan from your employer'],1,'If your employer matches 50% up to 6%, that\'s an immediate 50% return!'),
     bi('Optimize Your Account Strategy','Choose the right account for each goal:',[
       {label:'Retirement savings (30+ years)',options:['Checking account','Roth IRA','Credit card','Savings account'],correct:1},
       {label:'Free money from employer',options:['Brokerage','IRA','401(k) match','CD'],correct:2},
