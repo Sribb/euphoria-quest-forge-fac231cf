@@ -146,7 +146,7 @@ export const IMessageChat = () => {
     queryKey: ["message-requests-sent", user?.id],
     queryFn: async () => {
       if (!user?.id) return [];
-      const { data, error } = await supabase
+      const { data, error } = await db
         .from("message_requests")
         .select("recipient_id")
         .eq("sender_id", user.id)
@@ -196,7 +196,7 @@ export const IMessageChat = () => {
     const markRead = async () => {
       await supabase
         .from("direct_messages")
-        .update({ is_read: true })
+        .update({ is_read: true } as any)
         .eq("conversation_id", activeConversationId)
         .eq("receiver_id", user.id)
         .eq("is_read", false);
@@ -211,7 +211,7 @@ export const IMessageChat = () => {
       if (!selectedUser || !user?.id) throw new Error("No user selected");
 
       // Check if conversation already exists
-      const { data: existing } = await supabase
+      const { data: existing } = await db
         .from("conversations")
         .select("id, status")
         .or(
@@ -219,17 +219,15 @@ export const IMessageChat = () => {
         );
 
       if (existing && existing.length > 0) {
-        const convo = existing[0];
+        const convo = existing[0] as any;
         if (convo.status === "active") {
-          // Already active, just open it
-          return { action: "open", conversationId: convo.id };
+          return { action: "open" as const, conversationId: convo.id as string };
         }
-        // Pending request already exists
         throw new Error("A request is already pending with this user");
       }
 
       // Create conversation in pending state
-      const { data: convo, error: convoErr } = await supabase
+      const { data: convo, error: convoErr } = await db
         .from("conversations")
         .insert({
           participant_one: user.id,
@@ -242,17 +240,17 @@ export const IMessageChat = () => {
       if (convoErr) throw convoErr;
 
       // Create message request
-      const { error: reqErr } = await supabase
+      const { error: reqErr } = await db
         .from("message_requests")
         .insert({
           sender_id: user.id,
           recipient_id: selectedUser.id,
-          conversation_id: convo.id,
+          conversation_id: (convo as any).id,
           intro_message: newMsgIntro.trim() || null,
         });
       if (reqErr) throw reqErr;
 
-      return { action: "sent", conversationId: convo.id };
+      return { action: "sent" as const, conversationId: (convo as any).id as string };
     },
     onSuccess: (result) => {
       if (result?.action === "open") {
@@ -274,19 +272,16 @@ export const IMessageChat = () => {
   // ── Accept request ──
   const acceptRequestMutation = useMutation({
     mutationFn: async (request: MessageRequest) => {
-      // Update request status
-      await supabase
+      await db
         .from("message_requests")
         .update({ status: "accepted", updated_at: new Date().toISOString() })
         .eq("id", request.id);
 
-      // Activate conversation
-      await supabase
+      await db
         .from("conversations")
         .update({ status: "active", updated_at: new Date().toISOString() })
         .eq("id", request.conversation_id);
 
-      // If there was an intro message, insert it as the first message
       if (request.intro_message) {
         await supabase.from("direct_messages").insert({
           sender_id: request.sender_id,
@@ -312,12 +307,11 @@ export const IMessageChat = () => {
   // ── Decline request ──
   const declineRequestMutation = useMutation({
     mutationFn: async (request: MessageRequest) => {
-      await supabase
+      await db
         .from("message_requests")
         .update({ status: "declined", updated_at: new Date().toISOString() })
         .eq("id", request.id);
-      // Optionally remove the pending conversation
-      await supabase.from("conversations").delete().eq("id", request.conversation_id);
+      await db.from("conversations").delete().eq("id", request.conversation_id);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["message-requests-incoming"] });
@@ -374,12 +368,11 @@ export const IMessageChat = () => {
   // ── Delete conversation ──
   const deleteConversationMutation = useMutation({
     mutationFn: async (conversationId: string) => {
-      // Delete all messages in conversation first
       await supabase
         .from("direct_messages")
         .delete()
         .eq("conversation_id", conversationId);
-      await supabase
+      await db
         .from("conversations")
         .delete()
         .eq("id", conversationId);
