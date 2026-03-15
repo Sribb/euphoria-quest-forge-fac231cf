@@ -14,7 +14,7 @@ interface MicroLearningFeedProps {
 }
 
 const pathwayFilters = [
-  { id: "all", label: "All" },
+  { id: "all", label: "All Topics" },
   { id: "investing", label: "Investing" },
   { id: "corporate-finance", label: "Corp Finance" },
   { id: "personal-finance", label: "Personal" },
@@ -81,7 +81,6 @@ export const MicroLearningFeed = ({ onNavigate }: MicroLearningFeedProps) => {
     if (newIndex !== activeCardIndex && newIndex < feedCards.length) {
       setActiveCardIndex(newIndex);
     }
-    // Infinite load
     if (newIndex >= feedCards.length - 5 && lessons.length > 0) {
       const moreCards = generateFeedCards(lessons, 20);
       setFeedCards((prev) => [...prev, ...moreCards.map((c, i) => ({ ...c, id: `${c.id}-ext-${prev.length + i}` }))]);
@@ -98,49 +97,46 @@ export const MicroLearningFeed = ({ onNavigate }: MicroLearningFeedProps) => {
 
   return (
     <div className="relative h-[calc(100vh-120px)] md:h-[calc(100vh-48px)] flex flex-col bg-black">
-      {/* Floating top HUD */}
+      {/* ── Top HUD: clean, integrated bar ── */}
       <div className="absolute top-0 left-0 right-0 z-20 p-3 flex items-center justify-between pointer-events-none">
-        <div className="flex items-center gap-2 pointer-events-auto">
-          {/* XP counter */}
+        <div className="flex items-center gap-1.5 pointer-events-auto">
+          {/* XP */}
           <motion.div
             key={sessionXP}
-            initial={{ scale: 1.15 }}
+            initial={{ scale: 1.1 }}
             animate={{ scale: 1 }}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/50 backdrop-blur-xl border border-white/10"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black/60 backdrop-blur-xl border border-white/[0.06]"
           >
-            <Zap className="w-3.5 h-3.5 text-yellow-400" />
-            <span className="text-white text-xs font-black tabular-nums">{sessionXP}</span>
+            <Zap className="w-3 h-3 text-yellow-400/80" />
+            <span className="text-white/70 text-[11px] font-bold tabular-nums">{sessionXP}</span>
           </motion.div>
 
           {/* Streak */}
           <motion.div
-            animate={showStreakPulse ? { scale: [1, 1.2, 1] } : {}}
+            animate={showStreakPulse ? { scale: [1, 1.15, 1] } : {}}
             transition={{ duration: 0.5 }}
             className={cn(
-              "flex items-center gap-1.5 px-3 py-1.5 rounded-full backdrop-blur-xl border",
-              streak >= 5 ? "bg-orange-500/20 border-orange-500/30" :
-              streak > 0 ? "bg-black/50 border-white/10" : "bg-black/50 border-white/10"
+              "flex items-center gap-1.5 px-3 py-1.5 rounded-lg backdrop-blur-xl border",
+              streak >= 5 ? "bg-orange-500/10 border-orange-500/15" : "bg-black/60 border-white/[0.06]"
             )}
           >
-            <Flame className={cn("w-3.5 h-3.5", streak >= 5 ? "text-orange-400" : streak > 0 ? "text-orange-300" : "text-white/30")} />
-            <span className={cn("text-xs font-black", streak > 0 ? "text-orange-400" : "text-white/30")}>
-              {streak}
-            </span>
+            <Flame className={cn("w-3 h-3", streak >= 5 ? "text-orange-400" : streak > 0 ? "text-orange-400/60" : "text-white/20")} />
+            <span className={cn("text-[11px] font-bold tabular-nums", streak > 0 ? "text-orange-400/80" : "text-white/20")}>{streak}</span>
           </motion.div>
 
-          {/* Best streak badge */}
+          {/* Best streak */}
           {bestStreak >= 5 && (
-            <div className="flex items-center gap-1 px-2.5 py-1.5 rounded-full bg-black/50 backdrop-blur-xl border border-white/10">
-              <Trophy className="w-3 h-3 text-yellow-400" />
-              <span className="text-white/50 text-[10px] font-black">{bestStreak}</span>
+            <div className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-black/60 backdrop-blur-xl border border-white/[0.06]">
+              <Trophy className="w-2.5 h-2.5 text-yellow-400/60" />
+              <span className="text-white/30 text-[10px] font-bold">{bestStreak}</span>
             </div>
           )}
         </div>
 
-        {/* Filter button */}
+        {/* Filter */}
         <button
           onClick={() => setShowFilters(!showFilters)}
-          className="pointer-events-auto flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/50 backdrop-blur-xl border border-white/10 text-white text-xs font-black"
+          className="pointer-events-auto flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black/60 backdrop-blur-xl border border-white/[0.06] text-white/60 text-[11px] font-bold"
         >
           <Filter className="w-3 h-3" />
           {pathwayFilters.find((f) => f.id === selectedPathway)?.label}
@@ -148,18 +144,18 @@ export const MicroLearningFeed = ({ onNavigate }: MicroLearningFeedProps) => {
         </button>
       </div>
 
-      {/* Streak milestone popup */}
+      {/* Streak milestone */}
       <AnimatePresence>
         {showStreakPulse && (
           <motion.div
-            initial={{ opacity: 0, y: 20, scale: 0.9 }}
+            initial={{ opacity: 0, y: 15, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="absolute top-16 left-1/2 -translate-x-1/2 z-30 px-5 py-3 rounded-2xl bg-gradient-to-r from-orange-500/90 to-amber-500/90 backdrop-blur-xl"
+            exit={{ opacity: 0, y: -15 }}
+            className="absolute top-14 left-1/2 -translate-x-1/2 z-30 px-5 py-2.5 rounded-xl bg-gradient-to-r from-orange-500/80 to-amber-500/80 backdrop-blur-xl"
           >
             <div className="flex items-center gap-2">
-              <Flame className="w-5 h-5 text-white" />
-              <span className="text-white text-sm font-black">{streak} streak! 🔥 Keep going!</span>
+              <Flame className="w-4 h-4 text-white" />
+              <span className="text-white text-sm font-bold">{streak} streak! 🔥</span>
             </div>
           </motion.div>
         )}
@@ -169,23 +165,20 @@ export const MicroLearningFeed = ({ onNavigate }: MicroLearningFeedProps) => {
       <AnimatePresence>
         {showFilters && (
           <motion.div
-            initial={{ opacity: 0, y: -10 }}
+            initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            className="absolute top-14 right-3 z-30 p-2 rounded-2xl bg-black/90 backdrop-blur-xl border border-white/10 min-w-[160px]"
+            exit={{ opacity: 0, y: -8 }}
+            className="absolute top-12 right-3 z-30 p-1.5 rounded-xl bg-black/90 backdrop-blur-xl border border-white/[0.08] min-w-[150px]"
           >
             {pathwayFilters.map((f) => (
               <button
                 key={f.id}
-                onClick={() => {
-                  setSelectedPathway(f.id);
-                  setShowFilters(false);
-                }}
+                onClick={() => { setSelectedPathway(f.id); setShowFilters(false); }}
                 className={cn(
-                  "w-full text-left px-3 py-2.5 rounded-xl text-xs font-black transition-all",
+                  "w-full text-left px-3 py-2 rounded-lg text-[11px] font-bold transition-all",
                   selectedPathway === f.id
-                    ? "bg-white/15 text-white"
-                    : "text-white/40 hover:text-white hover:bg-white/5"
+                    ? "bg-white/[0.08] text-white"
+                    : "text-white/30 hover:text-white/60 hover:bg-white/[0.04]"
                 )}
               >
                 {f.label}
@@ -203,15 +196,15 @@ export const MicroLearningFeed = ({ onNavigate }: MicroLearningFeedProps) => {
             <div
               key={realIdx}
               className={cn(
-                "w-1 rounded-full transition-all duration-300",
-                realIdx === activeCardIndex ? "h-6 bg-white/60" : "h-1.5 bg-white/15"
+                "w-0.5 rounded-full transition-all duration-300",
+                realIdx === activeCardIndex ? "h-5 bg-white/40" : "h-1 bg-white/10"
               )}
             />
           );
         })}
       </div>
 
-      {/* Full-screen scroll container */}
+      {/* Scroll container */}
       <div
         ref={scrollRef}
         onScroll={handleScroll}
@@ -219,16 +212,8 @@ export const MicroLearningFeed = ({ onNavigate }: MicroLearningFeedProps) => {
         style={{ scrollSnapType: "y mandatory" }}
       >
         {feedCards.map((card, idx) => (
-          <div
-            key={card.id}
-            className="h-full w-full snap-start snap-always"
-            style={{ minHeight: "100%" }}
-          >
-            <FeedCard
-              card={card}
-              onComplete={handleCardComplete}
-              isActive={idx === activeCardIndex}
-            />
+          <div key={card.id} className="h-full w-full snap-start snap-always" style={{ minHeight: "100%" }}>
+            <FeedCard card={card} onComplete={handleCardComplete} isActive={idx === activeCardIndex} />
           </div>
         ))}
       </div>
