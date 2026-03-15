@@ -131,7 +131,7 @@ export const SpacedRepetitionPanel = () => {
                   className="flex-1 bg-success text-success-foreground hover:bg-success/90"
                   onClick={() => handleSelfAssess(true)}
                 >
-                  Got it! ✅
+                  Got it!
                 </Button>
               </div>
             )}
