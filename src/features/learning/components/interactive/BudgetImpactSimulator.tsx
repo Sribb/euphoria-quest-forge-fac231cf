@@ -117,7 +117,7 @@ export const BudgetImpactSimulator = ({
           <div key={cat.id} className="space-y-1.5">
             <div className="flex justify-between items-center">
               <label className="text-sm font-medium text-foreground">
-                {cat.emoji} {cat.label}
+                {cat.label}
               </label>
               <div className="text-right">
                 <span className="text-sm font-bold text-primary">

@@ -143,7 +143,7 @@ export const RiskReturnExplorer = ({
             <div key={asset.name} className="space-y-1">
               <div className="flex justify-between items-center">
                 <label className="text-xs font-medium text-foreground">
-                  {asset.emoji} {asset.name}
+                  {asset.name}
                 </label>
                 <span className="text-sm font-bold text-primary">{val}%</span>
               </div>
