@@ -1,608 +1,260 @@
-import { User, Award, TrendingUp, Target, Edit, Palette, Bell, Lock, Settings as SettingsIcon, RotateCcw, Brain, BookOpen, Volume2 } from "lucide-react";
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useState, useRef, useEffect } from "react";
+import { User, Settings as SettingsIcon, Trophy } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useOnboarding } from "@/hooks/useOnboarding";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { useState, useEffect } from "react";
-import { toast } from "sonner";
+import { useBadgeProgress } from "@/features/badges/hooks/useBadgeProgress";
 import { formatDollar } from "@/lib/formatters";
-import { useNavigate } from "react-router-dom";
-import Onboarding from "./Onboarding";
-import { isSoundEnabled, setSoundEnabled, playClick } from "@/lib/soundEffects";
-const PRESET_AVATARS = [{
-  id: 1,
-  color: "#9b87f5",
-  alt: "Purple avatar"
-}, {
-  id: 2,
-  color: "#0EA5E9",
-  alt: "Blue avatar"
-}, {
-  id: 3,
-  color: "#10B981",
-  alt: "Green avatar"
-}, {
-  id: 4,
-  color: "#F59E0B",
-  alt: "Orange avatar"
-}, {
-  id: 5,
-  color: "#EF4444",
-  alt: "Red avatar"
-}, {
-  id: 6,
-  color: "#EC4899",
-  alt: "Pink avatar"
-}, {
-  id: 7,
-  color: "#8B5CF6",
-  alt: "Violet avatar"
-}, {
-  id: 8,
-  color: "#14B8A6",
-  alt: "Teal avatar"
-}];
+import { cn } from "@/lib/utils";
+import { motion } from "framer-motion";
+
+// Profile components
+import { ProfileHeader } from "@/features/profile/components/ProfileHeader";
+import { StatsRow } from "@/features/profile/components/StatsRow";
+import { ActivityGraph } from "@/features/profile/components/ActivityGraph";
+import { RecentActivity } from "@/features/profile/components/RecentActivity";
+import { PortfolioBreakdown } from "@/features/profile/components/PortfolioBreakdown";
+import { BadgeShowcaseRow } from "@/features/profile/components/BadgeShowcaseRow";
+import { SettingsTab } from "@/features/profile/components/SettingsTab";
+import { AchievementsTab } from "@/features/profile/components/AchievementsTab";
+
 interface ProfileProps {
   onNavigate: (tab: string) => void;
 }
-const Profile = ({
-  onNavigate
-}: ProfileProps) => {
-  const {
-    user
-  } = useAuth();
-  const navigate = useNavigate();
-  const queryClient = useQueryClient();
-  const {
-    onboarding,
-    placementLesson,
-    refetch: refetchOnboarding
-  } = useOnboarding();
-  const [isEditing, setIsEditing] = useState(false);
-  const [displayName, setDisplayName] = useState("");
-  const [primaryColor, setPrimaryColor] = useState("#9b87f5");
-  const [notificationsEnabled, setNotificationsEnabled] = useState(true);
-  const [darkMode, setDarkMode] = useState(true);
-  const [soundOn, setSoundOn] = useState(isSoundEnabled());
-  const [selectedAvatar, setSelectedAvatar] = useState<string>("");
-  const [showAvatarDialog, setShowAvatarDialog] = useState(false);
-  const [showResetDialog, setShowResetDialog] = useState(false);
-  const [showRetakeWarning, setShowRetakeWarning] = useState(false);
-  const [showRetakeQuiz, setShowRetakeQuiz] = useState(false);
+
+const TABS = [
+  { id: "profile" as const, label: "Profile", icon: User },
+  { id: "settings" as const, label: "Settings", icon: SettingsIcon },
+  { id: "achievements" as const, label: "Achievements", icon: Trophy },
+] as const;
+
+type TabId = (typeof TABS)[number]["id"];
+
+const Profile = ({ onNavigate }: ProfileProps) => {
+  const { user } = useAuth();
+  const { onboarding, placementLesson, refetch: refetchOnboarding } = useOnboarding();
+  const { badges } = useBadgeProgress();
+  const [activeTab, setActiveTab] = useState<TabId>("profile");
+  const tabRefs = useRef<Record<string, HTMLButtonElement | null>>({});
+  const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0 });
+
+  // Update indicator position
   useEffect(() => {
-    // Load theme preference from localStorage
-    const savedTheme = localStorage.getItem("theme");
-    setDarkMode(savedTheme === "dark" || savedTheme === null);
-    const savedColor = localStorage.getItem("primaryColor");
-    if (savedColor) setPrimaryColor(savedColor);
-  }, []);
-  const {
-    data: profile
-  } = useQuery({
+    const el = tabRefs.current[activeTab];
+    if (el) {
+      setIndicatorStyle({
+        left: el.offsetLeft,
+        width: el.offsetWidth,
+      });
+    }
+  }, [activeTab]);
+
+  // Data queries
+  const { data: profile } = useQuery({
     queryKey: ["profile", user?.id],
     queryFn: async () => {
-      const {
-        data,
-        error
-      } = await supabase.from("profiles").select("*").eq("id", user?.id).single();
+      const { data, error } = await supabase.from("profiles").select("*").eq("id", user?.id).single();
       if (error) throw error;
-      setDisplayName(data.display_name || "");
-      setSelectedAvatar(data.avatar_url || "");
       return data;
     },
-    enabled: !!user?.id
+    enabled: !!user?.id,
   });
-  const {
-    data: portfolio
-  } = useQuery({
+
+  const { data: portfolio } = useQuery({
     queryKey: ["portfolio", user?.id],
     queryFn: async () => {
-      const {
-        data,
-        error
-      } = await supabase.from("portfolios").select("*").eq("user_id", user?.id).single();
-      if (error) throw error;
+      const { data } = await supabase.from("portfolios").select("*").eq("user_id", user?.id).single();
       return data;
     },
-    enabled: !!user?.id
+    enabled: !!user?.id,
   });
-  const {
-    data: streak
-  } = useQuery({
+
+  const { data: streak } = useQuery({
     queryKey: ["streak", user?.id],
     queryFn: async () => {
-      const {
-        data,
-        error
-      } = await supabase.from("streaks").select("*").eq("user_id", user?.id).single();
-      if (error) throw error;
+      const { data } = await supabase.from("streaks").select("*").eq("user_id", user?.id).single();
       return data;
     },
-    enabled: !!user?.id
+    enabled: !!user?.id,
   });
-  const {
-    data: userAchievements
-  } = useQuery({
-    queryKey: ["userAchievements", user?.id],
+
+  const { data: lessonProgress } = useQuery({
+    queryKey: ["profile-lessons", user?.id],
     queryFn: async () => {
-      const {
-        data,
-        error
-      } = await supabase.from("user_achievements").select(`
-          *,
-          achievements(*)
-        `).eq("user_id", user?.id);
-      if (error) throw error;
-      return data;
+      const { data } = await supabase.from("user_lesson_progress").select("*").eq("user_id", user?.id);
+      return data || [];
     },
-    enabled: !!user?.id
+    enabled: !!user?.id,
   });
-  const updateProfileMutation = useMutation({
-    mutationFn: async (newDisplayName: string) => {
-      const {
-        error
-      } = await supabase.from("profiles").update({
-        display_name: newDisplayName
-      }).eq("id", user?.id);
-      if (error) throw error;
+
+  const { data: orders } = useQuery({
+    queryKey: ["profile-orders", user?.id],
+    queryFn: async () => {
+      const { data } = await supabase.from("orders").select("*").eq("user_id", user?.id).order("created_at", { ascending: false }).limit(20);
+      return data || [];
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["profile"]
-      });
-      setIsEditing(false);
-      toast.success("Profile updated!");
-    },
-    onError: () => {
-      toast.error("Failed to update profile");
-    }
+    enabled: !!user?.id,
   });
-  const updateAvatarMutation = useMutation({
-    mutationFn: async (avatarUrl: string) => {
-      const {
-        error
-      } = await supabase.from("profiles").update({
-        avatar_url: avatarUrl
-      }).eq("id", user?.id);
-      if (error) throw error;
+
+  const { data: gameSessions } = useQuery({
+    queryKey: ["profile-games", user?.id],
+    queryFn: async () => {
+      const { data } = await supabase.from("game_sessions").select("*").eq("user_id", user?.id).order("created_at", { ascending: false }).limit(20);
+      return data || [];
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["profile"]
-      });
-      setShowAvatarDialog(false);
-      toast.success("Avatar updated!");
-    },
-    onError: () => {
-      toast.error("Failed to update avatar");
-    }
+    enabled: !!user?.id,
   });
-  const portfolioReturn = portfolio ? (Number(portfolio.total_value) - 10000) / 10000 * 100 : 0;
-  const applyThemeColor = (color: string) => {
-    setPrimaryColor(color);
-    localStorage.setItem("primaryColor", color);
 
-    // Convert hex to HSL
-    const r = parseInt(color.slice(1, 3), 16) / 255;
-    const g = parseInt(color.slice(3, 5), 16) / 255;
-    const b = parseInt(color.slice(5, 7), 16) / 255;
-    const max = Math.max(r, g, b);
-    const min = Math.min(r, g, b);
-    let h = 0,
-      s = 0,
-      l = (max + min) / 2;
-    if (max !== min) {
-      const d = max - min;
-      s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-      switch (max) {
-        case r:
-          h = ((g - b) / d + (g < b ? 6 : 0)) / 6;
-          break;
-        case g:
-          h = ((b - r) / d + 2) / 6;
-          break;
-        case b:
-          h = ((r - g) / d + 4) / 6;
-          break;
-      }
-    }
-    h = Math.round(h * 360);
-    s = Math.round(s * 100);
-    l = Math.round(l * 100);
-    document.documentElement.style.setProperty("--primary", `${h} ${s}% ${l}%`);
-    toast.success("Theme color updated");
-  };
-  const toggleDarkMode = () => {
-    const newMode = !darkMode;
-    setDarkMode(newMode);
-    localStorage.setItem("theme", newMode ? "dark" : "light");
-    if (newMode) {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-    toast.success(`${newMode ? "Dark" : "Light"} mode enabled`);
-  };
-  const handleResetPersonalization = async () => {
-    try {
-      // Reset to default values
-      const defaultColor = "#9b87f5";
-      const defaultAvatar = "#9b87f5";
-      const defaultTheme = "dark";
+  const { data: portfolioAssets } = useQuery({
+    queryKey: ["profile-assets", portfolio?.id],
+    queryFn: async () => {
+      const { data } = await supabase.from("portfolio_assets").select("*").eq("portfolio_id", portfolio!.id);
+      return data || [];
+    },
+    enabled: !!portfolio?.id,
+  });
 
-      // Reset theme
-      setDarkMode(true);
-      localStorage.setItem("theme", defaultTheme);
-      document.documentElement.classList.add("dark");
+  const { data: posts } = useQuery({
+    queryKey: ["profile-posts", user?.id],
+    queryFn: async () => {
+      const { data } = await supabase.from("posts").select("id, content, created_at").eq("user_id", user?.id).order("created_at", { ascending: false }).limit(10);
+      return data || [];
+    },
+    enabled: !!user?.id,
+  });
 
-      // Reset color
-      setPrimaryColor(defaultColor);
-      localStorage.setItem("primaryColor", defaultColor);
-      document.documentElement.style.setProperty("--primary", "262 83% 58%");
+  // Computed stats
+  const completedLessons = lessonProgress?.filter((l) => l.completed) || [];
+  const quizScores = lessonProgress?.filter((l) => l.quiz_score != null).map((l) => l.quiz_score!) || [];
+  const accuracy = quizScores.length ? Math.round(quizScores.reduce((a, b) => a + b, 0) / quizScores.length) : 0;
 
-      // Reset avatar and display name in database
-      const {
-        error
-      } = await supabase.from("profiles").update({
-        avatar_url: defaultAvatar,
-        display_name: "Euphoria User"
-      }).eq("id", user?.id);
-      if (error) throw error;
-      setDisplayName("Euphoria User");
-      setSelectedAvatar(defaultAvatar);
-      queryClient.invalidateQueries({
-        queryKey: ["profile"]
-      });
-      setShowResetDialog(false);
-      toast.success("Personalization settings reset to defaults");
-    } catch (error) {
-      toast.error("Failed to reset personalization settings");
-    }
-  };
-  return <div className="space-y-4 md:space-y-6 pt-2 md:pt-4 pb-20">
-      <div className="flex items-center gap-2 md:gap-3 animate-fade-in">
-        <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-gradient-primary flex items-center justify-center shadow-glow">
-          <User className="w-5 h-5 md:w-6 md:h-6 text-white" />
-        </div>
-        <div>
-          <h1 className="text-xl md:text-2xl font-bold">Profile & Settings</h1>
-          <p className="text-sm text-muted-foreground">Manage your account</p>
+  // Activity dates for graph
+  const lessonDates = (lessonProgress || []).filter((l) => l.completed).map((l) => l.updated_at || l.created_at);
+  const tradeDates = (orders || []).filter((o) => o.status === "filled").map((o) => o.created_at);
+  const gameDates = (gameSessions || []).map((g) => g.created_at);
+
+  // Recent activity timeline
+  const recentItems = [
+    ...(completedLessons || []).slice(0, 5).map((l) => ({
+      id: `lesson-${l.id}`,
+      type: "lesson" as const,
+      title: `Completed lesson`,
+      timestamp: l.updated_at || l.created_at,
+    })),
+    ...(orders || []).filter((o) => o.status === "filled").slice(0, 5).map((o) => ({
+      id: `trade-${o.id}`,
+      type: "trade" as const,
+      title: `${o.side === "buy" ? "Bought" : "Sold"} ${o.quantity} ${o.symbol}`,
+      timestamp: o.created_at,
+    })),
+    ...(gameSessions || []).slice(0, 5).map((g) => ({
+      id: `game-${g.id}`,
+      type: "game" as const,
+      title: `Game session (Score: ${g.score})`,
+      timestamp: g.created_at,
+    })),
+    ...(posts || []).slice(0, 3).map((p) => ({
+      id: `post-${p.id}`,
+      type: "post" as const,
+      title: (p.content || "").slice(0, 50) || "New post",
+      timestamp: p.created_at,
+    })),
+  ]
+    .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+    .slice(0, 10);
+
+  return (
+    <div className="pb-24 pt-2 md:pt-4 max-w-3xl mx-auto">
+      {/* Profile Header (always visible) */}
+      {profile && user && (
+        <ProfileHeader profile={profile} userId={user.id} email={user.email || ""} />
+      )}
+
+      {/* Tab Navigation with sliding indicator */}
+      <div className="relative mt-6 mb-5">
+        <div className="flex relative border-b border-border">
+          {TABS.map((tab) => {
+            const Icon = tab.icon;
+            return (
+              <button
+                key={tab.id}
+                ref={(el) => { tabRefs.current[tab.id] = el; }}
+                onClick={() => setActiveTab(tab.id)}
+                className={cn(
+                  "flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium transition-colors relative",
+                  activeTab === tab.id
+                    ? "text-primary"
+                    : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                <Icon className="w-4 h-4" />
+                <span className="hidden sm:inline">{tab.label}</span>
+              </button>
+            );
+          })}
+          {/* Animated indicator */}
+          <motion.div
+            className="absolute bottom-0 h-[2px] bg-primary rounded-full"
+            animate={{ left: indicatorStyle.left, width: indicatorStyle.width }}
+            transition={{ type: "spring", stiffness: 400, damping: 30 }}
+          />
         </div>
       </div>
 
-      <Tabs defaultValue="profile" className="w-full">
-        <TabsList className="grid w-full grid-cols-2 mb-4 md:mb-6">
-          <TabsTrigger value="profile" className="text-xs md:text-sm">Profile</TabsTrigger>
-          <TabsTrigger value="settings" className="text-xs md:text-sm">Settings</TabsTrigger>
-        </TabsList>
+      {/* Tab Content */}
+      <motion.div
+        key={activeTab}
+        initial={{ opacity: 0, y: 6 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.2 }}
+      >
+        {activeTab === "profile" && (
+          <div className="space-y-4">
+            <StatsRow
+              portfolioValue={Number(portfolio?.total_value) || 0}
+              streak={streak?.current_streak || 0}
+              lessonsCompleted={completedLessons.length}
+              accuracy={accuracy}
+              rank={0}
+            />
 
-        {/* Profile Tab */}
-        <TabsContent value="profile" className="space-y-6 animate-fade-in">
-          <Card className="p-6 bg-gradient-hero border-0">
-            <div className="flex items-start justify-between mb-4">
-              <div className="flex items-center gap-4">
-                <Dialog open={showAvatarDialog} onOpenChange={setShowAvatarDialog}>
-                  <DialogTrigger asChild>
-                    <button className="relative group">
-                      <Avatar className="w-20 h-20 cursor-pointer ring-2 ring-primary/20 group-hover:ring-primary transition-all">
-                        <AvatarFallback className="text-3xl font-bold text-white" style={{
-                        backgroundColor: profile?.avatar_url || "#9b87f5"
-                      }}>
-                          {displayName ? displayName[0].toUpperCase() : "E"}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
-                        <Edit className="w-5 h-5 text-white" />
-                      </div>
-                    </button>
-                  </DialogTrigger>
-                  <DialogContent>
-                    <DialogHeader>
-                      <DialogTitle>Choose Your Avatar</DialogTitle>
-                      <DialogDescription>
-                        Select a color for your profile avatar
-                      </DialogDescription>
-                    </DialogHeader>
-                    <div className="space-y-6 py-4">
-                      {/* Preview */}
-                      <div className="flex justify-center">
-                        <Avatar className="w-24 h-24 ring-2 ring-primary/20">
-                          <AvatarFallback className="text-4xl font-bold text-white" style={{
-                          backgroundColor: selectedAvatar || "#9b87f5"
-                        }}>
-                            {displayName ? displayName[0].toUpperCase() : "E"}
-                          </AvatarFallback>
-                        </Avatar>
-                      </div>
-                      {/* Avatar Selection */}
-                      <div>
-                        <Label className="mb-3 block">Select Color</Label>
-                        <div className="grid grid-cols-4 gap-3">
-                          {PRESET_AVATARS.map(avatar => <button key={avatar.id} onClick={() => setSelectedAvatar(avatar.color)} className={`relative w-full aspect-square rounded-lg transition-all hover:scale-105 ${selectedAvatar === avatar.color ? "ring-2 ring-primary ring-offset-2" : "ring-1 ring-border"}`} style={{
-                          backgroundColor: avatar.color
-                        }} title={avatar.alt} aria-label={avatar.alt}>
-                              <span className="text-2xl text-white font-bold">
-                                {displayName ? displayName[0].toUpperCase() : "E"}
-                              </span>
-                            </button>)}
-                        </div>
-                      </div>
-                      <Button onClick={() => updateAvatarMutation.mutate(selectedAvatar)} disabled={updateAvatarMutation.isPending} className="w-full">
-                        Save Avatar
-                      </Button>
-                    </div>
-                  </DialogContent>
-                </Dialog>
-                <div>
-                  {isEditing ? <div className="flex gap-2">
-                      <Input value={displayName} onChange={e => setDisplayName(e.target.value)} className="w-48" />
-                      <Button size="sm" onClick={() => updateProfileMutation.mutate(displayName)}>
-                        Save
-                      </Button>
-                    </div> : <h2 className="text-2xl font-bold">{displayName || "Euphoria User"}</h2>}
-                  <p className="text-muted-foreground">{user?.email}</p>
-                  <div className="flex gap-2 mt-2">
-                    <Badge>Level {profile?.level || 1}</Badge>
-                    <Badge variant="outline">{profile?.coins || 0} coins</Badge>
-                  </div>
-                </div>
-              </div>
-              {!isEditing && <Button variant="outline" size="sm" onClick={() => setIsEditing(true)}>
-                  <Edit className="w-4 h-4 mr-2" />
-                  Edit
-                </Button>}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <ActivityGraph
+                lessonDates={lessonDates}
+                tradeDates={tradeDates}
+                gameDates={gameDates}
+              />
+              <PortfolioBreakdown
+                assets={(portfolioAssets || []) as any}
+                cashBalance={Number(portfolio?.cash_balance) || 0}
+              />
             </div>
-          </Card>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
-            <Card className="p-3 md:p-4">
-              <div className="flex items-center gap-2 mb-2">
-                <TrendingUp className="w-4 h-4 md:w-5 md:h-5 text-primary" />
-                <span className="text-xs md:text-sm text-muted-foreground">Portfolio Value</span>
-              </div>
-              <p className="text-xl md:text-2xl font-bold">
-                {formatDollar(Number(portfolio?.total_value) || 0, 2)}
-              </p>
-              <p className="text-xs md:text-sm text-muted-foreground mt-1">
-                {portfolioReturn >= 0 ? "+" : ""}{portfolioReturn.toFixed(2)}% return
-              </p>
-            </Card>
+            <BadgeShowcaseRow
+              badges={badges}
+              onViewAll={() => setActiveTab("achievements")}
+            />
 
-            <Card className="p-3 md:p-4">
-              <div className="flex items-center gap-2 mb-2">
-                <Target className="w-4 h-4 md:w-5 md:h-5 text-primary" />
-                <span className="text-xs md:text-sm text-muted-foreground">Current Streak</span>
-              </div>
-              <p className="text-xl md:text-2xl font-bold">{streak?.current_streak || 0} days</p>
-              <p className="text-xs md:text-sm text-muted-foreground mt-1">
-                Longest: {streak?.longest_streak || 0} days
-              </p>
-            </Card>
+            <RecentActivity items={recentItems} />
           </div>
-        </TabsContent>
+        )}
 
-        {/* Settings Tab */}
-        <TabsContent value="settings" className="space-y-6 animate-fade-in">
-          <Card className="p-6">
-            <div className="flex items-center gap-3 mb-4">
-              <Palette className="w-5 h-5 text-primary" />
-              <h2 className="text-xl font-bold">Appearance</h2>
-            </div>
-            <div className="space-y-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="font-semibold">Dark Mode</p>
-                  <p className="text-sm text-muted-foreground">Toggle between light and dark theme</p>
-                </div>
-                <Switch checked={darkMode} onCheckedChange={toggleDarkMode} />
-              </div>
+        {activeTab === "settings" && (
+          <SettingsTab
+            userId={user?.id || ""}
+            onboarding={onboarding}
+            placementLesson={placementLesson}
+            refetchOnboarding={refetchOnboarding}
+          />
+        )}
 
-              <div>
-                <Label htmlFor="primaryColor">Primary Color</Label>
-                <div className="flex items-center gap-4 mt-2">
-                  <Input id="primaryColor" type="color" value={primaryColor} onChange={e => applyThemeColor(e.target.value)} className="w-20 h-12 cursor-pointer" />
-                  <div className="flex-1">
-                    <p className="text-sm text-muted-foreground">
-                      Choose your preferred accent color for buttons, links, and highlights
-                    </p>
-                  </div>
-                </div>
-                <div className="flex gap-2 mt-3">
-                  <button onClick={() => applyThemeColor("#9b87f5")} className="w-8 h-8 rounded-full border-2 border-border" style={{
-                  backgroundColor: "#9b87f5"
-                }} title="Purple (Default)" />
-                  <button onClick={() => applyThemeColor("#0EA5E9")} className="w-8 h-8 rounded-full border-2 border-border" style={{
-                  backgroundColor: "#0EA5E9"
-                }} title="Blue" />
-                  <button onClick={() => applyThemeColor("#10B981")} className="w-8 h-8 rounded-full border-2 border-border" style={{
-                  backgroundColor: "#10B981"
-                }} title="Green" />
-                  <button onClick={() => applyThemeColor("#F59E0B")} className="w-8 h-8 rounded-full border-2 border-border" style={{
-                  backgroundColor: "#F59E0B"
-                }} title="Orange" />
-                  <button onClick={() => applyThemeColor("#EF4444")} className="w-8 h-8 rounded-full border-2 border-border" style={{
-                  backgroundColor: "#EF4444"
-                }} title="Red" />
-                </div>
-              </div>
-            </div>
-          </Card>
-
-          <Card className="p-6">
-            <div className="flex items-center gap-3 mb-4">
-              <Bell className="w-5 h-5 text-primary" />
-              <h2 className="text-xl font-bold">Notifications</h2>
-            </div>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="font-semibold">Enable Notifications</p>
-                  <p className="text-sm text-muted-foreground">Receive updates about lessons, games, and achievements</p>
-                </div>
-                <Switch checked={notificationsEnabled} onCheckedChange={checked => {
-                setNotificationsEnabled(checked);
-                toast.success(checked ? "Notifications enabled" : "Notifications disabled");
-              }} />
-              </div>
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="font-semibold">Sound Effects</p>
-                  <p className="text-sm text-muted-foreground">Play sounds for interactions, correct answers, and rewards</p>
-                </div>
-                <Switch checked={soundOn} onCheckedChange={checked => {
-                  setSoundOn(checked);
-                  setSoundEnabled(checked);
-                  if (checked) playClick();
-                  toast.success(checked ? "Sound effects enabled" : "Sound effects muted");
-                }} />
-              </div>
-            </div>
-          </Card>
-
-          
-
-          <Card className="p-6">
-            <div className="flex items-center gap-3 mb-4">
-              <Brain className="w-5 h-5 text-primary" />
-              <h2 className="text-xl font-bold">Learning Placement</h2>
-            </div>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between p-4 border border-border rounded-lg">
-                <div>
-                  <p className="font-semibold">Current Placement: Lesson {placementLesson}</p>
-                  <p className="text-sm text-muted-foreground">
-                    Score: {onboarding?.quiz_score || 0}/20 • Level: {onboarding?.investment_level || "beginner"}
-                  </p>
-                </div>
-                <Button variant="outline" size="sm" onClick={() => setShowRetakeWarning(true)}>
-                  <BookOpen className="w-4 h-4 mr-2" />
-                  Retake Quiz
-                </Button>
-              </div>
-              <p className="text-xs text-muted-foreground">
-                Retake the placement quiz to improve your score and unlock more lessons (max: Lesson 25).
-              </p>
-            </div>
-          </Card>
-
-          <Card className="p-6">
-            <div className="flex items-center gap-3 mb-4">
-              <SettingsIcon className="w-5 h-5 text-primary" />
-              <h2 className="text-xl font-bold">Account Management</h2>
-            </div>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between p-4 border border-border rounded-lg">
-                <div>
-                  <p className="font-semibold">Reset Personalization</p>
-                  <p className="text-sm text-muted-foreground">Restore color theme, avatar, and display name to defaults</p>
-                </div>
-                <Button variant="outline" size="sm" onClick={() => setShowResetDialog(true)}>
-                  <RotateCcw className="w-4 h-4 mr-2" />
-                  Reset
-                </Button>
-              </div>
-            </div>
-          </Card>
-
-          {/* Retake Quiz Warning Dialog */}
-          <AlertDialog open={showRetakeWarning} onOpenChange={setShowRetakeWarning}>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle className="flex items-center gap-2">
-                  <Brain className="w-5 h-5 text-amber-500" />
-                  Retake Placement Quiz?
-                </AlertDialogTitle>
-                <AlertDialogDescription className="space-y-3">
-                  <p>
-                    Your placement quiz score determines which lessons are unlocked for you.
-                  </p>
-                  <div className="p-3 bg-amber-500/10 border border-amber-500/20 rounded-lg">
-                    <p className="text-amber-600 dark:text-amber-400 font-medium text-sm">
-                      Warning: Your level can go <strong>down</strong> as well as up!
-                    </p>
-                    <p className="text-amber-600/80 dark:text-amber-400/80 text-sm mt-1">
-                      If you score lower than before, you may have fewer lessons unlocked than you currently do.
-                    </p>
-                  </div>
-                  <p className="text-sm">
-                    Current placement: <strong>Lesson {placementLesson}</strong> • Score: <strong>{onboarding?.quiz_score || 0}/20</strong>
-                  </p>
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={() => {
-                setShowRetakeWarning(false);
-                setShowRetakeQuiz(true);
-              }} className="bg-amber-500 hover:bg-amber-600 text-white">
-                  I Understand, Continue
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-
-          {/* Retake Quiz Dialog */}
-          <Dialog open={showRetakeQuiz} onOpenChange={setShowRetakeQuiz}>
-            <DialogContent className="max-w-4xl h-[90vh] p-0 overflow-hidden">
-              <Onboarding isRetake={true} onComplete={() => {
-              setShowRetakeQuiz(false);
-              refetchOnboarding();
-              queryClient.invalidateQueries({
-                queryKey: ["lessons"]
-              });
-            }} />
-            </DialogContent>
-          </Dialog>
-
-          <Card className="p-6">
-            <div className="flex items-center gap-3 mb-4">
-              <Lock className="w-5 h-5 text-primary" />
-              <h2 className="text-xl font-bold">Security</h2>
-            </div>
-            <div className="space-y-4">
-              <Button variant="outline" onClick={async () => {
-              try {
-                await supabase.auth.signOut();
-                toast.success("Signed out successfully");
-                window.location.href = "/auth";
-              } catch (error) {
-                toast.error("Failed to sign out");
-              }
-            }} className="w-full">
-                Sign Out
-              </Button>
-            </div>
-          </Card>
-
-          <AlertDialog open={showResetDialog} onOpenChange={setShowResetDialog}>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Reset Personalization Settings?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  This will restore your color theme, profile picture, and display name to their original default values. This action cannot be undone.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={handleResetPersonalization}>
-                  Reset to Defaults
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-        </TabsContent>
-
-      </Tabs>
-    </div>;
+        {activeTab === "achievements" && (
+          <AchievementsTab />
+        )}
+      </motion.div>
+    </div>
+  );
 };
+
 export default Profile;
