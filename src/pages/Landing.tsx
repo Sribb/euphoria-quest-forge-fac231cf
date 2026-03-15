@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ChevronDown, ArrowRight, Star } from "lucide-react";
+import { ChevronDown, ArrowRight, Star, ChevronLeft, ChevronRight } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { FeatureShowcase } from "@/features/landing/components/FeatureShowcase";
