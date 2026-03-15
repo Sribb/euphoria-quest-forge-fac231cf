@@ -624,28 +624,35 @@ export const TrendMasterGame = ({ onClose }: TrendMasterGameProps) => {
               })}
             </div>
 
-            {/* Feedback Section */}
+            {/* Wrong Attempt Feedback */}
+            {wrongAttempts.length > 0 && !showFeedback && (
+              <Card className="p-6 animate-fade-in border-2 bg-gradient-to-br from-destructive/10 to-destructive/5 border-destructive/30">
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 rounded-full flex items-center justify-center bg-destructive/20 text-destructive">
+                    <Trophy className="w-6 h-6" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-bold text-xl mb-2">Not Quite Right</h3>
+                    <p className="text-muted-foreground leading-relaxed">
+                      {wrongAttempts.length === 1
+                        ? `"${wrongAttempts[0]}" isn't the pattern here. Look more carefully at the price action — study the highs, lows, and overall direction. Try again!`
+                        : `You've eliminated ${wrongAttempts.length} options. Focus on the remaining choices and look at the chart's key features.`}
+                    </p>
+                  </div>
+                </div>
+              </Card>
+            )}
+
+            {/* Correct Answer Feedback */}
             {showFeedback && (
-              <Card className={`p-6 animate-fade-in border-2 ${
-                selectedAnswer === scenario.correctAnswer 
-                  ? "bg-gradient-to-br from-green-500/10 to-teal-500/10 border-green-500/30" 
-                  : "bg-gradient-to-br from-destructive/10 to-destructive/5 border-destructive/30"
-              }`}>
+              <Card className="p-6 animate-fade-in border-2 bg-gradient-to-br from-green-500/10 to-teal-500/10 border-green-500/30">
                 <div className="flex items-start gap-4 mb-4">
-                  <div className={`w-12 h-12 rounded-full flex items-center justify-center ${
-                    selectedAnswer === scenario.correctAnswer 
-                      ? "bg-green-500/20 text-green-400" 
-                      : "bg-destructive/20 text-destructive"
-                  }`}>
-                    {selectedAnswer === scenario.correctAnswer ? (
-                      <Award className="w-6 h-6" />
-                    ) : (
-                      <Trophy className="w-6 h-6" />
-                    )}
+                  <div className="w-12 h-12 rounded-full flex items-center justify-center bg-green-500/20 text-green-400">
+                    <Award className="w-6 h-6" />
                   </div>
                   <div className="flex-1">
                     <h3 className="font-bold text-xl mb-2">
-                      {selectedAnswer === scenario.correctAnswer ? "Correct!" : "Not Quite Right"}
+                      {wrongAttempts.length === 0 ? "Correct!" : "You Got It!"}
                     </h3>
                     <p className="text-muted-foreground leading-relaxed">{scenario.explanation}</p>
                   </div>
@@ -663,6 +670,7 @@ export const TrendMasterGame = ({ onClose }: TrendMasterGameProps) => {
                   )}
                 </Button>
               </Card>
+            )}
             )}
           </div>
         </div>
