@@ -31,7 +31,7 @@ type TabId = (typeof TABS)[number]["id"];
 const Profile = ({ onNavigate }: ProfileProps) => {
   const { user } = useAuth();
   const { onboarding, placementLesson, refetch: refetchOnboarding } = useOnboarding();
-  const { badges } = useBadgeProgress();
+  
   const [activeTab, setActiveTab] = useState<TabId>("profile");
   const tabRefs = useRef<Record<string, HTMLButtonElement | null>>({});
   const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0 });
