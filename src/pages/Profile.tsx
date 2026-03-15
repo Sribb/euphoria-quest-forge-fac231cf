@@ -281,10 +281,9 @@ const Profile = ({
       </div>
 
       <Tabs defaultValue="profile" className="w-full">
-        <TabsList className="grid w-full grid-cols-3 mb-4 md:mb-6">
+        <TabsList className="grid w-full grid-cols-2 mb-4 md:mb-6">
           <TabsTrigger value="profile" className="text-xs md:text-sm">Profile</TabsTrigger>
           <TabsTrigger value="settings" className="text-xs md:text-sm">Settings</TabsTrigger>
-          <TabsTrigger value="achievements" className="text-xs md:text-sm">Achievements</TabsTrigger>
         </TabsList>
 
         {/* Profile Tab */}
@@ -603,32 +602,6 @@ const Profile = ({
           </AlertDialog>
         </TabsContent>
 
-        {/* Achievements Tab */}
-        <TabsContent value="achievements" className="space-y-6 animate-fade-in">
-          <Card className="p-6">
-            <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
-              <Award className="w-5 h-5" />
-              Your Achievements
-            </h3>
-            {userAchievements && userAchievements.length > 0 ? <div className="grid grid-cols-2 gap-3">
-                {userAchievements.map(ua => {
-              const achievement = ua.achievements as any;
-              return <div key={ua.id} className="p-4 bg-gradient-hero rounded-lg border border-primary/20">
-                      <div className="text-3xl mb-2">{achievement.icon}</div>
-                      <p className="font-bold text-sm">{achievement.title}</p>
-                      <p className="text-xs text-muted-foreground mt-1">
-                        {achievement.description}
-                      </p>
-                      <p className="text-xs text-muted-foreground mt-2">
-                        Earned {new Date(ua.earned_at).toLocaleDateString()}
-                      </p>
-                    </div>;
-            })}
-              </div> : <p className="text-center text-muted-foreground py-12">
-                Complete games and lessons to earn achievements!
-              </p>}
-          </Card>
-        </TabsContent>
       </Tabs>
     </div>;
 };
