@@ -2,6 +2,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Slider } from "@/components/ui/slider";
 import { playSnap } from "@/lib/soundEffects";
+import { stripEmoji } from "@/lib/stripEmoji";
 
 interface SliderConfig {
   id: string;
