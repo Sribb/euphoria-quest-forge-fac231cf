@@ -132,9 +132,9 @@ const Rewards = ({ onNavigate }: RewardsProps) => {
         </h3>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           {[
-            { label: "Correct Answer", xp: `+${XP_PER_CORRECT}`, emoji: "✅", desc: "Per question" },
-            { label: "Lesson Complete", xp: `+${XP_LESSON_COMPLETE}`, emoji: "📘", desc: "Finish any lesson" },
-            { label: "Perfect Lesson", xp: `+${XP_PERFECT_BONUS}`, emoji: "⭐", desc: "Zero mistakes" },
+            { label: "Correct Answer", xp: `+${XP_PER_CORRECT}`, desc: "Per question" },
+            { label: "Lesson Complete", xp: `+${XP_LESSON_COMPLETE}`, desc: "Finish any lesson" },
+            { label: "Perfect Lesson", xp: `+${XP_PERFECT_BONUS}`, desc: "Zero mistakes" },
           ].map(item => (
             <div key={item.label} className="p-3 rounded-2xl bg-muted/30 border border-border/50 text-center">
               <span className="text-2xl">{item.emoji}</span>
