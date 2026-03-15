@@ -70,7 +70,7 @@ export const FillInBlank = ({ sentence, options, correctIndex, explanation, onWr
             isCorrect ? "bg-primary/5 border border-primary/20" : "bg-destructive/5 border border-destructive/20"
           }`}
         >
-          <span className="font-bold">{isCorrect ? "🎯 Perfect!" : "💡 The answer is: " + options[correctIndex]}</span>
+          <span className="font-bold">{isCorrect ? "Perfect!" : "The answer is: " + options[correctIndex]}</span>
           <span className="ml-2 text-muted-foreground">{explanation}</span>
         </motion.div>
       )}

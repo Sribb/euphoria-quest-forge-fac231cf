@@ -180,7 +180,7 @@ function renderScreen(
                   transition={{ delay: 0.15 * i }}
                   className="flex items-center gap-3 p-3 rounded-xl bg-muted/40 border border-border"
                 >
-                  <span className="text-xl">{item.emoji}</span>
+                  <span className="text-foreground font-medium">{item.text}</span>
                   <span className="text-foreground font-medium">{item.text}</span>
                 </motion.div>
               ))}

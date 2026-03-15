@@ -49,7 +49,7 @@ export const SliderSimulator = ({
   return (
     <div className="p-5 rounded-2xl bg-muted/30 border border-border space-y-5">
       <div>
-        <h3 className="font-bold text-foreground text-lg">{title}</h3>
+        <h3 className="font-bold text-foreground text-lg">{stripEmoji(title)}</h3>
         <p className="text-sm text-muted-foreground mt-1">{description}</p>
       </div>
 

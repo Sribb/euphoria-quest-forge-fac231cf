@@ -25,7 +25,7 @@ export const RevealInsight = ({ setup, reveal, emoji, principle, visual }: Revea
     <div className="space-y-5">
       {/* Setup */}
       <div className="p-5 rounded-2xl bg-muted/40 border border-border">
-        {emoji && <span className="text-4xl block mb-2">{emoji}</span>}
+        {/* emoji hidden */}
         <p className="text-lg text-foreground font-medium leading-relaxed">{setup}</p>
       </div>
 
