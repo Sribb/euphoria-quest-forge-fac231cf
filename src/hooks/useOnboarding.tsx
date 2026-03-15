@@ -76,10 +76,11 @@ export const useOnboarding = () => {
       }
 
       // Mark lessons up to placement as viewable by creating progress records
-      // This ensures the Learn page knows which lessons to unlock
+      // Placement skip only applies to the 'investing' pathway
       const { data: lessons } = await supabase
         .from("lessons")
-        .select("id, order_index")
+        .select("id, order_index, pathway")
+        .eq("pathway", "investing")
         .lte("order_index", placementLesson)
         .order("order_index");
 
