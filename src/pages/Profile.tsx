@@ -15,9 +15,7 @@ import { StatsRow } from "@/features/profile/components/StatsRow";
 import { ActivityGraph } from "@/features/profile/components/ActivityGraph";
 import { RecentActivity } from "@/features/profile/components/RecentActivity";
 import { PortfolioBreakdown } from "@/features/profile/components/PortfolioBreakdown";
-import { BadgeShowcaseRow } from "@/features/profile/components/BadgeShowcaseRow";
 import { SettingsTab } from "@/features/profile/components/SettingsTab";
-import { AchievementsTab } from "@/features/profile/components/AchievementsTab";
 
 interface ProfileProps {
   onNavigate: (tab: string) => void;
