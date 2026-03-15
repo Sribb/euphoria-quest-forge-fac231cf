@@ -45,7 +45,11 @@ interface MessageRequest {
   sender?: { display_name: string; avatar_url: string | null };
 }
 
-export const IMessageChat = () => {
+interface IMessageChatProps {
+  initialConversationId?: string | null;
+}
+
+export const IMessageChat = ({ initialConversationId }: IMessageChatProps = {}) => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const isMobile = useIsMobile();
