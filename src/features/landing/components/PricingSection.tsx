@@ -25,6 +25,7 @@ interface PricingTier {
   price: string;
   annualPrice?: string;
   period: string;
+  annualPeriod?: string;
   originalPrice?: string;
   tagline: string;
   description: string;
@@ -63,6 +64,7 @@ const tiers: PricingTier[] = [
     price: "$9.99",
     annualPrice: "$99.99",
     period: "/mo",
+    annualPeriod: "/yr",
     originalPrice: "$12.99",
     tagline: "The fastest path to financial confidence",
     description: "Everything you need to go from beginner to confident investor.",
@@ -229,13 +231,15 @@ export const PricingSection = () => {
                 <span className="font-display text-3xl font-medium tracking-tight">
                   {billingCycle === "annual" && tier.annualPrice ? tier.annualPrice : tier.price}
                 </span>
-                {tier.period && <span className="text-sm text-muted-foreground">{tier.period}</span>}
+                {tier.period && (
+                  <span className="text-sm text-muted-foreground">
+                    {billingCycle === "annual" && tier.annualPeriod ? tier.annualPeriod : tier.period}
+                  </span>
+                )}
               </div>
-              {tier.annualPrice && (
+              {tier.annualPrice && billingCycle === "monthly" && (
                 <p className="text-[11px] text-muted-foreground mb-1">
-                  {billingCycle === "annual"
-                    ? `$${(parseFloat(tier.annualPrice.replace("$", "")) * 12).toFixed(2)}/year`
-                    : `$${(parseFloat(tier.price.replace("$", "")) * 12).toFixed(2)}/year`}
+                  or $99.99/year (save 17%)
                 </p>
               )}
 
