@@ -176,46 +176,6 @@ const Community = ({ onNavigate }: CommunityProps) => {
     },
   });
 
-  // Send DM
-  const sendDmMutation = useMutation({
-    mutationFn: async () => {
-      if (!dmMessage.trim() || !activeConversation) return;
-      const { error } = await supabase.from("direct_messages").insert({
-        sender_id: user?.id!,
-        receiver_id: activeConversation,
-        content: dmMessage.trim(),
-      });
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      setDmMessage("");
-      queryClient.invalidateQueries({ queryKey: ["dm-messages"] });
-      queryClient.invalidateQueries({ queryKey: ["dm-conversations"] });
-    },
-    onError: () => toast.error("Failed to send message"),
-  });
-
-  // Realtime subscriptions
-  useEffect(() => {
-    if (!user?.id) return;
-
-    const dmChannel = supabase
-      .channel("dm-realtime")
-      .on("postgres_changes", { event: "INSERT", schema: "public", table: "direct_messages" }, () => {
-        queryClient.invalidateQueries({ queryKey: ["dm-messages"] });
-        queryClient.invalidateQueries({ queryKey: ["dm-conversations"] });
-      })
-      .subscribe();
-
-    return () => { supabase.removeChannel(dmChannel); };
-  }, [user?.id, queryClient]);
-
-  // Auto-scroll messages
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [activeMessages]);
-
-  const activePartner = dmConversations?.find((c) => c.partnerId === activeConversation);
 
   return (
     <div className="space-y-4 pt-2 pb-20">
