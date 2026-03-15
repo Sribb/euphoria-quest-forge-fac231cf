@@ -59,7 +59,7 @@ const Learn = ({ onNavigate, selectedLesson, onLessonSelect }: LearnProps) => {
       // Group lessons by pathway for proper unlock logic
       const lessonsByPathway: Record<string, typeof lessonsData> = {};
       lessonsData.forEach(l => {
-        const pw = (l as any).pathway || 'default';
+        const pw = l.pathway || 'default';
         if (!lessonsByPathway[pw]) lessonsByPathway[pw] = [];
         lessonsByPathway[pw].push(l);
       });
@@ -71,10 +71,13 @@ const Learn = ({ onNavigate, selectedLesson, onLessonSelect }: LearnProps) => {
       return lessonsData.map((lesson) => {
         const progress = progressData?.find((p) => p.lesson_id === lesson.id);
         const isActuallyCompleted = progress?.completed || false;
-        const isSkippedByPlacement = lesson.order_index < placementLesson && !isActuallyCompleted;
+        
+        // Placement skip only applies to the 'investing' pathway
+        const isInvestingPathway = lesson.pathway === 'investing';
+        const isSkippedByPlacement = isInvestingPathway && lesson.order_index < placementLesson && !isActuallyCompleted;
         const isCompleted = isActuallyCompleted || isSkippedByPlacement;
         
-        const pw = (lesson as any).pathway || 'default';
+        const pw = lesson.pathway || 'default';
         const pathwayGroup = lessonsByPathway[pw] || [];
         const indexInPathway = pathwayGroup.findIndex(l => l.id === lesson.id);
         const previousInPathway = indexInPathway > 0 ? pathwayGroup[indexInPathway - 1] : null;
@@ -82,7 +85,8 @@ const Learn = ({ onNavigate, selectedLesson, onLessonSelect }: LearnProps) => {
           ? progressData?.find((p) => p.lesson_id === previousInPathway.id)
           : null;
         
-        const isUnlockedByPlacement = lesson.order_index <= placementLesson;
+        // Placement unlock only applies to investing pathway
+        const isUnlockedByPlacement = isInvestingPathway && lesson.order_index <= placementLesson;
         const isUnlockedByProgress = previousProgress?.completed || false;
         const isFirstInPathway = indexInPathway === 0;
         const isUnlocked = isFirstInPathway || isUnlockedByPlacement || isUnlockedByProgress || isCompleted;
@@ -137,7 +141,7 @@ const Learn = ({ onNavigate, selectedLesson, onLessonSelect }: LearnProps) => {
   }
 
   if (selectedPathway) {
-    const filtered = lessons.filter(l => (l as any).pathway === selectedPathway);
+    const filtered = lessons.filter(l => l.pathway === selectedPathway);
     const completedCount = filtered.filter(l => l.completed).length;
     const meta = PATHWAY_META[selectedPathway] || { title: selectedPathway, color: "" };
 
