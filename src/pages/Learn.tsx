@@ -59,7 +59,7 @@ const Learn = ({ onNavigate, selectedLesson, onLessonSelect }: LearnProps) => {
       // Group lessons by pathway for proper unlock logic
       const lessonsByPathway: Record<string, typeof lessonsData> = {};
       lessonsData.forEach(l => {
-        const pw = (l as any).pathway || 'default';
+        const pw = l.pathway || 'default';
         if (!lessonsByPathway[pw]) lessonsByPathway[pw] = [];
         lessonsByPathway[pw].push(l);
       });
