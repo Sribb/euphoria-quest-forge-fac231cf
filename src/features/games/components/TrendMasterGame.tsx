@@ -252,6 +252,7 @@ export const TrendMasterGame = ({ onClose }: TrendMasterGameProps) => {
       setSelectedAnswer(null);
       setShowFeedback(false);
       setShowHint(false);
+      setWrongAttempts([]);
     } else {
       setGameComplete(true);
     }
