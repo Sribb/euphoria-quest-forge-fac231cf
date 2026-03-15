@@ -351,10 +351,10 @@ export const IMessageChat = ({ initialConversationId }: IMessageChatProps = {}) 
     onError: () => toast.error("Failed to decline request"),
   });
 
-  // ── Send message ──
+  // ── Send message (with optional file) ──
   const sendMessageMutation = useMutation({
     mutationFn: async () => {
-      if (!dmMessage.trim() || !activeConversationId || !user?.id) return;
+      if ((!dmMessage.trim() && !pendingFile) || !activeConversationId || !user?.id) return;
       const activeConvo = conversations.find(c => c.id === activeConversationId);
       if (!activeConvo) throw new Error("Conversation not found");
 
@@ -362,20 +362,47 @@ export const IMessageChat = ({ initialConversationId }: IMessageChatProps = {}) 
         ? activeConvo.participant_two
         : activeConvo.participant_one;
 
+      let content = dmMessage.trim();
+
+      // Upload file if present
+      if (pendingFile) {
+        setIsUploading(true);
+        const ext = pendingFile.name.split(".").pop();
+        const path = `${user.id}/${Date.now()}-${pendingFile.name}`;
+        const { error: uploadErr } = await supabase.storage
+          .from("message-attachments")
+          .upload(path, pendingFile);
+        if (uploadErr) throw uploadErr;
+
+        const { data: urlData } = supabase.storage
+          .from("message-attachments")
+          .getPublicUrl(path);
+
+        const fileUrl = urlData.publicUrl;
+        const fileMeta = `[file:${pendingFile.name}](${fileUrl})`;
+        content = content ? `${content}\n${fileMeta}` : fileMeta;
+        setIsUploading(false);
+      }
+
+      if (!content) return;
+
       const { error } = await db.from("direct_messages").insert({
         sender_id: user.id,
         receiver_id: receiverId,
-        content: dmMessage.trim(),
+        content,
         conversation_id: activeConversationId,
       });
       if (error) throw error;
     },
     onSuccess: () => {
       setDmMessage("");
+      setPendingFile(null);
+      setPendingFilePreview(null);
       queryClient.invalidateQueries({ queryKey: ["conversation-messages"] });
       queryClient.invalidateQueries({ queryKey: ["conversations"] });
     },
     onError: () => {
+      setIsUploading(false);
       toast.error("Failed to send. Tap to retry.");
     },
   });
