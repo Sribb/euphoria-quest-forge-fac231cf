@@ -23,6 +23,7 @@ interface PricingTier {
   name: string;
   icon: React.ElementType;
   price: string;
+  annualPrice?: string;
   period: string;
   originalPrice?: string;
   tagline: string;
@@ -60,6 +61,7 @@ const tiers: PricingTier[] = [
     name: "Pro Student",
     icon: Zap,
     price: "$9.99",
+    annualPrice: "$7.99",
     period: "/mo",
     originalPrice: "$12.99",
     tagline: "The fastest path to financial confidence",
@@ -110,12 +112,12 @@ const stats = [
 
 export const PricingSection = () => {
   const navigate = useNavigate();
-  const [hoveredTier, setHoveredTier] = useState<number | null>(null);
+  const [billingCycle, setBillingCycle] = useState<"monthly" | "annual">("monthly");
 
   return (
     <section id="pricing" className="py-24 md:py-32 relative">
-      <div className="max-w-7xl mx-auto px-6 relative z-10">
-        {/* Header */}
+      <div className="max-w-6xl mx-auto px-6 relative z-10">
+        {/* Header — centered */}
         <motion.div
           className="text-center mb-6"
           variants={fadeUp}
@@ -123,15 +125,48 @@ export const PricingSection = () => {
           whileInView="show"
           viewport={{ once: true }}
         >
-          <p className="text-[11px] font-medium text-primary uppercase tracking-[0.15em] mb-4">
+          <p className="text-[11px] font-medium text-primary uppercase tracking-[0.18em] mb-4">
             Pricing
           </p>
-          <h2 className="font-heading text-4xl md:text-5xl font-bold tracking-tight mb-4 text-foreground">
+          <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-medium tracking-tight mb-4 text-foreground">
             Invest in yourself. Start free.
           </h2>
           <p className="text-muted-foreground text-base md:text-lg max-w-xl mx-auto">
             Join thousands of students building real financial skills — no textbooks, no risk, just results.
           </p>
+        </motion.div>
+
+        {/* Monthly / Annual toggle — Cluely-style */}
+        <motion.div
+          className="flex justify-center mb-6"
+          initial={{ opacity: 0, y: 8 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.15 }}
+        >
+          <div className="inline-flex items-center bg-muted/50 rounded-xl p-1 ring-1 ring-border/50">
+            <button
+              onClick={() => setBillingCycle("monthly")}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                billingCycle === "monthly"
+                  ? "bg-card text-foreground shadow-sm ring-1 ring-border/50"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              Monthly
+            </button>
+            <button
+              onClick={() => setBillingCycle("annual")}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                billingCycle === "annual"
+                  ? "bg-card text-foreground shadow-sm ring-1 ring-border/50"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              Annually
+              <span className="ml-1.5 text-[10px] text-primary font-medium">Save 20%</span>
+            </button>
+          </div>
         </motion.div>
 
         {/* Urgency banner */}
@@ -142,7 +177,7 @@ export const PricingSection = () => {
           viewport={{ once: true }}
           transition={{ delay: 0.2 }}
         >
-          <div className="inline-flex items-center gap-2 border border-white/[0.07] rounded-lg px-5 py-2">
+          <div className="inline-flex items-center gap-2 ring-1 ring-border/50 rounded-xl px-5 py-2.5 bg-card">
             <Clock className="w-3.5 h-3.5 text-primary" />
             <span className="text-xs font-medium text-muted-foreground">
               Early Access — Limited beta seats remaining for Spring 2026
@@ -150,9 +185,9 @@ export const PricingSection = () => {
           </div>
         </motion.div>
 
-        {/* Pricing Grid */}
+        {/* Pricing Grid — Cluely-style rounded-2xl cards with ring */}
         <motion.div
-          className="grid md:grid-cols-3 gap-5 items-stretch mb-20 max-w-5xl mx-auto py-6"
+          className="grid md:grid-cols-3 gap-5 items-stretch mb-20 max-w-5xl mx-auto"
           variants={stagger}
           initial="hidden"
           whileInView="show"
@@ -162,93 +197,81 @@ export const PricingSection = () => {
             <motion.div
               key={tier.name}
               variants={fadeUp}
-              onMouseEnter={() => setHoveredTier(i)}
-              onMouseLeave={() => setHoveredTier(null)}
-              className="relative"
+              className={`relative group rounded-2xl p-6 lg:p-7 flex flex-col bg-card ring-1 transition-all duration-300 ${
+                tier.highlighted
+                  ? "ring-primary/40 shadow-lg shadow-primary/5 scale-[1.02]"
+                  : "ring-border/50 hover:ring-border hover:shadow-md"
+              }`}
             >
-              <div
-                className={`relative h-full rounded-xl p-[1px] transition-all duration-500 ${
-                  tier.highlighted
-                    ? "bg-gradient-to-b from-primary via-primary/50 to-primary/20 shadow-[0_0_40px_-8px_hsl(263_70%_50%/0.4)]"
-                    : hoveredTier === i
-                    ? "bg-gradient-to-b from-white/[0.12] to-primary/20"
-                    : "bg-white/[0.07]"
-                }`}
-              >
-                {tier.badge && (
-                  <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 z-10">
-                    <div className="bg-primary text-primary-foreground text-[10px] font-medium uppercase tracking-wider px-4 py-1 rounded-lg">
-                      {tier.badge}
-                    </div>
-                  </div>
-                )}
-
-                <div
-                  className={`relative h-full rounded-xl p-6 lg:p-7 flex flex-col transition-all duration-500 bg-card ${
-                    hoveredTier === i ? "-translate-y-1" : ""
-                  }`}
-                >
-                  <div className="relative z-10 flex flex-col h-full">
-                    <div className="flex items-center gap-3 mb-4">
-                      <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${tier.highlighted ? "bg-primary/15" : "bg-muted/50"}`}>
-                        <tier.icon className={`w-4 h-4 ${tier.highlighted ? "text-primary" : "text-muted-foreground"}`} />
-                      </div>
-                      <h3 className="text-base font-medium text-foreground">{tier.name}</h3>
-                    </div>
-
-                    <p className="text-xs text-primary/80 font-medium mb-2">{tier.tagline}</p>
-
-                    <div className="flex items-baseline gap-1 mb-1">
-                      {tier.originalPrice && (
-                        <span className="text-sm text-muted-foreground line-through mr-1">{tier.originalPrice}</span>
-                      )}
-                      <span className="font-heading text-3xl font-bold tracking-tight">{tier.price}</span>
-                      {tier.period && <span className="text-sm text-muted-foreground">{tier.period}</span>}
-                    </div>
-
-                    {tier.trialNote && <p className="text-[11px] text-success font-medium mb-4">{tier.trialNote}</p>}
-                    {!tier.trialNote && <div className="mb-4" />}
-
-                    <p className="text-xs text-muted-foreground leading-relaxed mb-5">{tier.description}</p>
-
-                    <Button
-                      className={`w-full mb-6 font-medium rounded-lg transition-all duration-300 ${
-                        tier.highlighted
-                          ? "bg-primary hover:bg-primary/90 text-primary-foreground hover:shadow-[0_8px_30px_-6px_hsl(263_70%_50%/0.5)] hover:-translate-y-0.5"
-                          : ""
-                      }`}
-                      variant={tier.ctaVariant}
-                      size="sm"
-                      onClick={() => navigate("/auth?signup=true")}
-                    >
-                      {tier.cta}
-                      {tier.highlighted && <ArrowRight className="w-3.5 h-3.5 ml-1" />}
-                    </Button>
-
-                    <ul className="space-y-2.5 flex-1">
-                      {tier.features.map((f, j) => (
-                        <li key={j} className="flex items-start gap-2.5">
-                          {f.highlight ? (
-                            <Check className="w-3.5 h-3.5 flex-shrink-0 mt-0.5 text-primary" />
-                          ) : (
-                            <X className="w-3.5 h-3.5 flex-shrink-0 mt-0.5 text-muted-foreground/40" />
-                          )}
-                          <span className={`text-xs leading-relaxed ${f.highlight ? "text-foreground font-medium" : "text-muted-foreground"}`}>
-                            {f.text}
-                          </span>
-                        </li>
-                      ))}
-                    </ul>
+              {tier.badge && (
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10">
+                  <div className="bg-primary text-primary-foreground text-[10px] font-medium uppercase tracking-wider px-4 py-1 rounded-lg shadow-sm">
+                    {tier.badge}
                   </div>
                 </div>
+              )}
+
+              <div className="flex items-center gap-3 mb-4">
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+                  tier.highlighted ? "bg-primary/10" : "bg-muted/50"
+                }`}>
+                  <tier.icon className={`w-4.5 h-4.5 ${tier.highlighted ? "text-primary" : "text-muted-foreground"}`} />
+                </div>
+                <h3 className="text-base font-medium text-foreground">{tier.name}</h3>
               </div>
+
+              <p className="text-xs text-primary/80 font-medium mb-2">{tier.tagline}</p>
+
+              <div className="flex items-baseline gap-1 mb-1">
+                {tier.originalPrice && billingCycle === "monthly" && (
+                  <span className="text-sm text-muted-foreground line-through mr-1">{tier.originalPrice}</span>
+                )}
+                <span className="font-display text-3xl font-medium tracking-tight">
+                  {billingCycle === "annual" && tier.annualPrice ? tier.annualPrice : tier.price}
+                </span>
+                {tier.period && <span className="text-sm text-muted-foreground">{tier.period}</span>}
+              </div>
+
+              {tier.trialNote && <p className="text-[11px] text-success font-medium mb-4">{tier.trialNote}</p>}
+              {!tier.trialNote && <div className="mb-4" />}
+
+              <p className="text-xs text-muted-foreground leading-relaxed mb-5">{tier.description}</p>
+
+              <Button
+                className={`w-full mb-6 font-medium rounded-xl transition-all duration-300 ${
+                  tier.highlighted
+                    ? "bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm hover:shadow-md hover:shadow-primary/20"
+                    : ""
+                }`}
+                variant={tier.ctaVariant}
+                size="sm"
+                onClick={() => navigate("/auth?signup=true")}
+              >
+                {tier.cta}
+                {tier.highlighted && <ArrowRight className="w-3.5 h-3.5 ml-1" />}
+              </Button>
+
+              <ul className="space-y-2.5 flex-1">
+                {tier.features.map((f, j) => (
+                  <li key={j} className="flex items-start gap-2.5">
+                    {f.highlight ? (
+                      <Check className="w-3.5 h-3.5 flex-shrink-0 mt-0.5 text-primary" />
+                    ) : (
+                      <X className="w-3.5 h-3.5 flex-shrink-0 mt-0.5 text-muted-foreground/40" />
+                    )}
+                    <span className={`text-xs leading-relaxed ${f.highlight ? "text-foreground font-medium" : "text-muted-foreground"}`}>
+                      {f.text}
+                    </span>
+                  </li>
+                ))}
+              </ul>
             </motion.div>
           ))}
         </motion.div>
 
-        {/* Stats Bar — single card with vertical dividers */}
+        {/* Stats Bar — Cluely-style card with dividers */}
         <motion.div
-          className="bg-card border border-white/[0.07] rounded-xl mb-16"
+          className="bg-card ring-1 ring-border/50 rounded-2xl shadow-sm mb-16"
           variants={fadeUp}
           initial="hidden"
           whileInView="show"
@@ -259,10 +282,10 @@ export const PricingSection = () => {
               <div
                 key={i}
                 className={`text-center py-8 px-4 ${
-                  i < stats.length - 1 ? "border-r border-white/[0.07]" : ""
-                } ${i >= 2 ? "border-t md:border-t-0 border-white/[0.07]" : ""}`}
+                  i < stats.length - 1 ? "md:border-r border-border/50" : ""
+                } ${i >= 2 ? "border-t md:border-t-0 border-border/50" : ""}`}
               >
-                <p className="font-heading text-3xl md:text-4xl font-bold text-foreground">{s.value}</p>
+                <p className="font-display text-3xl md:text-4xl font-medium text-foreground">{s.value}</p>
                 <p className="text-[13px] text-muted-foreground mt-1">{s.label}</p>
               </div>
             ))}
@@ -277,12 +300,12 @@ export const PricingSection = () => {
           whileInView="show"
           viewport={{ once: true }}
         >
-          <p className="font-heading text-xl font-bold text-foreground mb-3">
+          <p className="font-display text-xl font-medium text-foreground mb-3 leading-relaxed">
             "Students using Euphoria scored{" "}
             <span className="text-primary">34% higher</span>{" "}
             on financial literacy assessments."
           </p>
-          <p className="text-xs text-[hsl(240_4%_32%)]">
+          <p className="text-xs text-muted-foreground">
             Based on pilot data from 200+ classrooms · Spring 2026
           </p>
         </motion.div>
