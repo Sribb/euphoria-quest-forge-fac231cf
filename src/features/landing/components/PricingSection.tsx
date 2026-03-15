@@ -222,7 +222,7 @@ export const PricingSection = () => {
 
               <p className="text-xs text-primary/80 font-medium mb-2">{tier.tagline}</p>
 
-              <div className="flex items-baseline gap-1 mb-1">
+              <div className="flex items-baseline gap-1 mb-0.5">
                 {tier.originalPrice && billingCycle === "monthly" && (
                   <span className="text-sm text-muted-foreground line-through mr-1">{tier.originalPrice}</span>
                 )}
@@ -231,6 +231,13 @@ export const PricingSection = () => {
                 </span>
                 {tier.period && <span className="text-sm text-muted-foreground">{tier.period}</span>}
               </div>
+              {tier.annualPrice && (
+                <p className="text-[11px] text-muted-foreground mb-1">
+                  {billingCycle === "annual"
+                    ? `$${(parseFloat(tier.annualPrice.replace("$", "")) * 12).toFixed(2)}/year`
+                    : `$${(parseFloat(tier.price.replace("$", "")) * 12).toFixed(2)}/year`}
+                </p>
+              )}
 
               {tier.trialNote && <p className="text-[11px] text-success font-medium mb-4">{tier.trialNote}</p>}
               {!tier.trialNote && <div className="mb-4" />}
