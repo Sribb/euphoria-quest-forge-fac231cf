@@ -132,11 +132,14 @@ const Landing = () => {
   ];
 
   const faqs = [
-    { q: "Is Euphoria actually free for students?", a: "Yes! Full access to all lessons, games, the AI market simulator, and portfolio tracking — completely free. No credit card required." },
-    { q: "How is this different from other apps?", a: "Euphoria teaches through simulation, not textbooks. Every lesson is a scenario where you make decisions and see consequences. It's Duolingo meets Robinhood." },
-    { q: "Can I use this in my classroom?", a: "Absolutely. The Educator plan lets you create classes with join codes, track individual progress, identify struggling learners, and export analytics." },
-    { q: "Is the trading simulation realistic?", a: "Our AI engine generates realistic price movements, news events, and market scenarios. You'll experience bull runs, crashes, and breaking news — without real money." },
-    { q: "What age group is this for?", a: "Designed for high school students (14+) through adult learners. The placement quiz adapts to your level." },
+    { q: "Is Euphoria actually free for students?", a: "Euphoria is free when accessed through your school or college. Individual users can sign up through an affordable subscription plan." },
+    { q: "How is this different from other apps?", a: "Euphoria is the only platform that combines Duolingo-style lessons, AI-powered market simulations, paper trading, and school-ready curriculum in one system. Other apps only offer one piece of the puzzle." },
+    { q: "Can I use this in my classroom?", a: "Absolutely. Euphoria integrates into your existing curriculum with customizable teaching plans. The educator hub lets you assign lessons, set daily tasks, track student progress, and manage your entire class." },
+    { q: "Is the trading simulation realistic?", a: "Yes. Our paper trading simulator uses real market data and AI-generated scenarios that mimic actual investing conditions, from bull runs to sudden crashes, so students practice in a realistic environment without risking real money." },
+    { q: "What age group is this for?", a: "Euphoria is built for Gen Z, primarily ages 15 to 25, but anyone looking to build foundational investing knowledge can benefit." },
+    { q: "Do I need any investing experience to start?", a: "None at all. Euphoria starts with the basics like compound interest, portfolio diversification, and risk management, then adapts to your level as you progress through bite-sized lessons." },
+    { q: "Does the AI give financial advice?", a: "No. Euphoria's AI analyzes your portfolio decisions, identifies patterns in your trading behavior, and provides general improvement suggestions to accelerate your learning. It does not give specific financial advice." },
+    { q: "Can I practice investing without losing real money?", a: "That's exactly what Euphoria is built for. Paper trading lets you buy and sell using real market data with zero financial risk, so you build confidence before ever investing real money." },
   ];
 
   const topRowTestimonials = [
