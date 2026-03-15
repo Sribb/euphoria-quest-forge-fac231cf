@@ -124,7 +124,10 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
       return lessonsData.map((lesson) => {
         const progress = progressData?.find((p) => p.lesson_id === lesson.id);
         const isActuallyCompleted = progress?.completed || false;
-        const isSkippedByPlacement = lesson.order_index < placementLesson && !isActuallyCompleted;
+        
+        // Placement skip only applies to the 'investing' pathway
+        const isInvestingPathway = (lesson as any).pathway === 'investing';
+        const isSkippedByPlacement = isInvestingPathway && lesson.order_index < placementLesson && !isActuallyCompleted;
         const isCompleted = isActuallyCompleted || isSkippedByPlacement;
 
         const pw = (lesson as any).pathway || "default";
@@ -135,7 +138,7 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
           ? progressData?.find((p) => p.lesson_id === previousInPathway.id)
           : null;
 
-        const isUnlockedByPlacement = lesson.order_index <= placementLesson;
+        const isUnlockedByPlacement = isInvestingPathway && lesson.order_index <= placementLesson;
         const isUnlockedByProgress = previousProgress?.completed || false;
         const isFirstInPathway = indexInPathway === 0;
         const isUnlocked = isFirstInPathway || isUnlockedByPlacement || isUnlockedByProgress || isCompleted;
