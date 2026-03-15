@@ -155,7 +155,7 @@ export const StandardLessonTemplate = ({ lesson, lessonTitle, lessonId, onComple
                     transition={{ delay: 0.2 + i * 0.15 }}
                     className="p-5 rounded-xl bg-muted/40 border"
                   >
-                    {card.icon && <span className="text-2xl mb-2 block">{card.icon}</span>}
+                    {/* icon intentionally hidden */}
                     <h3 className="font-bold text-foreground mb-1">{card.title}</h3>
                     <p className="text-sm text-muted-foreground">{card.description}</p>
                   </motion.div>
