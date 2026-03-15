@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { IMessageChat } from "@/features/community/components/IMessageChat";
+import { TwitterFeed } from "@/features/community/components/TwitterFeed";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,21 +8,18 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
-  MessageSquare, Heart, Send, Plus, Users, Image as ImageIcon,
-  Loader2, Smile, GraduationCap, Copy, Trash2, UserMinus
+  MessageSquare, Send, Plus, Users,
+  Loader2, GraduationCap, Copy, Trash2, UserMinus
 } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
 import { useEducatorRole } from "@/features/educator/hooks/useEducatorRole";
 import { useClassManagement } from "@/features/educator/hooks/useClassManagement";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { formatDistanceToNow } from "date-fns";
 
 interface CommunityProps {
   onNavigate: (tab: string) => void;
@@ -30,7 +28,6 @@ interface CommunityProps {
 const Community = ({ onNavigate }: CommunityProps) => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
-  const [newPostContent, setNewPostContent] = useState("");
   const [classCode, setClassCode] = useState("");
   const [newClassName, setNewClassName] = useState("");
   const [newClassDesc, setNewClassDesc] = useState("");
@@ -38,34 +35,6 @@ const Community = ({ onNavigate }: CommunityProps) => {
   const [showCreateClass, setShowCreateClass] = useState(false);
   const { hasEducatorAccess } = useEducatorRole();
   const { classes, isLoading: classesLoading, createClass, deleteClass, removeStudent } = useClassManagement();
-
-  // Fetch posts
-  const { data: posts, isLoading: postsLoading } = useQuery({
-    queryKey: ["community-posts"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("posts")
-        .select("*, profiles(display_name, avatar_url)")
-        .order("created_at", { ascending: false })
-        .limit(50);
-      if (error) throw error;
-      return data;
-    },
-  });
-
-  // Fetch user's likes
-  const { data: userLikes } = useQuery({
-    queryKey: ["user-likes", user?.id],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("likes")
-        .select("post_id")
-        .eq("user_id", user?.id!);
-      if (error) throw error;
-      return new Set(data.map((l) => l.post_id));
-    },
-    enabled: !!user?.id,
-  });
 
 
   // Fetch student's joined classes
@@ -141,42 +110,6 @@ const Community = ({ onNavigate }: CommunityProps) => {
     onError: () => toast.error("Failed to leave class"),
   });
 
-  // Create post
-  const createPostMutation = useMutation({
-    mutationFn: async () => {
-      if (!newPostContent.trim()) return;
-      const { error } = await supabase.from("posts").insert({
-        user_id: user?.id!,
-        content: newPostContent.trim(),
-        category: "general",
-      });
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      setNewPostContent("");
-      queryClient.invalidateQueries({ queryKey: ["community-posts"] });
-      toast.success("Post shared!");
-    },
-    onError: () => toast.error("Failed to create post"),
-  });
-
-  // Like/unlike
-  const toggleLikeMutation = useMutation({
-    mutationFn: async (postId: string) => {
-      const liked = userLikes?.has(postId);
-      if (liked) {
-        await supabase.from("likes").delete().eq("post_id", postId).eq("user_id", user?.id!);
-      } else {
-        await supabase.from("likes").insert({ post_id: postId, user_id: user?.id! });
-      }
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["user-likes"] });
-      queryClient.invalidateQueries({ queryKey: ["community-posts"] });
-    },
-  });
-
-
   return (
     <div className="space-y-4 pt-2 pb-20">
       <div className="flex items-center gap-3 animate-fade-in">
@@ -203,121 +136,8 @@ const Community = ({ onNavigate }: CommunityProps) => {
         </TabsList>
 
         {/* Feed Tab */}
-        <TabsContent value="feed" className="space-y-4">
-          {/* New Post */}
-          <Card className="p-4 border-border">
-            <div className="flex gap-3">
-              <Avatar className="w-10 h-10">
-                <AvatarFallback className="bg-primary/20 text-primary font-bold">
-                  {user?.email?.[0]?.toUpperCase() || "U"}
-                </AvatarFallback>
-              </Avatar>
-              <div className="flex-1 space-y-3">
-                <Input
-                  placeholder="Share a thought, insight, or question..."
-                  value={newPostContent}
-                  onChange={(e) => setNewPostContent(e.target.value)}
-                  className="bg-background/50 border-border"
-                  onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && createPostMutation.mutate()}
-                />
-                <div className="flex items-center justify-between">
-                  <div className="flex gap-2">
-                    <Button variant="ghost" size="sm" className="text-muted-foreground">
-                      <ImageIcon className="w-4 h-4" />
-                    </Button>
-                    <Button variant="ghost" size="sm" className="text-muted-foreground">
-                      <Smile className="w-4 h-4" />
-                    </Button>
-                  </div>
-                  <Button
-                    size="sm"
-                    onClick={() => createPostMutation.mutate()}
-                    disabled={!newPostContent.trim() || createPostMutation.isPending}
-                    className="bg-gradient-primary shadow-glow"
-                  >
-                    {createPostMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : "Post"}
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </Card>
-
-          {/* Posts */}
-          {postsLoading ? (
-            <div className="flex justify-center py-12">
-              <Loader2 className="w-8 h-8 animate-spin text-primary" />
-            </div>
-          ) : (
-            <AnimatePresence>
-              {posts?.map((post: any, i: number) => (
-                <motion.div
-                  key={post.id}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.05 }}
-                >
-                  <Card className="p-4 border-border hover:border-primary/30 transition-colors">
-                    <div className="flex gap-3">
-                      <Avatar className="w-10 h-10">
-                        <AvatarFallback
-                          className="font-bold text-white"
-                          style={{ backgroundColor: post.profiles?.avatar_url || "#9b87f5" }}
-                        >
-                          {post.profiles?.display_name?.[0]?.toUpperCase() || "U"}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className="font-semibold truncate">
-                            {post.profiles?.display_name || "Anonymous"}
-                          </span>
-                          <span className="text-xs text-muted-foreground">
-                            {formatDistanceToNow(new Date(post.created_at), { addSuffix: true })}
-                          </span>
-                          {post.category && post.category !== "general" && (
-                            <Badge variant="outline" className="text-[10px]">
-                              {post.category}
-                            </Badge>
-                          )}
-                        </div>
-                        <p className="text-sm leading-relaxed whitespace-pre-wrap">{post.content}</p>
-                        {post.image_url && (
-                          <img
-                            src={post.image_url}
-                            alt="Post"
-                            className="mt-3 rounded-lg max-h-64 object-cover w-full"
-                          />
-                        )}
-                        <div className="flex items-center gap-4 mt-3">
-                          <button
-                            onClick={() => toggleLikeMutation.mutate(post.id)}
-                            className={`flex items-center gap-1 text-sm transition-colors ${
-                              userLikes?.has(post.id) ? "text-destructive" : "text-muted-foreground hover:text-destructive"
-                            }`}
-                          >
-                            <Heart className={`w-4 h-4 ${userLikes?.has(post.id) ? "fill-current" : ""}`} />
-                            {post.likes_count || 0}
-                          </button>
-                          <button className="flex items-center gap-1 text-sm text-muted-foreground hover:text-primary transition-colors">
-                            <MessageSquare className="w-4 h-4" />
-                            {post.comments_count || 0}
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </Card>
-                </motion.div>
-              ))}
-            </AnimatePresence>
-          )}
-
-          {posts?.length === 0 && !postsLoading && (
-            <Card className="p-12 text-center border-border">
-              <MessageSquare className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
-              <h3 className="text-lg font-semibold mb-2">No posts yet</h3>
-              <p className="text-muted-foreground">Be the first to share something!</p>
-            </Card>
-          )}
+        <TabsContent value="feed" className="-mx-4 md:mx-0">
+          <TwitterFeed />
         </TabsContent>
 
         {/* DMs Tab */}
