@@ -351,14 +351,14 @@ const Auth = () => {
         }}
       />
 
-      {/* Subtle accent grid lines — low opacity so they don't look blocky */}
+      {/* Animated accent grid lines */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden" style={{ zIndex: 1 }}>
-        <div className="absolute top-[25%] left-0 w-full h-px bg-primary/[0.06] origin-left" style={{ animation: "drawX 3s ease-out 0.5s both" }} />
-        <div className="absolute top-[50%] left-0 w-full h-px bg-primary/[0.04] origin-left" style={{ animation: "drawX 3s ease-out 1s both" }} />
-        <div className="absolute top-[75%] left-0 w-full h-px bg-primary/[0.06] origin-left" style={{ animation: "drawX 3s ease-out 1.5s both" }} />
-        <div className="absolute left-[25%] top-0 w-px h-full bg-primary/[0.05] origin-top" style={{ animation: "drawY 3s ease-out 0.8s both" }} />
-        <div className="absolute left-[50%] top-0 w-px h-full bg-primary/[0.04] origin-top" style={{ animation: "drawY 3s ease-out 1.3s both" }} />
-        <div className="absolute left-[75%] top-0 w-px h-full bg-primary/[0.05] origin-top" style={{ animation: "drawY 3s ease-out 1.8s both" }} />
+        <div className="absolute top-[25%] left-0 w-full h-px bg-primary/[0.15] origin-left" style={{ animation: "drawX 3s ease-out 0.5s both" }} />
+        <div className="absolute top-[50%] left-0 w-full h-px bg-primary/[0.10] origin-left" style={{ animation: "drawX 3s ease-out 1s both" }} />
+        <div className="absolute top-[75%] left-0 w-full h-px bg-primary/[0.15] origin-left" style={{ animation: "drawX 3s ease-out 1.5s both" }} />
+        <div className="absolute left-[25%] top-0 w-px h-full bg-primary/[0.12] origin-top" style={{ animation: "drawY 3s ease-out 0.8s both" }} />
+        <div className="absolute left-[50%] top-0 w-px h-full bg-primary/[0.10] origin-top" style={{ animation: "drawY 3s ease-out 1.3s both" }} />
+        <div className="absolute left-[75%] top-0 w-px h-full bg-primary/[0.12] origin-top" style={{ animation: "drawY 3s ease-out 1.8s both" }} />
       </div>
 
       {/* Particles */}
