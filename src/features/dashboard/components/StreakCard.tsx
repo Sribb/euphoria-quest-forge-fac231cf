@@ -143,7 +143,7 @@ export const StreakCard = () => {
           <div className="w-px h-8 bg-border/30" />
           <div className="flex-1 text-center">
             <p className="text-lg font-bold text-foreground">
-              {streak.checkedInToday ? "✅" : "⏳"}
+              {streak.checkedInToday ? "Done" : "Pending"}
             </p>
             <p className="text-[10px] text-muted-foreground font-medium">Today</p>
           </div>
