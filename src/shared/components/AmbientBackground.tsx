@@ -24,16 +24,6 @@ export const AmbientBackground = () => {
     resize();
     window.addEventListener("resize", resize);
 
-    // Floating orbs — large soft glows
-    const orbs = Array.from({ length: 4 }, (_, i) => ({
-      x: Math.random() * w,
-      y: Math.random() * h,
-      r: 180 + Math.random() * 220,
-      vx: (Math.random() - 0.5) * 0.15,
-      vy: (Math.random() - 0.5) * 0.12,
-      hue: i % 2 === 0 ? 263 : 280, // primary vs accent
-      alpha: 0.025 + Math.random() * 0.015,
-    }));
 
     // Micro particles — subtle dots
     const dots = Array.from({ length: 60 }, () => ({
@@ -47,25 +37,6 @@ export const AmbientBackground = () => {
 
     const draw = () => {
       ctx.clearRect(0, 0, w, h);
-
-      // Draw orbs
-      for (const o of orbs) {
-        o.x += o.vx;
-        o.y += o.vy;
-        if (o.x < -o.r) o.x = w + o.r;
-        if (o.x > w + o.r) o.x = -o.r;
-        if (o.y < -o.r) o.y = h + o.r;
-        if (o.y > h + o.r) o.y = -o.r;
-
-        const grad = ctx.createRadialGradient(o.x, o.y, 0, o.x, o.y, o.r);
-        grad.addColorStop(0, `hsla(${o.hue}, 70%, 50%, ${o.alpha})`);
-        grad.addColorStop(0.5, `hsla(${o.hue}, 70%, 50%, ${o.alpha * 0.4})`);
-        grad.addColorStop(1, `hsla(${o.hue}, 70%, 50%, 0)`);
-        ctx.fillStyle = grad;
-        ctx.beginPath();
-        ctx.arc(o.x, o.y, o.r, 0, Math.PI * 2);
-        ctx.fill();
-      }
 
       // Draw micro particles
       for (const d of dots) {
