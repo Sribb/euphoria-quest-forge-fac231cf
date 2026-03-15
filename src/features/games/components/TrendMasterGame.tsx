@@ -400,10 +400,10 @@ export const TrendMasterGame = ({ onClose }: TrendMasterGameProps) => {
   if (gameComplete) {
     const accuracy = Math.round((score / scenarios.length) * 100);
     const motivationalMessage = 
-      accuracy >= 90 ? "Outstanding! You're seeing the market like a pro! 🏆" :
-      accuracy >= 75 ? "Excellent work! You've got a solid grasp of chart patterns! 📈" :
-      accuracy >= 60 ? "Great progress! Keep practicing and you'll master these patterns! 💪" :
-      "Good start! Review the patterns and try again—you'll improve fast! 🚀";
+      accuracy >= 90 ? "Outstanding! You're seeing the market like a pro!" :
+      accuracy >= 75 ? "Excellent work! You've got a solid grasp of chart patterns!" :
+      accuracy >= 60 ? "Great progress! Keep practicing and you'll master these patterns!" :
+      "Good start! Review the patterns and try again — you'll improve fast!";
 
     return (
       <div className="fixed inset-0 bg-background z-50 overflow-y-auto">
