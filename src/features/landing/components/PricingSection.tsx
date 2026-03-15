@@ -61,7 +61,7 @@ const tiers: PricingTier[] = [
     name: "Pro Student",
     icon: Zap,
     price: "$9.99",
-    annualPrice: "$7.99",
+    annualPrice: "$99.99",
     period: "/mo",
     originalPrice: "$12.99",
     tagline: "The fastest path to financial confidence",
@@ -164,7 +164,7 @@ export const PricingSection = () => {
               }`}
             >
               Annually
-              <span className="ml-1.5 text-[10px] text-primary font-medium">Save 20%</span>
+              <span className="ml-1.5 text-[10px] text-primary font-medium">Save 17%</span>
             </button>
           </div>
         </motion.div>
