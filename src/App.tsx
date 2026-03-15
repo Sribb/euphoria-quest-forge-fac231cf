@@ -5,6 +5,8 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { ProtectedRoute } from "@/shared/components/ProtectedRoute";
+import { lazy, Suspense } from "react";
+const VerifyCertificate = lazy(() => import("./pages/VerifyCertificate"));
 import Landing from "./pages/Landing";
 import { SpiralDemo } from "./pages/SpiralDemo";
 import Index from "./pages/Index";
