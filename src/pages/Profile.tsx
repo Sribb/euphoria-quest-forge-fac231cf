@@ -281,10 +281,9 @@ const Profile = ({
       </div>
 
       <Tabs defaultValue="profile" className="w-full">
-        <TabsList className="grid w-full grid-cols-3 mb-4 md:mb-6">
+        <TabsList className="grid w-full grid-cols-2 mb-4 md:mb-6">
           <TabsTrigger value="profile" className="text-xs md:text-sm">Profile</TabsTrigger>
           <TabsTrigger value="settings" className="text-xs md:text-sm">Settings</TabsTrigger>
-          <TabsTrigger value="achievements" className="text-xs md:text-sm">Achievements</TabsTrigger>
         </TabsList>
 
         {/* Profile Tab */}
