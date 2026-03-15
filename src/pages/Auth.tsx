@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
@@ -6,13 +6,96 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
-import { Loader2, GraduationCap, BookOpen, ArrowLeft, School, Users, BookMarked, Check, X } from "lucide-react";
+import {
+  Loader2, GraduationCap, BookOpen, ArrowLeft, School, Users, BookMarked,
+  Check, X, Eye, EyeOff, Mail, Lock, ArrowRight,
+} from "lucide-react";
 import euphoriaLogo from "@/assets/euphoria-logo-button.png";
 import { z } from "zod";
 import { motion, AnimatePresence } from "framer-motion";
 
+// ── Particle Background ──────────────────────────────────────────────
+function ParticleCanvas() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const ctx = canvas?.getContext("2d");
+    if (!canvas || !ctx) return;
+
+    const setSize = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+    setSize();
+
+    type P = { x: number; y: number; v: number; o: number };
+    let ps: P[] = [];
+    let raf = 0;
+
+    const make = (): P => ({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      v: Math.random() * 0.25 + 0.05,
+      o: Math.random() * 0.25 + 0.08,
+    });
+
+    const init = () => {
+      ps = [];
+      const count = Math.floor((canvas.width * canvas.height) / 10000);
+      for (let i = 0; i < count; i++) ps.push(make());
+    };
+
+    const draw = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ps.forEach((p) => {
+        p.y -= p.v;
+        if (p.y < 0) {
+          p.x = Math.random() * canvas.width;
+          p.y = canvas.height + Math.random() * 40;
+          p.v = Math.random() * 0.25 + 0.05;
+          p.o = Math.random() * 0.25 + 0.08;
+        }
+        // Violet particles
+        ctx.fillStyle = `rgba(124,58,237,${p.o})`;
+        ctx.fillRect(p.x, p.y, 0.7, 2.2);
+      });
+      raf = requestAnimationFrame(draw);
+    };
+
+    const onResize = () => { setSize(); init(); };
+    window.addEventListener("resize", onResize);
+    init();
+    raf = requestAnimationFrame(draw);
+    return () => {
+      window.removeEventListener("resize", onResize);
+      cancelAnimationFrame(raf);
+    };
+  }, []);
+
+  return (
+    <canvas
+      ref={canvasRef}
+      className="fixed inset-0 pointer-events-none"
+      style={{ zIndex: 1 }}
+    />
+  );
+}
+
+// ── Auth Styles (inline) ─────────────────────────────────────────────
+const AUTH_STYLES = `
+@keyframes drawX{0%{transform:scaleX(0);opacity:0}60%{opacity:.6}100%{transform:scaleX(1);opacity:.35}}
+@keyframes drawY{0%{transform:scaleY(0);opacity:0}60%{opacity:.6}100%{transform:scaleY(1);opacity:.35}}
+@keyframes shimmer{0%{opacity:0}35%{opacity:.15}100%{opacity:0}}
+.card-animate{opacity:0;transform:translateY(20px);animation:fadeUp .8s cubic-bezier(.22,.61,.36,1) .4s forwards}
+@keyframes fadeUp{to{opacity:1;transform:translateY(0)}}
+`;
+
+// ── Validation ───────────────────────────────────────────────────────
 const authSchema = z.object({
   email: z.string().email("Invalid email format").max(255, "Email too long"),
   password: z.string()
@@ -25,6 +108,7 @@ const authSchema = z.object({
 type SignupRole = "student" | "educator" | null;
 type AuthStep = "choose-role" | "form" | "educator-info";
 
+// ── Main Component ───────────────────────────────────────────────────
 const Auth = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -40,7 +124,9 @@ const Auth = () => {
   const [signupRole, setSignupRole] = useState<SignupRole>(null);
   const [loginRole, setLoginRole] = useState<"student" | "educator">("student");
   const [authStep, setAuthStep] = useState<AuthStep>("form");
-  
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
   // Educator info
   const [educatorName, setEducatorName] = useState("");
   const [schoolName, setSchoolName] = useState("");
@@ -137,7 +223,6 @@ const Auth = () => {
         });
         if (error) throw error;
 
-        // If educator, create educator profile
         if (signupRole === "educator" && data.user) {
           await supabase.from("educator_profiles").insert({
             user_id: data.user.id,
@@ -236,22 +321,70 @@ const Auth = () => {
 
   const isSignupFormValid = signupRole === "student" ? isStudentFormValid : isEducatorFormValid;
 
+  // ── Input wrapper with icon ──
+  const IconInput = ({
+    icon: Icon,
+    children,
+  }: {
+    icon: React.ComponentType<{ className?: string }>;
+    children: React.ReactNode;
+  }) => (
+    <div className="relative">
+      <Icon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
+      {children}
+    </div>
+  );
 
   return (
-    <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-background">
-      <div className="absolute inset-0 bg-gradient-hero opacity-30 blur-3xl" />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,hsl(262_83%_58%/0.15),transparent_50%)]" />
+    <div className="min-h-screen flex items-center justify-center relative overflow-hidden" style={{ backgroundColor: "#09090D" }}>
+      {/* Inline keyframes */}
+      <style>{AUTH_STYLES}</style>
 
-      <button
-        onClick={() => navigate("/")}
-        className="absolute top-6 left-6 z-10 text-foreground/80 hover:text-foreground transition-colors flex items-center gap-2"
-      >
-        <ArrowLeft className="w-5 h-5" />
-        Back to Home
-      </button>
+      {/* Vignette */}
+      <div
+        className="fixed inset-0 pointer-events-none"
+        style={{
+          background: "radial-gradient(ellipse at 50% 50%, transparent 40%, rgba(0,0,0,0.7) 100%)",
+          zIndex: 2,
+        }}
+      />
 
+      {/* Animated accent grid lines */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden" style={{ zIndex: 1 }}>
+        {/* Horizontal lines */}
+        <div className="absolute top-[25%] left-0 w-full h-px bg-primary/20 origin-left" style={{ animation: "drawX 3s ease-out 0.5s both" }} />
+        <div className="absolute top-[50%] left-0 w-full h-px bg-primary/15 origin-left" style={{ animation: "drawX 3s ease-out 1s both" }} />
+        <div className="absolute top-[75%] left-0 w-full h-px bg-primary/10 origin-left" style={{ animation: "drawX 3s ease-out 1.5s both" }} />
+        {/* Vertical lines */}
+        <div className="absolute left-[25%] top-0 w-px h-full bg-primary/15 origin-top" style={{ animation: "drawY 3s ease-out 0.8s both" }} />
+        <div className="absolute left-[50%] top-0 w-px h-full bg-primary/10 origin-top" style={{ animation: "drawY 3s ease-out 1.3s both" }} />
+        <div className="absolute left-[75%] top-0 w-px h-full bg-primary/15 origin-top" style={{ animation: "drawY 3s ease-out 1.8s both" }} />
+      </div>
+
+      {/* Particles */}
+      <ParticleCanvas />
+
+      {/* Header bar */}
+      <div className="fixed top-0 left-0 right-0 flex items-center justify-between px-6 py-4" style={{ zIndex: 10 }}>
+        <button
+          onClick={() => navigate("/")}
+          className="flex items-center gap-2 text-foreground/70 hover:text-foreground transition-colors"
+        >
+          <img src={euphoriaLogo} alt="Euphoria" className="w-8 h-8 object-contain" />
+          <span className="text-sm font-semibold tracking-wide text-foreground/90">EUPHORIA</span>
+        </button>
+        <button
+          onClick={() => navigate("/")}
+          className="text-xs text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
+        >
+          Home
+          <ArrowRight className="w-3 h-3" />
+        </button>
+      </div>
+
+      {/* Main content */}
       <AnimatePresence mode="wait">
-        {/* Role Selection */}
+        {/* ── Role Selection ── */}
         {!isLogin && authStep === "choose-role" && (
           <motion.div
             key="choose-role"
@@ -259,27 +392,28 @@ const Auth = () => {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, x: -60 }}
             transition={{ duration: 0.35, ease: [0.25, 0.46, 0.45, 0.94] }}
-            className="w-full max-w-lg px-4 relative z-10"
+            className="w-full max-w-lg px-4 relative"
+            style={{ zIndex: 5 }}
           >
-            <Card className="p-8 shadow-glow border-border backdrop-blur-sm bg-card/90">
+            <Card className="card-animate p-8 border-border/40 backdrop-blur-sm bg-card/90 shadow-lg">
               <div className="flex items-center justify-center gap-2 mb-8">
                 <img src={euphoriaLogo} alt="Euphoria" className="w-12 h-12 object-contain" />
-                 <h1 className="text-3xl font-bold">Euphoria</h1>
+                <h1 className="text-3xl font-bold text-foreground">Euphoria</h1>
               </div>
 
-              <h2 className="text-2xl font-bold mb-1 text-center">Join as...</h2>
+              <h2 className="text-2xl font-bold mb-1 text-center text-foreground">Join as...</h2>
               <p className="text-muted-foreground text-center mb-8 text-sm">Pick your path — you can always explore later</p>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <button
                   onClick={() => handleRoleSelect("student")}
-                  className="group p-6 rounded-2xl border-2 border-border hover:border-primary bg-card/50 hover:bg-primary/5 transition-all duration-300 text-left space-y-4 hover:-translate-y-1 hover:shadow-lg"
+                  className="group p-6 rounded-2xl border-2 border-border/40 hover:border-primary bg-card/50 hover:bg-primary/5 transition-all duration-300 text-left space-y-4 hover:-translate-y-1 hover:shadow-lg"
                 >
                   <div className="w-12 h-12 rounded-xl bg-primary/10 group-hover:bg-primary/20 flex items-center justify-center transition-colors">
                     <BookOpen className="w-6 h-6 text-primary" />
                   </div>
                   <div>
-                    <h3 className="text-lg font-bold mb-1">Student</h3>
+                    <h3 className="text-lg font-bold mb-1 text-foreground">Student</h3>
                     <p className="text-xs text-muted-foreground leading-relaxed">
                       Practice trading, take lessons & earn XP, all risk-free
                     </p>
@@ -299,13 +433,13 @@ const Auth = () => {
 
                 <button
                   onClick={() => handleRoleSelect("educator")}
-                  className="group p-6 rounded-2xl border-2 border-border hover:border-accent bg-card/50 hover:bg-accent/5 transition-all duration-300 text-left space-y-4 hover:-translate-y-1 hover:shadow-lg"
+                  className="group p-6 rounded-2xl border-2 border-border/40 hover:border-accent bg-card/50 hover:bg-accent/5 transition-all duration-300 text-left space-y-4 hover:-translate-y-1 hover:shadow-lg"
                 >
                   <div className="w-12 h-12 rounded-xl bg-accent/10 group-hover:bg-accent/20 flex items-center justify-center transition-colors">
                     <GraduationCap className="w-6 h-6 text-accent" />
                   </div>
                   <div>
-                    <h3 className="text-lg font-bold mb-1">Educator</h3>
+                    <h3 className="text-lg font-bold mb-1 text-foreground">Educator</h3>
                     <p className="text-xs text-muted-foreground leading-relaxed">
                       Create classes, monitor progress & identify struggling students
                     </p>
@@ -327,7 +461,7 @@ const Auth = () => {
               {/* Divider */}
               <div className="relative my-6">
                 <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-border" />
+                  <Separator className="w-full" />
                 </div>
                 <div className="relative flex justify-center text-xs">
                   <span className="bg-card px-3 text-muted-foreground">or</span>
@@ -338,7 +472,7 @@ const Auth = () => {
               <Button
                 type="button"
                 variant="outline"
-                className="w-full gap-2 bg-background/50 hover:bg-background"
+                className="w-full gap-2 bg-zinc-900 border-border/40 hover:bg-zinc-800 text-foreground"
                 onClick={handleGoogleSignIn}
                 disabled={googleLoading}
               >
@@ -359,7 +493,7 @@ const Auth = () => {
               <Button
                 type="button"
                 variant="outline"
-                className="w-full gap-2 bg-background/50 hover:bg-background mt-2"
+                className="w-full gap-2 bg-zinc-900 border-border/40 hover:bg-zinc-800 text-foreground mt-2"
                 onClick={handleAppleSignIn}
                 disabled={appleLoading}
               >
@@ -382,7 +516,7 @@ const Auth = () => {
           </motion.div>
         )}
 
-        {/* Educator Info */}
+        {/* ── Educator Info ── */}
         {!isLogin && authStep === "educator-info" && (
           <motion.div
             key="educator-info"
@@ -390,9 +524,10 @@ const Auth = () => {
             animate={{ opacity: 1, scale: 1, x: 0 }}
             exit={{ opacity: 0, scale: 0.95, x: -60 }}
             transition={{ duration: 0.35, ease: [0.25, 0.46, 0.45, 0.94] }}
-            className="w-full max-w-md px-4 relative z-10"
+            className="w-full max-w-md px-4 relative"
+            style={{ zIndex: 5 }}
           >
-            <Card className="p-8 shadow-glow border-border backdrop-blur-sm bg-card/90">
+            <Card className="card-animate p-8 border-border/40 backdrop-blur-sm bg-card/90 shadow-lg">
               <button
                 onClick={() => setAuthStep("choose-role")}
                 className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-4 transition-colors"
@@ -405,7 +540,7 @@ const Auth = () => {
                   <School className="w-5 h-5 text-primary" />
                 </div>
                 <div>
-                  <h2 className="text-xl font-bold">School Details</h2>
+                  <h2 className="text-xl font-bold text-foreground">School Details</h2>
                   <p className="text-sm text-muted-foreground">Tell us about your teaching</p>
                 </div>
               </div>
@@ -418,7 +553,7 @@ const Auth = () => {
                     placeholder="e.g. Dr. Sarah Mitchell"
                     value={educatorName}
                     onChange={(e) => setEducatorName(e.target.value)}
-                    className={`bg-background/50 transition-colors ${
+                    className={`bg-zinc-950 border-border/40 text-foreground placeholder:text-muted-foreground transition-colors ${
                       educatorName.length > 0
                         ? educatorName.trim().length >= 2
                           ? "border-success focus-visible:ring-success"
@@ -435,20 +570,22 @@ const Auth = () => {
 
                 <div className="space-y-2">
                   <Label htmlFor="educatorEmail">Email Address *</Label>
-                  <Input
-                    id="educatorEmail"
-                    type="email"
-                    placeholder="you@school.edu"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className={`bg-background/50 transition-colors ${
-                      email.length > 0
-                        ? /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
-                          ? "border-success focus-visible:ring-success"
-                          : "border-destructive focus-visible:ring-destructive"
-                        : ""
-                    }`}
-                  />
+                  <IconInput icon={Mail}>
+                    <Input
+                      id="educatorEmail"
+                      type="email"
+                      placeholder="you@school.edu"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className={`pl-10 bg-zinc-950 border-border/40 text-foreground placeholder:text-muted-foreground transition-colors ${
+                        email.length > 0
+                          ? /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+                            ? "border-success focus-visible:ring-success"
+                            : "border-destructive focus-visible:ring-destructive"
+                          : ""
+                      }`}
+                    />
+                  </IconInput>
                   {email.length > 0 && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) && (
                     <p className="text-xs text-destructive flex items-center gap-1">
                       <X className="w-3 h-3" /> Please enter a valid email address
@@ -463,7 +600,7 @@ const Auth = () => {
                     placeholder="e.g. Lincoln High School"
                     value={schoolName}
                     onChange={(e) => setSchoolName(e.target.value)}
-                    className={`bg-background/50 transition-colors ${
+                    className={`bg-zinc-950 border-border/40 text-foreground placeholder:text-muted-foreground transition-colors ${
                       schoolName.length > 0
                         ? schoolName.trim().length >= 2
                           ? "border-success focus-visible:ring-success"
@@ -480,7 +617,7 @@ const Auth = () => {
                     placeholder="e.g. Economics, Business Studies"
                     value={subject}
                     onChange={(e) => setSubject(e.target.value)}
-                    className="bg-background/50"
+                    className="bg-zinc-950 border-border/40 text-foreground placeholder:text-muted-foreground"
                   />
                 </div>
 
@@ -492,7 +629,7 @@ const Auth = () => {
                       placeholder="e.g. 9-12"
                       value={gradeLevel}
                       onChange={(e) => setGradeLevel(e.target.value)}
-                      className="bg-background/50"
+                      className="bg-zinc-950 border-border/40 text-foreground placeholder:text-muted-foreground"
                     />
                   </div>
                   <div className="space-y-2">
@@ -503,7 +640,7 @@ const Auth = () => {
                       placeholder="30"
                       value={classSize}
                       onChange={(e) => setClassSize(e.target.value)}
-                      className="bg-background/50"
+                      className="bg-zinc-950 border-border/40 text-foreground placeholder:text-muted-foreground"
                     />
                   </div>
                 </div>
@@ -516,7 +653,7 @@ const Auth = () => {
           </motion.div>
         )}
 
-        {/* Login / Final Signup Form */}
+        {/* ── Login / Final Signup Form ── */}
         {(isLogin || authStep === "form") && (
           <motion.div
             key="auth-form"
@@ -524,9 +661,10 @@ const Auth = () => {
             animate={{ opacity: 1, scale: 1, x: 0 }}
             exit={{ opacity: 0, scale: 0.95, x: -60 }}
             transition={{ duration: 0.35, ease: [0.25, 0.46, 0.45, 0.94] }}
-            className="w-full max-w-md px-4 relative z-10"
+            className="w-full max-w-md px-4 relative"
+            style={{ zIndex: 5 }}
           >
-            <Card className={`p-8 shadow-glow border-border backdrop-blur-sm bg-card/90 relative overflow-hidden ${
+            <Card className={`card-animate p-8 border-border/40 backdrop-blur-sm bg-card/90 shadow-lg relative overflow-hidden ${
               !isLogin && signupRole === "educator" ? "border-t-2 border-t-accent" : ""
             }`}>
               {/* Educator accent stripe */}
@@ -546,23 +684,23 @@ const Auth = () => {
               <div className="flex items-center justify-center gap-2 mb-8">
                 {!isLogin && signupRole === "educator" ? (
                   <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center">
-                    <GraduationCap className="w-7 h-7 text-white" />
+                    <GraduationCap className="w-7 h-7 text-primary-foreground" />
                   </div>
                 ) : (
                   <img src={euphoriaLogo} alt="Euphoria" className="w-12 h-12 object-contain" />
                 )}
-                <h1 className="text-3xl font-bold">Euphoria</h1>
+                <h1 className="text-3xl font-bold text-foreground">Euphoria</h1>
               </div>
 
               {isLogin && (
-                <div className="flex rounded-lg border border-border overflow-hidden mb-6">
+                <div className="flex rounded-lg border border-border/40 overflow-hidden mb-6">
                   <button
                     type="button"
                     onClick={() => setLoginRole("student")}
                     className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-medium transition-all ${
                       loginRole === "student"
                         ? "bg-primary text-primary-foreground shadow-glow"
-                        : "bg-card/50 text-muted-foreground hover:text-foreground"
+                        : "bg-zinc-900 text-muted-foreground hover:text-foreground"
                     }`}
                   >
                     <BookOpen className="w-4 h-4" />
@@ -574,7 +712,7 @@ const Auth = () => {
                     className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-medium transition-all ${
                       loginRole === "educator"
                         ? "bg-primary text-primary-foreground shadow-glow"
-                        : "bg-card/50 text-muted-foreground hover:text-foreground"
+                        : "bg-zinc-900 text-muted-foreground hover:text-foreground"
                     }`}
                   >
                     <GraduationCap className="w-4 h-4" />
@@ -584,12 +722,12 @@ const Auth = () => {
               )}
 
               <div className="mb-6">
-                <h2 className="text-2xl font-bold mb-2">
+                <h2 className="text-2xl font-bold mb-2 text-foreground">
                   {isLogin
                     ? loginRole === "educator" ? "Welcome back, Educator!" : "Welcome back!"
                     : `Create ${signupRole === "educator" ? "educator" : "student"} account`}
                 </h2>
-                <p className="text-muted-foreground">
+                <p className="text-muted-foreground text-sm">
                   {isLogin
                     ? loginRole === "educator"
                       ? "Sign in to manage your classes"
@@ -619,7 +757,7 @@ const Auth = () => {
                       onChange={(e) => setFullName(e.target.value)}
                       required
                       disabled={loading}
-                      className={`bg-background/50 transition-colors ${
+                      className={`bg-zinc-950 border-border/40 text-foreground placeholder:text-muted-foreground transition-colors ${
                         fullName.length > 0
                           ? fullName.trim().length >= 2
                             ? "border-success focus-visible:ring-success"
@@ -635,24 +773,27 @@ const Auth = () => {
                   </div>
                 )}
 
+                {/* Email */}
                 <div className="space-y-2">
-                  <Label htmlFor="email">Email *</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="you@example.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                    disabled={loading}
-                    className={`bg-background/50 transition-colors ${
-                      email.length > 0
-                        ? /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
-                          ? "border-success focus-visible:ring-success"
-                          : "border-destructive focus-visible:ring-destructive"
-                        : ""
-                    }`}
-                  />
+                  <Label htmlFor="email">Email {!isLogin && "*"}</Label>
+                  <IconInput icon={Mail}>
+                    <Input
+                      id="email"
+                      type="email"
+                      placeholder="you@example.com"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                      disabled={loading}
+                      className={`pl-10 bg-zinc-950 border-border/40 text-foreground placeholder:text-muted-foreground transition-colors ${
+                        email.length > 0
+                          ? /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+                            ? "border-success focus-visible:ring-success"
+                            : "border-destructive focus-visible:ring-destructive"
+                          : ""
+                      }`}
+                    />
+                  </IconInput>
                   {email.length > 0 && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) && (
                     <p className="text-xs text-destructive flex items-center gap-1">
                       <X className="w-3 h-3" /> Please enter a valid email address
@@ -660,24 +801,36 @@ const Auth = () => {
                   )}
                 </div>
 
+                {/* Password */}
                 <div className="space-y-2">
                   <Label htmlFor="password">Password {!isLogin && "*"}</Label>
-                  <Input
-                    id="password"
-                    type="password"
-                    placeholder="••••••••"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                    disabled={loading}
-                    className={`bg-background/50 transition-colors ${
-                      !isLogin && password.length > 0
-                        ? password.length >= 8 && /[A-Z]/.test(password) && /[0-9]/.test(password) && /[^A-Za-z0-9]/.test(password)
-                          ? "border-success focus-visible:ring-success"
-                          : "border-destructive focus-visible:ring-destructive"
-                        : ""
-                    }`}
-                  />
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
+                    <Input
+                      id="password"
+                      type={showPassword ? "text" : "password"}
+                      placeholder="••••••••"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required
+                      disabled={loading}
+                      className={`pl-10 pr-10 bg-zinc-950 border-border/40 text-foreground placeholder:text-muted-foreground transition-colors ${
+                        !isLogin && password.length > 0
+                          ? password.length >= 8 && /[A-Z]/.test(password) && /[0-9]/.test(password) && /[^A-Za-z0-9]/.test(password)
+                            ? "border-success focus-visible:ring-success"
+                            : "border-destructive focus-visible:ring-destructive"
+                          : ""
+                      }`}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword((v) => !v)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                      tabIndex={-1}
+                    >
+                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
                   {!isLogin && password.length > 0 && (
                     <div className="space-y-1 pt-1">
                       {[
@@ -695,26 +848,52 @@ const Auth = () => {
                   )}
                 </div>
 
+                {/* Remember me + Forgot password (login only) */}
+                {isLogin && (
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Checkbox id="remember" className="border-border/40" />
+                      <label htmlFor="remember" className="text-xs text-muted-foreground cursor-pointer">
+                        Remember me
+                      </label>
+                    </div>
+                    <button type="button" className="text-xs text-primary hover:text-primary/80 transition-colors">
+                      Forgot password?
+                    </button>
+                  </div>
+                )}
+
                 {/* Confirm Password - Signup only */}
                 {!isLogin && (
                   <div className="space-y-2">
                     <Label htmlFor="confirmPassword">Confirm Password *</Label>
-                    <Input
-                      id="confirmPassword"
-                      type="password"
-                      placeholder="••••••••"
-                      value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
-                      required
-                      disabled={loading}
-                      className={`bg-background/50 transition-colors ${
-                        confirmPassword.length > 0
-                          ? confirmPassword === password
-                            ? "border-success focus-visible:ring-success"
-                            : "border-destructive focus-visible:ring-destructive"
-                          : ""
-                      }`}
-                    />
+                    <div className="relative">
+                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
+                      <Input
+                        id="confirmPassword"
+                        type={showConfirmPassword ? "text" : "password"}
+                        placeholder="••••••••"
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        required
+                        disabled={loading}
+                        className={`pl-10 pr-10 bg-zinc-950 border-border/40 text-foreground placeholder:text-muted-foreground transition-colors ${
+                          confirmPassword.length > 0
+                            ? confirmPassword === password
+                              ? "border-success focus-visible:ring-success"
+                              : "border-destructive focus-visible:ring-destructive"
+                            : ""
+                        }`}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowConfirmPassword((v) => !v)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                        tabIndex={-1}
+                      >
+                        {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      </button>
+                    </div>
                     {confirmPassword.length > 0 && confirmPassword !== password && (
                       <p className="text-xs text-destructive flex items-center gap-1">
                         <X className="w-3 h-3" /> Passwords do not match
@@ -739,10 +918,10 @@ const Auth = () => {
                         onChange={(e) => setStudentGrade(e.target.value)}
                         required
                         disabled={loading}
-                        className={`flex h-10 w-full rounded-md border bg-background/50 px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 transition-colors ${
+                        className={`flex h-10 w-full rounded-md border bg-zinc-950 px-3 py-2 text-sm text-foreground ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 transition-colors ${
                           studentGrade
                             ? "border-success focus-visible:ring-success"
-                            : "border-input"
+                            : "border-border/40"
                         }`}
                       >
                         <option value="" disabled>Select your grade level</option>
@@ -761,7 +940,7 @@ const Auth = () => {
                         value={studentSchool}
                         onChange={(e) => setStudentSchool(e.target.value)}
                         disabled={loading}
-                        className="bg-background/50"
+                        className="bg-zinc-950 border-border/40 text-foreground placeholder:text-muted-foreground"
                       />
                     </div>
                   </>
@@ -816,7 +995,7 @@ const Auth = () => {
                       {isLogin ? "Signing in..." : "Creating account..."}
                     </>
                   ) : (
-                    <>{isLogin ? "Sign in" : "Create account"}</>
+                    <>{isLogin ? "Continue" : "Create account"}</>
                   )}
                 </Button>
               </form>
@@ -824,51 +1003,52 @@ const Auth = () => {
               {/* Divider */}
               <div className="relative my-6">
                 <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-border" />
+                  <Separator className="w-full" />
                 </div>
                 <div className="relative flex justify-center text-xs">
-                  <span className="bg-card px-3 text-muted-foreground">or continue with</span>
+                  <span className="bg-card px-3 text-muted-foreground">or</span>
                 </div>
               </div>
 
-              {/* Google Sign-In */}
-              <Button
-                type="button"
-                variant="outline"
-                className="w-full gap-2 bg-background/50 hover:bg-background"
-                onClick={handleGoogleSignIn}
-                disabled={googleLoading || loading}
-              >
-                {googleLoading ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                  <svg className="w-5 h-5" viewBox="0 0 24 24">
-                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4" />
-                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
-                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" />
-                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
-                  </svg>
-                )}
-                Sign in with Google
-              </Button>
+              {/* Social buttons */}
+              <div className="grid grid-cols-2 gap-3">
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="gap-2 bg-zinc-900 border-border/40 hover:bg-zinc-800 text-foreground"
+                  onClick={handleGoogleSignIn}
+                  disabled={googleLoading || loading}
+                >
+                  {googleLoading ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <svg className="w-4 h-4" viewBox="0 0 24 24">
+                      <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4" />
+                      <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
+                      <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" />
+                      <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
+                    </svg>
+                  )}
+                  Google
+                </Button>
 
-              {/* Apple Sign-In */}
-              <Button
-                type="button"
-                variant="outline"
-                className="w-full gap-2 bg-background/50 hover:bg-background mt-2"
-                onClick={handleAppleSignIn}
-                disabled={appleLoading || loading}
-              >
-                {appleLoading ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M17.05 20.28c-.98.95-2.05.88-3.08.4-1.09-.5-2.08-.48-3.24 0-1.44.62-2.2.44-3.06-.4C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z" />
-                  </svg>
-                )}
-                Sign in with Apple
-              </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="gap-2 bg-zinc-900 border-border/40 hover:bg-zinc-800 text-foreground"
+                  onClick={handleAppleSignIn}
+                  disabled={appleLoading || loading}
+                >
+                  {appleLoading ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M17.05 20.28c-.98.95-2.05.88-3.08.4-1.09-.5-2.08-.48-3.24 0-1.44.62-2.2.44-3.06-.4C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z" />
+                    </svg>
+                  )}
+                  Apple
+                </Button>
+              </div>
 
               <div className="mt-6 text-center">
                 <button
