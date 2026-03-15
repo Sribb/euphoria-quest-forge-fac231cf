@@ -29,7 +29,6 @@ const Community = ({ onNavigate }: CommunityProps) => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [classCode, setClassCode] = useState("");
-  const [classCode, setClassCode] = useState("");
   const [newClassName, setNewClassName] = useState("");
   const [newClassDesc, setNewClassDesc] = useState("");
   const [newClassMax, setNewClassMax] = useState("");
