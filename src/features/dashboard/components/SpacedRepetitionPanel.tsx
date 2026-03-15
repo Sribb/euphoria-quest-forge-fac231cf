@@ -124,7 +124,7 @@ export const SpacedRepetitionPanel = () => {
                   className="flex-1 border-destructive/40 text-destructive hover:bg-destructive/10"
                   onClick={() => handleSelfAssess(false)}
                 >
-                  Forgot 😬
+                  Forgot
                 </Button>
                 <Button
                   size="sm"
