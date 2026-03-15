@@ -6,7 +6,7 @@ const lessons = [
     c('📈','What Is Investing?','Investing means putting money into assets — stocks, bonds, real estate — with the expectation of earning a return over time.'),
     tr('Key Terms',[['Return','Profit earned on an investment'],['Risk','Chance of losing money'],['Asset','Something of value you own'],['Portfolio','Collection of investments']]),
     fb('Investing is putting money to work with the goal of earning a ___.',['return','salary','tax refund','bonus'],0),
-    q('What makes investing different from saving?','Saving keeps money safe with low growth; investing seeks higher growth with more risk','Investing is gambling','Saving and investing are the same','Investing only means stocks',0,'Saving is low-risk/low-return; investing accepts risk for potentially higher returns.'),
+    q('What makes investing different from saving?',['Saving keeps money safe with low growth; investing seeks higher growth with more risk','Investing is gambling','Saving and investing are the same','Investing only means stocks'],0,'Saving is low-risk/low-return; investing accepts risk for potentially higher returns.'),
     tf([{s:'Investing always guarantees a profit',a:false},{s:'Stocks are a type of investment',a:true},{s:'You need $10,000 to start investing',a:false}]),
     sc('You have $500 saved up. What should you do?',[
       {label:'Keep it all in cash',outcome:'Inflation erodes cash value ~3% per year. In 10 years your $500 buys only ~$370 worth.',correct:false},
