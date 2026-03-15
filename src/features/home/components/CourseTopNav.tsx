@@ -49,11 +49,6 @@ export const CourseTopNav = ({ activeView, onViewChange }: CourseTopNavProps) =>
       <div className="flex items-center justify-between px-6 h-16 border-b border-border/40">
         {/* Left: Logo + tabs */}
         <div className="flex items-center gap-8">
-          <div className="flex items-center gap-2.5">
-            <img src={logo} alt="Euphoria" className="w-8 h-8 object-contain" />
-            <span className="text-lg font-extrabold text-foreground tracking-tight">Euphoria</span>
-          </div>
-
           <nav className="flex items-center gap-1">
             {(["home", "courses"] as const).map((view) => (
               <button
