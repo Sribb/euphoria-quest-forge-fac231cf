@@ -4,6 +4,7 @@ import { DuoSidebar } from "@/shared/components/DuoSidebar";
 import { PersonalizedWelcomeOverlay } from "@/shared/components/PersonalizedWelcomeOverlay";
 import { AnimatePresence } from "framer-motion";
 import { GlobalAIAssistant } from "@/shared/components/GlobalAIAssistant";
+import { AmbientBackground } from "@/shared/components/AmbientBackground";
 import { useEducatorRole } from "@/features/educator/hooks/useEducatorRole";
 import { useIsMobile } from "@/hooks/use-mobile";
 import Dashboard from "./Dashboard";
