@@ -69,9 +69,8 @@ const Index = () => {
     setActiveTab("trade");
   };
 
-  // Dashboard has its own nav, hide sidebar for it
-  const isDashboard = activeTab === "dashboard";
-  const showSidebar = !isDashboard;
+  // Sidebar always visible
+  const showSidebar = true;
 
   const renderContent = () => {
     if (selectedStock) {
