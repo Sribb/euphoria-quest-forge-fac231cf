@@ -73,7 +73,7 @@ const lessons = [
     c('📦','Exchange-Traded Funds','An ETF is a basket of stocks, bonds, or other assets that trades on an exchange like a single stock. It gives you instant diversification.'),
     tr('ETF Features',[['Diversification','Holds many assets in one fund'],['Low Cost','Usually lower fees than mutual funds'],['Liquidity','Buy/sell anytime during market hours'],['Transparency','Holdings disclosed daily']]),
     fb('An ETF trades on an exchange just like a ___.',['stock','bond','savings account','CD'],0),
-    q('What is the main advantage of ETFs over individual stocks?','Higher returns guaranteed','Instant diversification','No risk','Free trading',1,'ETFs spread your money across many assets automatically.'),
+    q('What is the main advantage of ETFs over individual stocks?',['Higher returns guaranteed','Instant diversification','No risk','Free trading'],1,'ETFs spread your money across many assets automatically.'),
     m('ETF vs Individual Stock',[['ETF','Holds many assets in one fund'],['Individual Stock','Ownership in one company'],['Index ETF','Tracks a market index like S&P 500'],['Sector ETF','Focuses on one industry']]),
     tf([{s:'ETFs can only hold stocks',a:false},{s:'You can buy ETFs during market hours',a:true},{s:'ETFs are always actively managed',a:false}]),
     vi('SPY is an ETF tracking the S&P 500 with 500 stocks inside. If you buy 1 share of SPY...','How many companies do you effectively own?',['1','50','500','5,000'],2),
