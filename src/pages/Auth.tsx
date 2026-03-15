@@ -371,7 +371,7 @@ const Auth = () => {
           className="flex items-center gap-2 text-foreground/70 hover:text-foreground transition-colors"
         >
           <img src={euphoriaLogo} alt="Euphoria" className="w-8 h-8 object-contain" />
-          <span className="text-sm font-semibold tracking-wide text-foreground/90">EUPHORIA</span>
+          <span className="text-base font-extrabold text-foreground tracking-tight">Euphoria</span>
         </button>
         <button
           onClick={() => navigate("/")}
