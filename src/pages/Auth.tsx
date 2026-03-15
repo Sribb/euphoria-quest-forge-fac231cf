@@ -46,7 +46,7 @@ function ParticleCanvas() {
 
     const init = () => {
       ps = [];
-      const count = Math.floor((canvas.width * canvas.height) / 10000);
+      const count = Math.floor((canvas.width * canvas.height) / 5000);
       for (let i = 0; i < count; i++) ps.push(make());
     };
 
