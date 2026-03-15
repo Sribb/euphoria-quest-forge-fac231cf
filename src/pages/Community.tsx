@@ -23,9 +23,10 @@ import { Label } from "@/components/ui/label";
 
 interface CommunityProps {
   onNavigate: (tab: string) => void;
+  initialConversationId?: string | null;
 }
 
-const Community = ({ onNavigate }: CommunityProps) => {
+const Community = ({ onNavigate, initialConversationId }: CommunityProps) => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [classCode, setClassCode] = useState("");

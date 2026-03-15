@@ -53,7 +53,7 @@ export const IMessageChat = ({ initialConversationId }: IMessageChatProps = {}) 
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const isMobile = useIsMobile();
-  const [activeConversationId, setActiveConversationId] = useState<string | null>(null);
+  const [activeConversationId, setActiveConversationId] = useState<string | null>(initialConversationId || null);
   const [dmMessage, setDmMessage] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [showNewMessage, setShowNewMessage] = useState(false);
