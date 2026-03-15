@@ -850,7 +850,7 @@ export const IMessageChat = ({ initialConversationId }: IMessageChatProps = {}) 
                                     : "bg-muted/40 backdrop-blur-sm text-foreground rounded-[20px] rounded-bl-[6px] border border-border/10"
                                 )}
                               >
-                                {item.content}
+                                {renderMessageContent(item.content)}
                               </div>
                               {/* Delete button (own messages) */}
                               {isMine && (
