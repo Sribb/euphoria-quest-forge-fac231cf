@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from "react";
+import { AmbientBackground } from "@/shared/components/AmbientBackground";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ChevronDown, ArrowRight, Star, Menu, X } from "lucide-react";
@@ -163,6 +164,7 @@ const Landing = () => {
 
   return (
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
+      <AmbientBackground />
 
       {/* ═══════════════════════════════════════════════════════
           NAVBAR — transparent → sticky blur on scroll
