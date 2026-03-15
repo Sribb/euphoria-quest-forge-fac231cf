@@ -95,7 +95,7 @@ export const BudgetImpactSimulator = ({
               >
                 {pct >= 8 && (
                   <span className="text-xs font-bold text-primary-foreground truncate px-1">
-                    {cat.emoji}
+                    {cat.label}
                   </span>
                 )}
               </motion.div>
