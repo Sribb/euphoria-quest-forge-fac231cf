@@ -162,7 +162,7 @@ export const IMessageChat = () => {
     queryKey: ["conversation-messages", activeConversationId],
     queryFn: async () => {
       if (!activeConversationId) return [];
-      const { data, error } = await supabase
+      const { data, error } = await db
         .from("direct_messages")
         .select("*")
         .eq("conversation_id", activeConversationId)
