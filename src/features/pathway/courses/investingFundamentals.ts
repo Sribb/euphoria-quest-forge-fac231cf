@@ -6,7 +6,7 @@ const lessons = [
     c('📈','What Is Investing?','Investing means putting money into assets — stocks, bonds, real estate — with the expectation of earning a return over time.'),
     tr('Key Terms',[['Return','Profit earned on an investment'],['Risk','Chance of losing money'],['Asset','Something of value you own'],['Portfolio','Collection of investments']]),
     fb('Investing is putting money to work with the goal of earning a ___.',['return','salary','tax refund','bonus'],0),
-    q('What makes investing different from saving?','Saving keeps money safe with low growth; investing seeks higher growth with more risk','Investing is gambling','Saving and investing are the same','Investing only means stocks',0,'Saving is low-risk/low-return; investing accepts risk for potentially higher returns.'),
+    q('What makes investing different from saving?',['Saving keeps money safe with low growth; investing seeks higher growth with more risk','Investing is gambling','Saving and investing are the same','Investing only means stocks'],0,'Saving is low-risk/low-return; investing accepts risk for potentially higher returns.'),
     tf([{s:'Investing always guarantees a profit',a:false},{s:'Stocks are a type of investment',a:true},{s:'You need $10,000 to start investing',a:false}]),
     sc('You have $500 saved up. What should you do?',[
       {label:'Keep it all in cash',outcome:'Inflation erodes cash value ~3% per year. In 10 years your $500 buys only ~$370 worth.',correct:false},
@@ -28,7 +28,7 @@ const lessons = [
     tr('Stock Basics',[['Share','One unit of stock ownership'],['Shareholder','Person who owns stock'],['Ticker','Short code identifying a stock (e.g., AAPL)'],['Exchange','Marketplace where stocks trade']]),
     fb('When you buy a stock, you become a partial ___ of the company.',['owner','employee','creditor','manager'],0),
     vi('Imagine a company worth $1 billion with 1 billion shares outstanding.','What is the price per share?',['$1','$10','$100','$1,000'],0),
-    q('Why do companies issue stock?','To raise money for growth','To pay employees','To reduce taxes','To buy other companies',0,'Companies sell shares to raise capital for operations and expansion.'),
+    q('Why do companies issue stock?',['To raise money for growth','To pay employees','To reduce taxes','To buy other companies'],0,'Companies sell shares to raise capital for operations and expansion.'),
     tf([{s:'Owning stock means you own part of a company',a:true},{s:'All stocks pay dividends',a:false},{s:'Stock prices can go to zero',a:true}]),
     sc('A company you own stock in reports record earnings. What likely happens to the stock price?',[
       {label:'Price increases',outcome:'Strong earnings typically drive stock prices up as investors value the company higher.',correct:true},
@@ -48,7 +48,7 @@ const lessons = [
     c('📜','What Are Bonds?','A bond is a loan you make to a company or government. They promise to pay you back with interest over a set period.'),
     tr('Bond Anatomy',[['Face Value','Amount paid back at maturity (usually $1,000)'],['Coupon Rate','Annual interest rate paid'],['Maturity','When the bond expires and face value is returned'],['Yield','Total return considering price paid']]),
     fb('A bond\'s ___ is the interest rate it pays annually.',['coupon rate','face value','maturity date','credit rating'],0),
-    q('Who issues bonds?','Only the government','Only corporations','Governments, corporations, and municipalities','Only banks',2,'All three issue bonds to raise capital.'),
+    q('Who issues bonds?',['Only the government','Only corporations','Governments, corporations, and municipalities','Only banks'],2,'All three issue bonds to raise capital.'),
     ds('Order bond risk from lowest to highest:',['U.S. Treasury Bonds','Municipal Bonds','Investment-Grade Corporate','High-Yield (Junk) Bonds']),
     tf([{s:'Bonds are generally safer than stocks',a:true},{s:'Bonds always return more than stocks',a:false},{s:'Bond prices fall when interest rates rise',a:true}]),
     pc('Calculate annual interest on a $1,000 bond with 5% coupon',[
@@ -73,7 +73,7 @@ const lessons = [
     c('📦','Exchange-Traded Funds','An ETF is a basket of stocks, bonds, or other assets that trades on an exchange like a single stock. It gives you instant diversification.'),
     tr('ETF Features',[['Diversification','Holds many assets in one fund'],['Low Cost','Usually lower fees than mutual funds'],['Liquidity','Buy/sell anytime during market hours'],['Transparency','Holdings disclosed daily']]),
     fb('An ETF trades on an exchange just like a ___.',['stock','bond','savings account','CD'],0),
-    q('What is the main advantage of ETFs over individual stocks?','Higher returns guaranteed','Instant diversification','No risk','Free trading',1,'ETFs spread your money across many assets automatically.'),
+    q('What is the main advantage of ETFs over individual stocks?',['Higher returns guaranteed','Instant diversification','No risk','Free trading'],1,'ETFs spread your money across many assets automatically.'),
     m('ETF vs Individual Stock',[['ETF','Holds many assets in one fund'],['Individual Stock','Ownership in one company'],['Index ETF','Tracks a market index like S&P 500'],['Sector ETF','Focuses on one industry']]),
     tf([{s:'ETFs can only hold stocks',a:false},{s:'You can buy ETFs during market hours',a:true},{s:'ETFs are always actively managed',a:false}]),
     vi('SPY is an ETF tracking the S&P 500 with 500 stocks inside. If you buy 1 share of SPY...','How many companies do you effectively own?',['1','50','500','5,000'],2),
@@ -90,7 +90,7 @@ const lessons = [
     c('⚖️','Mutual vs Index Funds','Mutual funds pool money from investors to buy a portfolio of assets. Index funds are a type of mutual fund that passively tracks a market index.'),
     tr('Key Differences',[['Active Management','Fund manager picks stocks, higher fees'],['Passive Management','Tracks an index, lower fees'],['Expense Ratio','Annual fee as % of investment'],['Benchmark','Index the fund tries to match or beat']]),
     fb('An index fund passively tracks a market ___.',['index','manager','prediction','trend'],0),
-    q('Why do most actively managed funds underperform index funds?','Bad luck','Higher fees and difficulty beating the market consistently','They invest in bad stocks','They don\'t try',1,'Studies show ~80% of active funds underperform their benchmark after fees.'),
+    q('Why do most actively managed funds underperform index funds?',['Bad luck','Higher fees and difficulty beating the market consistently','They invest in bad stocks','They don\'t try'],1,'Studies show ~80% of active funds underperform their benchmark after fees.'),
     ds('Order from lowest to highest typical fees:',['Index Fund (0.03%)','ETF (0.10%)','Actively Managed Mutual Fund (0.75%)','Hedge Fund (2%)']),
     sc('You\'re choosing between a fund with 0.03% fees and one with 1.00% fees, both tracking the S&P 500. Over 30 years on $10,000:',[
       {label:'Pick the 0.03% fund',outcome:'After 30 years at 10% return: ~$164,000 vs ~$132,000. The low-fee fund earns you $32,000 more!',correct:true},
@@ -117,7 +117,7 @@ const lessons = [
     fb('Compound interest means earning interest on your ___.',['interest','principal only','debt','salary'],0),
     vi('A chart shows $1,000 growing to $17,449 over 30 years at 10% annually.','What drove most of the growth?',['The original $1,000','Annual contributions','Compound interest on reinvested returns','Inflation'],2),
     sl('If you invest $100/month at 8% for 30 years, approximately how much will you have?',50000,250000,150030,'$'),
-    q('What is the Rule of 72?','Divide 72 by return rate to estimate doubling time','A tax rule','A bond maturity rule','A trading strategy',0,'72 ÷ rate = years to double. At 8%, money doubles in ~9 years.'),
+    q('What is the Rule of 72?',['Divide 72 by return rate to estimate doubling time','A tax rule','A bond maturity rule','A trading strategy'],0,'72 ÷ rate = years to double. At 8%, money doubles in ~9 years.'),
     tf([{s:'$1,000 at 10% for 30 years grows to over $17,000',a:true},{s:'Simple interest grows faster than compound interest',a:false},{s:'Starting early matters more than investing larger amounts later',a:true}]),
     sc('You\'re 25. A friend says "I\'ll start investing at 35 — I have time." What do you tell them?',[
       {label:'Starting 10 years earlier could mean 2-3x more at retirement',outcome:'Correct! At 10% return, $5,000/year from 25-65 = ~$2.4M vs starting at 35 = ~$900K. That decade costs over $1.5M!',correct:true},
@@ -167,7 +167,7 @@ const lessons = [
       {prompt:'Total shares after 3 months: 10 + 20 + 12.5 = ?',options:['40','42.5','45','50'],correct:1}
     ]),
     fb('DCA means investing a ___ amount at regular intervals.',['fixed','random','increasing','variable'],0),
-    q('Why is DCA effective?','It guarantees profits','It removes the need to time the market','It only works in bull markets','It eliminates all risk',1,'DCA removes emotion and timing from investing decisions.'),
+    q('Why is DCA effective?',['It guarantees profits','It removes the need to time the market','It only works in bull markets','It eliminates all risk'],1,'DCA removes emotion and timing from investing decisions.'),
     tf([{s:'DCA means you should try to time market lows',a:false},{s:'With DCA, falling prices let you buy more shares',a:true},{s:'DCA works best with lump sum investing',a:false}]),
     sc('The market dropped 20% this month. You DCA $500/month. What do you do?',[
       {label:'Invest $500 as planned — you\'re buying at a discount!',outcome:'Correct! DCA means sticking to the plan. Lower prices mean more shares per dollar.',correct:true},
@@ -193,7 +193,7 @@ const lessons = [
       {label:'Real Estate (diversifier)',options:['0%','5%','10%','20%'],correct:2}
     ]),
     fb('Your portfolio\'s ___ determines your risk-return tradeoff.',['asset allocation','stock picks','broker','trading frequency'],0),
-    q('What is asset allocation?','Choosing individual stocks','Deciding how to divide money among asset types','Timing when to buy','Picking the best broker',1,'Asset allocation is the most important investment decision.'),
+    q('What is asset allocation?',['Choosing individual stocks','Deciding how to divide money among asset types','Timing when to buy','Picking the best broker'],1,'Asset allocation is the most important investment decision.'),
     m('Portfolio Types',[['Aggressive','80-100% stocks, high risk/return'],['Moderate','60% stocks 40% bonds, balanced'],['Conservative','30% stocks 70% bonds, low risk'],['Income','Dividend stocks and bonds, steady income']]),
     tf([{s:'Asset allocation determines ~90% of portfolio returns variability',a:true},{s:'Everyone should have the same portfolio',a:false},{s:'A good portfolio never loses money',a:false}]),
     vi('Two portfolios: A) 90% stocks 10% bonds. B) 30% stocks 70% bonds.','Which lost more during the 2008 crash?',['Portfolio A (90% stocks)','Portfolio B (30% stocks)','They lost the same','Neither lost money'],0),
@@ -215,7 +215,7 @@ const lessons = [
     tr('Account Types',[['Brokerage','Taxable, no restrictions, flexible'],['401(k)','Employer-sponsored, pre-tax, $23,000 limit'],['Roth IRA','After-tax contributions, tax-free growth'],['Traditional IRA','Pre-tax contributions, taxed at withdrawal']]),
     ds('Order of recommended account priority:',['Max employer 401(k) match','Max Roth IRA','Max remaining 401(k)','Taxable brokerage']),
     fb('A Roth IRA is funded with ___ money, so withdrawals in retirement are tax-free.',['after-tax','pre-tax','borrowed','employer'],0),
-    q('What is an employer match?','A bonus','Free money your employer adds to your 401(k)','A type of stock','A loan from your employer',1,'If your employer matches 50% up to 6%, that\'s an immediate 50% return!'),
+    q('What is an employer match?',['A bonus','Free money your employer adds to your 401(k)','A type of stock','A loan from your employer'],1,'If your employer matches 50% up to 6%, that\'s an immediate 50% return!'),
     bi('Optimize Your Account Strategy','Choose the right account for each goal:',[
       {label:'Retirement savings (30+ years)',options:['Checking account','Roth IRA','Credit card','Savings account'],correct:1},
       {label:'Free money from employer',options:['Brokerage','IRA','401(k) match','CD'],correct:2},
