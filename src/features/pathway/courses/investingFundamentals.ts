@@ -193,7 +193,7 @@ const lessons = [
       {label:'Real Estate (diversifier)',options:['0%','5%','10%','20%'],correct:2}
     ]),
     fb('Your portfolio\'s ___ determines your risk-return tradeoff.',['asset allocation','stock picks','broker','trading frequency'],0),
-    q('What is asset allocation?','Choosing individual stocks','Deciding how to divide money among asset types','Timing when to buy','Picking the best broker',1,'Asset allocation is the most important investment decision.'),
+    q('What is asset allocation?',['Choosing individual stocks','Deciding how to divide money among asset types','Timing when to buy','Picking the best broker'],1,'Asset allocation is the most important investment decision.'),
     m('Portfolio Types',[['Aggressive','80-100% stocks, high risk/return'],['Moderate','60% stocks 40% bonds, balanced'],['Conservative','30% stocks 70% bonds, low risk'],['Income','Dividend stocks and bonds, steady income']]),
     tf([{s:'Asset allocation determines ~90% of portfolio returns variability',a:true},{s:'Everyone should have the same portfolio',a:false},{s:'A good portfolio never loses money',a:false}]),
     vi('Two portfolios: A) 90% stocks 10% bonds. B) 30% stocks 70% bonds.','Which lost more during the 2008 crash?',['Portfolio A (90% stocks)','Portfolio B (30% stocks)','They lost the same','Neither lost money'],0),
