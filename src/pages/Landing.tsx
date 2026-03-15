@@ -437,6 +437,23 @@ const Landing = () => {
               </div>
             ))}
           </motion.div>
+
+          {/* CTA Button */}
+          <motion.div
+            className="text-center mt-14"
+            initial={{ opacity: 0, y: 12 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.3 }}
+          >
+            <Button
+              size="lg"
+              onClick={() => navigate("/auth?signup=true")}
+              className="px-10 py-3.5 bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl font-medium text-base shadow-md hover:shadow-lg hover:shadow-primary/20 transition-all duration-200"
+            >
+              Start Now <ArrowRight className="w-4 h-4 ml-2" />
+            </Button>
+          </motion.div>
         </div>
       </section>
 
