@@ -49,7 +49,7 @@ export const AmbientBackground = () => {
         if (d.x < -5) d.x = w + 5;
         if (d.x > w + 5) d.x = -5;
 
-        ctx.fillStyle = `hsla(263, 70%, 70%, ${d.alpha})`;
+        ctx.fillStyle = `hsla(0, 0%, 80%, ${d.alpha})`;
         ctx.beginPath();
         ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
         ctx.fill();
