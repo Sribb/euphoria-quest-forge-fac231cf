@@ -8,10 +8,10 @@ import { playMilestone, playClick } from "@/lib/soundEffects";
 import { fireConfetti } from "@/lib/confetti";
 
 const MILESTONE_CONFIG: Record<number, { label: string; emoji: string; icon: typeof Trophy; color: string }> = {
-  7: { label: "Week Warrior", emoji: "🔥", icon: Zap, color: "text-warning" },
-  30: { label: "Monthly Master", emoji: "⭐", icon: Star, color: "text-primary" },
-  100: { label: "Century Champion", emoji: "🏆", icon: Trophy, color: "text-accent-foreground" },
-  365: { label: "Year Legend", emoji: "👑", icon: Shield, color: "text-destructive" },
+  7: { label: "Week Warrior", emoji: "", icon: Zap, color: "text-warning" },
+  30: { label: "Monthly Master", emoji: "", icon: Star, color: "text-primary" },
+  100: { label: "Century Champion", emoji: "", icon: Trophy, color: "text-accent-foreground" },
+  365: { label: "Year Legend", emoji: "", icon: Shield, color: "text-destructive" },
 };
 
 export const StreakCard = () => {
