@@ -1,0 +1,75 @@
+import { BookOpen, Dumbbell } from "lucide-react";
+
+interface CourseInfoCardProps {
+  title: string;
+  description: string;
+  totalLessons: number;
+  completedLessons: number;
+  illustration?: React.ReactNode;
+}
+
+const COURSE_ILLUSTRATIONS: Record<string, { emoji: string; gradient: string }> = {
+  "Investing Fundamentals": { emoji: "📈", gradient: "from-emerald-500/20 to-teal-500/10" },
+  "Corporate Finance": { emoji: "🏢", gradient: "from-blue-500/20 to-indigo-500/10" },
+  "Personal Finance": { emoji: "💰", gradient: "from-violet-500/20 to-purple-500/10" },
+  "Trading & Technical Analysis": { emoji: "📊", gradient: "from-orange-500/20 to-amber-500/10" },
+  "Alternative Assets": { emoji: "🌐", gradient: "from-rose-500/20 to-pink-500/10" },
+  "Economics": { emoji: "🏛️", gradient: "from-cyan-500/20 to-sky-500/10" },
+  "Business & Entrepreneurship": { emoji: "💼", gradient: "from-amber-500/20 to-yellow-500/10" },
+  "Marketing Fundamentals": { emoji: "📣", gradient: "from-fuchsia-500/20 to-pink-500/10" },
+};
+
+export const CourseInfoCard = ({
+  title,
+  description,
+  totalLessons,
+  completedLessons,
+}: CourseInfoCardProps) => {
+  const illus = COURSE_ILLUSTRATIONS[title] || { emoji: "📚", gradient: "from-primary/20 to-primary/5" };
+  const exercises = totalLessons * 15; // ~15 exercises per lesson
+
+  return (
+    <div className="sticky top-24 w-full">
+      <div className="rounded-2xl border border-border/60 bg-card/80 backdrop-blur-sm overflow-hidden">
+        {/* Illustration area */}
+        <div className={`h-40 bg-gradient-to-br ${illus.gradient} flex items-center justify-center`}>
+          <span className="text-7xl select-none">{illus.emoji}</span>
+        </div>
+
+        {/* Info */}
+        <div className="p-5 space-y-3">
+          <h2 className="text-lg font-bold text-foreground leading-tight">{title}</h2>
+          <p className="text-sm text-muted-foreground leading-relaxed">{description}</p>
+
+          {/* Progress */}
+          <div className="pt-2">
+            <div className="flex items-center justify-between text-xs text-muted-foreground mb-1.5">
+              <span>{completedLessons} of {totalLessons} complete</span>
+              <span className="font-bold text-primary">
+                {totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0}%
+              </span>
+            </div>
+            <div className="h-2 bg-muted rounded-full overflow-hidden">
+              <div
+                className="h-full bg-primary rounded-full transition-all duration-700"
+                style={{ width: `${totalLessons > 0 ? (completedLessons / totalLessons) * 100 : 0}%` }}
+              />
+            </div>
+          </div>
+
+          {/* Stats */}
+          <div className="flex items-center gap-4 pt-3 border-t border-border/40">
+            <div className="flex items-center gap-1.5 text-muted-foreground">
+              <BookOpen className="w-4 h-4" />
+              <span className="text-xs font-medium">{totalLessons} Lessons</span>
+            </div>
+            <div className="flex items-center gap-1.5 text-muted-foreground">
+              <Dumbbell className="w-4 h-4" />
+              <span className="text-xs font-medium">{exercises} Exercises</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
