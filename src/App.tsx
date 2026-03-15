@@ -103,6 +103,7 @@ const App = () => (
             <Route path="/legal" element={<Legal />} />
             <Route path="/parent-consent" element={<ParentConsent />} />
             <Route path="/legal/dpa" element={<DpaPortal />} />
+            <Route path="/launch" element={<SpiralDemo />} />
             <Route
               path="/role-selection"
               element={
