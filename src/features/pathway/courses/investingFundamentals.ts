@@ -48,7 +48,7 @@ const lessons = [
     c('📜','What Are Bonds?','A bond is a loan you make to a company or government. They promise to pay you back with interest over a set period.'),
     tr('Bond Anatomy',[['Face Value','Amount paid back at maturity (usually $1,000)'],['Coupon Rate','Annual interest rate paid'],['Maturity','When the bond expires and face value is returned'],['Yield','Total return considering price paid']]),
     fb('A bond\'s ___ is the interest rate it pays annually.',['coupon rate','face value','maturity date','credit rating'],0),
-    q('Who issues bonds?','Only the government','Only corporations','Governments, corporations, and municipalities','Only banks',2,'All three issue bonds to raise capital.'),
+    q('Who issues bonds?',['Only the government','Only corporations','Governments, corporations, and municipalities','Only banks'],2,'All three issue bonds to raise capital.'),
     ds('Order bond risk from lowest to highest:',['U.S. Treasury Bonds','Municipal Bonds','Investment-Grade Corporate','High-Yield (Junk) Bonds']),
     tf([{s:'Bonds are generally safer than stocks',a:true},{s:'Bonds always return more than stocks',a:false},{s:'Bond prices fall when interest rates rise',a:true}]),
     pc('Calculate annual interest on a $1,000 bond with 5% coupon',[
