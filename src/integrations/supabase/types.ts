@@ -700,6 +700,35 @@ export type Database = {
         }
         Relationships: []
       }
+      bookmarks: {
+        Row: {
+          created_at: string
+          id: string
+          post_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          post_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          post_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bookmarks_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       class_members: {
         Row: {
           class_id: string
@@ -813,11 +842,41 @@ export type Database = {
         }
         Relationships: []
       }
+      comment_likes: {
+        Row: {
+          comment_id: string
+          created_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          comment_id: string
+          created_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          comment_id?: string
+          created_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "comment_likes_comment_id_fkey"
+            columns: ["comment_id"]
+            isOneToOne: false
+            referencedRelation: "comments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       comments: {
         Row: {
           content: string
           created_at: string
           id: string
+          likes_count: number
           post_id: string
           updated_at: string
           user_id: string
@@ -826,6 +885,7 @@ export type Database = {
           content: string
           created_at?: string
           id?: string
+          likes_count?: number
           post_id: string
           updated_at?: string
           user_id: string
@@ -834,6 +894,7 @@ export type Database = {
           content?: string
           created_at?: string
           id?: string
+          likes_count?: number
           post_id?: string
           updated_at?: string
           user_id?: string
@@ -2206,42 +2267,80 @@ export type Database = {
         }
         Relationships: []
       }
+      post_views: {
+        Row: {
+          id: string
+          post_id: string
+          user_id: string
+          viewed_at: string
+        }
+        Insert: {
+          id?: string
+          post_id: string
+          user_id: string
+          viewed_at?: string
+        }
+        Update: {
+          id?: string
+          post_id?: string
+          user_id?: string
+          viewed_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "post_views_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       posts: {
         Row: {
           category: string | null
           comments_count: number
           content: string
           created_at: string
+          edited_at: string | null
           id: string
           image_url: string | null
           likes_count: number
           media_type: string | null
+          reposts_count: number
           updated_at: string
           user_id: string
+          views_count: number
         }
         Insert: {
           category?: string | null
           comments_count?: number
           content: string
           created_at?: string
+          edited_at?: string | null
           id?: string
           image_url?: string | null
           likes_count?: number
           media_type?: string | null
+          reposts_count?: number
           updated_at?: string
           user_id: string
+          views_count?: number
         }
         Update: {
           category?: string | null
           comments_count?: number
           content?: string
           created_at?: string
+          edited_at?: string | null
           id?: string
           image_url?: string | null
           likes_count?: number
           media_type?: string | null
+          reposts_count?: number
           updated_at?: string
           user_id?: string
+          views_count?: number
         }
         Relationships: [
           {
@@ -2291,6 +2390,35 @@ export type Database = {
           username?: string | null
         }
         Relationships: []
+      }
+      reposts: {
+        Row: {
+          created_at: string
+          id: string
+          post_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          post_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          post_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reposts_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       seasonal_themes: {
         Row: {
