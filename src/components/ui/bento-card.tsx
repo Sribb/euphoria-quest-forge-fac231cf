@@ -105,7 +105,7 @@ const BentoCard = () => {
         </div>
 
         {/* Main Card */}
-        <div className="rounded-xl border border-white/[0.07] bg-card overflow-hidden">
+        <div className="rounded-xl border border-white/[0.10] bg-card shadow-lg ring-1 ring-white/[0.05] overflow-hidden">
           <LayoutGroup>
             {/* Window Chrome */}
             <div className="flex items-center justify-between border-b border-white/[0.07] px-4 py-2.5">
