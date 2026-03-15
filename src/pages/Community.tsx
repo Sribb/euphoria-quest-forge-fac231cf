@@ -36,34 +36,6 @@ const Community = ({ onNavigate }: CommunityProps) => {
   const { hasEducatorAccess } = useEducatorRole();
   const { classes, isLoading: classesLoading, createClass, deleteClass, removeStudent } = useClassManagement();
 
-  // Fetch posts
-  const { data: posts, isLoading: postsLoading } = useQuery({
-    queryKey: ["community-posts"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("posts")
-        .select("*, profiles(display_name, avatar_url)")
-        .order("created_at", { ascending: false })
-        .limit(50);
-      if (error) throw error;
-      return data;
-    },
-  });
-
-  // Fetch user's likes
-  const { data: userLikes } = useQuery({
-    queryKey: ["user-likes", user?.id],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("likes")
-        .select("post_id")
-        .eq("user_id", user?.id!);
-      if (error) throw error;
-      return new Set(data.map((l) => l.post_id));
-    },
-    enabled: !!user?.id,
-  });
-
 
   // Fetch student's joined classes
   const { data: studentClasses } = useQuery({
