@@ -76,7 +76,7 @@ const Rewards = ({ onNavigate }: RewardsProps) => {
             <Zap className="w-6 h-6 text-warning" />
           </div>
           <div>
-            <p className="font-black text-foreground">🔥 Double XP Event Active!</p>
+            <p className="font-black text-foreground">Double XP Event Active!</p>
             <p className="text-sm text-muted-foreground">All XP earned is multiplied by {multiplier}x</p>
           </div>
         </motion.div>
@@ -132,12 +132,12 @@ const Rewards = ({ onNavigate }: RewardsProps) => {
         </h3>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           {[
-            { label: "Correct Answer", xp: `+${XP_PER_CORRECT}`, emoji: "✅", desc: "Per question" },
-            { label: "Lesson Complete", xp: `+${XP_LESSON_COMPLETE}`, emoji: "📘", desc: "Finish any lesson" },
-            { label: "Perfect Lesson", xp: `+${XP_PERFECT_BONUS}`, emoji: "⭐", desc: "Zero mistakes" },
+            { label: "Correct Answer", xp: `+${XP_PER_CORRECT}`, desc: "Per question" },
+            { label: "Lesson Complete", xp: `+${XP_LESSON_COMPLETE}`, desc: "Finish any lesson" },
+            { label: "Perfect Lesson", xp: `+${XP_PERFECT_BONUS}`, desc: "Zero mistakes" },
           ].map(item => (
             <div key={item.label} className="p-3 rounded-2xl bg-muted/30 border border-border/50 text-center">
-              <span className="text-2xl">{item.emoji}</span>
+              <div className="w-8 h-8 rounded-lg bg-primary/10 mx-auto" />
               <p className="text-lg font-black text-primary mt-1">{item.xp} XP</p>
               <p className="text-xs font-bold text-foreground">{item.label}</p>
               <p className="text-[10px] text-muted-foreground">{item.desc}</p>

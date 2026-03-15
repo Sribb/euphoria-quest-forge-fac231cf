@@ -8,10 +8,10 @@ import { playMilestone, playClick } from "@/lib/soundEffects";
 import { fireConfetti } from "@/lib/confetti";
 
 const MILESTONE_CONFIG: Record<number, { label: string; emoji: string; icon: typeof Trophy; color: string }> = {
-  7: { label: "Week Warrior", emoji: "🔥", icon: Zap, color: "text-warning" },
-  30: { label: "Monthly Master", emoji: "⭐", icon: Star, color: "text-primary" },
-  100: { label: "Century Champion", emoji: "🏆", icon: Trophy, color: "text-accent-foreground" },
-  365: { label: "Year Legend", emoji: "👑", icon: Shield, color: "text-destructive" },
+  7: { label: "Week Warrior", emoji: "", icon: Zap, color: "text-warning" },
+  30: { label: "Monthly Master", emoji: "", icon: Star, color: "text-primary" },
+  100: { label: "Century Champion", emoji: "", icon: Trophy, color: "text-accent-foreground" },
+  365: { label: "Year Legend", emoji: "", icon: Shield, color: "text-destructive" },
 };
 
 export const StreakCard = () => {
@@ -143,7 +143,7 @@ export const StreakCard = () => {
           <div className="w-px h-8 bg-border/30" />
           <div className="flex-1 text-center">
             <p className="text-lg font-bold text-foreground">
-              {streak.checkedInToday ? "✅" : "⏳"}
+              {streak.checkedInToday ? "Done" : "Pending"}
             </p>
             <p className="text-[10px] text-muted-foreground font-medium">Today</p>
           </div>
@@ -189,7 +189,7 @@ export const StreakCard = () => {
                 +1 Streak Freeze earned!
               </div>
               <Button onClick={() => { playClick(); setShowMilestone(null); }} className="w-full rounded-xl">
-                Keep Going! 🔥
+                Keep Going!
               </Button>
             </motion.div>
           </motion.div>
