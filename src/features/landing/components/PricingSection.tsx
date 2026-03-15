@@ -113,7 +113,7 @@ export const PricingSection = () => {
   const [hoveredTier, setHoveredTier] = useState<number | null>(null);
 
   return (
-    <section id="pricing" className="py-24 md:py-32 relative overflow-x-hidden">
+    <section id="pricing" className="py-24 md:py-32 relative">
       <div className="max-w-7xl mx-auto px-6 relative z-10">
         {/* Header */}
         <motion.div
@@ -152,7 +152,7 @@ export const PricingSection = () => {
 
         {/* Pricing Grid */}
         <motion.div
-          className="grid md:grid-cols-3 gap-5 items-stretch mb-20 max-w-5xl mx-auto"
+          className="grid md:grid-cols-3 gap-5 items-stretch mb-20 max-w-5xl mx-auto py-6"
           variants={stagger}
           initial="hidden"
           whileInView="show"
