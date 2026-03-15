@@ -65,7 +65,7 @@ export const IMessageChat = () => {
     queryKey: ["conversations", user?.id],
     queryFn: async () => {
       if (!user?.id) return [];
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from("conversations")
         .select("*")
         .or(`participant_one.eq.${user.id},participant_two.eq.${user.id}`)
@@ -86,7 +86,6 @@ export const IMessageChat = () => {
         profiles?.forEach((p: any) => { profilesMap[p.id] = p; });
       }
 
-      // Get unread counts
       const convos: Conversation[] = [];
       for (const c of data || []) {
         const partnerId = c.participant_one === user.id ? c.participant_two : c.participant_one;
