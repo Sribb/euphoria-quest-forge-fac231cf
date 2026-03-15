@@ -156,7 +156,7 @@ export const SpacedRepetitionPanel = () => {
                 <div className="min-w-0">
                   <p className="text-sm font-medium text-foreground truncate">{item.concept_label}</p>
                   <p className="text-[11px] text-muted-foreground">
-                    {item.is_cracked ? "⚠️ Cracked — needs review" : `Next: ${item.interval_days}d interval`}
+                    {item.is_cracked ? "Cracked — needs review" : `Next: ${item.interval_days}d interval`}
                   </p>
                 </div>
               </div>

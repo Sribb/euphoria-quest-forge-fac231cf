@@ -147,7 +147,7 @@ export const LiveEconomicHeadlines = () => {
 
       <div className="mt-6 p-4 bg-primary/5 rounded-xl border border-primary/20 backdrop-blur-sm">
         <p className="text-xs text-center text-muted-foreground">
-          <span className="text-primary font-semibold">📡 Live Feed:</span> Headlines update automatically every 5 minutes
+          <span className="text-primary font-semibold">Live Feed:</span> Headlines update automatically every 5 minutes
         </p>
       </div>
     </Card>

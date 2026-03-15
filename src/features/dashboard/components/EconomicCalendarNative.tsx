@@ -172,7 +172,7 @@ export const EconomicCalendarNative = () => {
 
       <div className="mt-6 p-4 bg-primary/10 rounded-xl border border-primary/20">
         <p className="text-sm text-foreground">
-          <span className="font-semibold text-primary">Pro Tip:</span> High-impact events (🔴) can create significant market volatility.
+          <span className="font-semibold text-primary">Pro Tip:</span> High-impact events can create significant market volatility.
           Plan your trading strategy accordingly and consider reducing position sizes before major announcements.
         </p>
       </div>
