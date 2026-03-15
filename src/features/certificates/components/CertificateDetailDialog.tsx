@@ -295,6 +295,3 @@ export const CertificateDetailDialog = ({ certificate, open, onClose, onNavigate
     </Dialog>
   );
 };
-
-// Import Shield for credential details section
-import { Shield } from "lucide-react";
