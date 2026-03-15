@@ -218,6 +218,32 @@ const Landing = () => {
       {/* ── Features ── */}
       <FeatureShowcase />
 
+      {/* ── Feature Detail Sections ── */}
+      <SectionWithMockup
+        title={
+          <>
+            Interactive lessons,{" "}
+            <span className="text-primary">built for doing.</span>
+          </>
+        }
+        description="Every lesson is a scenario where you make real decisions and see consequences. No textbooks — just simulation-driven learning that adapts to your skill level."
+        primaryImageSrc="https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=800&q=80&auto=format"
+        secondaryImageSrc="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&q=80&auto=format"
+      />
+
+      <SectionWithMockup
+        title={
+          <>
+            AI-powered markets,{" "}
+            <span className="text-primary">zero real risk.</span>
+          </>
+        }
+        description="Our simulation engine generates realistic price movements, breaking news, and market events. Experience bull runs and crashes — without risking a single dollar."
+        primaryImageSrc="https://images.unsplash.com/photo-1642790106117-e829e14a795f?w=800&q=80&auto=format"
+        secondaryImageSrc="https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?w=600&q=80&auto=format"
+        reverseLayout
+      />
+
       {/* ── How It Works — Horizontal Timeline ── */}
       <section id="how-it-works" className="py-20 md:py-28">
         <div className="max-w-5xl mx-auto px-6">
