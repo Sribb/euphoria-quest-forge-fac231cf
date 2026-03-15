@@ -142,9 +142,9 @@ export const EconomicCalendarNative = () => {
                         {getSentimentIcon(event.sentiment)}
                       </div>
                       <div className="text-xs text-muted-foreground mt-1">
-                        {event.importance === "high" ? "🔴 High Impact" : 
-                         event.importance === "medium" ? "🟡 Medium Impact" : 
-                         "⚪ Low Impact"}
+                        {event.importance === "high" ? "High Impact" : 
+                         event.importance === "medium" ? "Medium Impact" : 
+                         "Low Impact"}
                       </div>
                     </div>
                     
