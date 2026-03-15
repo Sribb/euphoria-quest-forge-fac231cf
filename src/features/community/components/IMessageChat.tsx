@@ -92,7 +92,7 @@ export const IMessageChat = () => {
       const convos: Conversation[] = [];
       for (const c of data || []) {
         const partnerId = c.participant_one === user.id ? c.participant_two : c.participant_one;
-        const { count } = await supabase
+        const { count } = await db
           .from("direct_messages")
           .select("*", { count: "exact", head: true })
           .eq("conversation_id", c.id)
