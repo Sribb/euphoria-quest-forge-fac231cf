@@ -40,8 +40,8 @@ function ParticleCanvas() {
     const make = (): P => ({
       x: Math.random() * canvas.width,
       y: Math.random() * canvas.height,
-      v: Math.random() * 0.25 + 0.05,
-      o: Math.random() * 0.25 + 0.08,
+      v: Math.random() * 0.15 + 0.02,
+      o: Math.random() * 0.5 + 0.15,
     });
 
     const init = () => {
