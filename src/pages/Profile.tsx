@@ -1,10 +1,10 @@
 import { useState, useRef, useEffect } from "react";
-import { User, Settings as SettingsIcon, Trophy } from "lucide-react";
+import { User, Settings as SettingsIcon } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useOnboarding } from "@/hooks/useOnboarding";
-import { useBadgeProgress } from "@/features/badges/hooks/useBadgeProgress";
+
 import { formatDollar } from "@/lib/formatters";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
@@ -15,9 +15,7 @@ import { StatsRow } from "@/features/profile/components/StatsRow";
 import { ActivityGraph } from "@/features/profile/components/ActivityGraph";
 import { RecentActivity } from "@/features/profile/components/RecentActivity";
 import { PortfolioBreakdown } from "@/features/profile/components/PortfolioBreakdown";
-import { BadgeShowcaseRow } from "@/features/profile/components/BadgeShowcaseRow";
 import { SettingsTab } from "@/features/profile/components/SettingsTab";
-import { AchievementsTab } from "@/features/profile/components/AchievementsTab";
 
 interface ProfileProps {
   onNavigate: (tab: string) => void;
@@ -26,7 +24,6 @@ interface ProfileProps {
 const TABS = [
   { id: "profile" as const, label: "Profile", icon: User },
   { id: "settings" as const, label: "Settings", icon: SettingsIcon },
-  { id: "achievements" as const, label: "Achievements", icon: Trophy },
 ] as const;
 
 type TabId = (typeof TABS)[number]["id"];
@@ -34,7 +31,7 @@ type TabId = (typeof TABS)[number]["id"];
 const Profile = ({ onNavigate }: ProfileProps) => {
   const { user } = useAuth();
   const { onboarding, placementLesson, refetch: refetchOnboarding } = useOnboarding();
-  const { badges } = useBadgeProgress();
+  
   const [activeTab, setActiveTab] = useState<TabId>("profile");
   const tabRefs = useRef<Record<string, HTMLButtonElement | null>>({});
   const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0 });
@@ -231,10 +228,6 @@ const Profile = ({ onNavigate }: ProfileProps) => {
               />
             </div>
 
-            <BadgeShowcaseRow
-              badges={badges}
-              onViewAll={() => setActiveTab("achievements")}
-            />
 
             <RecentActivity items={recentItems} />
           </div>
@@ -249,9 +242,6 @@ const Profile = ({ onNavigate }: ProfileProps) => {
           />
         )}
 
-        {activeTab === "achievements" && (
-          <AchievementsTab />
-        )}
       </motion.div>
     </div>
   );
