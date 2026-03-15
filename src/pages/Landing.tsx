@@ -282,40 +282,21 @@ const Landing = () => {
         </div>
       </section>
 
-      {/* ── Testimonials — Carousel ── */}
+      {/* ── Testimonials — Infinite Scroll ── */}
       <section className="py-20 md:py-28">
         <div className="max-w-6xl mx-auto px-6">
-          <motion.div className="flex items-end justify-between mb-14" variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}>
-            <div>
-              <p className="text-[11px] font-medium text-primary uppercase tracking-[0.15em] mb-4">Testimonials</p>
-              <h2 className="font-heading text-4xl md:text-5xl font-bold text-foreground">Loved by students & professionals</h2>
-            </div>
-            <div className="hidden md:flex gap-2">
-              <button
-                onClick={() => setTestimonialIdx((p) => (p === 0 ? testimonials.length - 1 : p - 1))}
-                className="w-10 h-10 rounded-lg border border-white/[0.07] bg-card flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-white/20 transition-colors"
-              >
-                <ChevronLeft className="w-4 h-4" />
-              </button>
-              <button
-                onClick={() => setTestimonialIdx((p) => (p === testimonials.length - 1 ? 0 : p + 1))}
-                className="w-10 h-10 rounded-lg border border-white/[0.07] bg-card flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-white/20 transition-colors"
-              >
-                <ChevronRight className="w-4 h-4" />
-              </button>
-            </div>
+          <motion.div className="mb-14" variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}>
+            <p className="text-[11px] font-medium text-primary uppercase tracking-[0.15em] mb-4">Testimonials</p>
+            <h2 className="font-heading text-4xl md:text-5xl font-bold text-foreground">Loved by students & professionals</h2>
           </motion.div>
+        </div>
 
+        <div className="space-y-5">
+          {/* Top row — scrolls left */}
           <div className="overflow-hidden">
-            <motion.div
-              className="flex gap-5 transition-transform duration-500 ease-out"
-              style={{ transform: `translateX(-${testimonialIdx * (100 / 3)}%)` }}
-            >
-              {testimonials.map((t, i) => (
-                <div
-                  key={i}
-                  className="min-w-[calc(100%-0px)] sm:min-w-[calc(50%-10px)] lg:min-w-[calc(33.333%-14px)] bg-card border border-white/[0.07] rounded-xl p-6 shrink-0"
-                >
+            <div className="flex gap-5 w-max animate-[scroll-left_38s_linear_infinite] hover:[animation-play-state:paused]">
+              {[...topRowTestimonials, ...topRowTestimonials].map((t, i) => (
+                <div key={i} className="min-w-[300px] max-w-[380px] bg-card border border-white/[0.07] rounded-xl p-6 shrink-0">
                   <div className="flex gap-0.5 mb-4">
                     {[...Array(5)].map((_, j) => (
                       <Star key={j} className="w-3.5 h-3.5 text-[hsl(45_93%_47%)] fill-[hsl(45_93%_47%)]" />
@@ -328,18 +309,27 @@ const Landing = () => {
                   </div>
                 </div>
               ))}
-            </motion.div>
+            </div>
           </div>
 
-          {/* Dot indicators */}
-          <div className="flex justify-center gap-2 mt-8">
-            {testimonials.map((_, i) => (
-              <button
-                key={i}
-                onClick={() => setTestimonialIdx(i)}
-                className={`w-2 h-2 rounded-full transition-colors ${i === testimonialIdx ? "bg-primary" : "bg-white/10"}`}
-              />
-            ))}
+          {/* Bottom row — scrolls right */}
+          <div className="overflow-hidden">
+            <div className="flex gap-5 w-max animate-[scroll-right_38s_linear_infinite] hover:[animation-play-state:paused]">
+              {[...bottomRowTestimonials, ...bottomRowTestimonials].map((t, i) => (
+                <div key={i} className="min-w-[300px] max-w-[380px] bg-card border border-white/[0.07] rounded-xl p-6 shrink-0">
+                  <div className="flex gap-0.5 mb-4">
+                    {[...Array(5)].map((_, j) => (
+                      <Star key={j} className="w-3.5 h-3.5 text-[hsl(45_93%_47%)] fill-[hsl(45_93%_47%)]" />
+                    ))}
+                  </div>
+                  <p className="text-[15px] text-[hsl(240_5%_83%)] leading-[1.7] mb-5 font-normal">"{t.quote}"</p>
+                  <div>
+                    <p className="text-sm font-medium text-foreground">{t.author}</p>
+                    <p className="text-[13px] text-muted-foreground">{t.role}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>
