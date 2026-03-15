@@ -8,6 +8,8 @@ import { FeatureShowcase } from "@/features/landing/components/FeatureShowcase";
 import { PricingSection } from "@/features/landing/components/PricingSection";
 import SectionWithMockup from "@/components/ui/section-with-mockup";
 import logo from "@/assets/euphoria-logo-button.png";
+import landingLessons from "@/assets/landing-interactive-lessons.png";
+import landingIntro from "@/assets/landing-intro-investing.png";
 
 const HeroImage = () => {
   const ref = useRef<HTMLDivElement>(null);
@@ -228,8 +230,8 @@ const Landing = () => {
           </>
         }
         description="Every lesson is a scenario where you make real decisions and see consequences. No textbooks — just simulation-driven learning that adapts to your skill level."
-        primaryImageSrc="https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=800&q=80&auto=format"
-        secondaryImageSrc="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&q=80&auto=format"
+        primaryImageSrc={landingLessons}
+        secondaryImageSrc={landingIntro}
       />
 
       <SectionWithMockup
