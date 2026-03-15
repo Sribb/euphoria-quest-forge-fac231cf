@@ -770,10 +770,10 @@ export const IMessageChat = () => {
                             transition={{ duration: 0.15 }}
                             className={cn("flex mb-0.5 group", isMine ? "justify-end" : "justify-start")}
                           >
-                            <div className="relative">
+                            <div className="relative max-w-[75%]">
                               <div
                                 className={cn(
-                                  "max-w-[75%] px-4 py-2.5 text-[14px] leading-relaxed",
+                                  "px-4 py-2.5 text-[14px] leading-relaxed break-words overflow-hidden whitespace-pre-wrap",
                                   isMine
                                     ? "bg-primary text-primary-foreground rounded-[20px] rounded-br-[6px]"
                                     : "bg-muted/40 backdrop-blur-sm text-foreground rounded-[20px] rounded-bl-[6px] border border-border/10"
