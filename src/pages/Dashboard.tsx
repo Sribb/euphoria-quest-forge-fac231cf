@@ -185,6 +185,28 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
 
   // Active lesson view
   if (activeLessonId) {
+    const courseId = PATHWAY_TO_COURSE[activePathway];
+    if (courseId) {
+      // Find the lesson's order_index to map to lesson number
+      const lesson = lessons.find((l) => l.id === activeLessonId);
+      const lessonNumber = lesson ? lesson.order_index + 1 : 1;
+      return (
+        <PathwayLessonViewer
+          courseId={courseId}
+          lessonNumber={lessonNumber}
+          onClose={() => { setActiveLessonId(null); refetch(); }}
+          onNextLesson={() => {
+            const nextLesson = lessons.find((l) => l.order_index === (lesson?.order_index ?? 0) + 1 && (l as any).pathway === activePathway);
+            if (nextLesson) {
+              setActiveLessonId(nextLesson.id);
+            } else {
+              setActiveLessonId(null);
+              refetch();
+            }
+          }}
+        />
+      );
+    }
     return (
       <ThreePhaseLessonViewer
         lessonId={activeLessonId}
