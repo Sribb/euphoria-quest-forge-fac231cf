@@ -72,13 +72,13 @@ export const CoinShop = ({ onNavigate }: CoinShopProps) => {
           </div>
           <div className="flex flex-wrap gap-2">
             {hasDoubleXP && (
-              <Badge className="bg-amber-500/20 text-amber-400 border border-amber-500/30">
-                ⚡ Double XP Active
+              <Badge className="bg-amber-500/20 text-amber-400 border border-amber-500/30 flex items-center gap-1">
+                <EuphoriaIcon name="lightning" size={14} /> Double XP Active
               </Badge>
             )}
             {hintCount > 0 && (
-              <Badge className="bg-blue-500/20 text-blue-400 border border-blue-500/30">
-                💡 {hintCount} Hints Available
+              <Badge className="bg-blue-500/20 text-blue-400 border border-blue-500/30 flex items-center gap-1">
+                <EuphoriaIcon name="sparkle" size={14} /> {hintCount} Hints Available
               </Badge>
             )}
             {activePowerups.filter(p => p.powerup_type === "double_xp").map(p => {
