@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { useBadgeProgress, BadgeWithProgress } from "../hooks/useBadgeProgress";
 import { BADGE_CATEGORIES, RARITY_CONFIG, BadgeCategory } from "../data/badgeDefinitions";
+import { EuphoriaIcon } from "@/components/icons/EuphoriaIcon";
 
 const NEXT_ACHIEVABLE_COUNT = 6;
 
