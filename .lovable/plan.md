@@ -1,46 +1,96 @@
 
 
-# Implementation Plan: Lessons 6–10 in investingFundamentals.ts
+## Problem
 
-## What Changes
+The `ThreePhaseLessonViewer` routes lessons purely by `order_index` (1-25), ignoring `pathway`. All five pathways show the same Investing slides. The database has unique lesson titles per pathway, but no custom slide components exist for Personal Finance, Corporate Finance, Trading, or Alternative Assets.
 
-**Single file modified:** `src/features/pathway/courses/investingFundamentals.ts`
+## Plan
 
-**Lines 1268–1343** (placeholder L(8), L(9), L(10)) are replaced with five complete 22-step lessons:
+### 1. Create pathway-specific slide components (Lessons 1-10 for each of 4 pathways)
 
-| # | Title | Hook Stat | Case Study | BG Color |
-|---|-------|-----------|------------|----------|
-| 6 | Market Psychology: Fear and Greed | S&P 500: 27 bear markets, all recovered | GameStop Jan 2021 | #120a0a |
-| 7 | Value Investing: Price vs. Intrinsic Value | Buffett 97% wealth after 65 | Buffett buying Coca-Cola 1988 | #0a0d12 |
-| 8 | Fundamental Analysis: Reading the Numbers | Enron hid billions in debt | Enron fraud 2001 | #080b10 |
-| 9 | Economic Moats: Competitive Advantages | Visa 70B+ transactions/year | Visa network 1970–present | #0a0f0a |
-| 10 | Portfolio Management: Building Your Strategy | Yale Endowment 13.7% annual | Yale/Swensen strategy | #0a0a14 |
+Each uses `BeginnerLessonTemplate` with 4-5 slides per lesson, including at least one interactive element (SliderSimulator, DragSortChallenge, or quiz). Total: **40 new files**.
 
-## Structure Per Lesson (22 steps + 5 challenge questions)
+**Personal Finance** (`src/features/learning/components/lessons/pf/`):
+- `PF1FinancialStartingPoint.tsx` - Net worth calculator slider
+- `PF2BudgetingWorks.tsx` - 50/30/20 budget drag-sort
+- `PF3EmergencyFund.tsx` - Emergency fund months slider
+- `PF4CreditScores.tsx` - Score factor drag-rank
+- `PF5GoodVsBadDebt.tsx` - Interest rate slider comparison
+- `PF6BankingAccounts.tsx` - APY compound slider
+- `PF7PaycheckDeductions.tsx` - Tax bracket slider
+- `PF8FinancialGoals.tsx` - Goal priority drag-sort
+- `PF9LifestyleInflation.tsx` - Inflation impact slider
+- `PF10Challenge.tsx` - Mixed quiz with all concepts
 
-Each lesson uses the same helpers already imported. Phase structure:
+**Corporate Finance** (`src/features/learning/components/lessons/cf/`):
+- `CF1WhatIsCorporateFinance.tsx` - Stakeholder drag-sort
+- `CF2IncomeStatement.tsx` - Revenue/expense slider
+- `CF3BalanceSheets.tsx` - Assets vs liabilities slider
+- `CF4CashFlow.tsx` - Operating/investing/financing drag-sort
+- `CF5FinancialRatios.tsx` - Ratio calculator slider
+- `CF6RevenueRecognition.tsx` - Revenue timing drag-sort
+- `CF7COGSMargins.tsx` - Margin calculator slider
+- `CF8WorkingCapital.tsx` - Working capital slider
+- `CF9SECFilings.tsx` - Filing types drag-sort
+- `CF10Challenge.tsx` - Mixed quiz
 
-1. **Hook** (2 steps): `hookOpener` + `stakesCard`
-2. **Teach** (6 steps): `teachingSlide` + `microCheck` + `interactiveGraph` + `caseStudy` + `misconceptions` + `keyTermsCards`
-3. **Practice** (8 steps): Unique interactive element order per lesson as specified in the plan
-4. **Apply** (4 steps): scenario `q()` + `simulationFinale` + `summaryCards` + `whatsNext`
-5. **Challenge**: 5 `cq()` questions
+**Trading** (`src/features/learning/components/lessons/tr/`):
+- `TR1WhatIsTrading.tsx` - Trading vs investing drag-sort
+- `TR2CandlestickBasics.tsx` - Chart annotation interactive
+- `TR3SupportResistance.tsx` - Chart annotation (identify levels)
+- `TR4TrendLines.tsx` - Chart annotation (draw trends)
+- `TR5VolumeAnalysis.tsx` - Volume-price slider
+- `TR6MovingAverages.tsx` - MA period slider
+- `TR7OrderTypes.tsx` - Order type drag-sort
+- `TR8RiskManagement.tsx` - Position size slider
+- `TR9PaperTrading.tsx` - P&L simulator slider
+- `TR10Challenge.tsx` - Mixed quiz
 
-## Interactive Element Orders (Phase 3)
+**Alternative Assets** (`src/features/learning/components/lessons/alt/`):
+- `ALT1BeyondStocks.tsx` - Asset class drag-sort
+- `ALT2RealEstate.tsx` - Rental yield slider
+- `ALT3REITs.tsx` - REIT dividend slider
+- `ALT4GoldMetals.tsx` - Gold allocation slider
+- `ALT5Commodities.tsx` - Supply/demand drag-sort
+- `ALT6Crypto.tsx` - Volatility comparison slider
+- `ALT7NFTs.tsx` - Risk factor drag-sort
+- `ALT8Collectibles.tsx` - Appreciation slider
+- `ALT9ESG.tsx` - ESG score drag-sort
+- `ALT10Challenge.tsx` - Mixed quiz
 
-- **L6:** tapToReveal → mcq → scenario → fillInBlank → visualInteractive → trueFalse → dragSort → match
-- **L7:** fillInBlank → visualInteractive → mcq → tapToReveal → dragSort → scenario → trueFalse → slider
-- **L8:** mcq → dragSort → tapToReveal → fillInBlank → trueFalse → visualInteractive → scenario → match
-- **L9:** visualInteractive → fillInBlank → trueFalse → mcq → scenario → dragSort → tapToReveal → slider
-- **L10:** dragSort → mcq → fillInBlank → scenario → trueFalse → tapToReveal → visualInteractive → match
+### 2. Update ThreePhaseLessonViewer routing
 
-## Untouched
+Refactor the giant if/else chain to use a pathway-aware lookup map:
 
-- Lessons 1–5 (lines 8–1266): unchanged
-- Condensed lessons 11–50 (lines 1345–1406): unchanged
-- All renderer, type, and helper files: unchanged
+```typescript
+const LESSON_MAP: Record<string, Record<number, React.FC<{onComplete: () => void}>>> = {
+  'investing': { 1: Lesson1Beginner, 2: Lesson2RiskRewardSlides, ... },
+  'personal-finance': { 1: PF1FinancialStartingPoint, 2: PF2BudgetingWorks, ... },
+  'corporate-finance': { 1: CF1WhatIsCorporateFinance, ... },
+  'trading': { 1: TR1WhatIsTrading, ... },
+  'alternative-assets': { 1: ALT1BeyondStocks, ... },
+};
+```
 
-## Size Estimate
+Then replace the 500-line if/else with:
+```typescript
+const SlideComponent = LESSON_MAP[lesson.pathway]?.[lesson.order_index];
+if (SlideComponent) {
+  return <SlideComponent onComplete={handleComplete} />;
+}
+// fallback to generic three-phase flow
+```
 
-Each full lesson is ~200–250 lines of data. Total addition: ~1,100–1,250 lines replacing the 76 placeholder lines.
+### 3. Also increase lesson text size (from previous request)
+
+Update `BeginnerLessonTemplate`:
+- Title: `text-3xl md:text-4xl`
+- Content wrapper: `text-lg leading-relaxed`
+- Container: `max-w-3xl mx-auto`
+
+### Summary
+
+- **40 new lesson files** across 4 subdirectories
+- **1 major refactor** of `ThreePhaseLessonViewer.tsx` (pathway-aware routing map)
+- **1 minor edit** to `BeginnerLessonTemplate.tsx` (text sizing)
 

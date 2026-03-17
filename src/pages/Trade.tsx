@@ -1,14 +1,14 @@
-import { TrendingUp, Brain, BarChart3, Zap, PieChart } from "lucide-react";
-import { InteractiveAIMarket } from "@/features/trading/components/InteractiveAIMarket";
-import { PortfolioOverview } from "@/features/trading/components/PortfolioOverview";
-import { PortfolioAnalyzer } from "@/features/trading/components/PortfolioAnalyzer";
-import { AssetAllocation } from "@/features/trading/components/AssetAllocation";
-import { TransactionHistory } from "@/features/trading/components/TransactionHistory";
-import { StockTrading } from "@/features/trading/components/StockTrading";
+import { useState } from "react";
+import { TrendingUp } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useAuth } from "@/hooks/useAuth";
-import { useAIMarket } from "@/hooks/useAIMarket";
+import { usePaperTrading } from "@/hooks/usePaperTrading";
+import { WatchlistRow } from "@/features/paper-trading/components/WatchlistRow";
+import { StockSearchBar } from "@/features/paper-trading/components/StockSearch";
+import { MarketList } from "@/features/paper-trading/components/MarketList";
+import { PortfolioTab } from "@/features/paper-trading/components/PortfolioTab";
+import { HistoryTab } from "@/features/paper-trading/components/HistoryTab";
+import { StockDetailModal } from "@/features/paper-trading/components/StockDetailModal";
 import { motion } from "framer-motion";
 
 interface TradeProps {
@@ -16,74 +16,58 @@ interface TradeProps {
   onStockSearch?: () => void;
 }
 
-const Trade = ({ onNavigate, onStockSearch }: TradeProps) => {
-  const { user } = useAuth();
-  const { session } = useAIMarket(user?.id);
+const Trade = ({ onNavigate }: TradeProps) => {
+  const { data } = usePaperTrading();
+  const [activeTab, setActiveTab] = useState("discover");
+  const [selectedStock, setSelectedStock] = useState<string | null>(null);
+
+  if (selectedStock) {
+    return <StockDetailModal symbol={selectedStock} onBack={() => setSelectedStock(null)} />;
+  }
 
   return (
-    <motion.div 
+    <motion.div
       className="min-h-screen bg-background pb-24 pt-2"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.4 }}
     >
       {/* Header */}
-      <div className="flex items-center justify-between mb-6 px-1">
+      <div className="flex items-center justify-between mb-5 px-1">
         <div className="flex items-center gap-3">
           <div className="w-11 h-11 rounded-xl bg-gradient-success flex items-center justify-center shadow-glow-soft">
             <TrendingUp className="w-5 h-5 text-white" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold">Trade Terminal</h1>
-            <p className="text-sm text-muted-foreground">AI-powered market simulation</p>
+            <h1 className="text-2xl font-bold">Paper Trading</h1>
+            <p className="text-xs text-muted-foreground">Virtual money — practice risk free</p>
           </div>
         </div>
-        
-        {session && (
-          <Badge variant="outline" className="bg-success/10 text-success border-success/30 px-3 py-1.5 text-xs">
-            <div className="w-2 h-2 rounded-full bg-success mr-2 animate-pulse" />
-            AI Market Active
-          </Badge>
-        )}
+        <Badge variant="outline" className="bg-success/10 text-success border-success/30 px-3 py-1.5 text-sm font-semibold">
+          ${data.paper_cash.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} available
+        </Badge>
       </div>
 
       {/* Tabs */}
-      <Tabs defaultValue="overview" className="w-full">
-        <TabsList className="grid w-full grid-cols-4 mb-6 bg-muted/50 backdrop-blur-sm">
-          <TabsTrigger value="overview" className="gap-2 text-xs sm:text-sm">
-            <BarChart3 className="w-4 h-4" />
-            Overview
-          </TabsTrigger>
-          <TabsTrigger value="ai-market" className="gap-2 text-xs sm:text-sm">
-            <Brain className="w-4 h-4" />
-            AI Market
-          </TabsTrigger>
-          <TabsTrigger value="trade" className="gap-2 text-xs sm:text-sm">
-            <Zap className="w-4 h-4" />
-            Trade
-          </TabsTrigger>
-          <TabsTrigger value="analyze" className="gap-2 text-xs sm:text-sm">
-            <PieChart className="w-4 h-4" />
-            Analyze
-          </TabsTrigger>
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <TabsList className="grid w-full grid-cols-3 mb-5 bg-muted/50 backdrop-blur-sm">
+          <TabsTrigger value="discover">Discover</TabsTrigger>
+          <TabsTrigger value="portfolio">Portfolio</TabsTrigger>
+          <TabsTrigger value="history">History</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="overview" className="space-y-6">
-          <PortfolioOverview />
-          <AssetAllocation />
-          <TransactionHistory />
+        <TabsContent value="discover" className="space-y-5">
+          <WatchlistRow onSelect={setSelectedStock} />
+          <StockSearchBar onSelect={setSelectedStock} />
+          <MarketList onSelect={setSelectedStock} />
         </TabsContent>
 
-        <TabsContent value="ai-market">
-          <InteractiveAIMarket />
+        <TabsContent value="portfolio">
+          <PortfolioTab onSelectStock={setSelectedStock} onSwitchTab={setActiveTab} />
         </TabsContent>
 
-        <TabsContent value="trade">
-          <StockTrading />
-        </TabsContent>
-
-        <TabsContent value="analyze">
-          <PortfolioAnalyzer />
+        <TabsContent value="history">
+          <HistoryTab />
         </TabsContent>
       </Tabs>
     </motion.div>

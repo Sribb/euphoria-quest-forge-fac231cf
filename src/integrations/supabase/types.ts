@@ -2104,6 +2104,36 @@ export type Database = {
         }
         Relationships: []
       }
+      paper_trading: {
+        Row: {
+          created_at: string
+          id: string
+          paper_cash: number
+          paper_holdings: Json
+          paper_trades: Json
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          paper_cash?: number
+          paper_holdings?: Json
+          paper_trades?: Json
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          paper_cash?: number
+          paper_holdings?: Json
+          paper_trades?: Json
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       parental_consents: {
         Row: {
           class_id: string
@@ -3286,6 +3316,15 @@ export type Database = {
       is_class_member: {
         Args: { _class_id: string; _user_id: string }
         Returns: boolean
+      }
+      update_paper_portfolio: {
+        Args: {
+          p_cash: number
+          p_holdings: Json
+          p_trades: Json
+          p_user_id: string
+        }
+        Returns: undefined
       }
     }
     Enums: {
