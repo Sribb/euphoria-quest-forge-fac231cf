@@ -101,6 +101,7 @@ export const PortfolioBreakdown = ({ assets, cashBalance }: PortfolioBreakdownPr
           height={size + hoverGrow * 2}
           viewBox={`${-hoverGrow} ${-hoverGrow} ${size + hoverGrow * 2} ${size + hoverGrow * 2}`}
           className="overflow-visible"
+          style={{ pointerEvents: "auto" }}
           onMouseLeave={() => setHovered(null)}
         >
           {segments.map((seg, i) => {
@@ -122,7 +123,7 @@ export const PortfolioBreakdown = ({ assets, cashBalance }: PortfolioBreakdownPr
                   stroke={seg.color}
                   strokeWidth={outerR - innerR}
                   className="cursor-pointer transition-all duration-200"
-                  style={{ opacity: hovered !== null && !isHovered ? 0.4 : 1 }}
+                  style={{ opacity: hovered !== null && !isHovered ? 0.4 : 1, pointerEvents: "auto" }}
                   onMouseEnter={() => setHovered(i)}
                 />
               );
@@ -136,6 +137,7 @@ export const PortfolioBreakdown = ({ assets, cashBalance }: PortfolioBreakdownPr
                 style={{
                   opacity: hovered !== null && !isHovered ? 0.4 : 1,
                   filter: isHovered ? "brightness(1.15)" : "none",
+                  pointerEvents: "auto",
                 }}
                 onMouseEnter={() => setHovered(i)}
               />
