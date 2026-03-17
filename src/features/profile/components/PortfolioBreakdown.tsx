@@ -137,6 +137,7 @@ export const PortfolioBreakdown = ({ assets, cashBalance }: PortfolioBreakdownPr
                 style={{
                   opacity: hovered !== null && !isHovered ? 0.4 : 1,
                   filter: isHovered ? "brightness(1.15)" : "none",
+                  pointerEvents: "auto",
                 }}
                 onMouseEnter={() => setHovered(i)}
               />
