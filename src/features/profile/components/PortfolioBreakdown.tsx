@@ -101,6 +101,7 @@ export const PortfolioBreakdown = ({ assets, cashBalance }: PortfolioBreakdownPr
           height={size + hoverGrow * 2}
           viewBox={`${-hoverGrow} ${-hoverGrow} ${size + hoverGrow * 2} ${size + hoverGrow * 2}`}
           className="overflow-visible"
+          style={{ pointerEvents: "auto" }}
           onMouseLeave={() => setHovered(null)}
         >
           {segments.map((seg, i) => {
