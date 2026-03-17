@@ -108,7 +108,7 @@ function DragSortView({ step, onComplete }: { step: DragSortStep; onComplete: (c
   };
   const reset = () => { setOrder([]); setDone(false); };
   return (
-    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col items-center gap-5 px-4 w-full max-w-lg mx-auto">
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col items-center gap-5 px-4 w-full max-w-2xl mx-auto">
       <h2 className="text-lg font-bold text-foreground text-center">{step.prompt}</h2>
       <p className="text-xs text-muted-foreground">Tap items in the correct order</p>
       <div className="flex flex-col gap-2 w-full min-h-[120px] p-3 rounded-xl border border-dashed border-border bg-card/50">

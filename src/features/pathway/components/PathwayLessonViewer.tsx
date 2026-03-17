@@ -86,7 +86,7 @@ export function PathwayLessonViewer({ courseId, lessonNumber, onClose, onNextLes
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-y-auto flex items-center justify-center py-10">
+      <div className="flex-1 overflow-y-auto flex items-start justify-center py-8 px-2">
         <AnimatePresence mode="wait">
           {phase === 'steps' && (
             <motion.div key={`step-${stepIdx}`} initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -40 }}
