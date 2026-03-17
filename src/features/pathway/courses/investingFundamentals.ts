@@ -133,7 +133,7 @@ const lessons = [
     // ═══════════════════════════════════════════
 
     // Step 9 — Fill in the Blank
-    fb('Investing is putting money to work so it grows faster than ___.',['inflation','taxes','bills','debt'],0),
+    fb('Investing is putting money to work so it grows faster than ___.',['inflation','deflation','savings','interest'],0),
 
     // Step 10 — Multiple Choice (Scenario-based)
     q('Sarah has $10,000 sitting in a checking account earning 0.01% interest. Inflation is currently 3.2%. After 5 years, what has actually happened to her money?',
