@@ -150,9 +150,9 @@ export const StockDetailModal = ({ symbol, onBack }: Props) => {
       )}
 
       {/* Buy/Sell Buttons */}
-      <div className="fixed bottom-20 left-0 right-0 p-4 bg-background/95 backdrop-blur-sm border-t border-border z-20 flex gap-3 safe-area-bottom">
-        <Button onClick={() => setTradeMode("BUY")} className="flex-1 bg-success hover:bg-success/90 text-white font-bold">BUY</Button>
-        <Button onClick={() => setTradeMode("SELL")} variant="outline" className="flex-1 border-destructive text-destructive hover:bg-destructive/10 font-bold">SELL</Button>
+      <div className="fixed bottom-0 left-[var(--sidebar-width,0px)] right-0 px-4 py-3 bg-background/95 backdrop-blur-sm border-t border-border z-20 flex gap-3">
+        <Button onClick={() => setTradeMode("BUY")} className="flex-1 h-12 bg-success hover:bg-success/90 text-white font-bold text-base rounded-xl">BUY</Button>
+        <Button onClick={() => setTradeMode("SELL")} variant="outline" className="flex-1 h-12 border-destructive text-destructive hover:bg-destructive/10 font-bold text-base rounded-xl">SELL</Button>
       </div>
 
       {tradeMode && (
