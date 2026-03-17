@@ -218,8 +218,71 @@ const Certificates = ({ onNavigate }: CertificatesProps) => {
 
         {/* OVERVIEW TAB */}
         <TabsContent value="overview">
-          <div className="space-y-6">
-            {/* Prestige Tiers */}
+          <div className="space-y-8">
+
+            {/* Next Up — promoted to top */}
+            {(() => {
+              const nextCerts = certificates
+                .filter(c => !c.earned && c.unlocked && c.progress > 0)
+                .sort((a, b) => b.progress - a.progress)
+                .slice(0, 4);
+              if (nextCerts.length === 0) return null;
+              return (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.05 }}
+                  className="space-y-3"
+                >
+                  <h2 className="text-lg font-bold flex items-center gap-2">
+                    <TrendingUp className="w-5 h-5 text-primary" /> Continue Earning
+                  </h2>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {nextCerts.map((cert, i) => {
+                      const tierMeta = PRESTIGE_TIERS.find(t => t.key === cert.tier);
+                      return (
+                        <Card
+                          key={cert.id}
+                          className={cn(
+                            "p-4 cursor-pointer transition-all hover:-translate-y-0.5 border",
+                            tierMeta?.borderClass || "border-border"
+                          )}
+                          onClick={() => { setSelectedCertificate(cert); setDialogOpen(true); }}
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className={cn("w-11 h-11 rounded-[10px] flex items-center justify-center shrink-0", tierMeta?.bgClass)}>
+                              <Award className={cn("w-5 h-5", tierMeta?.textClass)} />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2">
+                                <h4 className="font-semibold text-sm truncate">{cert.title}</h4>
+                                <span className={cn("text-[10px] font-bold uppercase tracking-wider", tierMeta?.textClass)}>
+                                  {tierMeta?.label}
+                                </span>
+                              </div>
+                              <p className="text-xs text-muted-foreground truncate mt-0.5">{cert.description}</p>
+                              <div className="flex items-center gap-2 mt-2">
+                                <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
+                                  <div
+                                    className={cn("h-full rounded-full bg-gradient-to-r", tierMeta?.gradient)}
+                                    style={{ width: `${cert.progress}%` }}
+                                  />
+                                </div>
+                                <span className={cn("text-[11px] font-bold tabular-nums", tierMeta?.textClass)}>
+                                  {Math.round(cert.progress)}%
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        </Card>
+                      );
+                    })}
+                  </div>
+                </motion.div>
+              );
+            })()}
+
+            {/* Prestige Tiers — redesigned with unique accents and ring charts */}
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -228,6 +291,14 @@ const Certificates = ({ onNavigate }: CertificatesProps) => {
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                 {prestigeTiers.map((tier, i) => {
                   const Icon = tier.icon;
+                  const isActive = tier.count > 0;
+                  const isComplete = tier.count === tier.total && tier.total > 0;
+                  const pct = tier.total > 0 ? (tier.count / tier.total) * 100 : 0;
+                  // SVG ring params
+                  const radius = 32;
+                  const circumference = 2 * Math.PI * radius;
+                  const dashOffset = circumference - (pct / 100) * circumference;
+
                   return (
                     <motion.div
                       key={tier.key}
@@ -236,17 +307,41 @@ const Certificates = ({ onNavigate }: CertificatesProps) => {
                       transition={{ delay: i * 0.08 }}
                     >
                       <Card className={cn(
-                        "relative overflow-hidden p-4 text-center border-2 transition-all hover:-translate-y-0.5",
-                        tier.count === tier.total && tier.total > 0
-                          ? "border-primary/30 bg-primary/5"
-                          : "border-border"
+                        "relative overflow-hidden p-5 text-center transition-all hover:-translate-y-0.5",
+                        isComplete
+                          ? cn("border-2", tier.borderClass, tier.bgClass)
+                          : isActive
+                            ? cn("border", tier.borderClass)
+                            : "border border-border/60"
                       )}>
-                        <div className={cn("w-12 h-12 rounded-xl mx-auto mb-3 flex items-center justify-center bg-gradient-to-br text-white", tier.gradient)}>
-                          <Icon className="w-6 h-6" />
+                        {/* Ring chart */}
+                        <div className="relative w-[76px] h-[76px] mx-auto mb-3">
+                          <svg className="w-full h-full -rotate-90" viewBox="0 0 76 76">
+                            <circle cx="38" cy="38" r={radius} fill="none" className="stroke-muted/30" strokeWidth="5" />
+                            <circle
+                              cx="38" cy="38" r={radius}
+                              fill="none"
+                              className={tier.ringColor}
+                              strokeWidth="5"
+                              strokeLinecap="round"
+                              strokeDasharray={circumference}
+                              strokeDashoffset={dashOffset}
+                              style={{ transition: 'stroke-dashoffset 0.8s ease' }}
+                            />
+                          </svg>
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <div className={cn(
+                              "w-10 h-10 rounded-[10px] flex items-center justify-center bg-gradient-to-br text-white",
+                              tier.gradient
+                            )}>
+                              <Icon className="w-5 h-5" />
+                            </div>
+                          </div>
                         </div>
-                        <h3 className="font-bold text-sm mb-1">{tier.label}</h3>
-                        <p className="text-2xl font-bold text-foreground">{tier.count}<span className="text-sm text-muted-foreground font-normal">/{tier.total}</span></p>
-                        <Progress value={tier.total ? (tier.count / tier.total) * 100 : 0} className="h-1.5 mt-2" />
+                        <h3 className={cn("font-bold text-sm mb-0.5", isActive ? tier.textClass : "text-muted-foreground")}>{tier.label}</h3>
+                        <p className="text-xl font-bold tabular-nums text-foreground">
+                          {tier.count}<span className="text-sm text-muted-foreground font-normal">/{tier.total}</span>
+                        </p>
                       </Card>
                     </motion.div>
                   );
@@ -254,43 +349,66 @@ const Certificates = ({ onNavigate }: CertificatesProps) => {
               </div>
             </motion.div>
 
-            {/* Overall Progress */}
+            {/* Credential Progress — ring chart visualization */}
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
             >
-              <Card className="p-6 bg-gradient-to-r from-primary/5 via-background to-primary/5 border-primary/10">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-3">
-                    <Sparkles className="w-5 h-5 text-primary" />
-                    <h3 className="text-lg font-bold">Credential Progress</h3>
-                  </div>
-                  <span className="text-sm font-bold text-primary">{Math.round((totalEarned / totalCertificates) * 100)}%</span>
-                </div>
-                <Progress value={(totalEarned / totalCertificates) * 100} className="h-3 mb-4" />
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <div className="text-center p-3 bg-background/60 rounded-lg">
-                    <p className="text-2xl font-bold text-primary">{totalEarned}</p>
-                    <p className="text-xs text-muted-foreground">Certificates Earned</p>
-                  </div>
-                  <div className="text-center p-3 bg-background/60 rounded-lg">
-                    <p className="text-2xl font-bold text-primary">{totalBadgesEarned}</p>
-                    <p className="text-xs text-muted-foreground">Badges Collected</p>
-                  </div>
-                  <div className="text-center p-3 bg-background/60 rounded-lg">
-                    <p className="text-2xl font-bold text-primary">{recentCerts.length}</p>
-                    <p className="text-xs text-muted-foreground">Claimed Credentials</p>
-                  </div>
-                  <div className="text-center p-3 bg-background/60 rounded-lg">
-                    <p className="text-2xl font-bold text-primary">{totalCertificates - totalEarned}</p>
-                    <p className="text-xs text-muted-foreground">Remaining</p>
+              <Card className="p-6 border-border/60">
+                <div className="flex flex-col md:flex-row items-center gap-6">
+                  {/* Large ring chart */}
+                  {(() => {
+                    const pct = totalCertificates > 0 ? (totalEarned / totalCertificates) * 100 : 0;
+                    const radius = 54;
+                    const circumference = 2 * Math.PI * radius;
+                    const dashOffset = circumference - (pct / 100) * circumference;
+                    return (
+                      <div className="relative w-[140px] h-[140px] shrink-0">
+                        <svg className="w-full h-full -rotate-90" viewBox="0 0 140 140">
+                          <circle cx="70" cy="70" r={radius} fill="none" className="stroke-muted/20" strokeWidth="8" />
+                          <circle
+                            cx="70" cy="70" r={radius}
+                            fill="none"
+                            className="stroke-[hsl(var(--primary))]"
+                            strokeWidth="8"
+                            strokeLinecap="round"
+                            strokeDasharray={circumference}
+                            strokeDashoffset={dashOffset}
+                            style={{ transition: 'stroke-dashoffset 1s ease' }}
+                          />
+                        </svg>
+                        <div className="absolute inset-0 flex flex-col items-center justify-center">
+                          <span className="text-2xl font-bold tabular-nums text-foreground">{Math.round(pct)}%</span>
+                          <span className="text-[10px] text-muted-foreground">Complete</span>
+                        </div>
+                      </div>
+                    );
+                  })()}
+                  {/* Stats grid */}
+                  <div className="flex-1 grid grid-cols-2 gap-3 w-full">
+                    <div className="p-3 rounded-[12px] bg-emerald-500/5 border border-emerald-500/15 text-center">
+                      <p className="text-xl font-bold tabular-nums text-emerald-400">{totalEarned}</p>
+                      <p className="text-[11px] text-muted-foreground">Certificates</p>
+                    </div>
+                    <div className="p-3 rounded-[12px] bg-primary/5 border border-primary/15 text-center">
+                      <p className="text-xl font-bold tabular-nums text-primary">{totalBadgesEarned}</p>
+                      <p className="text-[11px] text-muted-foreground">Badges</p>
+                    </div>
+                    <div className="p-3 rounded-[12px] bg-blue-500/5 border border-blue-500/15 text-center">
+                      <p className="text-xl font-bold tabular-nums text-blue-400">{recentCerts.length}</p>
+                      <p className="text-[11px] text-muted-foreground">Claimed</p>
+                    </div>
+                    <div className="p-3 rounded-[12px] bg-muted/40 border border-border/40 text-center">
+                      <p className="text-xl font-bold tabular-nums text-muted-foreground">{totalCertificates - totalEarned}</p>
+                      <p className="text-[11px] text-muted-foreground">Remaining</p>
+                    </div>
                   </div>
                 </div>
               </Card>
             </motion.div>
 
-            {/* Recently Earned */}
+            {/* Recently Earned — no credential IDs */}
             {recentCerts.length > 0 && (
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
@@ -299,21 +417,20 @@ const Certificates = ({ onNavigate }: CertificatesProps) => {
                 className="space-y-3"
               >
                 <h2 className="text-lg font-bold flex items-center gap-2">
-                  <Award className="w-5 h-5 text-primary" /> Recently Earned Credentials
+                  <Award className="w-5 h-5 text-primary" /> Recently Earned
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                  {recentCerts.map((cert: any, i: number) => (
+                  {recentCerts.map((cert: any) => (
                     <Card key={cert.id} className="p-4 border-primary/20 bg-primary/5 hover:bg-primary/10 transition-colors">
                       <div className="flex items-start gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[hsl(var(--primary))] to-[hsl(273,84%,65%)] flex items-center justify-center text-white shrink-0">
+                        <div className="w-10 h-10 rounded-[10px] bg-gradient-to-br from-[hsl(var(--primary))] to-[hsl(273,84%,65%)] flex items-center justify-center text-white shrink-0">
                           <Award className="w-5 h-5" />
                         </div>
                         <div className="min-w-0">
                           <h4 className="font-semibold text-sm truncate">{cert.title}</h4>
-                          <p className="text-xs text-muted-foreground">
-                            Earned {new Date(cert.issued_at).toLocaleDateString()}
+                          <p className="text-xs text-muted-foreground mt-0.5">
+                            {new Date(cert.issued_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                           </p>
-                          <p className="text-[10px] text-muted-foreground font-mono mt-1">{cert.credential_id}</p>
                         </div>
                       </div>
                     </Card>
@@ -322,7 +439,7 @@ const Certificates = ({ onNavigate }: CertificatesProps) => {
               </motion.div>
             )}
 
-            {/* Featured Badges */}
+            {/* Top Badges */}
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -349,47 +466,6 @@ const Certificates = ({ onNavigate }: CertificatesProps) => {
                     Start learning to earn your first badges!
                   </p>
                 )}
-              </div>
-            </motion.div>
-
-            {/* Next Certificates to Earn */}
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
-              className="space-y-3"
-            >
-              <h2 className="text-lg font-bold flex items-center gap-2">
-                <TrendingUp className="w-5 h-5 text-primary" /> Next Up
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {certificates
-                  .filter(c => !c.earned && c.unlocked && c.progress > 0)
-                  .sort((a, b) => b.progress - a.progress)
-                  .slice(0, 4)
-                  .map(cert => (
-                    <Card
-                      key={cert.id}
-                      className="p-4 cursor-pointer hover:bg-muted/30 transition-colors"
-                      onClick={() => { setSelectedCertificate(cert); setDialogOpen(true); }}
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className="shrink-0">
-                          <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center">
-                            <Award className="w-5 h-5 text-muted-foreground" />
-                          </div>
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <h4 className="font-semibold text-sm truncate">{cert.title}</h4>
-                          <p className="text-xs text-muted-foreground truncate">{cert.description}</p>
-                          <div className="flex items-center gap-2 mt-1.5">
-                            <Progress value={cert.progress} className="h-1.5 flex-1" />
-                            <span className="text-[11px] font-semibold text-primary">{Math.round(cert.progress)}%</span>
-                          </div>
-                        </div>
-                      </div>
-                    </Card>
-                  ))}
               </div>
             </motion.div>
           </div>
