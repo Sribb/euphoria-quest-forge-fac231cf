@@ -85,6 +85,25 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
   const [legendaryLessonId, setLegendaryLessonId] = useState<string | null>(null);
   const [showDailyRewards, setShowDailyRewards] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [headerVisible, setHeaderVisible] = useState(true);
+  const lastScrollY = useRef(0);
+
+  // Auto-hide header on scroll down, show on scroll up
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentY = window.scrollY;
+      if (currentY < 80) {
+        setHeaderVisible(true);
+      } else if (currentY > lastScrollY.current + 8) {
+        setHeaderVisible(false);
+      } else if (currentY < lastScrollY.current - 8) {
+        setHeaderVisible(true);
+      }
+      lastScrollY.current = currentY;
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   // Persist pathway selection
   useEffect(() => {
