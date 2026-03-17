@@ -18,6 +18,7 @@ const PATHWAY_TO_COURSE: Record<string, string> = {
   investing: 'investing-fundamentals',
   'personal-finance': 'personal-finance',
   economics: 'global-economics',
+  'corporate-finance': 'corporate-finance',
 };
 
 const PATHWAY_TABS = [
