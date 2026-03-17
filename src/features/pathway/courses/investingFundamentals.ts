@@ -150,18 +150,14 @@ const lessons = [
       ['How long has the U.S. market taken to recover from its worst crashes?','The longest recovery was ~5.5 years (2007-2013). Patient investors were rewarded every time.']
     ]),
 
-    // Step 12 — Drag and Drop: Categorize
-    ds('Sort each item into the correct asset class: Stocks, Bonds, Real Estate, or Cash',[
-      'Apple stock → Stocks',
-      'US Treasury Bond → Bonds',
-      'Rental property in Austin → Real Estate',
-      'High-yield savings account → Cash',
-      'Corporate bond from Amazon → Bonds',
-      'S&P 500 index fund → Stocks',
-      'REIT fund → Real Estate',
-      'Checking account → Cash',
-      'Municipal bond → Bonds',
-      'Tesla shares → Stocks'
+    // Step 12 — Drag and Drop: Order the steps of how compound growth works
+    ds('Put these steps in order: How does $1,000 grow through compound interest?',[
+      'You invest $1,000 at an 8% annual return',
+      'After Year 1, you earn $80 in returns → balance is $1,080',
+      'In Year 2, you earn 8% on $1,080 (not just $1,000)',
+      'Your returns start generating their own returns',
+      'After 10 years, over half your balance is from compounded returns',
+      'After 30 years, 90%+ of your wealth comes from compound growth'
     ]),
 
     // Step 13 — Scenario Simulation (Interactive Diagram replacement)
