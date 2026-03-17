@@ -172,7 +172,7 @@ export const SettingsTab = ({ userId, onboarding, placementLesson, refetchOnboar
   return (
     <div className="space-y-4 animate-fade-in">
       {/* Bento Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+      <div className="grid grid-cols-2 md:grid-cols-2 gap-3">
         {cards.map((card, i) => {
           const Icon = card.icon;
           const isExpanded = expanded === card.id;
