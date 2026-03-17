@@ -169,8 +169,8 @@ export const CoinShop = ({ onNavigate }: CoinShopProps) => {
                   <div className="relative z-10">
                     {/* Header */}
                     <div className="flex items-start justify-between mb-3">
-                      <span className="text-4xl group-hover:scale-110 transition-transform inline-block">
-                        {item.icon}
+                      <span className="group-hover:scale-110 transition-transform inline-block">
+                        <EuphoriaIcon name={item.icon} size={40} />
                       </span>
                       <Badge variant="outline" className={cn("text-[10px]", rarity.border, rarity.text)}>
                         {rarity.label}
