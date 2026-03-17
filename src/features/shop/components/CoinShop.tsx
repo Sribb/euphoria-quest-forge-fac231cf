@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 import { useCoinShop } from "../hooks/useCoinShop";
 import { SHOP_ITEMS, SHOP_CATEGORIES, ShopCategory } from "../data/shopItems";
 import { motion, AnimatePresence } from "framer-motion";
+import { EuphoriaIcon } from "@/components/icons/EuphoriaIcon";
 
 const RARITY_STYLES = {
   common: { border: "border-slate-400/30", bg: "from-slate-500/10 to-slate-600/10", text: "text-slate-400", label: "Common" },
