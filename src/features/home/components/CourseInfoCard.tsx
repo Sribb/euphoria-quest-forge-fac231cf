@@ -29,7 +29,7 @@ export const CourseInfoCard = ({
   const exercises = totalLessons * 15; // ~15 exercises per lesson
 
   return (
-    <div className="sticky top-24 w-full">
+    <div className="sticky top-4 w-full">
       <div className="rounded-2xl border border-border/60 bg-card/80 backdrop-blur-sm overflow-hidden">
         {/* Illustration area */}
         <div className={`h-40 bg-gradient-to-br ${illus.gradient} flex items-center justify-center`}>
