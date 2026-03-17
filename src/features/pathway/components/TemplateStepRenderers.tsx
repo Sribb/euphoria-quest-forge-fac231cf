@@ -10,10 +10,29 @@ import type {
   InteractiveGraphStep, CaseStudyStep, MisconceptionsStep, KeyTermsCardsStep,
   SimulationFinaleStep, SummaryCardsStep, WhatsNextStep
 } from '../types';
+import {
+  HookChartRiskReward, HookChartCompounding, HookChartStocksBonds, HookChartDiversification,
+  StakesIllustrationRisk, StakesIllustrationDiversified,
+  StakesIllustrationLateStart, StakesIllustrationEarlyStart,
+  StakesIllustrationAllStocks, StakesIllustrationBalanced,
+  StakesIllustrationConcentrated, StakesIllustrationDiversifiedGrid,
+  DiagramRiskSpectrum, DiagramSnowball, DiagramStockVsBond, DiagramCorrelationMatrix
+} from './LessonVisuals';
+
+/* ─── Helpers to detect lesson context ─── */
+function detectLesson(title: string): number {
+  const t = title.toLowerCase();
+  if (t.includes('risk') && t.includes('reward')) return 2;
+  if (t.includes('compound') || t.includes('magic')) return 3;
+  if (t.includes('stocks') && t.includes('bonds')) return 4;
+  if (t.includes('diversif')) return 5;
+  return 1;
+}
 
 /* ─── Hook Opener ─── */
 export function HookOpenerView({ step, onComplete }: { step: HookOpenerStep; onComplete: (c: boolean) => void }) {
   const [animPhase, setAnimPhase] = useState(0);
+  const lessonNum = detectLesson(step.title);
 
   useEffect(() => {
     const t1 = setTimeout(() => setAnimPhase(1), 400);
@@ -22,15 +41,15 @@ export function HookOpenerView({ step, onComplete }: { step: HookOpenerStep; onC
     return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
   }, []);
 
-  return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-center gap-0 w-full min-h-[85vh] relative">
-      {/* Full-bleed chart area — desktop: fills top 55% */}
-      <div className="w-full flex-1 flex items-center justify-center px-0 py-6" style={{
-        background: 'linear-gradient(180deg, #1a0a2e 0%, #0d0618 60%, transparent 100%)',
-      }}>
-        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.3, duration: 0.8 }}
-          className="w-full px-4" style={{ maxWidth: '800px' }}>
-          {/* Desktop-sized chart: 700x350 viewBox */}
+  const renderChart = () => {
+    switch (lessonNum) {
+      case 2: return <HookChartRiskReward animPhase={animPhase} />;
+      case 3: return <HookChartCompounding animPhase={animPhase} />;
+      case 4: return <HookChartStocksBonds animPhase={animPhase} />;
+      case 5: return <HookChartDiversification animPhase={animPhase} />;
+      default:
+        // Lesson 1 — original S&P 500 growth chart
+        return (
           <svg viewBox="0 0 700 350" className="w-full h-auto" style={{ pointerEvents: 'auto', minHeight: '280px' }}>
             <defs>
               <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
@@ -38,31 +57,26 @@ export function HookOpenerView({ step, onComplete }: { step: HookOpenerStep; onC
                 <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity="0" />
               </linearGradient>
             </defs>
-            {/* Grid lines */}
             {[80, 140, 200, 260].map(y => (
               <line key={y} x1="60" y1={y} x2="660" y2={y} stroke="rgba(139,92,246,0.12)" strokeWidth="0.5" strokeDasharray="4 4" />
             ))}
-            {/* Growth curve — clean purple line only */}
             <motion.path
               d="M60,300 Q120,298 180,290 Q240,275 300,250 Q360,210 420,160 Q480,105 540,65 Q600,45 660,35"
               fill="none" stroke="hsl(var(--primary))" strokeWidth="3" strokeLinecap="round"
               initial={{ pathLength: 0 }} animate={{ pathLength: animPhase >= 1 ? 1 : 0 }}
               transition={{ duration: 1.5, ease: "easeOut" }}
             />
-            {/* Area under curve */}
             <motion.path
               d="M60,300 Q120,298 180,290 Q240,275 300,250 Q360,210 420,160 Q480,105 540,65 Q600,45 660,35 L660,320 L60,320 Z"
               fill="url(#chartGrad)"
               initial={{ opacity: 0 }} animate={{ opacity: animPhase >= 2 ? 0.6 : 0 }}
               transition={{ duration: 0.8 }}
             />
-            {/* Axis labels */}
             <motion.g initial={{ opacity: 0 }} animate={{ opacity: animPhase >= 2 ? 1 : 0 }} transition={{ delay: 0.3 }}>
               <text x="60" y="340" fill="rgba(255,255,255,0.5)" fontSize="13" textAnchor="middle">1990</text>
               <text x="360" y="340" fill="rgba(255,255,255,0.5)" fontSize="13" textAnchor="middle">2007</text>
               <text x="660" y="340" fill="rgba(255,255,255,0.5)" fontSize="13" textAnchor="middle">2024</text>
             </motion.g>
-            {/* Value labels — $1K and $23K */}
             <motion.g initial={{ opacity: 0 }} animate={{ opacity: animPhase >= 3 ? 1 : 0 }}>
               <circle cx="60" cy="300" r="6" fill="hsl(var(--primary))" />
               <text x="80" y="295" fill="white" fontSize="16" fontWeight="bold">$1K</text>
@@ -70,11 +84,21 @@ export function HookOpenerView({ step, onComplete }: { step: HookOpenerStep; onC
               <text x="635" y="26" fill="white" fontSize="17" fontWeight="bold" textAnchor="end">$23K</text>
             </motion.g>
           </svg>
+        );
+    }
+  };
+
+  return (
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-center gap-0 w-full min-h-[85vh] relative">
+      <div className="w-full flex-1 flex items-center justify-center px-0 py-6" style={{
+        background: 'linear-gradient(180deg, #1a0a2e 0%, #0d0618 60%, transparent 100%)',
+      }}>
+        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.3, duration: 0.8 }}
+          className="w-full px-4" style={{ maxWidth: '800px' }}>
+          {renderChart()}
           <p className="text-xs text-center text-muted-foreground mt-2 italic">{step.visualDescription}</p>
         </motion.div>
       </div>
-
-      {/* Frosted glass card overlay */}
       <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.8 }}
         className="mx-4 -mt-4 mb-8 p-8 rounded-2xl text-center self-center" style={{
           maxWidth: '700px', width: '100%',
@@ -95,55 +119,88 @@ export function HookOpenerView({ step, onComplete }: { step: HookOpenerStep; onC
 
 /* ─── Stakes Card ─── */
 export function StakesCardView({ step, onComplete }: { step: StakesCardStep; onComplete: (c: boolean) => void }) {
+  const lessonNum = detectLessonFromStakes(step);
+
+  function detectLessonFromStakes(s: StakesCardStep): number {
+    const w = s.without.label.toLowerCase();
+    if (w.includes('single stock') && w.includes('80%')) return 2;
+    if (w.includes('22') || w.includes('starting at')) return 3;
+    if (w.includes('100% stocks') && w.includes('2008')) return 4;
+    if (w.includes('meta') || w.includes('100%')) return 5;
+    return 1;
+  }
+
+  const renderWithoutSVG = () => {
+    switch (lessonNum) {
+      case 2: return <StakesIllustrationRisk />;
+      case 3: return <StakesIllustrationLateStart />;
+      case 4: return <StakesIllustrationAllStocks />;
+      case 5: return <StakesIllustrationConcentrated />;
+      default: return (
+        <svg viewBox="0 0 360 200" className="w-full" style={{ maxWidth: '440px' }}>
+          <rect x="30" y="40" width="70" height="120" rx="10" fill="rgba(239,68,68,0.10)" stroke="rgba(239,68,68,0.3)" strokeWidth="1.5" />
+          <text x="65" y="95" textAnchor="middle" fill="#f87171" fontSize="22" fontWeight="bold">$10K</text>
+          <text x="65" y="178" textAnchor="middle" fill="rgba(255,255,255,0.5)" fontSize="11">Today</text>
+          <line x1="110" y1="100" x2="130" y2="100" stroke="rgba(239,68,68,0.4)" strokeWidth="1.5" />
+          <polygon points="128,96 136,100 128,104" fill="rgba(239,68,68,0.4)" />
+          <rect x="140" y="60" width="70" height="100" rx="10" fill="rgba(239,68,68,0.08)" stroke="rgba(239,68,68,0.25)" strokeWidth="1.5" />
+          <text x="175" y="105" textAnchor="middle" fill="#f87171" fontSize="20" fontWeight="bold">$8.5K</text>
+          <text x="175" y="178" textAnchor="middle" fill="rgba(255,255,255,0.5)" fontSize="11">5 Years</text>
+          <line x1="220" y1="110" x2="240" y2="110" stroke="rgba(239,68,68,0.4)" strokeWidth="1.5" />
+          <polygon points="238,106 246,110 238,114" fill="rgba(239,68,68,0.4)" />
+          <rect x="250" y="85" width="70" height="75" rx="10" fill="rgba(239,68,68,0.06)" stroke="rgba(239,68,68,0.2)" strokeWidth="1.5" />
+          <text x="285" y="118" textAnchor="middle" fill="#f87171" fontSize="18" fontWeight="bold">$7.4K</text>
+          <text x="285" y="178" textAnchor="middle" fill="rgba(255,255,255,0.5)" fontSize="11">10 Years</text>
+          <line x1="65" y1="30" x2="285" y2="75" stroke="#ef4444" strokeWidth="2" strokeDasharray="6,4" />
+          <polygon points="282,70 290,77 282,80" fill="#ef4444" />
+          <text x="180" y="16" textAnchor="middle" fill="#ef4444" fontSize="12" fontWeight="600">Purchasing power lost to inflation</text>
+        </svg>
+      );
+    }
+  };
+
+  const renderWithSVG = () => {
+    switch (lessonNum) {
+      case 2: return <StakesIllustrationDiversified />;
+      case 3: return <StakesIllustrationEarlyStart />;
+      case 4: return <StakesIllustrationBalanced />;
+      case 5: return <StakesIllustrationDiversifiedGrid />;
+      default: return (
+        <svg viewBox="0 0 280 220" className="w-full" style={{ maxWidth: '320px', maxHeight: '220px' }}>
+          <rect x="50" y="140" width="50" height="60" rx="6" fill="rgba(16,185,129,0.15)" stroke="rgba(16,185,129,0.4)" strokeWidth="1.5" />
+          <text x="75" y="175" textAnchor="middle" fill="#10b981" fontSize="11" fontWeight="bold">$5K</text>
+          <rect x="115" y="95" width="50" height="105" rx="6" fill="rgba(16,185,129,0.2)" stroke="rgba(16,185,129,0.5)" strokeWidth="1.5" />
+          <text x="140" y="155" textAnchor="middle" fill="#10b981" fontSize="11" fontWeight="bold">$15K</text>
+          <rect x="180" y="35" width="50" height="165" rx="6" fill="rgba(16,185,129,0.3)" stroke="rgba(16,185,129,0.6)" strokeWidth="2" />
+          <text x="205" y="125" textAnchor="middle" fill="#10b981" fontSize="12" fontWeight="bold">$26K</text>
+          <line x1="205" y1="30" x2="205" y2="-5" stroke="#10b981" strokeWidth="3" />
+          <polygon points="198,-3 205,-15 212,-3" fill="#10b981" />
+          <text x="205" y="-20" textAnchor="middle" fill="#10b981" fontSize="13" fontWeight="bold">+10% avg return</text>
+          <text x="75" y="212" textAnchor="middle" fill="rgba(255,255,255,0.4)" fontSize="10">Year 5</text>
+          <text x="140" y="212" textAnchor="middle" fill="rgba(255,255,255,0.4)" fontSize="10">Year 15</text>
+          <text x="205" y="212" textAnchor="middle" fill="rgba(255,255,255,0.4)" fontSize="10">Year 30</text>
+        </svg>
+      );
+    }
+  };
+
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col items-center gap-6 w-full min-h-[85vh] pt-4 px-6">
       <h2 className="text-2xl font-black text-foreground text-center">Why This Matters</h2>
-      {/* Desktop: two side-by-side panels, each ~45% width, tall */}
       <div className="flex flex-col lg:flex-row gap-6 w-full" style={{ maxWidth: '1100px' }}>
         {/* WITHOUT panel */}
         <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 }}
           className="flex-1 p-8 rounded-2xl border-2 border-red-500/30 flex flex-col gap-4" style={{
-            background: 'rgba(239,68,68,0.04)',
-            minHeight: '55vh',
+            background: 'rgba(239,68,68,0.04)', minHeight: '55vh',
           }}>
           <div className="flex items-center gap-2">
             <XIcon className="w-5 h-5 text-red-400" />
-            <span className="text-sm font-bold text-red-400 uppercase tracking-wider">Without Investing</span>
+            <span className="text-sm font-bold text-red-400 uppercase tracking-wider">
+              {lessonNum === 2 ? 'Concentrated' : lessonNum === 3 ? 'Starting Late' : lessonNum === 4 ? '100% Stocks' : lessonNum === 5 ? 'Single Stock' : 'Without Investing'}
+            </span>
           </div>
-          {/* SVG: Shrinking money over time */}
           <div className="flex-1 flex items-center justify-center px-4">
-            <svg viewBox="0 0 360 200" className="w-full" style={{ maxWidth: '440px' }}>
-              {/* Three shrinking coin stacks over time */}
-              {/* Year 0 — tall stack */}
-              <rect x="30" y="40" width="70" height="120" rx="10" fill="rgba(239,68,68,0.10)" stroke="rgba(239,68,68,0.3)" strokeWidth="1.5" />
-              <text x="65" y="95" textAnchor="middle" fill="#f87171" fontSize="22" fontWeight="bold">$10K</text>
-              <text x="65" y="178" textAnchor="middle" fill="rgba(255,255,255,0.5)" fontSize="11">Today</text>
-
-              {/* Arrow 1 */}
-              <line x1="110" y1="100" x2="130" y2="100" stroke="rgba(239,68,68,0.4)" strokeWidth="1.5" />
-              <polygon points="128,96 136,100 128,104" fill="rgba(239,68,68,0.4)" />
-
-              {/* Year 5 — medium stack */}
-              <rect x="140" y="60" width="70" height="100" rx="10" fill="rgba(239,68,68,0.08)" stroke="rgba(239,68,68,0.25)" strokeWidth="1.5" />
-              <text x="175" y="105" textAnchor="middle" fill="#f87171" fontSize="20" fontWeight="bold">$8.5K</text>
-              <text x="175" y="178" textAnchor="middle" fill="rgba(255,255,255,0.5)" fontSize="11">5 Years</text>
-
-              {/* Arrow 2 */}
-              <line x1="220" y1="110" x2="240" y2="110" stroke="rgba(239,68,68,0.4)" strokeWidth="1.5" />
-              <polygon points="238,106 246,110 238,114" fill="rgba(239,68,68,0.4)" />
-
-              {/* Year 10 — short stack */}
-              <rect x="250" y="85" width="70" height="75" rx="10" fill="rgba(239,68,68,0.06)" stroke="rgba(239,68,68,0.2)" strokeWidth="1.5" />
-              <text x="285" y="118" textAnchor="middle" fill="#f87171" fontSize="18" fontWeight="bold">$7.4K</text>
-              <text x="285" y="178" textAnchor="middle" fill="rgba(255,255,255,0.5)" fontSize="11">10 Years</text>
-
-              {/* Downward trend line across the top */}
-              <line x1="65" y1="30" x2="285" y2="75" stroke="#ef4444" strokeWidth="2" strokeDasharray="6,4" />
-              <polygon points="282,70 290,77 282,80" fill="#ef4444" />
-
-              {/* Label */}
-              <text x="180" y="16" textAnchor="middle" fill="#ef4444" fontSize="12" fontWeight="600">Purchasing power lost to inflation</text>
-            </svg>
+            {renderWithoutSVG()}
           </div>
           <p className="text-base font-semibold text-foreground">{step.without.label}</p>
           <p className="text-sm text-muted-foreground leading-relaxed">{step.without.detail}</p>
@@ -151,32 +208,16 @@ export function StakesCardView({ step, onComplete }: { step: StakesCardStep; onC
         {/* WITH panel */}
         <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.5 }}
           className="flex-1 p-8 rounded-2xl border-2 border-emerald-500/30 flex flex-col gap-4" style={{
-            background: 'rgba(16,185,129,0.04)',
-            minHeight: '55vh',
+            background: 'rgba(16,185,129,0.04)', minHeight: '55vh',
           }}>
           <div className="flex items-center gap-2">
             <Check className="w-5 h-5 text-emerald-400" />
-            <span className="text-sm font-bold text-emerald-400 uppercase tracking-wider">With Investing</span>
+            <span className="text-sm font-bold text-emerald-400 uppercase tracking-wider">
+              {lessonNum === 2 ? 'Diversified' : lessonNum === 3 ? 'Starting Early' : lessonNum === 4 ? '60/40 Balanced' : lessonNum === 5 ? 'Diversified Portfolio' : 'With Investing'}
+            </span>
           </div>
-          {/* Large SVG: Three ascending bars with upward arrow */}
           <div className="flex-1 flex items-center justify-center">
-            <svg viewBox="0 0 280 220" className="w-full" style={{ maxWidth: '320px', maxHeight: '220px' }}>
-              {/* Three ascending bars */}
-              <rect x="50" y="140" width="50" height="60" rx="6" fill="rgba(16,185,129,0.15)" stroke="rgba(16,185,129,0.4)" strokeWidth="1.5" />
-              <text x="75" y="175" textAnchor="middle" fill="#10b981" fontSize="11" fontWeight="bold">$5K</text>
-              <rect x="115" y="95" width="50" height="105" rx="6" fill="rgba(16,185,129,0.2)" stroke="rgba(16,185,129,0.5)" strokeWidth="1.5" />
-              <text x="140" y="155" textAnchor="middle" fill="#10b981" fontSize="11" fontWeight="bold">$15K</text>
-              <rect x="180" y="35" width="50" height="165" rx="6" fill="rgba(16,185,129,0.3)" stroke="rgba(16,185,129,0.6)" strokeWidth="2" />
-              <text x="205" y="125" textAnchor="middle" fill="#10b981" fontSize="12" fontWeight="bold">$26K</text>
-              {/* Bold upward arrow breaking through */}
-              <line x1="205" y1="30" x2="205" y2="-5" stroke="#10b981" strokeWidth="3" />
-              <polygon points="198,-3 205,-15 212,-3" fill="#10b981" />
-              <text x="205" y="-20" textAnchor="middle" fill="#10b981" fontSize="13" fontWeight="bold">+10% avg return</text>
-              {/* Year labels */}
-              <text x="75" y="212" textAnchor="middle" fill="rgba(255,255,255,0.4)" fontSize="10">Year 5</text>
-              <text x="140" y="212" textAnchor="middle" fill="rgba(255,255,255,0.4)" fontSize="10">Year 15</text>
-              <text x="205" y="212" textAnchor="middle" fill="rgba(255,255,255,0.4)" fontSize="10">Year 30</text>
-            </svg>
+            {renderWithSVG()}
           </div>
           <p className="text-base font-semibold text-foreground">{step.with.label}</p>
           <p className="text-sm text-muted-foreground leading-relaxed">{step.with.detail}</p>
@@ -196,8 +237,8 @@ export function TeachingSlideView({ step, onComplete }: { step: TeachingSlideSte
   const [canContinue, setCanContinue] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const lessonNum = detectLesson(step.title);
 
-  // Scroll gate
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => { if (entry.isIntersecting) setCanContinue(true); },
@@ -236,10 +277,49 @@ export function TeachingSlideView({ step, onComplete }: { step: TeachingSlideSte
     );
   };
 
+  const renderDiagram = () => {
+    switch (lessonNum) {
+      case 2: return <DiagramRiskSpectrum />;
+      case 3: return <DiagramSnowball />;
+      case 4: return <DiagramStockVsBond />;
+      case 5: return <DiagramCorrelationMatrix />;
+      default:
+        // Lesson 1 — Bank → Inflation → Investment flow
+        return (
+          <svg viewBox="0 0 480 520" className="w-full h-auto" style={{ minHeight: '420px' }}>
+            <motion.g initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }}>
+              <rect x="130" y="20" width="220" height="100" rx="14" fill="rgba(59,130,246,0.12)" stroke="rgba(59,130,246,0.4)" strokeWidth="2" />
+              <text x="240" y="60" textAnchor="middle" fill="white" fontSize="16" fontWeight="bold">Bank Account</text>
+              <text x="240" y="88" textAnchor="middle" fill="#10b981" fontSize="14">1% return</text>
+            </motion.g>
+            <motion.g initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}>
+              <line x1="240" y1="125" x2="240" y2="175" stroke="rgba(255,255,255,0.3)" strokeWidth="2" />
+              <polygon points="234,172 240,184 246,172" fill="rgba(255,255,255,0.3)" />
+              <text x="260" y="158" fill="#ef4444" fontSize="13" fontWeight="bold">loses to</text>
+            </motion.g>
+            <motion.g initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }}>
+              <rect x="130" y="190" width="220" height="100" rx="14" fill="rgba(239,68,68,0.1)" stroke="rgba(239,68,68,0.4)" strokeWidth="2" />
+              <text x="240" y="230" textAnchor="middle" fill="white" fontSize="16" fontWeight="bold">Inflation</text>
+              <text x="240" y="258" textAnchor="middle" fill="#f59e0b" fontSize="14">3% per year</text>
+            </motion.g>
+            <motion.g initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.8 }}>
+              <line x1="240" y1="295" x2="240" y2="345" stroke="rgba(255,255,255,0.3)" strokeWidth="2" />
+              <polygon points="234,342 240,354 246,342" fill="rgba(255,255,255,0.3)" />
+              <text x="260" y="328" fill="#10b981" fontSize="13" fontWeight="bold">beaten by</text>
+            </motion.g>
+            <motion.g initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.9 }}>
+              <rect x="130" y="360" width="220" height="100" rx="14" fill="rgba(16,185,129,0.12)" stroke="rgba(16,185,129,0.4)" strokeWidth="2" />
+              <text x="240" y="400" textAnchor="middle" fill="white" fontSize="16" fontWeight="bold">Investment</text>
+              <text x="240" y="428" textAnchor="middle" fill="#10b981" fontSize="14">8-10% return</text>
+            </motion.g>
+          </svg>
+        );
+    }
+  };
+
   return (
     <motion.div ref={scrollRef} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
       className="w-full min-h-[85vh]">
-      {/* Desktop: two-column layout. Left 55% scrollable text, Right 45% sticky diagram */}
       <div className="flex flex-col lg:flex-row w-full" style={{ maxWidth: '1200px', margin: '0 auto' }}>
         {/* Left column — text content */}
         <div className="flex-1 lg:w-[55%] flex flex-col gap-5 px-6 lg:px-10 py-6 lg:overflow-y-auto" style={{ maxHeight: 'calc(100vh - 56px)' }}>
@@ -248,13 +328,9 @@ export function TeachingSlideView({ step, onComplete }: { step: TeachingSlideSte
             <span className="text-xs font-bold text-primary uppercase tracking-widest">{step.sectionLabel}</span>
           </div>
           <h2 className="text-2xl lg:text-3xl font-black text-foreground">{step.title}</h2>
-
-          {/* Paragraphs with highlighted terms */}
           <div className="flex flex-col gap-4">
             {step.paragraphs.map((p, i) => renderParagraph(p, i))}
           </div>
-
-          {/* Term tooltip */}
           <AnimatePresence>
             {activeTermData && (
               <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }}
@@ -270,35 +346,27 @@ export function TeachingSlideView({ step, onComplete }: { step: TeachingSlideSte
               </motion.div>
             )}
           </AnimatePresence>
-
-          {/* Real example callout */}
           {step.realExample && (
             <div className="p-4 rounded-2xl" style={{ background: 'rgba(139,92,246,0.08)', border: '1px solid rgba(139,92,246,0.2)' }}>
               <div className="flex items-center gap-2 mb-2">
                 <Sparkles className="w-4 h-4 text-primary" />
                 <span className="text-xs font-bold text-primary uppercase">Real Example</span>
               </div>
-              <p className="text-sm text-foreground">
-                <strong>{step.realExample.company}</strong> — {step.realExample.metric}
-              </p>
+              <p className="text-sm text-foreground"><strong>{step.realExample.company}</strong> — {step.realExample.metric}</p>
               <p className="text-xs text-muted-foreground mt-1">{step.realExample.explanation}</p>
             </div>
           )}
-
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
             <span className="text-primary">💡</span>
             <span>Tap underlined terms to see definitions</span>
           </div>
-
           <div ref={bottomRef} />
-
           <Button onClick={() => onComplete(true)}
             disabled={!canContinue}
             className={cn("px-8 rounded-xl self-center gap-2 transition-opacity mb-6", !canContinue && "opacity-40 pointer-events-none")}>
             Continue <ArrowRight className="w-4 h-4" />
           </Button>
         </div>
-
         {/* Right column — sticky diagram (desktop only) */}
         <div className="hidden lg:flex lg:w-[45%] items-start justify-center py-6 px-6" style={{
           position: 'sticky', top: '56px', height: 'calc(100vh - 56px)',
@@ -307,72 +375,14 @@ export function TeachingSlideView({ step, onComplete }: { step: TeachingSlideSte
         }}>
           <div className="w-full flex items-center justify-center h-full">
             <div className="w-full p-6 rounded-2xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(139,92,246,0.15)' }}>
-              {/* Large desktop SVG flow diagram — 520px tall */}
-              <svg viewBox="0 0 480 520" className="w-full h-auto" style={{ minHeight: '420px' }}>
-                {/* Bank Account box */}
-                <motion.g initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }}>
-                  <rect x="130" y="20" width="220" height="100" rx="14" fill="rgba(59,130,246,0.12)" stroke="rgba(59,130,246,0.4)" strokeWidth="2" />
-                  <text x="240" y="60" textAnchor="middle" fill="white" fontSize="16" fontWeight="bold">Bank Account</text>
-                  <text x="240" y="88" textAnchor="middle" fill="#10b981" fontSize="14">1% return</text>
-                </motion.g>
-                {/* Arrow 1 down */}
-                <motion.g initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}>
-                  <line x1="240" y1="125" x2="240" y2="175" stroke="rgba(255,255,255,0.3)" strokeWidth="2" />
-                  <polygon points="234,172 240,184 246,172" fill="rgba(255,255,255,0.3)" />
-                  <text x="260" y="158" fill="#ef4444" fontSize="13" fontWeight="bold">loses to</text>
-                </motion.g>
-                {/* Inflation box */}
-                <motion.g initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }}>
-                  <rect x="130" y="190" width="220" height="100" rx="14" fill="rgba(239,68,68,0.1)" stroke="rgba(239,68,68,0.4)" strokeWidth="2" />
-                  <text x="240" y="230" textAnchor="middle" fill="white" fontSize="16" fontWeight="bold">Inflation</text>
-                  <text x="240" y="258" textAnchor="middle" fill="#f59e0b" fontSize="14">3% per year</text>
-                </motion.g>
-                {/* Arrow 2 down */}
-                <motion.g initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.8 }}>
-                  <line x1="240" y1="295" x2="240" y2="345" stroke="rgba(255,255,255,0.3)" strokeWidth="2" />
-                  <polygon points="234,342 240,354 246,342" fill="rgba(255,255,255,0.3)" />
-                  <text x="260" y="328" fill="#10b981" fontSize="13" fontWeight="bold">beaten by</text>
-                </motion.g>
-                {/* Investment box */}
-                <motion.g initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.9 }}>
-                  <rect x="130" y="360" width="220" height="100" rx="14" fill="rgba(16,185,129,0.12)" stroke="rgba(16,185,129,0.4)" strokeWidth="2" />
-                  <text x="240" y="400" textAnchor="middle" fill="white" fontSize="16" fontWeight="bold">Investment</text>
-                  <text x="240" y="428" textAnchor="middle" fill="#10b981" fontSize="14">8-10% return</text>
-                </motion.g>
-              </svg>
+              {renderDiagram()}
             </div>
           </div>
         </div>
-
         {/* Mobile: inline diagram */}
         <div className="lg:hidden px-6 pb-6">
           <div className="w-full p-4 rounded-2xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(139,92,246,0.15)' }}>
-            <svg viewBox="0 0 460 120" className="w-full h-auto">
-              <motion.g initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }}>
-                <rect x="5" y="20" width="120" height="70" rx="10" fill="rgba(59,130,246,0.15)" stroke="rgba(59,130,246,0.4)" strokeWidth="1.5" />
-                <text x="65" y="48" textAnchor="middle" fill="white" fontSize="11" fontWeight="bold">Bank Account</text>
-                <text x="65" y="68" textAnchor="middle" fill="#10b981" fontSize="10">1% return</text>
-              </motion.g>
-              <motion.g initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}>
-                <line x1="130" y1="55" x2="160" y2="55" stroke="rgba(255,255,255,0.3)" strokeWidth="1.5" />
-                <polygon points="158,50 168,55 158,60" fill="rgba(255,255,255,0.3)" />
-                <text x="149" y="45" textAnchor="middle" fill="#ef4444" fontSize="8" fontWeight="bold">loses to</text>
-              </motion.g>
-              <motion.g initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }}>
-                <rect x="170" y="20" width="120" height="70" rx="10" fill="rgba(239,68,68,0.12)" stroke="rgba(239,68,68,0.4)" strokeWidth="1.5" />
-                <text x="230" y="48" textAnchor="middle" fill="white" fontSize="11" fontWeight="bold">Inflation</text>
-                <text x="230" y="68" textAnchor="middle" fill="#f59e0b" fontSize="10">3% per year</text>
-              </motion.g>
-              <motion.g initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.8 }}>
-                <line x1="295" y1="55" x2="325" y2="55" stroke="rgba(255,255,255,0.3)" strokeWidth="1.5" />
-                <polygon points="323,50 333,55 323,60" fill="rgba(255,255,255,0.3)" />
-              </motion.g>
-              <motion.g initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.9 }}>
-                <rect x="335" y="20" width="120" height="70" rx="10" fill="rgba(16,185,129,0.15)" stroke="rgba(16,185,129,0.4)" strokeWidth="1.5" />
-                <text x="395" y="48" textAnchor="middle" fill="white" fontSize="11" fontWeight="bold">Investment</text>
-                <text x="395" y="68" textAnchor="middle" fill="#10b981" fontSize="10">8-10% return</text>
-              </motion.g>
-            </svg>
+            {renderDiagram()}
           </div>
         </div>
       </div>
@@ -422,7 +432,7 @@ export function MicroCheckView({ step, onComplete }: { step: MicroCheckStep; onC
   );
 }
 
-/* ─── Interactive Graph ─── */
+/* ─── Interactive Graph (supports exponential, comparison, pie) ─── */
 export function InteractiveGraphView({ step, onComplete }: { step: InteractiveGraphStep; onComplete: (c: boolean) => void }) {
   const defaultSliders = step.sliders?.map(s => s.default) ?? [];
   const [values, setValues] = useState<number[]>(defaultSliders);
@@ -445,8 +455,20 @@ export function InteractiveGraphView({ step, onComplete }: { step: InteractiveGr
     }
   };
 
+  // Exponential graph calculations
   const computedValue = useMemo(() => {
     if (step.graphType === 'exponential' && step.sliders && values.length >= 2) {
+      if (step.sliders.length >= 3) {
+        // 3-slider: starting amount, monthly contribution, annual return
+        const principal = values[0];
+        const monthly = values[1];
+        const rate = values[2] / 100;
+        const years = 40; // fixed for compound calc
+        const monthlyRate = rate / 12;
+        const months = years * 12;
+        const futureVal = principal * Math.pow(1 + rate, years) + monthly * ((Math.pow(1 + monthlyRate, months) - 1) / monthlyRate);
+        return Math.round(futureVal);
+      }
       const principal = 1000;
       const rate = values[0] / 100;
       const years = values[1];
@@ -457,14 +479,25 @@ export function InteractiveGraphView({ step, onComplete }: { step: InteractiveGr
 
   const curvePoints = useMemo(() => {
     if (step.graphType !== 'exponential' || !step.sliders || values.length < 2) return '';
-    const rate = values[0] / 100;
-    const years = values[1];
+    const rate = (step.sliders.length >= 3 ? values[2] : values[0]) / 100;
+    const years = step.sliders.length >= 3 ? 40 : values[1];
+    const principal = step.sliders.length >= 3 ? values[0] : 1000;
+    const monthly = step.sliders.length >= 3 ? values[1] : 0;
     const points: string[] = [];
-    const maxVal = 1000 * Math.pow(1 + rate, years);
+    let maxVal = principal;
+    // Calculate max for scaling
+    for (let y = 0; y <= years; y++) {
+      const monthlyRate = rate / 12;
+      const months = y * 12;
+      const val = principal * Math.pow(1 + rate, y) + (monthly > 0 ? monthly * ((Math.pow(1 + monthlyRate, months) - 1) / monthlyRate) : 0);
+      if (val > maxVal) maxVal = val;
+    }
     const chartH = 230;
     const chartW = 620;
     for (let y = 0; y <= years; y++) {
-      const val = 1000 * Math.pow(1 + rate, y);
+      const monthlyRate = rate / 12;
+      const months = y * 12;
+      const val = principal * Math.pow(1 + rate, y) + (monthly > 0 ? monthly * ((Math.pow(1 + monthlyRate, months) - 1) / monthlyRate) : 0);
       const x = 60 + (y / Math.max(years, 1)) * chartW;
       const yPos = 260 - (val / Math.max(maxVal, 1)) * chartH;
       points.push(`${x},${yPos}`);
@@ -472,18 +505,194 @@ export function InteractiveGraphView({ step, onComplete }: { step: InteractiveGr
     return points.join(' ');
   }, [step.graphType, values, step.sliders]);
 
-  // Dynamic Y-axis labels
   const yLabels = useMemo(() => {
     if (step.graphType !== 'exponential' || !step.sliders || values.length < 2) return [];
-    const rate = values[0] / 100;
-    const years = values[1];
-    const maxVal = 1000 * Math.pow(1 + rate, years);
+    const rate = (step.sliders.length >= 3 ? values[2] : values[0]) / 100;
+    const years = step.sliders.length >= 3 ? 40 : values[1];
+    const principal = step.sliders.length >= 3 ? values[0] : 1000;
+    const monthly = step.sliders.length >= 3 ? values[1] : 0;
+    const monthlyRate = rate / 12;
+    const months = years * 12;
+    const maxVal = principal * Math.pow(1 + rate, years) + (monthly > 0 ? monthly * ((Math.pow(1 + monthlyRate, months) - 1) / monthlyRate) : 0);
     return [0, 0.25, 0.5, 0.75, 1].map(frac => {
       const val = Math.round(maxVal * frac);
       const yPos = 260 - frac * 230;
-      return { val: val >= 1000 ? `$${(val / 1000).toFixed(0)}K` : `$${val}`, y: yPos };
+      return { val: val >= 1000000 ? `$${(val / 1000000).toFixed(1)}M` : val >= 1000 ? `$${(val / 1000).toFixed(0)}K` : `$${val}`, y: yPos };
     });
   }, [step.graphType, values, step.sliders]);
+
+  // Comparison graph calculations
+  const comparisonData = useMemo(() => {
+    if (step.graphType !== 'comparison' || !step.sliders || values.length < 2) return null;
+    const stockAlloc = values[0] / 100;
+    const years = values[1];
+    const stockReturn = 0.10;
+    const bondReturn = 0.05;
+
+    const conservativeLine: string[] = [];
+    const aggressiveLine: string[] = [];
+    const chartW = 620;
+    const chartH = 230;
+
+    // Conservative: 40% stocks, 60% bonds (or slider-based)
+    const consStock = Math.min(stockAlloc, 0.4);
+    const consBond = 1 - consStock;
+    const consRate = consStock * stockReturn + consBond * bondReturn;
+
+    // Aggressive: slider-based
+    const aggRate = stockAlloc * stockReturn + (1 - stockAlloc) * bondReturn;
+
+    let maxVal = 10000;
+    for (let y = 0; y <= years; y++) {
+      const consVal = 10000 * Math.pow(1 + consRate, y);
+      const aggVal = 10000 * Math.pow(1 + aggRate, y);
+      if (consVal > maxVal) maxVal = consVal;
+      if (aggVal > maxVal) maxVal = aggVal;
+    }
+
+    for (let y = 0; y <= years; y++) {
+      const x = 60 + (y / Math.max(years, 1)) * chartW;
+      const consVal = 10000 * Math.pow(1 + consRate, y);
+      const aggVal = 10000 * Math.pow(1 + aggRate, y);
+      conservativeLine.push(`${x},${260 - (consVal / maxVal) * chartH}`);
+      aggressiveLine.push(`${x},${260 - (aggVal / maxVal) * chartH}`);
+    }
+
+    const finalCons = Math.round(10000 * Math.pow(1 + consRate, years));
+    const finalAgg = Math.round(10000 * Math.pow(1 + aggRate, years));
+
+    return {
+      consPoints: conservativeLine.join(' '),
+      aggPoints: aggressiveLine.join(' '),
+      finalCons,
+      finalAgg,
+      years,
+    };
+  }, [step.graphType, values, step.sliders]);
+
+  // Pie chart calculations
+  const pieData = useMemo(() => {
+    if (step.graphType !== 'pie' || !step.sliders) return null;
+    const total = values.reduce((a, b) => a + b, 0);
+    const normalized = values.map(v => total > 0 ? v / total : 0);
+    const colors = ['#10b981', '#3b82f6', '#f59e0b', '#8b5cf6'];
+    const labels = step.sliders.map(s => s.label);
+
+    // Calculate risk score (weighted by position)
+    const riskWeights = [0.7, 0.8, 0.2, 0.5]; // US stocks=high, Intl=high, Bonds=low, RE=medium
+    const riskScore = normalized.reduce((sum, n, i) => sum + n * (riskWeights[i] || 0.5) * 100, 0);
+    const volatility = (riskScore * 0.25).toFixed(1);
+
+    // Build SVG arc paths
+    let cumAngle = -90;
+    const arcs = normalized.map((frac, i) => {
+      const angle = frac * 360;
+      const startAngle = cumAngle;
+      cumAngle += angle;
+      const endAngle = cumAngle;
+      const startRad = (startAngle * Math.PI) / 180;
+      const endRad = (endAngle * Math.PI) / 180;
+      const r = 90;
+      const cx = 150;
+      const cy = 150;
+      const x1 = cx + r * Math.cos(startRad);
+      const y1 = cy + r * Math.sin(startRad);
+      const x2 = cx + r * Math.cos(endRad);
+      const y2 = cy + r * Math.sin(endRad);
+      const largeArc = angle > 180 ? 1 : 0;
+      const d = frac > 0.001 ? `M${cx},${cy} L${x1},${y1} A${r},${r} 0 ${largeArc},1 ${x2},${y2} Z` : '';
+      return { d, color: colors[i], label: labels[i], pct: Math.round(frac * 100) };
+    });
+
+    return { arcs, riskScore: Math.round(riskScore), volatility, total };
+  }, [step.graphType, values, step.sliders]);
+
+  const renderGraph = () => {
+    if (step.graphType === 'comparison' && comparisonData) {
+      return (
+        <svg viewBox="0 0 720 300" className="w-full h-auto mb-4" style={{ minHeight: '260px' }}>
+          {[80, 130, 180, 230].map(y => (
+            <line key={y} x1="60" y1={y} x2="680" y2={y} stroke="rgba(139,92,246,0.1)" strokeWidth="0.5" strokeDasharray="4 4" />
+          ))}
+          {/* Conservative line */}
+          <polyline points={comparisonData.consPoints} fill="none" stroke="#3b82f6" strokeWidth="2.5" strokeLinecap="round" strokeDasharray="8 4" />
+          {/* Aggressive line */}
+          <polyline points={comparisonData.aggPoints} fill="none" stroke="#10b981" strokeWidth="3" strokeLinecap="round" />
+          {/* Labels */}
+          <text x="60" y="280" fill="rgba(255,255,255,0.5)" fontSize="12">Year 0</text>
+          <text x="680" y="280" fill="rgba(255,255,255,0.5)" fontSize="12" textAnchor="end">Year {comparisonData.years}</text>
+          {/* Legend */}
+          <rect x="60" y="15" width="12" height="12" rx="3" fill="#10b981" />
+          <text x="78" y="25" fill="#10b981" fontSize="11" fontWeight="600">Your allocation: ${comparisonData.finalAgg.toLocaleString()}</text>
+          <rect x="350" y="15" width="12" height="12" rx="3" fill="#3b82f6" />
+          <text x="368" y="25" fill="#3b82f6" fontSize="11" fontWeight="600">Conservative: ${comparisonData.finalCons.toLocaleString()}</text>
+        </svg>
+      );
+    }
+
+    if (step.graphType === 'pie' && pieData) {
+      return (
+        <div className="flex flex-col lg:flex-row items-center gap-6 mb-4">
+          <svg viewBox="0 0 300 300" className="w-full lg:w-1/2 h-auto" style={{ maxWidth: '300px', minHeight: '250px' }}>
+            {pieData.arcs.map((arc, i) => (
+              arc.d && <motion.path key={i} d={arc.d} fill={arc.color} fillOpacity="0.6" stroke={arc.color} strokeWidth="2"
+                initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ delay: i * 0.1 }} />
+            ))}
+            <circle cx="150" cy="150" r="40" fill="#0d0618" />
+            <text x="150" y="145" textAnchor="middle" fill="white" fontSize="14" fontWeight="bold">Risk</text>
+            <text x="150" y="165" textAnchor="middle" fill="hsl(var(--primary))" fontSize="18" fontWeight="black">{pieData.riskScore}</text>
+          </svg>
+          <div className="flex flex-col gap-2 w-full lg:w-1/2">
+            {pieData.arcs.map((arc, i) => (
+              <div key={i} className="flex items-center gap-3 p-2 rounded-lg" style={{ background: `${arc.color}11` }}>
+                <div className="w-4 h-4 rounded" style={{ background: arc.color }} />
+                <span className="text-sm text-foreground flex-1">{arc.label}</span>
+                <span className="text-sm font-bold" style={{ color: arc.color }}>{arc.pct}%</span>
+              </div>
+            ))}
+            <div className="mt-2 p-3 rounded-xl" style={{ background: 'rgba(139,92,246,0.08)', border: '1px solid rgba(139,92,246,0.2)' }}>
+              <p className="text-xs text-muted-foreground">Projected Annual Volatility</p>
+              <p className="text-lg font-bold text-primary">±{pieData.volatility}%</p>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // Default: exponential
+    return (
+      <>
+        <svg viewBox="0 0 720 300" className="w-full h-auto mb-4" style={{ pointerEvents: 'auto', minHeight: '260px' }}>
+          <defs>
+            <linearGradient id="igGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity="0.3" />
+              <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity="0" />
+            </linearGradient>
+          </defs>
+          {[80, 130, 180, 230].map(y => (
+            <line key={y} x1="60" y1={y} x2="680" y2={y} stroke="rgba(139,92,246,0.1)" strokeWidth="0.5" strokeDasharray="4 4" />
+          ))}
+          {yLabels.map((l, i) => (
+            <text key={i} x="50" y={l.y + 4} fill="rgba(255,255,255,0.4)" fontSize="11" textAnchor="end">{l.val}</text>
+          ))}
+          {curvePoints && (
+            <>
+              <polyline points={curvePoints} fill="none" stroke="hsl(var(--primary))" strokeWidth="3" strokeLinecap="round" />
+              <polygon points={`${curvePoints} 680,260 60,260`} fill="url(#igGrad)" opacity="0.5" />
+            </>
+          )}
+          <text x="60" y="280" fill="rgba(255,255,255,0.5)" fontSize="12">Year 0</text>
+          <text x="680" y="280" fill="rgba(255,255,255,0.5)" fontSize="12" textAnchor="end">
+            {step.sliders && step.sliders.length >= 3 ? 'Year 40' : `Year ${values[1] || 10}`}
+          </text>
+        </svg>
+        <div className="text-center mb-4">
+          <span className="text-xs text-muted-foreground">Final value: </span>
+          <span className="text-2xl font-black text-primary">${computedValue.toLocaleString()}</span>
+        </div>
+      </>
+    );
+  };
 
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col gap-5 px-6 w-full min-h-[85vh]" style={{ maxWidth: '900px', margin: '0 auto' }}>
@@ -494,39 +703,7 @@ export function InteractiveGraphView({ step, onComplete }: { step: InteractiveGr
       <h2 className="text-2xl lg:text-3xl font-black text-foreground">{step.title}</h2>
 
       <div className="w-full p-6 rounded-2xl relative" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(139,92,246,0.15)' }}>
-        {step.graphType === 'exponential' && (
-          <>
-            {/* Desktop-sized chart: 700x300 */}
-            <svg viewBox="0 0 720 300" className="w-full h-auto mb-4" style={{ pointerEvents: 'auto', minHeight: '260px' }}>
-              <defs>
-                <linearGradient id="igGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity="0.3" />
-                  <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity="0" />
-                </linearGradient>
-              </defs>
-              {/* Grid lines */}
-              {[80, 130, 180, 230].map(y => (
-                <line key={y} x1="60" y1={y} x2="680" y2={y} stroke="rgba(139,92,246,0.1)" strokeWidth="0.5" strokeDasharray="4 4" />
-              ))}
-              {/* Y-axis labels */}
-              {yLabels.map((l, i) => (
-                <text key={i} x="50" y={l.y + 4} fill="rgba(255,255,255,0.4)" fontSize="11" textAnchor="end">{l.val}</text>
-              ))}
-              {curvePoints && (
-                <>
-                  <polyline points={curvePoints} fill="none" stroke="hsl(var(--primary))" strokeWidth="3" strokeLinecap="round" />
-                  <polygon points={`${curvePoints} 680,260 60,260`} fill="url(#igGrad)" opacity="0.5" />
-                </>
-              )}
-              <text x="60" y="280" fill="rgba(255,255,255,0.5)" fontSize="12">Year 0</text>
-              <text x="680" y="280" fill="rgba(255,255,255,0.5)" fontSize="12" textAnchor="end">Year {values[1] || 10}</text>
-            </svg>
-            <div className="text-center mb-4">
-              <span className="text-xs text-muted-foreground">Final value: </span>
-              <span className="text-2xl font-black text-primary">${computedValue.toLocaleString()}</span>
-            </div>
-          </>
-        )}
+        {renderGraph()}
 
         {/* Bouncing prompt arrow */}
         {showPrompt && !touched && (
@@ -544,9 +721,11 @@ export function InteractiveGraphView({ step, onComplete }: { step: InteractiveGr
           <div key={i} className="mb-4">
             <div className="flex justify-between text-xs text-muted-foreground mb-1">
               <span>{s.label}</span>
-              <span className="font-bold text-foreground">{values[i]}{s.unit}</span>
+              <span className="font-bold text-foreground">
+                {s.unit === '$' ? `$${values[i].toLocaleString()}` : `${values[i]}${s.unit}`}
+              </span>
             </div>
-            <Slider min={s.min} max={s.max} step={1} value={[values[i]]}
+            <Slider min={s.min} max={s.max} step={s.max > 1000 ? 100 : 1} value={[values[i]]}
               onValueChange={([v]) => updateSlider(i, v)} className="w-full" />
           </div>
         ))}
@@ -590,22 +769,6 @@ export function InteractiveGraphView({ step, onComplete }: { step: InteractiveGr
 export function CaseStudyView({ step, onComplete }: { step: CaseStudyStep; onComplete: (c: boolean) => void }) {
   const [revealedIdx, setRevealedIdx] = useState(0);
   const nodeRefs = useRef<(HTMLDivElement | null)[]>([]);
-
-  useEffect(() => {
-    const observers: IntersectionObserver[] = [];
-    nodeRefs.current.forEach((el, i) => {
-      if (!el || i === 0) return;
-      const obs = new IntersectionObserver(
-        ([entry]) => {
-          if (entry.isIntersecting && i <= revealedIdx) { /* noop */ }
-        },
-        { threshold: 0.5 }
-      );
-      obs.observe(el);
-      observers.push(obs);
-    });
-    return () => observers.forEach(o => o.disconnect());
-  }, [revealedIdx]);
 
   const revealNext = () => {
     if (revealedIdx < step.events.length) {
