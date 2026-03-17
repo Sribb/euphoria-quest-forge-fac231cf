@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -19,6 +19,17 @@ const PATHWAY_TO_COURSE: Record<string, string> = {
   'personal-finance': 'personal-finance',
   economics: 'global-economics',
 };
+
+const PATHWAY_TABS = [
+  { id: "investing", label: "Investing Fundamentals" },
+  { id: "corporate-finance", label: "Corporate Finance" },
+  { id: "personal-finance", label: "Personal Finance" },
+  { id: "trading", label: "Trading & Technical Analysis" },
+  { id: "alternative-assets", label: "Alternative Assets" },
+  { id: "economics", label: "Economics" },
+  { id: "business", label: "Business & Entrepreneurship" },
+  { id: "marketing", label: "Marketing Fundamentals" },
+];
 
 const PATHWAY_META: Record<string, { title: string; description: string }> = {
   investing: {
@@ -55,6 +66,8 @@ const PATHWAY_META: Record<string, { title: string; description: string }> = {
   },
 };
 
+const STORAGE_KEY = "euphoria_active_pathway";
+
 interface DashboardProps {
   onNavigate: (tab: string) => void;
   onStockSearch?: () => void;
@@ -64,10 +77,29 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
   const { user } = useAuth();
   const { placementLesson } = useOnboarding();
   const [activeView, setActiveView] = useState<"home" | "courses">("home");
-  const [activePathway, setActivePathway] = useState<string>("investing");
+  const [activePathway, setActivePathway] = useState<string>(() => {
+    try { return localStorage.getItem(STORAGE_KEY) || "investing"; }
+    catch { return "investing"; }
+  });
   const [activeLessonId, setActiveLessonId] = useState<string | null>(null);
   const [legendaryLessonId, setLegendaryLessonId] = useState<string | null>(null);
   const [showDailyRewards, setShowDailyRewards] = useState(false);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  // Persist pathway selection
+  useEffect(() => {
+    try { localStorage.setItem(STORAGE_KEY, activePathway); } catch {}
+  }, [activePathway]);
+
+  // Scroll active tab into view
+  useEffect(() => {
+    if (scrollContainerRef.current) {
+      const active = scrollContainerRef.current.querySelector('[data-active="true"]');
+      if (active) {
+        active.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+      }
+    }
+  }, [activePathway]);
 
   // Streak check for daily rewards
   const { data: streakData } = useQuery({
@@ -133,7 +165,6 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
         const progress = progressData?.find((p) => p.lesson_id === lesson.id);
         const isActuallyCompleted = progress?.completed || false;
         
-        // Placement skip only applies to the 'investing' pathway
         const isInvestingPathway = (lesson as any).pathway === 'investing';
         const isSkippedByPlacement = isInvestingPathway && lesson.order_index < placementLesson && !isActuallyCompleted;
         const isCompleted = isActuallyCompleted || isSkippedByPlacement;
@@ -187,7 +218,6 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
   if (activeLessonId) {
     const courseId = PATHWAY_TO_COURSE[activePathway];
     if (courseId) {
-      // Find the lesson's order_index to map to lesson number
       const lesson = lessons.find((l) => l.id === activeLessonId);
       const lessonNumber = lesson ? lesson.order_index : 1;
       return (
@@ -239,6 +269,29 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
         activeView={activeView}
         onViewChange={setActiveView}
       />
+
+      {/* Pathway Selector Bar */}
+      <div className="sticky top-[56px] z-10 bg-background/80 backdrop-blur-2xl border-b border-border/40">
+        <div
+          ref={scrollContainerRef}
+          className="flex gap-1.5 overflow-x-auto scrollbar-hide px-6 py-3 max-w-6xl mx-auto"
+        >
+          {PATHWAY_TABS.map((tab) => (
+            <button
+              key={tab.id}
+              data-active={activePathway === tab.id}
+              onClick={() => setActivePathway(tab.id)}
+              className={`flex-shrink-0 px-4 py-2 rounded-[8px] text-sm font-semibold whitespace-nowrap transition-all ${
+                activePathway === tab.id
+                  ? 'bg-primary text-primary-foreground shadow-sm'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-muted/40'
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+      </div>
 
       {activeView === "courses" ? (
         <CoursesGrid

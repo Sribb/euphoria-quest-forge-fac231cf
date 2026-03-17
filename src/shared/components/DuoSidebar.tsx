@@ -31,9 +31,8 @@ interface DuoSidebarProps {
 }
 
 const studentNavItems = [
-  { id: "dashboard", label: "Home", icon: Home },
+  { id: "dashboard", label: "Learn", icon: BookOpen },
   { id: "feed", label: "Feed", icon: PlayCircle },
-  { id: "learn", label: "Learn", icon: BookOpen },
   { id: "trade", label: "Trade", icon: BarChart3 },
   { id: "games", label: "Games", icon: Gamepad2 },
   
