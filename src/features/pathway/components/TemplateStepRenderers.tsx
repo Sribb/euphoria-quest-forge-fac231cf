@@ -1,10 +1,10 @@
 
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
 import { cn } from '@/lib/utils';
-import { ArrowRight, Check, X as XIcon, ChevronLeft, ChevronRight, Sparkles, TrendingUp, AlertTriangle, BookOpen, Zap } from 'lucide-react';
+import { ArrowRight, Check, X as XIcon, ChevronLeft, ChevronRight, Sparkles, TrendingUp, AlertTriangle, BookOpen, Zap, Heart } from 'lucide-react';
 import type {
   HookOpenerStep, StakesCardStep, TeachingSlideStep, MicroCheckStep,
   InteractiveGraphStep, CaseStudyStep, MisconceptionsStep, KeyTermsCardsStep,
@@ -15,22 +15,22 @@ import type {
 export function HookOpenerView({ step, onComplete }: { step: HookOpenerStep; onComplete: (c: boolean) => void }) {
   const [animPhase, setAnimPhase] = useState(0);
 
-  // Simulate chart growth animation
-  useState(() => {
+  useEffect(() => {
     const t1 = setTimeout(() => setAnimPhase(1), 400);
     const t2 = setTimeout(() => setAnimPhase(2), 1000);
     const t3 = setTimeout(() => setAnimPhase(3), 1600);
     return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
-  });
+  }, []);
 
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-center gap-0 w-full min-h-[70vh] relative">
-      {/* Visual area */}
-      <div className="w-full flex-1 flex items-center justify-center bg-gradient-to-b from-primary/10 via-primary/5 to-transparent px-6 py-10">
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-center gap-0 w-full min-h-[80vh] relative">
+      {/* Full-bleed chart area */}
+      <div className="w-full flex-1 flex items-center justify-center px-0 py-6" style={{
+        background: 'linear-gradient(180deg, #1a0a2e 0%, #0d0618 60%, transparent 100%)',
+      }}>
         <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.3, duration: 0.8 }}
-          className="w-full max-w-xl">
-          {/* SVG Chart visualization — expanded viewBox for label room */}
-          <svg viewBox="0 0 420 230" className="w-full h-auto" style={{ pointerEvents: 'auto' }}>
+          className="w-full max-w-2xl px-4">
+          <svg viewBox="0 0 440 250" className="w-full h-auto" style={{ pointerEvents: 'auto' }}>
             <defs>
               <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity="0.3" />
@@ -39,48 +39,66 @@ export function HookOpenerView({ step, onComplete }: { step: HookOpenerStep; onC
             </defs>
             {/* Grid lines */}
             {[60, 100, 140, 180].map(y => (
-              <line key={y} x1="40" y1={y} x2="380" y2={y} stroke="hsl(var(--border))" strokeWidth="0.5" strokeDasharray="4 4" />
+              <line key={y} x1="40" y1={y} x2="400" y2={y} stroke="rgba(139,92,246,0.15)" strokeWidth="0.5" strokeDasharray="4 4" />
             ))}
-            {/* Growth curve — shifted down so labels aren't clipped */}
+            {/* Growth curve */}
             <motion.path
-              d="M40,185 Q100,180 140,170 Q180,155 220,135 Q260,105 300,70 Q340,40 370,30"
+              d="M40,190 Q80,188 120,182 Q160,172 200,155 Q240,130 280,95 Q320,60 360,38 Q380,30 400,25"
               fill="none" stroke="hsl(var(--primary))" strokeWidth="3" strokeLinecap="round"
               initial={{ pathLength: 0 }} animate={{ pathLength: animPhase >= 1 ? 1 : 0 }}
-              transition={{ duration: 2, ease: "easeOut" }}
+              transition={{ duration: 1.5, ease: "easeOut" }}
             />
             {/* Area under curve */}
             <motion.path
-              d="M40,185 Q100,180 140,170 Q180,155 220,135 Q260,105 300,70 Q340,40 370,30 L370,200 L40,200 Z"
+              d="M40,190 Q80,188 120,182 Q160,172 200,155 Q240,130 280,95 Q320,60 360,38 Q380,30 400,25 L400,210 L40,210 Z"
               fill="url(#chartGrad)"
               initial={{ opacity: 0 }} animate={{ opacity: animPhase >= 2 ? 0.6 : 0 }}
               transition={{ duration: 0.8 }}
             />
+            {/* Crash annotations */}
+            <motion.g initial={{ opacity: 0 }} animate={{ opacity: animPhase >= 2 ? 1 : 0 }} transition={{ delay: 0.2 }}>
+              {/* Dotcom crash ~2000 */}
+              <circle cx="140" cy="178" r="4" fill="#ef4444" />
+              <line x1="140" y1="182" x2="140" y2="200" stroke="#ef4444" strokeWidth="1" strokeDasharray="2 2" />
+              <text x="140" y="212" fill="#ef4444" fontSize="8" textAnchor="middle" fontWeight="bold">Dotcom</text>
+              {/* 2008 Financial Crisis */}
+              <circle cx="240" cy="130" r="4" fill="#ef4444" />
+              <line x1="240" y1="134" x2="240" y2="200" stroke="#ef4444" strokeWidth="1" strokeDasharray="2 2" />
+              <text x="240" y="212" fill="#ef4444" fontSize="8" textAnchor="middle" fontWeight="bold">2008</text>
+              {/* COVID crash ~2020 */}
+              <circle cx="360" cy="38" r="4" fill="#ef4444" />
+              <line x1="360" y1="42" x2="360" y2="200" stroke="#ef4444" strokeWidth="1" strokeDasharray="2 2" />
+              <text x="360" y="212" fill="#ef4444" fontSize="8" textAnchor="middle" fontWeight="bold">COVID</text>
+            </motion.g>
             {/* Milestone labels */}
             <motion.g initial={{ opacity: 0 }} animate={{ opacity: animPhase >= 2 ? 1 : 0 }} transition={{ delay: 0.3 }}>
-              <text x="40" y="218" fill="hsl(var(--muted-foreground))" fontSize="10" textAnchor="middle">1990</text>
-              <text x="140" y="218" fill="hsl(var(--muted-foreground))" fontSize="10" textAnchor="middle">2000</text>
-              <text x="260" y="218" fill="hsl(var(--muted-foreground))" fontSize="10" textAnchor="middle">2010</text>
-              <text x="370" y="218" fill="hsl(var(--muted-foreground))" fontSize="10" textAnchor="middle">2024</text>
+              <text x="40" y="230" fill="rgba(255,255,255,0.5)" fontSize="10" textAnchor="middle">1990</text>
+              <text x="200" y="230" fill="rgba(255,255,255,0.5)" fontSize="10" textAnchor="middle">2007</text>
+              <text x="400" y="230" fill="rgba(255,255,255,0.5)" fontSize="10" textAnchor="middle">2024</text>
             </motion.g>
-            {/* Value labels — positioned with room above */}
+            {/* Value labels */}
             <motion.g initial={{ opacity: 0 }} animate={{ opacity: animPhase >= 3 ? 1 : 0 }}>
-              <circle cx="40" cy="185" r="4" fill="hsl(var(--primary))" />
-              <text x="50" y="178" fill="hsl(var(--foreground))" fontSize="12" fontWeight="bold" textAnchor="start">$1K</text>
-              <circle cx="370" cy="30" r="5" fill="hsl(var(--primary))" />
-              <text x="358" y="20" fill="hsl(var(--foreground))" fontSize="13" fontWeight="bold" textAnchor="end">$23K</text>
+              <circle cx="40" cy="190" r="5" fill="hsl(var(--primary))" />
+              <text x="55" y="185" fill="white" fontSize="13" fontWeight="bold">$1K</text>
+              <circle cx="400" cy="25" r="6" fill="hsl(var(--primary))" />
+              <text x="385" y="17" fill="white" fontSize="14" fontWeight="bold" textAnchor="end">$23K</text>
             </motion.g>
           </svg>
           <p className="text-xs text-center text-muted-foreground mt-2 italic">{step.visualDescription}</p>
         </motion.div>
       </div>
 
-      {/* Text overlay */}
+      {/* Frosted glass card overlay */}
       <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.8 }}
-        className="px-6 pb-8 pt-6 text-center max-w-lg mx-auto">
+        className="mx-4 -mt-4 mb-8 p-6 rounded-2xl text-center max-w-lg self-center" style={{
+          background: 'rgba(255, 255, 255, 0.04)',
+          backdropFilter: 'blur(12px)',
+          border: '1px solid rgba(139, 92, 246, 0.2)',
+        }}>
         <h1 className="text-3xl font-black text-foreground mb-4 tracking-tight">{step.title}</h1>
         <p className="text-base text-muted-foreground leading-relaxed mb-3">{step.fact}</p>
         <p className="text-sm text-foreground/70 leading-relaxed">{step.outcome}</p>
-        <Button onClick={() => onComplete(true)} className="mt-8 px-10 rounded-xl gap-2 text-base font-bold" size="lg">
+        <Button onClick={() => onComplete(true)} className="mt-6 px-10 rounded-xl gap-2 text-base font-bold" size="lg">
           Begin <ArrowRight className="w-4 h-4" />
         </Button>
       </motion.div>
@@ -94,29 +112,45 @@ export function StakesCardView({ step, onComplete }: { step: StakesCardStep; onC
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col items-center gap-6 px-4 w-full max-w-lg mx-auto">
       <h2 className="text-xl font-black text-foreground text-center">Why This Matters</h2>
       <div className="grid grid-cols-2 gap-4 w-full">
-        {/* WITHOUT */}
+        {/* WITHOUT — with SVG illustration */}
         <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 }}
           className="p-5 rounded-2xl border-2 border-red-500/30 bg-red-500/5 flex flex-col gap-3">
           <div className="flex items-center gap-2">
             <XIcon className="w-5 h-5 text-red-400" />
             <span className="text-sm font-bold text-red-400 uppercase tracking-wider">Without</span>
           </div>
+          {/* SVG: Shrinking coin */}
+          <svg viewBox="0 0 120 80" className="w-full h-16">
+            <circle cx="30" cy="30" r="20" fill="rgba(239,68,68,0.2)" stroke="rgba(239,68,68,0.5)" strokeWidth="1.5" />
+            <text x="30" y="34" textAnchor="middle" fill="#ef4444" fontSize="10" fontWeight="bold">$</text>
+            <line x1="55" y1="30" x2="75" y2="50" stroke="#ef4444" strokeWidth="2" markerEnd="url(#arrowRed)" />
+            <circle cx="90" cy="55" r="12" fill="rgba(239,68,68,0.15)" stroke="rgba(239,68,68,0.3)" strokeWidth="1" />
+            <text x="90" y="59" textAnchor="middle" fill="#ef4444" fontSize="7" fontWeight="bold">$</text>
+            <text x="60" y="72" textAnchor="middle" fill="rgba(239,68,68,0.7)" fontSize="8">3% inflation</text>
+          </svg>
           <p className="text-sm font-semibold text-foreground">{step.without.label}</p>
           <p className="text-xs text-muted-foreground leading-relaxed">{step.without.detail}</p>
         </motion.div>
-        {/* WITH */}
+        {/* WITH — with SVG illustration */}
         <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.5 }}
           className="p-5 rounded-2xl border-2 border-emerald-500/30 bg-emerald-500/5 flex flex-col gap-3">
           <div className="flex items-center gap-2">
             <Check className="w-5 h-5 text-emerald-400" />
             <span className="text-sm font-bold text-emerald-400 uppercase tracking-wider">With</span>
           </div>
+          {/* SVG: Growing coin */}
+          <svg viewBox="0 0 120 80" className="w-full h-16">
+            <circle cx="30" cy="50" r="14" fill="rgba(16,185,129,0.15)" stroke="rgba(16,185,129,0.3)" strokeWidth="1" />
+            <text x="30" y="54" textAnchor="middle" fill="#10b981" fontSize="8" fontWeight="bold">$</text>
+            <line x1="50" y1="45" x2="70" y2="28" stroke="#10b981" strokeWidth="2" />
+            <circle cx="88" cy="22" r="22" fill="rgba(16,185,129,0.2)" stroke="rgba(16,185,129,0.5)" strokeWidth="1.5" />
+            <text x="88" y="26" textAnchor="middle" fill="#10b981" fontSize="12" fontWeight="bold">$</text>
+            <text x="60" y="72" textAnchor="middle" fill="rgba(16,185,129,0.7)" fontSize="8">10% return</text>
+          </svg>
           <p className="text-sm font-semibold text-foreground">{step.with.label}</p>
           <p className="text-xs text-muted-foreground leading-relaxed">{step.with.detail}</p>
         </motion.div>
       </div>
-      <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.8 }}
-        className="text-sm text-muted-foreground text-center italic">This is why it matters. Let's go.</motion.p>
       <Button onClick={() => onComplete(true)} className="px-8 rounded-xl gap-2">
         Continue <ArrowRight className="w-4 h-4" />
       </Button>
@@ -128,6 +162,19 @@ export function StakesCardView({ step, onComplete }: { step: StakesCardStep; onC
 export function TeachingSlideView({ step, onComplete }: { step: TeachingSlideStep; onComplete: (c: boolean) => void }) {
   const [revealedTerms, setRevealedTerms] = useState<Set<string>>(new Set());
   const [activeTerm, setActiveTerm] = useState<string | null>(null);
+  const [canContinue, setCanContinue] = useState(false);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const bottomRef = useRef<HTMLDivElement>(null);
+
+  // Scroll gate
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) setCanContinue(true); },
+      { rootMargin: '100px', threshold: 0.1 }
+    );
+    if (bottomRef.current) observer.observe(bottomRef.current);
+    return () => observer.disconnect();
+  }, []);
 
   const toggleTerm = (term: string) => {
     setRevealedTerms(prev => new Set(prev).add(term));
@@ -137,20 +184,6 @@ export function TeachingSlideView({ step, onComplete }: { step: TeachingSlideSte
   const activeTermData = step.highlightedTerms.find(t => t.term === activeTerm);
 
   const renderParagraph = (text: string, idx: number) => {
-    let result = text;
-    const parts: (string | { term: string })[] = [];
-    let remaining = result;
-
-    // Find and split by highlighted terms
-    for (const ht of step.highlightedTerms) {
-      const termLower = ht.term.toLowerCase();
-      const idx = remaining.toLowerCase().indexOf(termLower);
-      if (idx !== -1) {
-        // Term found inline
-      }
-    }
-
-    // Simple approach: render text and underline terms
     return (
       <p key={idx} className="text-sm text-foreground/90 leading-relaxed">
         {text.split(/(\b\w+\b)/g).map((word, wi) => {
@@ -173,19 +206,46 @@ export function TeachingSlideView({ step, onComplete }: { step: TeachingSlideSte
   };
 
   return (
-    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col gap-5 px-4 w-full max-w-lg mx-auto">
+    <motion.div ref={scrollRef} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col gap-5 px-4 w-full max-w-lg mx-auto">
       <div className="flex items-center gap-2">
         <BookOpen className="w-4 h-4 text-primary" />
         <span className="text-xs font-bold text-primary uppercase tracking-widest">{step.sectionLabel}</span>
       </div>
       <h2 className="text-2xl font-black text-foreground">{step.title}</h2>
 
-      {/* Diagram placeholder */}
-      <div className="w-full p-6 rounded-2xl bg-card border border-border/50 text-center">
-        <div className="w-full h-32 rounded-xl bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center mb-3">
-          <TrendingUp className="w-12 h-12 text-primary/40" />
-        </div>
-        <p className="text-xs text-muted-foreground italic">{step.diagramDescription}</p>
+      {/* Real SVG Flow Diagram */}
+      <div className="w-full p-4 rounded-2xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(139,92,246,0.15)' }}>
+        <svg viewBox="0 0 460 120" className="w-full h-auto">
+          {/* Bank Account box */}
+          <motion.g initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }}>
+            <rect x="5" y="20" width="120" height="70" rx="10" fill="rgba(59,130,246,0.15)" stroke="rgba(59,130,246,0.4)" strokeWidth="1.5" />
+            <text x="65" y="48" textAnchor="middle" fill="white" fontSize="11" fontWeight="bold">Bank Account</text>
+            <text x="65" y="68" textAnchor="middle" fill="#10b981" fontSize="10">1% return</text>
+          </motion.g>
+          {/* Arrow 1 */}
+          <motion.g initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}>
+            <line x1="130" y1="55" x2="160" y2="55" stroke="rgba(255,255,255,0.3)" strokeWidth="1.5" />
+            <polygon points="158,50 168,55 158,60" fill="rgba(255,255,255,0.3)" />
+            <text x="149" y="45" textAnchor="middle" fill="#ef4444" fontSize="8" fontWeight="bold">loses to</text>
+          </motion.g>
+          {/* Inflation box */}
+          <motion.g initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }}>
+            <rect x="170" y="20" width="120" height="70" rx="10" fill="rgba(239,68,68,0.12)" stroke="rgba(239,68,68,0.4)" strokeWidth="1.5" />
+            <text x="230" y="48" textAnchor="middle" fill="white" fontSize="11" fontWeight="bold">Inflation</text>
+            <text x="230" y="68" textAnchor="middle" fill="#f59e0b" fontSize="10">3% per year</text>
+          </motion.g>
+          {/* Arrow 2 */}
+          <motion.g initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.8 }}>
+            <line x1="295" y1="55" x2="325" y2="55" stroke="rgba(255,255,255,0.3)" strokeWidth="1.5" />
+            <polygon points="323,50 333,55 323,60" fill="rgba(255,255,255,0.3)" />
+          </motion.g>
+          {/* Investment box */}
+          <motion.g initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.9 }}>
+            <rect x="335" y="20" width="120" height="70" rx="10" fill="rgba(16,185,129,0.15)" stroke="rgba(16,185,129,0.4)" strokeWidth="1.5" />
+            <text x="395" y="48" textAnchor="middle" fill="white" fontSize="11" fontWeight="bold">Investment</text>
+            <text x="395" y="68" textAnchor="middle" fill="#10b981" fontSize="10">8-10% return</text>
+          </motion.g>
+        </svg>
       </div>
 
       {/* Paragraphs with highlighted terms */}
@@ -197,7 +257,7 @@ export function TeachingSlideView({ step, onComplete }: { step: TeachingSlideSte
       <AnimatePresence>
         {activeTermData && (
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }}
-            className="p-4 rounded-2xl bg-primary/10 border border-primary/30">
+            className="p-4 rounded-2xl" style={{ background: 'rgba(139,92,246,0.1)', border: '1px solid rgba(139,92,246,0.3)' }}>
             <div className="flex items-center justify-between mb-2">
               <span className="text-sm font-bold text-primary">{activeTermData.term}</span>
               <Button variant="ghost" size="sm" onClick={() => setActiveTerm(null)} className="h-6 w-6 p-0 rounded-full">
@@ -212,10 +272,10 @@ export function TeachingSlideView({ step, onComplete }: { step: TeachingSlideSte
 
       {/* Real example callout */}
       {step.realExample && (
-        <div className="p-4 rounded-2xl bg-accent/10 border border-accent/30">
+        <div className="p-4 rounded-2xl" style={{ background: 'rgba(139,92,246,0.08)', border: '1px solid rgba(139,92,246,0.2)' }}>
           <div className="flex items-center gap-2 mb-2">
-            <Sparkles className="w-4 h-4 text-accent-foreground" />
-            <span className="text-xs font-bold text-accent-foreground uppercase">Real Example</span>
+            <Sparkles className="w-4 h-4 text-primary" />
+            <span className="text-xs font-bold text-primary uppercase">Real Example</span>
           </div>
           <p className="text-sm text-foreground">
             <strong>{step.realExample.company}</strong> — {step.realExample.metric}
@@ -229,7 +289,11 @@ export function TeachingSlideView({ step, onComplete }: { step: TeachingSlideSte
         <span>Tap underlined terms to see definitions</span>
       </div>
 
-      <Button onClick={() => onComplete(true)} className="px-8 rounded-xl self-center gap-2">
+      <div ref={bottomRef} />
+
+      <Button onClick={() => onComplete(true)}
+        disabled={!canContinue}
+        className={cn("px-8 rounded-xl self-center gap-2 transition-opacity", !canContinue && "opacity-40 pointer-events-none")}>
         Continue <ArrowRight className="w-4 h-4" />
       </Button>
     </motion.div>
@@ -260,14 +324,14 @@ export function MicroCheckView({ step, onComplete }: { step: MicroCheckStep; onC
           <Button key={i}
             variant={sel === i ? (i === step.correct ? "default" : "destructive") : "outline"}
             onClick={() => pick(i)} disabled={sel !== null}
-            className={cn("justify-start text-left text-sm rounded-xl h-auto py-3 px-4",
+            className={cn("justify-start text-left text-sm rounded-xl h-auto py-3 px-4 whitespace-normal leading-relaxed",
               sel !== null && i === step.correct && "border-emerald-500 bg-emerald-500/10 text-emerald-400"
             )}>{o}</Button>
         ))}
       </div>
       {sel !== null && (
         <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-          className={cn("text-sm text-center p-4 rounded-xl w-full",
+          className={cn("text-sm text-center p-4 rounded-xl w-full leading-relaxed",
             isCorrect ? "bg-emerald-500/10 text-emerald-400" : "bg-red-500/10 text-red-400"
           )}>
           {isCorrect ? step.explanationCorrect : step.explanationWrong}
@@ -292,7 +356,6 @@ export function InteractiveGraphView({ step, onComplete }: { step: InteractiveGr
     }
   };
 
-  // Calculate compound growth for the exponential graph type
   const computedValue = useMemo(() => {
     if (step.graphType === 'exponential' && step.sliders && values.length >= 2) {
       const principal = 1000;
@@ -303,7 +366,6 @@ export function InteractiveGraphView({ step, onComplete }: { step: InteractiveGr
     return 0;
   }, [step.graphType, step.sliders, values]);
 
-  // Generate curve points for SVG
   const curvePoints = useMemo(() => {
     if (step.graphType !== 'exponential' || !step.sliders || values.length < 2) return '';
     const rate = values[0] / 100;
@@ -329,8 +391,7 @@ export function InteractiveGraphView({ step, onComplete }: { step: InteractiveGr
       </div>
       <h2 className="text-2xl font-black text-foreground">{step.title}</h2>
 
-      {/* Interactive Graph */}
-      <div className="w-full p-6 rounded-2xl bg-card border border-border/50">
+      <div className="w-full p-6 rounded-2xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(139,92,246,0.15)' }}>
         {step.graphType === 'exponential' && (
           <>
             <svg viewBox="0 0 400 220" className="w-full h-auto mb-4" style={{ pointerEvents: 'auto', minHeight: '220px' }}>
@@ -341,7 +402,7 @@ export function InteractiveGraphView({ step, onComplete }: { step: InteractiveGr
                 </linearGradient>
               </defs>
               {[60, 100, 140, 180].map(y => (
-                <line key={y} x1="40" y1={y} x2="360" y2={y} stroke="hsl(var(--border))" strokeWidth="0.5" strokeDasharray="4 4" />
+                <line key={y} x1="40" y1={y} x2="360" y2={y} stroke="rgba(139,92,246,0.12)" strokeWidth="0.5" strokeDasharray="4 4" />
               ))}
               {curvePoints && (
                 <>
@@ -349,8 +410,8 @@ export function InteractiveGraphView({ step, onComplete }: { step: InteractiveGr
                   <polygon points={`${curvePoints} 360,180 40,180`} fill="url(#igGrad)" opacity="0.5" />
                 </>
               )}
-              <text x="40" y="195" fill="hsl(var(--muted-foreground))" fontSize="10">Year 0</text>
-              <text x="360" y="195" fill="hsl(var(--muted-foreground))" fontSize="10" textAnchor="end">Year {values[1] || 10}</text>
+              <text x="40" y="195" fill="rgba(255,255,255,0.5)" fontSize="10">Year 0</text>
+              <text x="360" y="195" fill="rgba(255,255,255,0.5)" fontSize="10" textAnchor="end">Year {values[1] || 10}</text>
             </svg>
             <div className="text-center mb-4">
               <span className="text-xs text-muted-foreground">Final value: </span>
@@ -359,7 +420,6 @@ export function InteractiveGraphView({ step, onComplete }: { step: InteractiveGr
           </>
         )}
 
-        {/* Sliders */}
         {step.sliders?.map((s, i) => (
           <div key={i} className="mb-4">
             <div className="flex justify-between text-xs text-muted-foreground mb-1">
@@ -372,18 +432,16 @@ export function InteractiveGraphView({ step, onComplete }: { step: InteractiveGr
         ))}
       </div>
 
-      {/* Paragraphs */}
       <div className="flex flex-col gap-3">
         {step.paragraphs.map((p, i) => (
           <p key={i} className="text-sm text-foreground/90 leading-relaxed">{p}</p>
         ))}
       </div>
 
-      {/* Insights revealed */}
       <div className="flex flex-col gap-2">
         {step.insights.slice(0, revealedInsights).map((ins, i) => (
           <motion.div key={i} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }}
-            className="flex items-start gap-2 p-3 rounded-xl bg-primary/5 border border-primary/20">
+            className="flex items-start gap-2 p-3 rounded-xl" style={{ background: 'rgba(139,92,246,0.06)', border: '1px solid rgba(139,92,246,0.15)' }}>
             <span className="text-primary font-bold text-sm">{i + 1}.</span>
             <p className="text-xs text-foreground/80">{ins}</p>
           </motion.div>
@@ -391,10 +449,10 @@ export function InteractiveGraphView({ step, onComplete }: { step: InteractiveGr
       </div>
 
       {step.realExample && (
-        <div className="p-4 rounded-2xl bg-accent/10 border border-accent/30">
+        <div className="p-4 rounded-2xl" style={{ background: 'rgba(139,92,246,0.08)', border: '1px solid rgba(139,92,246,0.2)' }}>
           <div className="flex items-center gap-2 mb-2">
-            <Sparkles className="w-4 h-4 text-accent-foreground" />
-            <span className="text-xs font-bold text-accent-foreground uppercase">Real Example</span>
+            <Sparkles className="w-4 h-4 text-primary" />
+            <span className="text-xs font-bold text-primary uppercase">Real Example</span>
           </div>
           <p className="text-sm text-foreground"><strong>{step.realExample.company}</strong> — {step.realExample.metric}</p>
           <p className="text-xs text-muted-foreground mt-1">{step.realExample.explanation}</p>
@@ -411,6 +469,26 @@ export function InteractiveGraphView({ step, onComplete }: { step: InteractiveGr
 /* ─── Case Study ─── */
 export function CaseStudyView({ step, onComplete }: { step: CaseStudyStep; onComplete: (c: boolean) => void }) {
   const [revealedIdx, setRevealedIdx] = useState(0);
+  const nodeRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+  // Progressive reveal via IntersectionObserver
+  useEffect(() => {
+    const observers: IntersectionObserver[] = [];
+    nodeRefs.current.forEach((el, i) => {
+      if (!el || i === 0) return; // first is always visible
+      const obs = new IntersectionObserver(
+        ([entry]) => {
+          if (entry.isIntersecting && i <= revealedIdx) {
+            // Already revealed
+          }
+        },
+        { threshold: 0.5 }
+      );
+      obs.observe(el);
+      observers.push(obs);
+    });
+    return () => observers.forEach(o => o.disconnect());
+  }, [revealedIdx]);
 
   const revealNext = () => {
     if (revealedIdx < step.events.length) {
@@ -428,14 +506,14 @@ export function CaseStudyView({ step, onComplete }: { step: CaseStudyStep; onCom
       </div>
       <h2 className="text-2xl font-black text-foreground">{step.title}</h2>
 
-      {/* Timeline */}
       <div className="relative pl-6">
-        <div className="absolute left-2 top-2 bottom-2 w-0.5 bg-border" />
+        <div className="absolute left-2 top-2 bottom-2 w-0.5" style={{ background: 'rgba(139,92,246,0.2)' }} />
         {step.events.map((evt, i) => (
           <motion.div key={i}
-            initial={{ opacity: 0, x: -10 }}
-            animate={{ opacity: i < revealedIdx ? 1 : 0.2, x: i < revealedIdx ? 0 : -10 }}
-            transition={{ delay: i < revealedIdx ? 0 : 0 }}
+            ref={el => { nodeRefs.current[i] = el; }}
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: i < revealedIdx ? 1 : 0.2, y: i < revealedIdx ? 0 : 12 }}
+            transition={{ duration: 0.4, delay: i < revealedIdx ? i * 0.15 : 0 }}
             className="relative mb-6 last:mb-0"
             onClick={() => { if (i === revealedIdx) revealNext(); }}
             style={{ cursor: i === revealedIdx ? 'pointer' : 'default', pointerEvents: 'auto' }}
@@ -462,7 +540,7 @@ export function CaseStudyView({ step, onComplete }: { step: CaseStudyStep; onCom
       {allRevealed && (
         <>
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-            className="p-4 rounded-2xl bg-primary/10 border border-primary/30">
+            className="p-4 rounded-2xl" style={{ background: 'rgba(139,92,246,0.1)', border: '1px solid rgba(139,92,246,0.25)' }}>
             <span className="text-xs font-bold text-primary uppercase">The Lesson</span>
             <p className="text-sm text-foreground mt-2 leading-relaxed">{step.lesson}</p>
           </motion.div>
@@ -478,6 +556,17 @@ export function CaseStudyView({ step, onComplete }: { step: CaseStudyStep; onCom
 /* ─── Misconceptions ─── */
 export function MisconceptionsView({ step, onComplete }: { step: MisconceptionsStep; onComplete: (c: boolean) => void }) {
   const [revealedIdx, setRevealedIdx] = useState(0);
+  const [canContinue, setCanContinue] = useState(false);
+  const bottomRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) setCanContinue(true); },
+      { rootMargin: '100px', threshold: 0.1 }
+    );
+    if (bottomRef.current) observer.observe(bottomRef.current);
+    return () => observer.disconnect();
+  }, []);
 
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col gap-5 px-4 w-full max-w-lg mx-auto">
@@ -494,11 +583,14 @@ export function MisconceptionsView({ step, onComplete }: { step: MisconceptionsS
             animate={{ opacity: i <= revealedIdx ? 1 : 0.3, y: i <= revealedIdx ? 0 : 10 }}
             onClick={() => { if (i === revealedIdx && revealedIdx < step.items.length) setRevealedIdx(prev => prev + 1); }}
             style={{ cursor: i === revealedIdx ? 'pointer' : 'default', pointerEvents: 'auto' }}
-            className={cn("p-4 rounded-2xl border transition-all", i <= revealedIdx ? "border-border bg-card" : "border-border/30 bg-card/50")}
+            className={cn("p-4 rounded-2xl border transition-all",
+              i <= revealedIdx ? "border-border/50 bg-card/50" : "border-border/20 bg-card/20"
+            )}
           >
             <div className="flex items-start gap-3 mb-2">
-              <XIcon className="w-4 h-4 text-red-400 mt-0.5 shrink-0" />
-              <p className="text-sm text-red-400 line-through">{item.myth}</p>
+              <XIcon className="w-4 h-4 text-muted-foreground/50 mt-0.5 shrink-0" />
+              {/* Dimmed strikethrough — muted gray, not harsh red */}
+              <p className="text-sm text-muted-foreground/40 line-through decoration-muted-foreground/30">{item.myth}</p>
             </div>
             {i < revealedIdx && (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
@@ -513,8 +605,12 @@ export function MisconceptionsView({ step, onComplete }: { step: MisconceptionsS
         ))}
       </div>
 
+      <div ref={bottomRef} />
+
       {revealedIdx > step.items.length - 1 && (
-        <Button onClick={() => onComplete(true)} className="px-8 rounded-xl self-center gap-2">
+        <Button onClick={() => onComplete(true)}
+          disabled={!canContinue}
+          className={cn("px-8 rounded-xl self-center gap-2 transition-opacity", !canContinue && "opacity-40 pointer-events-none")}>
           Continue <ArrowRight className="w-4 h-4" />
         </Button>
       )}
@@ -531,11 +627,30 @@ export function MisconceptionsView({ step, onComplete }: { step: MisconceptionsS
 export function KeyTermsCardsView({ step, onComplete }: { step: KeyTermsCardsStep; onComplete: (c: boolean) => void }) {
   const [idx, setIdx] = useState(0);
   const [viewed, setViewed] = useState<Set<number>>(new Set([0]));
+  const [saved, setSaved] = useState<Set<number>>(new Set());
+  const viewTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Track view time — card is viewed after 1.5s on it
+  useEffect(() => {
+    viewTimerRef.current = setTimeout(() => {
+      setViewed(prev => new Set(prev).add(idx));
+    }, 1500);
+    return () => { if (viewTimerRef.current) clearTimeout(viewTimerRef.current); };
+  }, [idx]);
 
   const goTo = (dir: number) => {
+    // Mark current card as viewed when navigating away
+    setViewed(prev => new Set(prev).add(idx));
     const next = Math.max(0, Math.min(step.terms.length - 1, idx + dir));
     setIdx(next);
-    setViewed(prev => new Set(prev).add(next));
+  };
+
+  const toggleSave = () => {
+    setSaved(prev => {
+      const next = new Set(prev);
+      if (next.has(idx)) next.delete(idx); else next.add(idx);
+      return next;
+    });
   };
 
   const allViewed = viewed.size === step.terms.length;
@@ -552,11 +667,19 @@ export function KeyTermsCardsView({ step, onComplete }: { step: KeyTermsCardsSte
       {/* Card */}
       <AnimatePresence mode="wait">
         <motion.div key={idx} initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }}
-          className="w-full p-6 rounded-2xl bg-card border border-border min-h-[200px]">
+          className="w-full p-6 rounded-2xl min-h-[200px] relative" style={{
+            background: 'rgba(255,255,255,0.04)',
+            border: '1px solid rgba(139,92,246,0.25)',
+          }}>
+          {/* Heart/save button */}
+          <button onClick={toggleSave} className="absolute top-4 right-4 p-1.5 rounded-full transition-colors hover:bg-primary/10" style={{ pointerEvents: 'auto' }}>
+            <Heart className={cn("w-5 h-5 transition-all", saved.has(idx) ? "fill-primary text-primary" : "text-muted-foreground/40")} />
+          </button>
+
           <h3 className="text-xl font-black text-foreground mb-3">{term.term}</h3>
           <p className="text-sm text-foreground/90 leading-relaxed mb-3">{term.definition}</p>
           <p className="text-xs text-muted-foreground italic mb-3">e.g., {term.example}</p>
-          <div className="p-3 rounded-xl bg-muted/30 border border-border/50">
+          <div className="p-3 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(139,92,246,0.1)' }}>
             <span className="text-xs text-muted-foreground">Used in a sentence:</span>
             <p className="text-sm text-foreground mt-1 italic">"{term.sentence}"</p>
           </div>
@@ -581,11 +704,11 @@ export function KeyTermsCardsView({ step, onComplete }: { step: KeyTermsCardsSte
       </div>
       <p className="text-xs text-muted-foreground">{idx + 1} of {step.terms.length}</p>
 
-      {allViewed && (
-        <Button onClick={() => onComplete(true)} className="px-8 rounded-xl gap-2">
-          Continue <ArrowRight className="w-4 h-4" />
-        </Button>
-      )}
+      <Button onClick={() => onComplete(true)}
+        disabled={!allViewed}
+        className={cn("px-8 rounded-xl gap-2 transition-opacity", !allViewed && "opacity-40 pointer-events-none")}>
+        Continue <ArrowRight className="w-4 h-4" />
+      </Button>
     </motion.div>
   );
 }
@@ -621,12 +744,12 @@ export function SimulationFinaleView({ step, onComplete }: { step: SimulationFin
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col items-center gap-5 px-4 w-full max-w-lg mx-auto text-center">
         <Sparkles className="w-10 h-10 text-primary" />
         <h2 className="text-2xl font-black text-foreground">Simulation Complete</h2>
-        <div className="p-5 rounded-2xl bg-card border border-border w-full">
+        <div className="p-5 rounded-2xl w-full" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(139,92,246,0.2)' }}>
           <p className="text-sm text-muted-foreground mb-2">Your outcome</p>
           <p className="text-3xl font-black text-primary mb-4">{totalScore}/{maxScore}</p>
           <p className="text-sm text-muted-foreground mb-2">Optimal outcome</p>
           <p className="text-sm text-foreground mb-4">{step.optimalOutcome}</p>
-          <div className="p-3 rounded-xl bg-primary/10 border border-primary/20">
+          <div className="p-3 rounded-xl" style={{ background: 'rgba(139,92,246,0.1)', border: '1px solid rgba(139,92,246,0.2)' }}>
             <p className="text-xs font-bold text-primary uppercase mb-1">The Principle</p>
             <p className="text-sm text-foreground">{step.principle}</p>
           </div>
@@ -657,21 +780,21 @@ export function SimulationFinaleView({ step, onComplete }: { step: SimulationFin
         ))}
       </div>
 
-      <div className="w-full p-4 rounded-2xl bg-card border border-border">
+      <div className="w-full p-4 rounded-2xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(139,92,246,0.15)' }}>
         <p className="text-sm text-foreground font-medium mb-3">{currentDecision.prompt}</p>
         <div className="flex flex-col gap-2">
           {currentDecision.options.map((opt, i) => (
             <Button key={i} variant={choices[decisionIdx] === i ? "default" : "outline"}
               onClick={() => pick(i)} disabled={showConsequence}
-              className="justify-start text-left text-sm rounded-xl h-auto py-3 px-4">{opt.label}</Button>
+              className="justify-start text-left text-sm rounded-xl h-auto py-3 px-4 whitespace-normal leading-relaxed">{opt.label}</Button>
           ))}
         </div>
       </div>
 
       {showConsequence && (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-          className="w-full p-4 rounded-2xl bg-primary/5 border border-primary/20">
-          <p className="text-sm text-foreground">{currentDecision.options[choices[decisionIdx]].consequence}</p>
+          className="w-full p-4 rounded-2xl" style={{ background: 'rgba(139,92,246,0.06)', border: '1px solid rgba(139,92,246,0.2)' }}>
+          <p className="text-sm text-foreground leading-relaxed">{currentDecision.options[choices[decisionIdx]].consequence}</p>
           <Button onClick={advance} className="mt-3 rounded-xl gap-2 text-sm" size="sm">
             {decisionIdx + 1 < step.decisions.length ? 'Next Decision' : 'See Results'} <ArrowRight className="w-4 h-4" />
           </Button>
@@ -703,7 +826,10 @@ export function SummaryCardsView({ step, onComplete }: { step: SummaryCardsStep;
 
       <AnimatePresence mode="wait">
         <motion.div key={idx} initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }}
-          className="w-full p-6 rounded-2xl bg-gradient-to-br from-primary/10 to-accent/10 border border-primary/20 min-h-[140px] flex flex-col justify-center">
+          className="w-full p-6 rounded-2xl min-h-[140px] flex flex-col justify-center" style={{
+            background: 'linear-gradient(135deg, rgba(139,92,246,0.1), rgba(139,92,246,0.05))',
+            border: '1px solid rgba(139,92,246,0.2)',
+          }}>
           <p className="text-base font-bold text-foreground mb-2">{step.cards[idx].takeaway}</p>
           <p className="text-sm text-muted-foreground leading-relaxed">{step.cards[idx].detail}</p>
         </motion.div>
@@ -738,8 +864,7 @@ export function WhatsNextView({ step, onComplete, onClose }: { step: WhatsNextSt
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col items-center gap-5 px-4 w-full max-w-lg mx-auto text-center">
       <h2 className="text-xl font-black text-foreground">You're Building Momentum</h2>
 
-      {/* Progress indication */}
-      <div className="w-full p-5 rounded-2xl bg-card border border-border">
+      <div className="w-full p-5 rounded-2xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(139,92,246,0.15)' }}>
         <p className="text-xs text-muted-foreground mb-3 uppercase tracking-widest font-bold">Next Lesson</p>
         <h3 className="text-lg font-bold text-foreground mb-2">{step.nextTitle}</h3>
         <p className="text-sm text-muted-foreground leading-relaxed mb-3">{step.preview}</p>
@@ -747,13 +872,11 @@ export function WhatsNextView({ step, onComplete, onClose }: { step: WhatsNextSt
       </div>
 
       <div className="flex gap-3">
-        <Button onClick={() => onComplete(true)} className="px-8 rounded-xl gap-2">
-          Start Next Lesson <ArrowRight className="w-4 h-4" />
+        <Button variant="outline" onClick={onClose} className="rounded-xl">Back to Dashboard</Button>
+        <Button onClick={() => onComplete(true)} className="px-6 rounded-xl gap-2">
+          Next Lesson <ArrowRight className="w-4 h-4" />
         </Button>
       </div>
-      <Button variant="ghost" onClick={onClose || (() => onComplete(true))} className="text-sm text-muted-foreground">
-        Back to Dashboard
-      </Button>
     </motion.div>
   );
 }
