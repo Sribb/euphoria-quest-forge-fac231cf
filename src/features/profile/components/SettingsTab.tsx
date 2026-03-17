@@ -130,7 +130,7 @@ export const SettingsTab = ({ userId, onboarding, placementLesson, refetchOnboar
       icon: Palette,
       title: "Appearance",
       summary: `${darkMode ? "Dark" : "Light"} · ${THEME_PRESETS.find(t => t.color === primaryColor)?.name || "Custom"}`,
-      span: "md:col-span-2",
+      span: "",
     },
     {
       id: "notifications" as const,
