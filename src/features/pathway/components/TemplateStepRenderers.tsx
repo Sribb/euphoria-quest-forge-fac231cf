@@ -42,6 +42,10 @@ export function HookOpenerView({ step, onComplete }: { step: HookOpenerStep; onC
   }, []);
 
   const renderChart = () => {
+    // If the step provides custom SVG, render it directly
+    if (step.chartSvg) {
+      return <div dangerouslySetInnerHTML={{ __html: step.chartSvg }} className="w-full flex items-center justify-center" style={{ minHeight: '280px' }} />;
+    }
     switch (lessonNum) {
       case 2: return <HookChartRiskReward animPhase={animPhase} />;
       case 3: return <HookChartCompounding animPhase={animPhase} />;
@@ -131,6 +135,9 @@ export function StakesCardView({ step, onComplete }: { step: StakesCardStep; onC
   }
 
   const renderWithoutSVG = () => {
+    if (step.withoutSvg) {
+      return <div dangerouslySetInnerHTML={{ __html: step.withoutSvg }} className="w-full flex items-center justify-center" />;
+    }
     switch (lessonNum) {
       case 2: return <StakesIllustrationRisk />;
       case 3: return <StakesIllustrationLateStart />;
@@ -160,6 +167,9 @@ export function StakesCardView({ step, onComplete }: { step: StakesCardStep; onC
   };
 
   const renderWithSVG = () => {
+    if (step.withSvg) {
+      return <div dangerouslySetInnerHTML={{ __html: step.withSvg }} className="w-full flex items-center justify-center" />;
+    }
     switch (lessonNum) {
       case 2: return <StakesIllustrationDiversified />;
       case 3: return <StakesIllustrationEarlyStart />;
@@ -196,7 +206,7 @@ export function StakesCardView({ step, onComplete }: { step: StakesCardStep; onC
           <div className="flex items-center gap-2">
             <XIcon className="w-5 h-5 text-red-400" />
             <span className="text-sm font-bold text-red-400 uppercase tracking-wider">
-              {lessonNum === 2 ? 'Concentrated' : lessonNum === 3 ? 'Starting Late' : lessonNum === 4 ? '100% Stocks' : lessonNum === 5 ? 'Single Stock' : 'Without Investing'}
+              {step.withoutLabel || (lessonNum === 2 ? 'Concentrated' : lessonNum === 3 ? 'Starting Late' : lessonNum === 4 ? '100% Stocks' : lessonNum === 5 ? 'Single Stock' : 'Without Investing')}
             </span>
           </div>
           <div className="flex-1 flex items-center justify-center px-4">
@@ -213,7 +223,7 @@ export function StakesCardView({ step, onComplete }: { step: StakesCardStep; onC
           <div className="flex items-center gap-2">
             <Check className="w-5 h-5 text-emerald-400" />
             <span className="text-sm font-bold text-emerald-400 uppercase tracking-wider">
-              {lessonNum === 2 ? 'Diversified' : lessonNum === 3 ? 'Starting Early' : lessonNum === 4 ? '60/40 Balanced' : lessonNum === 5 ? 'Diversified Portfolio' : 'With Investing'}
+              {step.withLabel || (lessonNum === 2 ? 'Diversified' : lessonNum === 3 ? 'Starting Early' : lessonNum === 4 ? '60/40 Balanced' : lessonNum === 5 ? 'Diversified Portfolio' : 'With Investing')}
             </span>
           </div>
           <div className="flex-1 flex items-center justify-center">
@@ -278,6 +288,9 @@ export function TeachingSlideView({ step, onComplete }: { step: TeachingSlideSte
   };
 
   const renderDiagram = () => {
+    if (step.diagramSvg) {
+      return <div dangerouslySetInnerHTML={{ __html: step.diagramSvg }} className="w-full flex items-center justify-center" />;
+    }
     switch (lessonNum) {
       case 2: return <DiagramRiskSpectrum />;
       case 3: return <DiagramSnowball />;

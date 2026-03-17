@@ -19,12 +19,17 @@ export interface HookOpenerStep {
   fact: string;
   outcome: string;
   visualDescription: string;
+  chartSvg?: string;
 }
 
 export interface StakesCardStep {
   type: 'stakesCard';
   without: { label: string; detail: string };
   with: { label: string; detail: string };
+  withoutSvg?: string;
+  withSvg?: string;
+  withoutLabel?: string;
+  withLabel?: string;
 }
 
 export interface TeachingSlideStep {
@@ -34,6 +39,7 @@ export interface TeachingSlideStep {
   paragraphs: string[];
   highlightedTerms: { term: string; definition: string; example: string }[];
   diagramDescription: string;
+  diagramSvg?: string;
   realExample?: { company: string; metric: string; outcome: string; explanation: string };
 }
 

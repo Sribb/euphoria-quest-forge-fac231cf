@@ -25,15 +25,16 @@ export const cq = (question: string, options: string[], correct: number, explana
 export const L = (num: number, title: string, xp: number, steps: LessonStep[], challenge: ChallengeQuestion[]): PathwayLesson => ({ num, title, xp, steps, challenge });
 
 // ─── New Template Helpers ───
-export const hookOpener = (title: string, fact: string, outcome: string, visualDescription: string): HookOpenerStep => ({
-  type: 'hookOpener', title, fact, outcome, visualDescription
+export const hookOpener = (title: string, fact: string, outcome: string, visualDescription: string, chartSvg?: string): HookOpenerStep => ({
+  type: 'hookOpener', title, fact, outcome, visualDescription, ...(chartSvg && { chartSvg })
 });
 
 export const stakesCard = (
   without: { label: string; detail: string },
-  with_: { label: string; detail: string }
+  with_: { label: string; detail: string },
+  opts?: { withoutSvg?: string; withSvg?: string; withoutLabel?: string; withLabel?: string }
 ): StakesCardStep => ({
-  type: 'stakesCard', without, with: with_
+  type: 'stakesCard', without, with: with_, ...opts
 });
 
 export const teachingSlide = (
@@ -41,9 +42,10 @@ export const teachingSlide = (
   paragraphs: string[],
   highlightedTerms: { term: string; definition: string; example: string }[],
   diagramDescription: string,
-  realExample?: { company: string; metric: string; outcome: string; explanation: string }
+  realExample?: { company: string; metric: string; outcome: string; explanation: string },
+  diagramSvg?: string
 ): TeachingSlideStep => ({
-  type: 'teachingSlide', sectionLabel, title, paragraphs, highlightedTerms, diagramDescription, realExample
+  type: 'teachingSlide', sectionLabel, title, paragraphs, highlightedTerms, diagramDescription, realExample, ...(diagramSvg && { diagramSvg })
 });
 
 export const microCheck = (
