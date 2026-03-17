@@ -1,17 +1,15 @@
 import { useState, useEffect } from "react";
 import {
-  Palette, Bell, Shield, Globe, Link2, Database, HelpCircle, Languages,
-  Download, LogOut, Trash2, RotateCcw, BookOpen, Brain, Volume2, Sun, Moon,
-  Monitor, ChevronRight, Eye, EyeOff, Users, Lock, MessageSquare,
-  TrendingUp, Flame, AlertTriangle, Check
+  Palette, Bell, Shield, Database, Languages, Brain,
+  Volume2, Sun, Moon, RotateCcw, BookOpen, Globe, Download,
+  LogOut, Trash2, Lock, Eye, EyeOff, Users, MessageSquare,
+  TrendingUp, Flame, Check, AlertTriangle
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle
@@ -42,30 +40,13 @@ const THEME_PRESETS = [
 ];
 
 const FONT_SIZES = [
-  { label: "Small", value: "14px", class: "text-sm" },
-  { label: "Default", value: "16px", class: "text-base" },
-  { label: "Large", value: "18px", class: "text-lg" },
-  { label: "Extra Large", value: "20px", class: "text-xl" },
+  { label: "S", value: "14px" },
+  { label: "M", value: "16px" },
+  { label: "L", value: "18px" },
+  { label: "XL", value: "20px" },
 ];
 
-function SettingRow({
-  icon: Icon, title, description, children, className
-}: {
-  icon: any; title: string; description: string; children: React.ReactNode; className?: string;
-}) {
-  return (
-    <div className={cn("flex items-center justify-between gap-4 py-3", className)}>
-      <div className="flex items-start gap-3 flex-1 min-w-0">
-        <Icon className="w-4 h-4 text-muted-foreground mt-0.5 shrink-0" />
-        <div className="min-w-0">
-          <p className="text-sm font-medium">{title}</p>
-          <p className="text-xs text-muted-foreground">{description}</p>
-        </div>
-      </div>
-      <div className="shrink-0">{children}</div>
-    </div>
-  );
-}
+type ExpandedCard = null | "appearance" | "notifications" | "privacy" | "data" | "language" | "placement";
 
 export const SettingsTab = ({ userId, onboarding, placementLesson, refetchOnboarding }: SettingsTabProps) => {
   const queryClient = useQueryClient();
@@ -73,12 +54,12 @@ export const SettingsTab = ({ userId, onboarding, placementLesson, refetchOnboar
   const [primaryColor, setPrimaryColor] = useState("#9b87f5");
   const [fontSize, setFontSize] = useState("16px");
   const [soundOn, setSoundOn] = useState(isSoundEnabled());
+  const [expanded, setExpanded] = useState<ExpandedCard>(null);
   const [showRetakeWarning, setShowRetakeWarning] = useState(false);
   const [showRetakeQuiz, setShowRetakeQuiz] = useState(false);
   const [showDeleteAccount, setShowDeleteAccount] = useState(false);
   const [showSignOut, setShowSignOut] = useState(false);
 
-  // Notification states
   const [notifMessages, setNotifMessages] = useState(true);
   const [notifLikes, setNotifLikes] = useState(true);
   const [notifComments, setNotifComments] = useState(true);
@@ -86,7 +67,6 @@ export const SettingsTab = ({ userId, onboarding, placementLesson, refetchOnboar
   const [notifLessons, setNotifLessons] = useState(true);
   const [notifMarket, setNotifMarket] = useState(true);
 
-  // Privacy states
   const [profileVisibility, setProfileVisibility] = useState("public");
   const [portfolioVisibility, setPortfolioVisibility] = useState("public");
   const [activityVisibility, setActivityVisibility] = useState("public");
@@ -112,26 +92,16 @@ export const SettingsTab = ({ userId, onboarding, placementLesson, refetchOnboar
     setDarkMode(newMode);
     localStorage.setItem("theme", newMode ? "dark" : "light");
     document.documentElement.classList.toggle("dark", newMode);
-    toast.success(`${newMode ? "Dark" : "Light"} mode`);
   };
 
   const changeFontSize = (size: string) => {
     setFontSize(size);
     localStorage.setItem("fontSize", size);
     document.documentElement.style.fontSize = size;
-    toast.success("Font size updated");
-  };
-
-  const handleResetAppearance = () => {
-    applyThemeColor("#9b87f5", "263 84% 58%");
-    if (!darkMode) toggleDarkMode();
-    changeFontSize("16px");
-    toast.success("Appearance reset to defaults");
   };
 
   const handleExportData = () => {
     toast.success("Preparing your data export...");
-    // In a real app, this would trigger an edge function
     setTimeout(() => toast.info("Data export will be emailed to you shortly."), 1500);
   };
 
@@ -150,313 +120,315 @@ export const SettingsTab = ({ userId, onboarding, placementLesson, refetchOnboar
     setShowDeleteAccount(false);
   };
 
+  const toggle = (card: ExpandedCard) => setExpanded(expanded === card ? null : card);
+
+  const notifCount = [notifMessages, notifLikes, notifComments, notifStreaks, notifLessons, notifMarket].filter(Boolean).length;
+
+  const cards = [
+    {
+      id: "appearance" as const,
+      icon: Palette,
+      title: "Appearance",
+      summary: `${darkMode ? "Dark" : "Light"} · ${THEME_PRESETS.find(t => t.color === primaryColor)?.name || "Custom"}`,
+      span: "md:col-span-2",
+    },
+    {
+      id: "notifications" as const,
+      icon: Bell,
+      title: "Notifications",
+      summary: `${notifCount}/6 enabled`,
+      span: "",
+    },
+    {
+      id: "privacy" as const,
+      icon: Shield,
+      title: "Privacy",
+      summary: `Profile: ${profileVisibility}`,
+      span: "",
+    },
+    {
+      id: "language" as const,
+      icon: Languages,
+      title: "Language",
+      summary: "English",
+      span: "",
+    },
+    {
+      id: "placement" as const,
+      icon: Brain,
+      title: "Learning Placement",
+      summary: `Lesson ${placementLesson} · ${onboarding?.investment_level || "beginner"}`,
+      span: "",
+    },
+    {
+      id: "data" as const,
+      icon: Database,
+      title: "Data & Storage",
+      summary: "Export · Cache",
+      span: "",
+    },
+  ];
+
   return (
     <div className="space-y-4 animate-fade-in">
-      {/* APPEARANCE */}
-      <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}>
-        <Card className="p-5">
-          <div className="flex items-center gap-2 mb-4">
-            <Palette className="w-4.5 h-4.5 text-primary" />
-            <h2 className="text-base font-bold">Appearance</h2>
-          </div>
+      {/* Bento Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+        {cards.map((card, i) => {
+          const Icon = card.icon;
+          const isExpanded = expanded === card.id;
 
-          <SettingRow icon={darkMode ? Moon : Sun} title="Dark Mode" description="Toggle dark and light theme">
-            <Switch checked={darkMode} onCheckedChange={toggleDarkMode} />
-          </SettingRow>
-
-          <Separator className="my-1" />
-
-          {/* Theme Selector */}
-          <div className="py-3">
-            <p className="text-sm font-medium mb-2">Theme</p>
-            <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
-              {THEME_PRESETS.map((t) => (
-                <button
-                  key={t.name}
-                  onClick={() => applyThemeColor(t.color, t.hsl)}
-                  className={cn(
-                    "rounded-xl border-2 p-2.5 transition-all text-center hover:scale-[1.03]",
-                    primaryColor === t.color
-                      ? "border-primary ring-2 ring-primary/30"
-                      : "border-border"
-                  )}
-                >
-                  <div
-                    className="w-full h-8 rounded-lg mb-1.5"
-                    style={{ background: `linear-gradient(135deg, ${t.color}, ${t.color}dd)` }}
-                  />
-                  <span className="text-[11px] font-medium">{t.name}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <Separator className="my-1" />
-
-          {/* Font Size */}
-          <div className="py-3">
-            <p className="text-sm font-medium mb-2">Font Size</p>
-            <div className="flex gap-2">
-              {FONT_SIZES.map((f) => (
-                <button
-                  key={f.value}
-                  onClick={() => changeFontSize(f.value)}
-                  className={cn(
-                    "flex-1 py-2 rounded-lg border text-center transition-all",
-                    fontSize === f.value
-                      ? "border-primary bg-primary/10 text-primary font-semibold"
-                      : "border-border text-muted-foreground hover:bg-muted/50"
-                  )}
-                >
-                  <span className={f.class}>{f.label}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <Separator className="my-1" />
-
-          <SettingRow icon={Volume2} title="Sound Effects" description="Interaction sounds and rewards">
-            <Switch
-              checked={soundOn}
-              onCheckedChange={(checked) => {
-                setSoundOn(checked);
-                setSoundEnabled(checked);
-                if (checked) playClick();
-              }}
-            />
-          </SettingRow>
-
-          <Separator className="my-1" />
-
-          <SettingRow icon={RotateCcw} title="Reset Appearance" description="Restore defaults">
-            <Button size="sm" variant="ghost" onClick={handleResetAppearance}>
-              Reset
-            </Button>
-          </SettingRow>
-        </Card>
-      </motion.div>
-
-      {/* NOTIFICATIONS */}
-      <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}>
-        <Card className="p-5">
-          <div className="flex items-center gap-2 mb-4">
-            <Bell className="w-4.5 h-4.5 text-primary" />
-            <h2 className="text-base font-bold">Notifications</h2>
-          </div>
-
-          <SettingRow icon={MessageSquare} title="Messages" description="Direct and group messages">
-            <Switch checked={notifMessages} onCheckedChange={setNotifMessages} />
-          </SettingRow>
-          <Separator className="my-1" />
-          <SettingRow icon={Check} title="Likes & Reactions" description="When someone likes your content">
-            <Switch checked={notifLikes} onCheckedChange={setNotifLikes} />
-          </SettingRow>
-          <Separator className="my-1" />
-          <SettingRow icon={MessageSquare} title="Comments" description="Replies to your posts">
-            <Switch checked={notifComments} onCheckedChange={setNotifComments} />
-          </SettingRow>
-          <Separator className="my-1" />
-          <SettingRow icon={Flame} title="Streak Reminders" description="Don't lose your streak!">
-            <Switch checked={notifStreaks} onCheckedChange={setNotifStreaks} />
-          </SettingRow>
-          <Separator className="my-1" />
-          <SettingRow icon={BookOpen} title="Lesson Reminders" description="Continue your learning">
-            <Switch checked={notifLessons} onCheckedChange={setNotifLessons} />
-          </SettingRow>
-          <Separator className="my-1" />
-          <SettingRow icon={TrendingUp} title="Market Alerts" description="Portfolio and trade updates">
-            <Switch checked={notifMarket} onCheckedChange={setNotifMarket} />
-          </SettingRow>
-        </Card>
-      </motion.div>
-
-      {/* PRIVACY */}
-      <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-        <Card className="p-5">
-          <div className="flex items-center gap-2 mb-4">
-            <Shield className="w-4.5 h-4.5 text-primary" />
-            <h2 className="text-base font-bold">Privacy</h2>
-          </div>
-
-          <SettingRow icon={Eye} title="Profile Visibility" description="Who can see your profile">
-            <Select value={profileVisibility} onValueChange={setProfileVisibility}>
-              <SelectTrigger className="w-28 h-8 text-xs"><SelectValue /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="public">Public</SelectItem>
-                <SelectItem value="friends">Friends</SelectItem>
-                <SelectItem value="private">Private</SelectItem>
-              </SelectContent>
-            </Select>
-          </SettingRow>
-          <Separator className="my-1" />
-          <SettingRow icon={TrendingUp} title="Portfolio" description="Who can see your holdings">
-            <Select value={portfolioVisibility} onValueChange={setPortfolioVisibility}>
-              <SelectTrigger className="w-28 h-8 text-xs"><SelectValue /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="public">Public</SelectItem>
-                <SelectItem value="friends">Friends</SelectItem>
-                <SelectItem value="private">Private</SelectItem>
-              </SelectContent>
-            </Select>
-          </SettingRow>
-          <Separator className="my-1" />
-          <SettingRow icon={Users} title="Activity" description="Who can see your activity">
-            <Select value={activityVisibility} onValueChange={setActivityVisibility}>
-              <SelectTrigger className="w-28 h-8 text-xs"><SelectValue /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="public">Public</SelectItem>
-                <SelectItem value="friends">Friends</SelectItem>
-                <SelectItem value="private">Private</SelectItem>
-              </SelectContent>
-            </Select>
-          </SettingRow>
-        </Card>
-      </motion.div>
-
-      {/* CONNECTED ACCOUNTS */}
-      <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
-        <Card className="p-5">
-          <div className="flex items-center gap-2 mb-4">
-            <Link2 className="w-4.5 h-4.5 text-primary" />
-            <h2 className="text-base font-bold">Connected Accounts</h2>
-          </div>
-          <div className="space-y-3">
-            <div className="flex items-center justify-between p-3 rounded-lg border border-border">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center text-sm">G</div>
-                <div>
-                  <p className="text-sm font-medium">Google</p>
-                  <p className="text-xs text-muted-foreground">Sign-in provider</p>
-                </div>
-              </div>
-              <Button size="sm" variant="outline" disabled>Connected</Button>
-            </div>
-            <div className="flex items-center justify-between p-3 rounded-lg border border-border">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center text-sm">🍎</div>
-                <div>
-                  <p className="text-sm font-medium">Apple</p>
-                  <p className="text-xs text-muted-foreground">Not connected</p>
-                </div>
-              </div>
-              <Button size="sm" variant="outline">Connect</Button>
-            </div>
-          </div>
-        </Card>
-      </motion.div>
-
-      {/* LEARNING PLACEMENT */}
-      <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-        <Card className="p-5">
-          <div className="flex items-center gap-2 mb-4">
-            <Brain className="w-4.5 h-4.5 text-primary" />
-            <h2 className="text-base font-bold">Learning Placement</h2>
-          </div>
-          <div className="flex items-center justify-between p-3 rounded-lg border border-border">
-            <div>
-              <p className="text-sm font-medium">Current Placement: Lesson {placementLesson}</p>
-              <p className="text-xs text-muted-foreground">
-                Score: {onboarding?.quiz_score || 0}/20 • Level: {onboarding?.investment_level || "beginner"}
-              </p>
-            </div>
-            <Button size="sm" variant="outline" onClick={() => setShowRetakeWarning(true)}>
-              Retake
-            </Button>
-          </div>
-        </Card>
-      </motion.div>
-
-      {/* DATA & STORAGE */}
-      <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}>
-        <Card className="p-5">
-          <div className="flex items-center gap-2 mb-4">
-            <Database className="w-4.5 h-4.5 text-primary" />
-            <h2 className="text-base font-bold">Data & Storage</h2>
-          </div>
-          <SettingRow icon={Download} title="Export Data" description="Download your learning data and portfolio history">
-            <Button size="sm" variant="outline" onClick={handleExportData}>
-              Export
-            </Button>
-          </SettingRow>
-          <Separator className="my-1" />
-          <SettingRow icon={Database} title="Clear Cache" description="Clear cached content and temporary files">
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => {
-                localStorage.clear();
-                toast.success("Cache cleared. Page will reload.");
-                setTimeout(() => window.location.reload(), 1000);
-              }}
+          return (
+            <motion.div
+              key={card.id}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.04 }}
+              className={cn(card.span, isExpanded && "md:col-span-2 lg:col-span-3")}
             >
-              Clear
-            </Button>
-          </SettingRow>
-        </Card>
-      </motion.div>
+              <Card
+                className={cn(
+                  "transition-all duration-300 overflow-hidden",
+                  isExpanded ? "ring-1 ring-primary/30" : "hover:border-primary/30 cursor-pointer"
+                )}
+              >
+                {/* Header — always visible */}
+                <button
+                  onClick={() => toggle(card.id)}
+                  className="w-full flex items-center gap-3 p-4 text-left"
+                >
+                  <div className={cn(
+                    "w-9 h-9 rounded-xl flex items-center justify-center shrink-0 transition-colors",
+                    isExpanded ? "bg-primary/15 text-primary" : "bg-muted text-muted-foreground"
+                  )}>
+                    <Icon className="w-4.5 h-4.5" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold">{card.title}</p>
+                    <p className="text-xs text-muted-foreground truncate">{card.summary}</p>
+                  </div>
+                  <motion.div
+                    animate={{ rotate: isExpanded ? 180 : 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="text-muted-foreground"
+                  >
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                      <path d="M4 6L8 10L12 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                    </svg>
+                  </motion.div>
+                </button>
 
-      {/* LANGUAGE */}
+                {/* Expanded content */}
+                {isExpanded && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.25 }}
+                    className="px-4 pb-4"
+                  >
+                    <Separator className="mb-4" />
+
+                    {card.id === "appearance" && (
+                      <div className="space-y-4">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            {darkMode ? <Moon className="w-4 h-4 text-muted-foreground" /> : <Sun className="w-4 h-4 text-muted-foreground" />}
+                            <span className="text-sm">Dark Mode</span>
+                          </div>
+                          <Switch checked={darkMode} onCheckedChange={toggleDarkMode} />
+                        </div>
+
+                        <div>
+                          <p className="text-xs font-medium text-muted-foreground mb-2">THEME</p>
+                          <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
+                            {THEME_PRESETS.map((t) => (
+                              <button
+                                key={t.name}
+                                onClick={() => applyThemeColor(t.color, t.hsl)}
+                                className={cn(
+                                  "rounded-xl border-2 p-2 transition-all text-center hover:scale-[1.03]",
+                                  primaryColor === t.color ? "border-primary ring-2 ring-primary/30" : "border-border"
+                                )}
+                              >
+                                <div className="w-full h-6 rounded-lg mb-1" style={{ background: t.color }} />
+                                <span className="text-[10px] font-medium">{t.name}</span>
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div>
+                          <p className="text-xs font-medium text-muted-foreground mb-2">FONT SIZE</p>
+                          <div className="flex gap-2">
+                            {FONT_SIZES.map((f) => (
+                              <button
+                                key={f.value}
+                                onClick={() => changeFontSize(f.value)}
+                                className={cn(
+                                  "flex-1 py-1.5 rounded-lg border text-sm font-medium transition-all",
+                                  fontSize === f.value
+                                    ? "border-primary bg-primary/10 text-primary"
+                                    : "border-border text-muted-foreground hover:bg-muted/50"
+                                )}
+                              >
+                                {f.label}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <Volume2 className="w-4 h-4 text-muted-foreground" />
+                            <span className="text-sm">Sound Effects</span>
+                          </div>
+                          <Switch checked={soundOn} onCheckedChange={(v) => { setSoundOn(v); setSoundEnabled(v); if (v) playClick(); }} />
+                        </div>
+
+                        <Button size="sm" variant="ghost" className="text-xs" onClick={() => {
+                          applyThemeColor("#9b87f5", "263 84% 58%");
+                          if (!darkMode) toggleDarkMode();
+                          changeFontSize("16px");
+                          toast.success("Reset to defaults");
+                        }}>
+                          <RotateCcw className="w-3 h-3 mr-1" /> Reset Defaults
+                        </Button>
+                      </div>
+                    )}
+
+                    {card.id === "notifications" && (
+                      <div className="space-y-2">
+                        {[
+                          { label: "Messages", icon: MessageSquare, state: notifMessages, set: setNotifMessages },
+                          { label: "Likes & Reactions", icon: Check, state: notifLikes, set: setNotifLikes },
+                          { label: "Comments", icon: MessageSquare, state: notifComments, set: setNotifComments },
+                          { label: "Streak Reminders", icon: Flame, state: notifStreaks, set: setNotifStreaks },
+                          { label: "Lesson Reminders", icon: BookOpen, state: notifLessons, set: setNotifLessons },
+                          { label: "Market Alerts", icon: TrendingUp, state: notifMarket, set: setNotifMarket },
+                        ].map(({ label, icon: NIcon, state, set }) => (
+                          <div key={label} className="flex items-center justify-between py-1.5">
+                            <div className="flex items-center gap-2">
+                              <NIcon className="w-3.5 h-3.5 text-muted-foreground" />
+                              <span className="text-sm">{label}</span>
+                            </div>
+                            <Switch checked={state} onCheckedChange={set} />
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {card.id === "privacy" && (
+                      <div className="space-y-3">
+                        {[
+                          { label: "Profile Visibility", icon: Eye, value: profileVisibility, set: setProfileVisibility },
+                          { label: "Portfolio", icon: TrendingUp, value: portfolioVisibility, set: setPortfolioVisibility },
+                          { label: "Activity", icon: Users, value: activityVisibility, set: setActivityVisibility },
+                        ].map(({ label, icon: PIcon, value, set }) => (
+                          <div key={label} className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              <PIcon className="w-3.5 h-3.5 text-muted-foreground" />
+                              <span className="text-sm">{label}</span>
+                            </div>
+                            <Select value={value} onValueChange={set}>
+                              <SelectTrigger className="w-24 h-8 text-xs"><SelectValue /></SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="public">Public</SelectItem>
+                                <SelectItem value="friends">Friends</SelectItem>
+                                <SelectItem value="private">Private</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {card.id === "language" && (
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <Globe className="w-3.5 h-3.5 text-muted-foreground" />
+                          <span className="text-sm">Display Language</span>
+                        </div>
+                        <Select defaultValue="en">
+                          <SelectTrigger className="w-28 h-8 text-xs"><SelectValue /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="en">English</SelectItem>
+                            <SelectItem value="es">Español</SelectItem>
+                            <SelectItem value="fr">Français</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    )}
+
+                    {card.id === "placement" && (
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between p-3 rounded-lg border border-border bg-muted/20">
+                          <div>
+                            <p className="text-sm font-medium">Lesson {placementLesson}</p>
+                            <p className="text-xs text-muted-foreground">
+                              Score: {onboarding?.quiz_score || 0}/20 · {onboarding?.investment_level || "beginner"}
+                            </p>
+                          </div>
+                          <Button size="sm" variant="outline" onClick={() => setShowRetakeWarning(true)}>
+                            Retake
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+
+                    {card.id === "data" && (
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between py-1.5">
+                          <div className="flex items-center gap-2">
+                            <Download className="w-3.5 h-3.5 text-muted-foreground" />
+                            <span className="text-sm">Export Data</span>
+                          </div>
+                          <Button size="sm" variant="outline" onClick={handleExportData}>Export</Button>
+                        </div>
+                        <div className="flex items-center justify-between py-1.5">
+                          <div className="flex items-center gap-2">
+                            <Database className="w-3.5 h-3.5 text-muted-foreground" />
+                            <span className="text-sm">Clear Cache</span>
+                          </div>
+                          <Button size="sm" variant="outline" onClick={() => {
+                            localStorage.clear();
+                            toast.success("Cache cleared. Reloading...");
+                            setTimeout(() => window.location.reload(), 1000);
+                          }}>Clear</Button>
+                        </div>
+                      </div>
+                    )}
+                  </motion.div>
+                )}
+              </Card>
+            </motion.div>
+          );
+        })}
+      </div>
+
+      {/* Account actions — always visible */}
       <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
-        <Card className="p-5">
-          <div className="flex items-center gap-2 mb-4">
-            <Languages className="w-4.5 h-4.5 text-primary" />
-            <h2 className="text-base font-bold">Language & Region</h2>
+        <Card className="p-4">
+          <div className="flex items-center gap-2 mb-3">
+            <Lock className="w-4 h-4 text-primary" />
+            <h2 className="text-sm font-bold">Account</h2>
           </div>
-          <SettingRow icon={Globe} title="Language" description="Display language">
-            <Select defaultValue="en">
-              <SelectTrigger className="w-28 h-8 text-xs"><SelectValue /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="en">English</SelectItem>
-                <SelectItem value="es">Español</SelectItem>
-                <SelectItem value="fr">Français</SelectItem>
-              </SelectContent>
-            </Select>
-          </SettingRow>
-        </Card>
-      </motion.div>
-
-      {/* HELP */}
-      <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }}>
-        <Card className="p-5">
-          <button className="flex items-center justify-between w-full">
-            <div className="flex items-center gap-3">
-              <HelpCircle className="w-4.5 h-4.5 text-primary" />
-              <div className="text-left">
-                <p className="text-sm font-medium">Help & Support</p>
-                <p className="text-xs text-muted-foreground">FAQ, feedback, and contact</p>
-              </div>
-            </div>
-            <ChevronRight className="w-4 h-4 text-muted-foreground" />
-          </button>
-        </Card>
-      </motion.div>
-
-      {/* ACCOUNT */}
-      <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
-        <Card className="p-5">
-          <div className="flex items-center gap-2 mb-4">
-            <Lock className="w-4.5 h-4.5 text-primary" />
-            <h2 className="text-base font-bold">Account</h2>
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm" className="gap-1.5" onClick={() => setShowSignOut(true)}>
+              <LogOut className="w-3.5 h-3.5" /> Sign Out
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-1.5 text-destructive hover:text-destructive border-destructive/30 hover:bg-destructive/10"
+              onClick={() => setShowDeleteAccount(true)}
+            >
+              <Trash2 className="w-3.5 h-3.5" /> Delete Account
+            </Button>
           </div>
-          <Button
-            variant="outline"
-            className="w-full justify-start gap-2 mb-2"
-            onClick={() => setShowSignOut(true)}
-          >
-            <LogOut className="w-4 h-4" /> Sign Out
-          </Button>
-          <Button
-            variant="outline"
-            className="w-full justify-start gap-2 text-destructive hover:text-destructive border-destructive/30 hover:bg-destructive/10"
-            onClick={() => setShowDeleteAccount(true)}
-          >
-            <Trash2 className="w-4 h-4" /> Delete Account
-          </Button>
         </Card>
       </motion.div>
 
-      {/* DIALOGS */}
+      {/* Dialogs */}
       <AlertDialog open={showSignOut} onOpenChange={setShowSignOut}>
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -477,15 +449,12 @@ export const SettingsTab = ({ userId, onboarding, placementLesson, refetchOnboar
               <AlertTriangle className="w-5 h-5" /> Delete Account?
             </AlertDialogTitle>
             <AlertDialogDescription>
-              This action is permanent and cannot be undone. All your data, progress, achievements, and portfolio will be permanently deleted.
+              This action is permanent. All data, progress, achievements, and portfolio will be deleted.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDeleteAccount}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
+            <AlertDialogAction onClick={handleDeleteAccount} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
               Delete My Account
             </AlertDialogAction>
           </AlertDialogFooter>
@@ -506,7 +475,7 @@ export const SettingsTab = ({ userId, onboarding, placementLesson, refetchOnboar
                 </p>
               </div>
               <p className="text-sm">
-                Current: <strong>Lesson {placementLesson}</strong> • Score: <strong>{onboarding?.quiz_score || 0}/20</strong>
+                Current: <strong>Lesson {placementLesson}</strong> · Score: <strong>{onboarding?.quiz_score || 0}/20</strong>
               </p>
             </AlertDialogDescription>
           </AlertDialogHeader>

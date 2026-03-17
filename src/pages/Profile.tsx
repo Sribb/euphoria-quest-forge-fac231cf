@@ -211,18 +211,10 @@ const Profile = ({ onNavigate }: ProfileProps) => {
               rank={0}
             />
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <ActivityGraph
-                lessonDates={lessonDates}
-                tradeDates={tradeDates}
-                gameDates={gameDates}
-              />
-              <PortfolioBreakdown
-                assets={(portfolioAssets || []) as any}
-                cashBalance={Number(portfolio?.cash_balance) || 0}
-              />
-            </div>
-
+            <PortfolioBreakdown
+              assets={(portfolioAssets || []) as any}
+              cashBalance={Number(portfolio?.cash_balance) || 0}
+            />
 
             <RecentActivity items={recentItems} />
           </div>
