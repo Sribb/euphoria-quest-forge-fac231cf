@@ -3,7 +3,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { getQuote } from "@/lib/finnhub";
-import { v4 as uuid } from "crypto";
 
 export interface PaperHolding {
   shares: number;
