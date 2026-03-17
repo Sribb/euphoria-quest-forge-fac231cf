@@ -197,10 +197,10 @@ function BadgeCard({ badge }: { badge: BadgeWithProgress }) {
 
       {/* Icon */}
       <div className={cn(
-        "text-4xl mb-2 transition-transform group-hover:scale-110 relative z-[1]",
+        "mb-2 transition-transform group-hover:scale-110 relative z-[1]",
         !badge.earned && "grayscale"
       )}>
-        {badge.icon}
+        <EuphoriaIcon name={badge.icon} size={40} />
       </div>
 
       {/* Title */}
