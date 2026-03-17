@@ -39,6 +39,7 @@ export interface TeachingSlideStep {
   paragraphs: string[];
   highlightedTerms: { term: string; definition: string; example: string }[];
   diagramDescription: string;
+  diagramSvg?: string;
   realExample?: { company: string; metric: string; outcome: string; explanation: string };
 }
 
