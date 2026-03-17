@@ -44,57 +44,43 @@ const CF1_HOOK_CHART = `<svg viewBox="0 0 700 370" style="width:100%;min-height:
   <text x="620" y="348" fill="rgba(255,255,255,0.4)" font-size="11" text-anchor="middle">2024</text>
 </svg>`;
 
-const CF1_STAKES_WITHOUT = `<svg viewBox="0 0 360 220" style="width:100%;max-width:420px">
-  <!-- Building crumbling -->
-  <rect x="120" y="50" width="120" height="130" rx="8" fill="rgba(239,68,68,0.08)" stroke="rgba(239,68,68,0.3)" stroke-width="1.5"/>
-  <!-- Windows -->
-  <rect x="138" y="68" width="24" height="18" rx="3" fill="rgba(239,68,68,0.15)" stroke="rgba(239,68,68,0.25)" stroke-width="1"/>
-  <rect x="178" y="68" width="24" height="18" rx="3" fill="rgba(239,68,68,0.15)" stroke="rgba(239,68,68,0.25)" stroke-width="1"/>
-  <rect x="138" y="100" width="24" height="18" rx="3" fill="rgba(239,68,68,0.12)" stroke="rgba(239,68,68,0.2)" stroke-width="1"/>
-  <rect x="178" y="100" width="24" height="18" rx="3" fill="rgba(239,68,68,0.12)" stroke="rgba(239,68,68,0.2)" stroke-width="1"/>
-  <rect x="138" y="132" width="24" height="18" rx="3" fill="rgba(239,68,68,0.08)" stroke="rgba(239,68,68,0.15)" stroke-width="1"/>
-  <rect x="178" y="132" width="24" height="18" rx="3" fill="rgba(239,68,68,0.08)" stroke="rgba(239,68,68,0.15)" stroke-width="1"/>
-  <!-- Door -->
-  <rect x="165" y="155" width="30" height="25" rx="3" fill="rgba(239,68,68,0.2)" stroke="rgba(239,68,68,0.35)" stroke-width="1"/>
-  <!-- Crack lines -->
-  <line x1="200" y1="50" x2="220" y2="90" stroke="rgba(239,68,68,0.5)" stroke-width="1.5" stroke-dasharray="3 2"/>
-  <line x1="220" y1="90" x2="210" y2="130" stroke="rgba(239,68,68,0.4)" stroke-width="1.5" stroke-dasharray="3 2"/>
-  <!-- Debt label -->
-  <rect x="245" y="70" width="80" height="32" rx="6" fill="rgba(239,68,68,0.15)" stroke="rgba(239,68,68,0.35)" stroke-width="1"/>
-  <text x="285" y="91" text-anchor="middle" fill="#f87171" font-size="13" font-weight="bold">$7.5B debt</text>
-  <!-- Down arrow -->
-  <line x1="180" y1="185" x2="180" y2="210" stroke="#ef4444" stroke-width="2"/>
-  <polygon points="174,207 180,218 186,207" fill="#ef4444"/>
-  <text x="180" y="14" text-anchor="middle" fill="#ef4444" font-size="12" font-weight="600">No growth investment</text>
-  <text x="180" y="32" text-anchor="middle" fill="rgba(239,68,68,0.6)" font-size="11">Toys "R" Us</text>
+const CF1_STAKES_WITHOUT = `<svg viewBox="0 0 300 240" style="width:100%;max-width:360px">
+  <!-- Declining chart bar -->
+  <rect x="60" y="40" width="180" height="140" rx="10" fill="rgba(239,68,68,0.06)" stroke="rgba(239,68,68,0.2)" stroke-width="1.5"/>
+  <!-- Declining bars -->
+  <rect x="85" y="70" width="28" height="90" rx="4" fill="rgba(239,68,68,0.25)" stroke="rgba(239,68,68,0.4)" stroke-width="1"/>
+  <rect x="125" y="90" width="28" height="70" rx="4" fill="rgba(239,68,68,0.2)" stroke="rgba(239,68,68,0.35)" stroke-width="1"/>
+  <rect x="165" y="115" width="28" height="45" rx="4" fill="rgba(239,68,68,0.15)" stroke="rgba(239,68,68,0.3)" stroke-width="1"/>
+  <rect x="205" y="135" width="28" height="25" rx="4" fill="rgba(239,68,68,0.1)" stroke="rgba(239,68,68,0.25)" stroke-width="1"/>
+  <!-- Decline trendline -->
+  <line x1="85" y1="68" x2="233" y2="133" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="5 3" opacity="0.6"/>
+  <!-- Debt badge -->
+  <rect x="100" y="190" width="100" height="28" rx="14" fill="rgba(239,68,68,0.15)" stroke="rgba(239,68,68,0.4)" stroke-width="1"/>
+  <text x="150" y="209" text-anchor="middle" fill="#f87171" font-size="12" font-weight="bold">$7.5B debt</text>
+  <!-- Company label -->
+  <text x="150" y="18" text-anchor="middle" fill="#ef4444" font-size="12" font-weight="600">Toys "R" Us</text>
+  <text x="150" y="235" text-anchor="middle" fill="rgba(239,68,68,0.5)" font-size="10">Revenue decline → bankruptcy</text>
 </svg>`;
 
-const CF1_STAKES_WITH = `<svg viewBox="0 0 320 220" style="width:100%;max-width:380px">
-  <!-- Building growing upward -->
-  <rect x="100" y="30" width="120" height="150" rx="8" fill="rgba(16,185,129,0.08)" stroke="rgba(16,185,129,0.35)" stroke-width="1.5"/>
-  <!-- Windows (lit up) -->
-  <rect x="118" y="48" width="24" height="18" rx="3" fill="rgba(16,185,129,0.2)" stroke="rgba(16,185,129,0.4)" stroke-width="1"/>
-  <rect x="158" y="48" width="24" height="18" rx="3" fill="rgba(16,185,129,0.2)" stroke="rgba(16,185,129,0.4)" stroke-width="1"/>
-  <rect x="118" y="80" width="24" height="18" rx="3" fill="rgba(16,185,129,0.25)" stroke="rgba(16,185,129,0.45)" stroke-width="1"/>
-  <rect x="158" y="80" width="24" height="18" rx="3" fill="rgba(16,185,129,0.25)" stroke="rgba(16,185,129,0.45)" stroke-width="1"/>
-  <rect x="118" y="112" width="24" height="18" rx="3" fill="rgba(16,185,129,0.3)" stroke="rgba(16,185,129,0.5)" stroke-width="1"/>
-  <rect x="158" y="112" width="24" height="18" rx="3" fill="rgba(16,185,129,0.3)" stroke="rgba(16,185,129,0.5)" stroke-width="1"/>
-  <!-- Door -->
-  <rect x="145" y="155" width="30" height="25" rx="3" fill="rgba(16,185,129,0.25)" stroke="rgba(16,185,129,0.5)" stroke-width="1"/>
-  <!-- Growth arrow -->
-  <line x1="160" y1="25" x2="160" y2="5" stroke="#10b981" stroke-width="2.5"/>
-  <polygon points="154,8 160,-4 166,8" fill="#10b981"/>
-  <!-- Value labels -->
-  <text x="160" y="200" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="11">Microsoft</text>
-  <!-- Growth bars -->
-  <rect x="30" y="140" width="40" height="40" rx="5" fill="rgba(16,185,129,0.12)" stroke="rgba(16,185,129,0.3)" stroke-width="1"/>
-  <text x="50" y="165" text-anchor="middle" fill="#10b981" font-size="10" font-weight="bold">$300B</text>
-  <rect x="250" y="60" width="40" height="120" rx="5" fill="rgba(16,185,129,0.2)" stroke="rgba(16,185,129,0.45)" stroke-width="1.5"/>
-  <text x="270" y="125" text-anchor="middle" fill="#10b981" font-size="10" font-weight="bold">$3T</text>
-  <!-- Arrow between bars -->
-  <line x1="75" y1="155" x2="95" y2="130" stroke="rgba(16,185,129,0.4)" stroke-width="1" stroke-dasharray="4 3"/>
-  <line x1="225" y1="110" x2="245" y2="110" stroke="rgba(16,185,129,0.4)" stroke-width="1" stroke-dasharray="4 3"/>
-  <text x="160" y="215" text-anchor="middle" fill="#10b981" font-size="12" font-weight="bold">10x growth via Azure</text>
+const CF1_STAKES_WITH = `<svg viewBox="0 0 300 240" style="width:100%;max-width:360px">
+  <!-- Growing chart area -->
+  <rect x="60" y="40" width="180" height="140" rx="10" fill="rgba(16,185,129,0.06)" stroke="rgba(16,185,129,0.2)" stroke-width="1.5"/>
+  <!-- Growing bars -->
+  <rect x="85" y="135" width="28" height="25" rx="4" fill="rgba(16,185,129,0.15)" stroke="rgba(16,185,129,0.3)" stroke-width="1"/>
+  <rect x="125" y="115" width="28" height="45" rx="4" fill="rgba(16,185,129,0.2)" stroke="rgba(16,185,129,0.35)" stroke-width="1"/>
+  <rect x="165" y="85" width="28" height="75" rx="4" fill="rgba(16,185,129,0.25)" stroke="rgba(16,185,129,0.4)" stroke-width="1"/>
+  <rect x="205" y="55" width="28" height="105" rx="4" fill="rgba(16,185,129,0.3)" stroke="rgba(16,185,129,0.5)" stroke-width="1"/>
+  <!-- Growth trendline -->
+  <line x1="85" y1="133" x2="233" y2="53" stroke="#10b981" stroke-width="1.5" stroke-dasharray="5 3" opacity="0.6"/>
+  <!-- Value badges -->
+  <rect x="70" y="190" width="60" height="28" rx="14" fill="rgba(16,185,129,0.1)" stroke="rgba(16,185,129,0.3)" stroke-width="1"/>
+  <text x="100" y="209" text-anchor="middle" fill="#10b981" font-size="11" font-weight="bold">$300B</text>
+  <text x="150" y="209" text-anchor="middle" fill="rgba(16,185,129,0.5)" font-size="14">→</text>
+  <rect x="170" y="190" width="60" height="28" rx="14" fill="rgba(16,185,129,0.2)" stroke="rgba(16,185,129,0.5)" stroke-width="1"/>
+  <text x="200" y="209" text-anchor="middle" fill="#10b981" font-size="11" font-weight="bold">$3T</text>
+  <!-- Company label -->
+  <text x="150" y="18" text-anchor="middle" fill="#10b981" font-size="12" font-weight="600">Microsoft</text>
+  <text x="150" y="235" text-anchor="middle" fill="rgba(16,185,129,0.5)" font-size="10">10x growth via Azure cloud pivot</text>
 </svg>`;
 
 const CF1_DIAGRAM = `<svg viewBox="0 0 480 520" style="width:100%;min-height:420px">
