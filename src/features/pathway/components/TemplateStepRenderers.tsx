@@ -110,36 +110,39 @@ export function StakesCardView({ step, onComplete }: { step: StakesCardStep; onC
             <XIcon className="w-5 h-5 text-red-400" />
             <span className="text-sm font-bold text-red-400 uppercase tracking-wider">Without Investing</span>
           </div>
-          {/* Large SVG: Cracked coin jar with downward arrows */}
-          <div className="flex-1 flex items-center justify-center">
-            <svg viewBox="0 0 280 220" className="w-full" style={{ maxWidth: '320px', maxHeight: '220px' }}>
-              {/* Jar outline */}
-              <rect x="70" y="40" width="140" height="130" rx="16" fill="rgba(239,68,68,0.08)" stroke="rgba(239,68,68,0.3)" strokeWidth="2" />
-              {/* Crack lines */}
-              <path d="M140,45 L150,80 L135,100 L155,130" fill="none" stroke="rgba(239,68,68,0.4)" strokeWidth="1.5" />
-              <path d="M110,60 L120,90 L105,120" fill="none" stroke="rgba(239,68,68,0.3)" strokeWidth="1" />
-              {/* Coins shrinking */}
-              <circle cx="110" cy="140" r="14" fill="rgba(239,68,68,0.15)" stroke="rgba(239,68,68,0.4)" strokeWidth="1.5" />
-              <text x="110" y="145" textAnchor="middle" fill="#ef4444" fontSize="12" fontWeight="bold">$</text>
-              <circle cx="145" cy="145" r="10" fill="rgba(239,68,68,0.1)" stroke="rgba(239,68,68,0.3)" strokeWidth="1" />
-              <text x="145" y="149" textAnchor="middle" fill="#ef4444" fontSize="9" fontWeight="bold">$</text>
-              <circle cx="170" cy="148" r="7" fill="rgba(239,68,68,0.08)" stroke="rgba(239,68,68,0.2)" strokeWidth="1" />
-              {/* Three downward arrows */}
-              <g transform="translate(225, 55)">
-                <line x1="0" y1="0" x2="0" y2="30" stroke="#ef4444" strokeWidth="2" />
-                <polygon points="-5,28 0,36 5,28" fill="#ef4444" />
-                <text x="12" y="22" fill="#ef4444" fontSize="11" fontWeight="bold">-1% savings</text>
-              </g>
-              <g transform="translate(225, 100)">
-                <line x1="0" y1="0" x2="0" y2="30" stroke="#ef4444" strokeWidth="2" />
-                <polygon points="-5,28 0,36 5,28" fill="#ef4444" />
-                <text x="12" y="22" fill="#ef4444" fontSize="11" fontWeight="bold">-3% inflation</text>
-              </g>
-              <g transform="translate(225, 145)">
-                <line x1="0" y1="0" x2="0" y2="30" stroke="#ef4444" strokeWidth="2" />
-                <polygon points="-5,28 0,36 5,28" fill="#ef4444" />
-                <text x="12" y="22" fill="#ef4444" fontSize="11" fontWeight="bold">= losing $$$</text>
-              </g>
+          {/* SVG: Shrinking money over time */}
+          <div className="flex-1 flex items-center justify-center px-4">
+            <svg viewBox="0 0 360 200" className="w-full" style={{ maxWidth: '440px' }}>
+              {/* Three shrinking coin stacks over time */}
+              {/* Year 0 — tall stack */}
+              <rect x="30" y="40" width="70" height="120" rx="10" fill="rgba(239,68,68,0.10)" stroke="rgba(239,68,68,0.3)" strokeWidth="1.5" />
+              <text x="65" y="95" textAnchor="middle" fill="#f87171" fontSize="22" fontWeight="bold">$10K</text>
+              <text x="65" y="178" textAnchor="middle" fill="rgba(255,255,255,0.5)" fontSize="11">Today</text>
+
+              {/* Arrow 1 */}
+              <line x1="110" y1="100" x2="130" y2="100" stroke="rgba(239,68,68,0.4)" strokeWidth="1.5" />
+              <polygon points="128,96 136,100 128,104" fill="rgba(239,68,68,0.4)" />
+
+              {/* Year 5 — medium stack */}
+              <rect x="140" y="60" width="70" height="100" rx="10" fill="rgba(239,68,68,0.08)" stroke="rgba(239,68,68,0.25)" strokeWidth="1.5" />
+              <text x="175" y="105" textAnchor="middle" fill="#f87171" fontSize="20" fontWeight="bold">$8.5K</text>
+              <text x="175" y="178" textAnchor="middle" fill="rgba(255,255,255,0.5)" fontSize="11">5 Years</text>
+
+              {/* Arrow 2 */}
+              <line x1="220" y1="110" x2="240" y2="110" stroke="rgba(239,68,68,0.4)" strokeWidth="1.5" />
+              <polygon points="238,106 246,110 238,114" fill="rgba(239,68,68,0.4)" />
+
+              {/* Year 10 — short stack */}
+              <rect x="250" y="85" width="70" height="75" rx="10" fill="rgba(239,68,68,0.06)" stroke="rgba(239,68,68,0.2)" strokeWidth="1.5" />
+              <text x="285" y="118" textAnchor="middle" fill="#f87171" fontSize="18" fontWeight="bold">$7.4K</text>
+              <text x="285" y="178" textAnchor="middle" fill="rgba(255,255,255,0.5)" fontSize="11">10 Years</text>
+
+              {/* Downward trend line across the top */}
+              <line x1="65" y1="30" x2="285" y2="75" stroke="#ef4444" strokeWidth="2" strokeDasharray="6,4" />
+              <polygon points="282,70 290,77 282,80" fill="#ef4444" />
+
+              {/* Label */}
+              <text x="180" y="16" textAnchor="middle" fill="#ef4444" fontSize="12" fontWeight="600">Purchasing power lost to inflation</text>
             </svg>
           </div>
           <p className="text-base font-semibold text-foreground">{step.without.label}</p>
