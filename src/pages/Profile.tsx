@@ -12,7 +12,6 @@ import { motion } from "framer-motion";
 // Profile components
 import { ProfileHeader } from "@/features/profile/components/ProfileHeader";
 import { StatsRow } from "@/features/profile/components/StatsRow";
-import { ActivityGraph } from "@/features/profile/components/ActivityGraph";
 import { RecentActivity } from "@/features/profile/components/RecentActivity";
 import { PortfolioBreakdown } from "@/features/profile/components/PortfolioBreakdown";
 import { SettingsTab } from "@/features/profile/components/SettingsTab";
