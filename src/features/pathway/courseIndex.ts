@@ -32,6 +32,8 @@ export async function loadCourseLessons(courseId: string): Promise<PathwayLesson
       return (await import('./courses/personalFinance')).default;
     case 'global-economics':
       return (await import('./courses/globalEconomics')).default;
+    case 'corporate-finance':
+      return (await import('./courses/corporateFinance')).default;
     default:
       return [];
   }
