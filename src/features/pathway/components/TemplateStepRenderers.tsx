@@ -167,6 +167,9 @@ export function StakesCardView({ step, onComplete }: { step: StakesCardStep; onC
   };
 
   const renderWithSVG = () => {
+    if (step.withSvg) {
+      return <div dangerouslySetInnerHTML={{ __html: step.withSvg }} className="w-full flex items-center justify-center" />;
+    }
     switch (lessonNum) {
       case 2: return <StakesIllustrationDiversified />;
       case 3: return <StakesIllustrationEarlyStart />;
