@@ -34,7 +34,7 @@ const studentNavItems = [
   { id: "dashboard", label: "Home", icon: Home },
   { id: "feed", label: "Feed", icon: PlayCircle },
   { id: "learn", label: "Learn", icon: BookOpen },
-  { id: "trade", label: "Practice", icon: Dumbbell },
+  { id: "trade", label: "Trade", icon: BarChart3 },
   { id: "games", label: "Games", icon: Gamepad2 },
   
   { id: "shop", label: "Shop", icon: ShoppingBag },
