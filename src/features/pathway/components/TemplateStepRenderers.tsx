@@ -288,6 +288,9 @@ export function TeachingSlideView({ step, onComplete }: { step: TeachingSlideSte
   };
 
   const renderDiagram = () => {
+    if (step.diagramSvg) {
+      return <div dangerouslySetInnerHTML={{ __html: step.diagramSvg }} className="w-full flex items-center justify-center" />;
+    }
     switch (lessonNum) {
       case 2: return <DiagramRiskSpectrum />;
       case 3: return <DiagramSnowball />;
