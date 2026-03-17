@@ -129,7 +129,7 @@ export const CoinShop = ({ onNavigate }: CoinShopProps) => {
                   : "bg-muted/50 text-muted-foreground border-border hover:bg-muted"
               )}
             >
-              <span>{cat.icon}</span>
+              <EuphoriaIcon name={cat.icon} size={16} />
               <span>{cat.label}</span>
             </button>
           ))}
