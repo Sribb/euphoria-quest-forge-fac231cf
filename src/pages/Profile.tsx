@@ -12,7 +12,6 @@ import { motion } from "framer-motion";
 // Profile components
 import { ProfileHeader } from "@/features/profile/components/ProfileHeader";
 import { StatsRow } from "@/features/profile/components/StatsRow";
-import { ActivityGraph } from "@/features/profile/components/ActivityGraph";
 import { RecentActivity } from "@/features/profile/components/RecentActivity";
 import { PortfolioBreakdown } from "@/features/profile/components/PortfolioBreakdown";
 import { SettingsTab } from "@/features/profile/components/SettingsTab";
@@ -126,10 +125,6 @@ const Profile = ({ onNavigate }: ProfileProps) => {
   const quizScores = lessonProgress?.filter((l) => l.quiz_score != null).map((l) => l.quiz_score!) || [];
   const accuracy = quizScores.length ? Math.round(quizScores.reduce((a, b) => a + b, 0) / quizScores.length) : 0;
 
-  // Activity dates for graph
-  const lessonDates = (lessonProgress || []).filter((l) => l.completed).map((l) => l.updated_at || l.created_at);
-  const tradeDates = (orders || []).filter((o) => o.status === "filled").map((o) => o.created_at);
-  const gameDates = (gameSessions || []).map((g) => g.created_at);
 
   // Recent activity timeline
   const recentItems = [
@@ -216,18 +211,10 @@ const Profile = ({ onNavigate }: ProfileProps) => {
               rank={0}
             />
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <ActivityGraph
-                lessonDates={lessonDates}
-                tradeDates={tradeDates}
-                gameDates={gameDates}
-              />
-              <PortfolioBreakdown
-                assets={(portfolioAssets || []) as any}
-                cashBalance={Number(portfolio?.cash_balance) || 0}
-              />
-            </div>
-
+            <PortfolioBreakdown
+              assets={(portfolioAssets || []) as any}
+              cashBalance={Number(portfolio?.cash_balance) || 0}
+            />
 
             <RecentActivity items={recentItems} />
           </div>
