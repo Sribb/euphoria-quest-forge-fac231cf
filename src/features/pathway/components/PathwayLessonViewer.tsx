@@ -91,7 +91,7 @@ export function PathwayLessonViewer({ courseId, lessonNumber, onClose, onNextLes
           {phase === 'steps' && (
             <motion.div key={`step-${stepIdx}`} initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -40 }}
               className="w-full">
-              <StepRenderer step={lesson.steps[stepIdx]} onComplete={handleStepComplete} />
+              <StepRenderer step={lesson.steps[stepIdx]} onComplete={handleStepComplete} onClose={onClose} />
             </motion.div>
           )}
           {phase === 'challenge' && (
