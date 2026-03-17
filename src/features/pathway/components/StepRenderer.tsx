@@ -4,9 +4,25 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Slider } from '@/components/ui/slider';
-import type { LessonStep, ConceptStep, TapRevealStep, FillBlankStep, DragSortStep, QuizStep, TrueFalseStep, MatchStep, SliderStep, ScenarioStep, BuildItStep, ProgressiveCalcStep, VisualInteractiveStep } from '../types';
+import type {
+  LessonStep, ConceptStep, TapRevealStep, FillBlankStep, DragSortStep,
+  QuizStep, TrueFalseStep, MatchStep, SliderStep, ScenarioStep,
+  BuildItStep, ProgressiveCalcStep, VisualInteractiveStep,
+  HookOpenerStep, StakesCardStep, TeachingSlideStep, MicroCheckStep,
+  InteractiveGraphStep, CaseStudyStep, MisconceptionsStep, KeyTermsCardsStep,
+  SimulationFinaleStep, SummaryCardsStep, WhatsNextStep
+} from '../types';
+import {
+  HookOpenerView, StakesCardView, TeachingSlideView, MicroCheckView,
+  InteractiveGraphView, CaseStudyView, MisconceptionsView, KeyTermsCardsView,
+  SimulationFinaleView, SummaryCardsView, WhatsNextView
+} from './TemplateStepRenderers';
 
-interface Props { step: LessonStep; onComplete: (correct: boolean) => void; }
+interface Props {
+  step: LessonStep;
+  onComplete: (correct: boolean) => void;
+  onClose?: () => void;
+}
 
 /* ─── Concept ─── */
 function ConceptView({ step, onComplete }: { step: ConceptStep; onComplete: (c: boolean) => void }) {
@@ -34,7 +50,7 @@ function TapRevealView({ step, onComplete }: { step: TapRevealStep; onComplete: 
           <motion.div key={i} whileTap={{ scale: 0.95 }} onClick={() => toggle(i)}
             className={cn("p-4 rounded-xl border cursor-pointer min-h-[90px] flex items-center justify-center text-center transition-all",
               revealed.has(i) ? "bg-primary/10 border-primary/40" : "bg-card border-border hover:border-primary/50"
-            )}>
+            )} style={{ pointerEvents: 'auto' }}>
             {revealed.has(i) ? (
               <div><p className="font-bold text-sm text-primary">{front}</p><p className="text-xs text-muted-foreground mt-1">{back}</p></div>
             ) : <span className="text-3xl text-muted-foreground">?</span>}
@@ -199,8 +215,7 @@ function MatchView({ step, onComplete }: { step: MatchStep; onComplete: (c: bool
     const correctRight = step.pairs[selLeft][1];
     if (shuffledRight[ri] === correctRight) {
       const next = new Map(matched).set(selLeft, ri);
-      setMatched(next);
-      setSelLeft(null);
+      setMatched(next); setSelLeft(null);
       if (next.size === step.pairs.length) setTimeout(() => onComplete(true), 600);
     } else {
       setWrong(ri);
@@ -218,7 +233,7 @@ function MatchView({ step, onComplete }: { step: MatchStep; onComplete: (c: bool
               className={cn("p-3 rounded-xl border text-sm cursor-pointer transition-all text-center",
                 matched.has(i) ? "bg-emerald-500/10 border-emerald-500/40 opacity-60" :
                 selLeft === i ? "bg-primary/20 border-primary" : "bg-card border-border hover:border-primary/50"
-              )}>{p[0]}</motion.div>
+              )} style={{ pointerEvents: 'auto' }}>{p[0]}</motion.div>
           ))}
         </div>
         <div className="flex flex-col gap-2">
@@ -229,7 +244,7 @@ function MatchView({ step, onComplete }: { step: MatchStep; onComplete: (c: bool
                 className={cn("p-3 rounded-xl border text-sm cursor-pointer transition-all text-center",
                   isMatched ? "bg-emerald-500/10 border-emerald-500/40 opacity-60" :
                   wrong === i ? "bg-red-500/10 border-red-500/40" : "bg-card border-border hover:border-primary/50"
-                )}>{r}</motion.div>
+                )} style={{ pointerEvents: 'auto' }}>{r}</motion.div>
             );
           })}
         </div>
@@ -298,9 +313,7 @@ function ScenarioView({ step, onComplete }: { step: ScenarioStep; onComplete: (c
 function BuildItView({ step, onComplete }: { step: BuildItStep; onComplete: (c: boolean) => void }) {
   const [selections, setSelections] = useState<(number | null)[]>(new Array(step.slots.length).fill(null));
   const [done, setDone] = useState(false);
-  const setSlot = (si: number, oi: number) => {
-    const next = [...selections]; next[si] = oi; setSelections(next);
-  };
+  const setSlot = (si: number, oi: number) => { const next = [...selections]; next[si] = oi; setSelections(next); };
   const submit = () => {
     setDone(true);
     const correct = selections.every((s, i) => s === step.slots[i].correct);
@@ -341,11 +354,8 @@ function ProgressiveCalcView({ step, onComplete }: { step: ProgressiveCalcStep; 
     const correct = i === current.correct;
     if (correct) setScore(s => s + 1);
     setTimeout(() => {
-      if (idx + 1 < step.calcSteps.length) {
-        setIdx(x => x + 1); setSel(null);
-      } else {
-        onComplete(score + (correct ? 1 : 0) >= Math.ceil(step.calcSteps.length / 2));
-      }
+      if (idx + 1 < step.calcSteps.length) { setIdx(x => x + 1); setSel(null); }
+      else { onComplete(score + (correct ? 1 : 0) >= Math.ceil(step.calcSteps.length / 2)); }
     }, 800);
   };
   return (
@@ -393,7 +403,7 @@ function VisualInteractiveView({ step, onComplete }: { step: VisualInteractiveSt
 }
 
 /* ─── Main Router ─── */
-export function StepRenderer({ step, onComplete }: Props) {
+export function StepRenderer({ step, onComplete, onClose }: Props) {
   switch (step.type) {
     case 'concept': return <ConceptView step={step} onComplete={onComplete} />;
     case 'tapReveal': return <TapRevealView step={step} onComplete={onComplete} />;
@@ -407,6 +417,18 @@ export function StepRenderer({ step, onComplete }: Props) {
     case 'buildIt': return <BuildItView step={step} onComplete={onComplete} />;
     case 'progressiveCalc': return <ProgressiveCalcView step={step} onComplete={onComplete} />;
     case 'visualInteractive': return <VisualInteractiveView step={step} onComplete={onComplete} />;
+    // New template types
+    case 'hookOpener': return <HookOpenerView step={step} onComplete={onComplete} />;
+    case 'stakesCard': return <StakesCardView step={step} onComplete={onComplete} />;
+    case 'teachingSlide': return <TeachingSlideView step={step} onComplete={onComplete} />;
+    case 'microCheck': return <MicroCheckView step={step} onComplete={onComplete} />;
+    case 'interactiveGraph': return <InteractiveGraphView step={step} onComplete={onComplete} />;
+    case 'caseStudy': return <CaseStudyView step={step} onComplete={onComplete} />;
+    case 'misconceptions': return <MisconceptionsView step={step} onComplete={onComplete} />;
+    case 'keyTermsCards': return <KeyTermsCardsView step={step} onComplete={onComplete} />;
+    case 'simulationFinale': return <SimulationFinaleView step={step} onComplete={onComplete} />;
+    case 'summaryCards': return <SummaryCardsView step={step} onComplete={onComplete} />;
+    case 'whatsNext': return <WhatsNextView step={step} onComplete={onComplete} onClose={onClose} />;
     default: return null;
   }
 }
