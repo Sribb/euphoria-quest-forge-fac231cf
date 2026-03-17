@@ -27,28 +27,36 @@ interface CertificateCardProps {
 
 const tierColors = {
   easy: {
-    gradient: "from-emerald-500/20 to-green-500/20",
+    gradient: "from-emerald-500/15 to-emerald-500/5",
     border: "border-emerald-500/30",
+    borderEarned: "border-emerald-500/60",
     icon: "bg-gradient-to-br from-emerald-500 to-green-500",
-    glow: "shadow-[0_0_30px_rgba(16,185,129,0.3)]",
+    glow: "shadow-[0_0_20px_rgba(16,185,129,0.2)]",
+    text: "text-emerald-400",
   },
   medium: {
-    gradient: "from-blue-500/20 to-cyan-500/20",
+    gradient: "from-blue-500/15 to-blue-500/5",
     border: "border-blue-500/30",
+    borderEarned: "border-blue-500/60",
     icon: "bg-gradient-to-br from-blue-500 to-cyan-500",
-    glow: "shadow-[0_0_30px_rgba(59,130,246,0.3)]",
+    glow: "shadow-[0_0_20px_rgba(59,130,246,0.2)]",
+    text: "text-blue-400",
   },
   hard: {
-    gradient: "from-purple-500/20 to-pink-500/20",
-    border: "border-purple-500/30",
+    gradient: "from-primary/15 to-primary/5",
+    border: "border-primary/30",
+    borderEarned: "border-primary/60",
     icon: "bg-gradient-to-br from-purple-500 to-pink-500",
-    glow: "shadow-[0_0_30px_rgba(168,85,247,0.3)]",
+    glow: "shadow-[0_0_20px_rgba(168,85,247,0.2)]",
+    text: "text-primary",
   },
   master: {
-    gradient: "from-amber-500/20 to-orange-500/20",
+    gradient: "from-amber-500/15 to-amber-500/5",
     border: "border-amber-500/30",
+    borderEarned: "border-amber-500/60",
     icon: "bg-gradient-to-br from-amber-500 to-orange-500",
-    glow: "shadow-[0_0_40px_rgba(245,158,11,0.4)]",
+    glow: "shadow-[0_0_20px_rgba(245,158,11,0.25)]",
+    text: "text-amber-400",
   },
 };
 
@@ -69,90 +77,67 @@ export const CertificateCard = ({ certificate, onClick }: CertificateCardProps) 
     <Card
       onClick={onClick}
       className={cn(
-        "group relative p-6 cursor-pointer transition-all duration-300 overflow-hidden",
-        "hover:-translate-y-2 hover:scale-[1.02]",
+        "group relative p-4 cursor-pointer transition-all duration-300 overflow-hidden",
+        "hover:-translate-y-1 hover:shadow-lg",
         certificate.earned
-          ? `bg-gradient-to-br ${colors.gradient} ${colors.border} border-2 ${colors.glow}`
-          : certificate.progress >= 100
-          ? `bg-gradient-to-br ${colors.gradient} ${colors.border} border-2 animate-pulse ${colors.glow}`
-          : "bg-card/50 border-border hover:border-primary/50",
-        certificate.unlocked ? "" : "opacity-60"
+          ? cn("bg-gradient-to-br border-2", colors.gradient, colors.borderEarned, colors.glow)
+          : certificate.unlocked
+            ? "bg-card/40 border-border/60 hover:border-border"
+            : "bg-card/20 border-border/30 opacity-50"
       )}
     >
-      {/* Sparkle effect for earned certificates */}
-      {certificate.earned && (
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute w-32 h-32 bg-white/10 rounded-full blur-3xl -top-10 -right-10 animate-pulse" />
-          <div className="absolute w-32 h-32 bg-white/10 rounded-full blur-3xl -bottom-10 -left-10 animate-pulse" style={{ animationDelay: "1s" }} />
-        </div>
-      )}
-
-      <div className="relative z-10">
-        {/* Header */}
-        <div className="flex items-start justify-between mb-4">
-          <div className={cn("w-14 h-14 rounded-xl flex items-center justify-center", colors.icon, certificate.earned ? "animate-pulse" : "")}>
+      <div className="relative z-[1]">
+        {/* Header row */}
+        <div className="flex items-start justify-between mb-3">
+          <div className={cn(
+            "w-10 h-10 rounded-[10px] flex items-center justify-center shrink-0",
+            certificate.earned ? colors.icon : "bg-muted/60"
+          )}>
             {certificate.earned || certificate.progress >= 100 ? (
-              <Award className="w-7 h-7 text-white" />
+              <Award className="w-5 h-5 text-white" />
             ) : certificate.unlocked ? (
-              <CategoryIcon className="w-7 h-7 text-white" />
+              <CategoryIcon className="w-5 h-5 text-muted-foreground" />
             ) : (
-              <Lock className="w-7 h-7 text-white/70" />
+              <Lock className="w-5 h-5 text-muted-foreground/50" />
             )}
           </div>
-          <div className="flex flex-col items-end gap-2">
-            <Badge variant="outline" className={cn("text-xs", colors.border)}>
-              {certificate.tier.toUpperCase()}
-            </Badge>
+          <div className="flex flex-col items-end gap-1.5">
             {certificate.earned && (
-              <Badge className="bg-gradient-primary text-white">
+              <Badge className="bg-gradient-to-r from-emerald-500 to-green-500 text-white border-0 text-[10px] px-2 py-0.5">
                 <CheckCircle2 className="w-3 h-3 mr-1" />
                 Earned
               </Badge>
             )}
             {certificate.progress >= 100 && !certificate.earned && (
-              <Badge className="bg-gradient-accent text-white animate-pulse">
-                Ready to Claim!
+              <Badge className="bg-gradient-to-r from-amber-500 to-orange-500 text-white border-0 text-[10px] animate-pulse">
+                Claim!
               </Badge>
             )}
           </div>
         </div>
 
         {/* Title & Description */}
-        <h3 className="font-bold text-lg mb-2 group-hover:text-primary transition-colors">
+        <h3 className={cn(
+          "font-bold text-sm mb-1 line-clamp-1 transition-colors",
+          certificate.earned ? "group-hover:text-foreground" : "text-muted-foreground group-hover:text-foreground/80"
+        )}>
           {certificate.title}
         </h3>
-        <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
+        <p className="text-[11px] text-muted-foreground mb-3 line-clamp-2 leading-relaxed">
           {certificate.description}
         </p>
 
-        {/* Progress Ring Visual */}
-        <div className="relative mb-4">
-          <div className="flex items-center justify-between text-sm mb-2">
-            <span className="text-muted-foreground">Progress</span>
-            <span className="font-semibold text-primary">{Math.round(certificate.progress)}%</span>
+        {/* Progress */}
+        <div>
+          <div className="flex items-center justify-between text-[11px] mb-1.5">
+            <span className="text-muted-foreground">{completedRequirements}/{totalRequirements} tasks</span>
+            <span className={cn("font-bold tabular-nums", certificate.earned ? colors.text : "text-muted-foreground")}>
+              {Math.round(certificate.progress)}%
+            </span>
           </div>
-          <Progress 
-            value={certificate.progress} 
-            className={cn("h-3", certificate.progress >= 100 ? "bg-gradient-primary" : "")} 
-          />
-          <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground">
-            <span>{completedRequirements}/{totalRequirements} requirements met</span>
-          </div>
+          <Progress value={certificate.progress} className="h-1.5" />
         </div>
-
-        {/* Earned Date */}
-        {certificate.earnedDate && (
-          <p className="text-xs text-muted-foreground">
-            Earned {new Date(certificate.earnedDate).toLocaleDateString()}
-          </p>
-        )}
       </div>
-
-      {/* Hover glow effect */}
-      <div className={cn(
-        "absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none",
-        certificate.earned ? colors.glow : ""
-      )} />
     </Card>
   );
 };

@@ -478,28 +478,34 @@ const Certificates = ({ onNavigate }: CertificatesProps) => {
 
         {/* CERTIFICATES TAB */}
         <TabsContent value="certificates">
-          <div className="space-y-6 md:space-y-8">
-            {/* Tier Sections */}
+          <div className="space-y-10">
             {(["easy", "medium", "hard", "master"] as const).map((tierKey, tierIdx) => {
               const tier = prestigeTiers[tierIdx];
               const certs = certsByTier[tierKey];
+              const tierAccent = {
+                easy: { label: "Beginner", sub: "Foundation credentials", borderClass: "border-emerald-500/20", bgClass: "from-emerald-500/5 to-transparent", textClass: "text-emerald-400", dotClass: "bg-emerald-500" },
+                medium: { label: "Advanced", sub: "Intermediate mastery", borderClass: "border-blue-500/20", bgClass: "from-blue-500/5 to-transparent", textClass: "text-blue-400", dotClass: "bg-blue-500" },
+                hard: { label: "Elite", sub: "Expert-level achievement", borderClass: "border-primary/20", bgClass: "from-primary/5 to-transparent", textClass: "text-primary", dotClass: "bg-primary" },
+                master: { label: "Fellow", sub: "Legendary distinction", borderClass: "border-amber-500/20", bgClass: "from-amber-500/5 to-transparent", textClass: "text-amber-400", dotClass: "bg-amber-500" },
+              }[tierKey];
+
               return (
                 <motion.div
                   key={tierKey}
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: tierIdx * 0.1 }}
-                  className="space-y-4"
+                  className={cn("rounded-[12px] border p-5 bg-gradient-to-br", tierAccent.borderClass, tierAccent.bgClass)}
                 >
-                  <div className="flex items-center gap-3">
-                    <Badge className={cn("bg-gradient-to-r text-white border-0", tier.gradient)}>
-                      {tier.label.toUpperCase()}
-                    </Badge>
-                    <span className="text-sm text-muted-foreground">
-                      {certs.filter(c => c.earned).length} / {certs.length} completed
-                    </span>
+                  {/* Tier header */}
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className={cn("w-2.5 h-2.5 rounded-full", tierAccent.dotClass)} />
+                    <div>
+                      <h2 className={cn("text-xl font-bold", tierAccent.textClass)}>{tierAccent.label}</h2>
+                      <p className="text-xs text-muted-foreground">{tierAccent.sub} · {certs.filter(c => c.earned).length}/{certs.length} completed</p>
+                    </div>
                   </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
                     {certs.map(cert => (
                       <CertificateCard
                         key={cert.id}
