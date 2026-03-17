@@ -125,10 +125,6 @@ const Profile = ({ onNavigate }: ProfileProps) => {
   const quizScores = lessonProgress?.filter((l) => l.quiz_score != null).map((l) => l.quiz_score!) || [];
   const accuracy = quizScores.length ? Math.round(quizScores.reduce((a, b) => a + b, 0) / quizScores.length) : 0;
 
-  // Activity dates for graph
-  const lessonDates = (lessonProgress || []).filter((l) => l.completed).map((l) => l.updated_at || l.created_at);
-  const tradeDates = (orders || []).filter((o) => o.status === "filled").map((o) => o.created_at);
-  const gameDates = (gameSessions || []).map((g) => g.created_at);
 
   // Recent activity timeline
   const recentItems = [
