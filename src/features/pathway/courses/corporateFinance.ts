@@ -8,7 +8,7 @@ import { L, c, tr, fb, ds, q, tf, m, sl, sc, bi, pc, vi, cq,
 // UNIQUE SVG GRAPHICS FOR CORPORATE FINANCE LESSON 1
 // ═══════════════════════════════════════════════════════════════
 
-const CF1_HOOK_CHART = `<svg viewBox="0 0 700 350" style="width:100%;min-height:280px">
+const CF1_HOOK_CHART = `<svg viewBox="0 0 700 370" style="width:100%;min-height:280px">
   <defs>
     <linearGradient id="cfGrad1" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0%" stop-color="#f59e0b" stop-opacity="0.25"/>
@@ -35,14 +35,13 @@ const CF1_HOOK_CHART = `<svg viewBox="0 0 700 350" style="width:100%;min-height:
   <text x="420" y="128" text-anchor="middle" fill="rgba(255,255,255,0.6)" font-size="11">Finance</text>
   <circle cx="600" cy="30" r="8" fill="#8b5cf6" opacity="0.9"/>
   <text x="600" y="58" text-anchor="middle" fill="rgba(255,255,255,0.6)" font-size="11">Distribute</text>
-  <!-- Labels -->
-  <text x="80" y="300" fill="rgba(255,255,255,0.4)" font-size="12">Revenue</text>
+  <!-- Title label -->
   <text x="660" y="20" fill="#10b981" font-size="15" font-weight="bold" text-anchor="end">$100B+</text>
-  <text x="80" y="296" fill="#f59e0b" font-size="14" font-weight="bold">Apple Cash Flow</text>
+  <text x="80" y="318" fill="#f59e0b" font-size="14" font-weight="bold">Apple Cash Flow</text>
   <!-- Year labels -->
-  <text x="120" y="320" fill="rgba(255,255,255,0.4)" font-size="11" text-anchor="middle">2015</text>
-  <text x="370" y="320" fill="rgba(255,255,255,0.4)" font-size="11" text-anchor="middle">2020</text>
-  <text x="620" y="320" fill="rgba(255,255,255,0.4)" font-size="11" text-anchor="middle">2024</text>
+  <text x="120" y="348" fill="rgba(255,255,255,0.4)" font-size="11" text-anchor="middle">2015</text>
+  <text x="370" y="348" fill="rgba(255,255,255,0.4)" font-size="11" text-anchor="middle">2020</text>
+  <text x="620" y="348" fill="rgba(255,255,255,0.4)" font-size="11" text-anchor="middle">2024</text>
 </svg>`;
 
 const CF1_STAKES_WITHOUT = `<svg viewBox="0 0 360 220" style="width:100%;max-width:420px">
