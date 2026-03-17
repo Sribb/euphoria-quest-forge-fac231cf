@@ -123,7 +123,7 @@ export const PortfolioBreakdown = ({ assets, cashBalance }: PortfolioBreakdownPr
                   stroke={seg.color}
                   strokeWidth={outerR - innerR}
                   className="cursor-pointer transition-all duration-200"
-                  style={{ opacity: hovered !== null && !isHovered ? 0.4 : 1 }}
+                  style={{ opacity: hovered !== null && !isHovered ? 0.4 : 1, pointerEvents: "auto" }}
                   onMouseEnter={() => setHovered(i)}
                 />
               );
