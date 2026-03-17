@@ -206,7 +206,7 @@ export function StakesCardView({ step, onComplete }: { step: StakesCardStep; onC
           <div className="flex items-center gap-2">
             <XIcon className="w-5 h-5 text-red-400" />
             <span className="text-sm font-bold text-red-400 uppercase tracking-wider">
-              {lessonNum === 2 ? 'Concentrated' : lessonNum === 3 ? 'Starting Late' : lessonNum === 4 ? '100% Stocks' : lessonNum === 5 ? 'Single Stock' : 'Without Investing'}
+              {step.withoutLabel || (lessonNum === 2 ? 'Concentrated' : lessonNum === 3 ? 'Starting Late' : lessonNum === 4 ? '100% Stocks' : lessonNum === 5 ? 'Single Stock' : 'Without Investing')}
             </span>
           </div>
           <div className="flex-1 flex items-center justify-center px-4">
