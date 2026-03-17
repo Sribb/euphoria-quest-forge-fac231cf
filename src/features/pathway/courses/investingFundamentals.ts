@@ -2,25 +2,73 @@
 import { L, c, tr, fb, ds, q, tf, m, sl, sc, bi, pc, vi, cq } from '../helpers';
 
 const lessons = [
-  L(1,'What Is Investing?',25,[
-    c('📈','What Is Investing?','Investing means putting money into assets — stocks, bonds, real estate — with the expectation of earning a return over time.'),
-    tr('Key Terms',[['Return','Profit earned on an investment'],['Risk','Chance of losing money'],['Asset','Something of value you own'],['Portfolio','Collection of investments']]),
-    fb('Investing is putting money to work with the goal of earning a ___.',['return','salary','tax refund','bonus'],0),
-    q('What makes investing different from saving?',['Saving keeps money safe with low growth; investing seeks higher growth with more risk','Investing is gambling','Saving and investing are the same','Investing only means stocks'],0,'Saving is low-risk/low-return; investing accepts risk for potentially higher returns.'),
-    tf([{s:'Investing always guarantees a profit',a:false},{s:'Stocks are a type of investment',a:true},{s:'You need $10,000 to start investing',a:false}]),
-    sc('You have $500 saved up. What should you do?',[
-      {label:'Keep it all in cash',outcome:'Inflation erodes cash value ~3% per year. In 10 years your $500 buys only ~$370 worth.',correct:false},
-      {label:'Invest in a diversified index fund',outcome:'Historically, diversified funds return 7-10% annually. Your $500 could grow to ~$1,000 in 10 years.',correct:true},
-      {label:'Spend it immediately',outcome:'You get short-term satisfaction but zero growth.',correct:false}
+  L(1,'Introduction to Investing',30,[
+    // Screen 1 — Core concept
+    c('💡','Saving vs. Investing','Saving means putting money aside. Investing means putting money to work. When you save $1,000 at 1% interest, after 10 years you have $1,105. Invest that same $1,000 at 8% average return, and after 10 years you have $2,159.'),
+    // Screen 2 — Why investing matters
+    c('📉','The Inflation Problem','Inflation — the rising cost of everything — averages about 3% per year. If your savings earn 1%, you lose 2% of purchasing power every year. Investing is not optional for building wealth. It is the only tool that outpaces inflation over time.'),
+    // Screen 3 — Four asset classes
+    tr('The Four Asset Classes',[
+      ['Stocks','Ownership in a company. Highest potential return, highest risk.'],
+      ['Bonds','A loan you give to a company or government. They pay you back with interest. Lower return, lower risk.'],
+      ['Real Estate','Property that generates rental income or appreciates in value. Requires more capital to enter.'],
+      ['Cash / Cash Equivalents','Savings accounts, money market funds. Safest, lowest return.']
     ]),
-    sl('What is the average annual stock market return over the last 100 years?',1,20,10,'%'),
-    m('Match the Concepts',[['Stock','Ownership share in a company'],['Bond','A loan you make to a company or government'],['Dividend','Regular payment from company profits'],['Interest','Payment for borrowing money']])
+    // Screen 4 — Key terms tap-to-reveal
+    tr('Key Terms',[
+      ['Asset','Anything you own that has financial value'],
+      ['Return','The profit or loss on an investment, expressed as a percentage'],
+      ['Inflation','The rate at which prices rise over time, eroding purchasing power'],
+      ['Portfolio','The collection of all investments you own'],
+      ['Liquidity','How quickly you can convert an investment to cash']
+    ]),
+    // Screen 5 — Fill in the blank
+    fb('Investing is putting money to work so it grows faster than ___.',['inflation','taxes','bills','debt'],0),
+    // Screen 6 — True/False
+    tf([
+      {s:'Saving alone is enough to build long-term wealth',a:false},
+      {s:'Stocks represent ownership in a company',a:true},
+      {s:'Bonds are higher risk than stocks',a:false},
+      {s:'Inflation erodes the purchasing power of cash',a:true}
+    ]),
+    // Screen 7 — Asset Class Sorter (drag-sort)
+    ds('Sort each item into the correct asset class: Stocks, Bonds, Real Estate, or Cash',[
+      'Apple stock → Stocks',
+      'US Treasury Bond → Bonds',
+      'Rental property in Austin → Real Estate',
+      'High-yield savings account → Cash',
+      'Corporate bond from Amazon → Bonds',
+      'S&P 500 index fund → Stocks',
+      'Gold → Cash',
+      'Checking account → Cash',
+      'REIT fund → Real Estate',
+      'Bitcoin → Stocks'
+    ]),
+    // Screen 8 — Matching exercise
+    m('Match the Asset to Its Profile',[
+      ['Stocks','Highest potential return, highest risk'],
+      ['Bonds','Steady income, lower risk'],
+      ['Real Estate','Rental income and appreciation'],
+      ['Cash','Safest, lowest return']
+    ]),
+    // Screen 9 — Slider: savings vs investing comparison
+    sl('If you invest $1,000 at 8% annual return, roughly how much will you have after 10 years?',1000,3000,2159,'$'),
+    // Screen 10 — Scenario simulation
+    sc('You have $1,000 saved. Inflation is 3%. Your savings account pays 1%. What happens to your purchasing power over 10 years?',[
+      {label:'It stays the same',outcome:'Wrong — at 1% interest vs 3% inflation, you lose 2% purchasing power per year.',correct:false},
+      {label:'It decreases steadily',outcome:'Correct. After 10 years your $1,000 buys only about $820 worth of goods in today\'s dollars.',correct:true},
+      {label:'It increases slightly',outcome:'Your nominal balance grows, but inflation eats more than your interest earns.',correct:false}
+    ]),
+    // Screen 11 — Quiz
+    q('What is the primary goal of investing?',['Get rich overnight','Build wealth steadily over time by owning assets that grow','Avoid paying taxes','Beat other investors'],1,'The goal of investing is not to get rich overnight. It is to build wealth steadily by owning assets that grow.'),
+    // Screen 12 — Summary concept
+    c('🎯','What to Remember','Investing is putting money to work so it grows faster than inflation. Saving alone will not build wealth. There are four asset classes — stocks, bonds, real estate, and cash — each with a different risk and return profile.')
   ],[
-    cq('What is investing?',['Saving in a bank','Buying things on sale','Putting money into assets for returns','Paying bills'],2,'Investing is allocating money to assets expecting future returns.'),
-    cq('Which is NOT an investment?',['Stocks','Bonds','Checking account','Real estate'],2,'A checking account is for holding cash, not investing.'),
-    cq('What is a return?',['A tax refund','Profit from an investment','Money you pay back','A type of stock'],1,'Return is the gain or loss on an investment.'),
-    cq('What does diversification mean?',['Buying one stock','Spreading investments across assets','Timing the market','Day trading'],1,'Diversification reduces risk by spreading across different investments.'),
-    cq('Inflation causes cash to:',['Gain value','Lose purchasing power','Stay the same','Earn interest'],1,'Inflation erodes the purchasing power of cash over time.')
+    cq('What is the key difference between saving and investing?',['There is no difference','Saving grows money faster','Investing puts money to work for higher potential growth','Saving is riskier'],2,'Investing seeks higher returns by accepting more risk than saving.'),
+    cq('Why is inflation a problem for savers?',['It makes banks fail','It erodes purchasing power when returns are below inflation','It only affects rich people','It increases savings account rates'],1,'When inflation exceeds your return, your money buys less over time.'),
+    cq('Which asset class has the highest potential return and highest risk?',['Bonds','Cash','Real estate','Stocks'],3,'Stocks offer the highest potential return but come with the most volatility.'),
+    cq('A US Treasury Bond belongs to which asset class?',['Stocks','Bonds','Real Estate','Cash'],1,'Treasury bonds are loans to the government — a classic bond investment.'),
+    cq('What does liquidity mean?',['How much an investment is worth','How risky an investment is','How quickly you can convert an investment to cash','The interest rate on a bond'],2,'Liquidity measures how fast you can turn an asset into cash.')
   ]),
 
   L(2,'Stocks Explained',25,[
