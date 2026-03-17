@@ -1,37 +1,156 @@
 
-import { L, c, tr, fb, ds, q, tf, m, sl, sc, bi, pc, vi, cq } from '../helpers';
+import { L, c, tr, fb, ds, q, tf, m, sl, sc, bi, pc, vi, cq,
+  hookOpener, stakesCard, teachingSlide, microCheck, interactiveGraph,
+  caseStudy, misconceptions, keyTermsCards, simulationFinale, summaryCards, whatsNext
+} from '../helpers';
 
 const lessons = [
   L(1,'Introduction to Investing',30,[
-    // Screen 1 — Core concept
-    c('💡','Saving vs. Investing','Saving means putting money aside. Investing means putting money to work. When you save $1,000 at 1% interest, after 10 years you have $1,105. Invest that same $1,000 at 8% average return, and after 10 years you have $2,159.'),
-    // Screen 2 — Why investing matters
-    c('📉','The Inflation Problem','Inflation — the rising cost of everything — averages about 3% per year. If your savings earn 1%, you lose 2% of purchasing power every year. Investing is not optional for building wealth. It is the only tool that outpaces inflation over time.'),
-    // Screen 3 — Four asset classes
-    tr('The Four Asset Classes',[
-      ['Stocks','Ownership in a company. Highest potential return, highest risk.'],
-      ['Bonds','A loan you give to a company or government. They pay you back with interest. Lower return, lower risk.'],
-      ['Real Estate','Property that generates rental income or appreciates in value. Requires more capital to enter.'],
-      ['Cash / Cash Equivalents','Savings accounts, money market funds. Safest, lowest return.']
+    // ═══════════════════════════════════════════
+    // PHASE 1 — HOOK (Steps 1–2)
+    // ═══════════════════════════════════════════
+
+    // Step 1 — Real-World Opener
+    hookOpener(
+      'Introduction to Investing',
+      '$1,000 invested in the S&P 500 in 1990 would be worth $23,000 today — without ever picking a single stock.',
+      'By the end of this lesson, you\'ll understand exactly what investing is, the four main asset classes, and why millions of people build wealth this way.',
+      'S&P 500 growth from $1,000 to $23,000 (1990–2024)'
+    ),
+
+    // Step 2 — Stakes Card
+    stakesCard(
+      { label: 'Savings account at 1% interest', detail: '$10,000 becomes $11,050 in 10 years. Inflation eats most of it. Your money actually loses purchasing power.' },
+      { label: 'Index fund at 10% average return', detail: '$10,000 becomes $25,937 in 10 years. Your money works for you while you sleep, outpacing inflation by 7% annually.' }
+    ),
+
+    // ═══════════════════════════════════════════
+    // PHASE 2 — TEACH (Steps 3–8)
+    // ═══════════════════════════════════════════
+
+    // Step 3 — First Teaching Slide (Core Concept)
+    teachingSlide(
+      'THE BASICS',
+      'What Is Investing?',
+      [
+        'Investing means buying assets — things that can grow in value or generate income over time. When you invest, you put your money to work instead of letting it sit idle in a bank account.',
+        'There are four main asset classes: stocks, bonds, real estate, and cash equivalents. Each has a different level of risk and potential return. Understanding these categories is the foundation of every investment decision.',
+        'The key difference between saving and investing is growth. A savings account might pay 1% interest, but inflation averages 3% per year. That means savers actually lose purchasing power over time. Investors aim to beat inflation and grow real wealth.'
+      ],
+      [
+        { term: 'Asset', definition: 'Anything you own that has financial value and can potentially generate returns.', example: 'A share of Apple stock, a rental property, or a U.S. Treasury bond are all assets.' },
+        { term: 'Return', definition: 'The profit or loss on an investment, usually expressed as a percentage of the amount invested.', example: 'If you invest $1,000 and it grows to $1,100, your return is 10%.' },
+        { term: 'Inflation', definition: 'The rate at which the general level of prices rises, eroding the purchasing power of money over time.', example: 'At 3% inflation, something that costs $100 today will cost $103 next year.' },
+        { term: 'Portfolio', definition: 'The collection of all investments you own, across all asset classes.', example: 'A portfolio might contain 60% stocks, 30% bonds, and 10% cash.' }
+      ],
+      'Flow diagram showing money moving from a bank account (1% return) vs. an investment account (8% return), with inflation (3%) shown as a barrier in the middle.',
+      { company: 'Vanguard', metric: 'Total Stock Market Index Fund (VTSAX)', outcome: 'averaged 10.4% annual return since 1992', explanation: 'A single index fund holding the entire U.S. stock market has turned $10,000 into over $200,000 in 30 years — with zero stock-picking required.' }
+    ),
+
+    // Step 4 — Embedded Micro-Check
+    microCheck(
+      'What is the primary difference between saving and investing?',
+      ['Saving is safer so it always earns more', 'Investing puts money to work for higher potential growth', 'There is no difference', 'Investing means buying a house'],
+      1,
+      'Correct! Investing seeks higher returns by accepting more risk, which is essential to beat inflation and build long-term wealth.',
+      'Not quite. Saving keeps money safe but usually earns less than inflation. Investing puts money to work for higher potential growth — that\'s the key difference.'
+    ),
+
+    // Step 5 — Second Teaching Slide (Interactive Graph)
+    interactiveGraph(
+      'HOW IT WORKS',
+      'The Power of Compound Growth',
+      'exponential',
+      'Watch how your money grows when you invest. Adjust the return rate and time period to see the exponential effect of compounding.',
+      [
+        'Compound growth means your returns generate their own returns. In year one, you earn interest on your original investment. In year two, you earn interest on your original investment plus last year\'s returns. This snowball effect accelerates over time.',
+        'The difference between 1% (savings) and 8% (investing) seems small, but over decades it\'s massive. At 1%, $1,000 becomes $1,349 in 30 years. At 8%, it becomes $10,063. That\'s not 8x more — it\'s the exponential power of compounding.',
+        'This is why starting early matters so much. An investor who starts at 25 with $5,000 per year at 10% will have $2.4 million by 65. Starting at 35 — just 10 years later — yields only $900,000. That decade costs over $1.5 million.'
+      ],
+      [
+        { term: 'Compound', definition: 'Earning returns on your returns, not just on your original investment.', example: '$1,000 at 10%: Year 1 = $1,100, Year 2 = $1,210, Year 3 = $1,331.' },
+        { term: 'Principal', definition: 'The original amount of money you invest before any returns are added.', example: 'If you invest $5,000, your principal is $5,000.' }
+      ],
+      [
+        'At 8% annual return, your money doubles approximately every 9 years (the Rule of 72).',
+        'After 30 years, over 90% of your wealth comes from compound returns — not from your original contributions.',
+        'Starting 10 years earlier can more than double your final amount, even investing the same amount per year.'
+      ],
+      [
+        { label: 'Annual Return', min: 1, max: 15, default: 8, unit: '%' },
+        { label: 'Time Period', min: 5, max: 40, default: 20, unit: ' years' }
+      ],
+      { company: 'Warren Buffett', metric: 'Net worth timeline', outcome: '$95B of his $100B+ net worth came after age 60', explanation: 'Buffett started investing at age 11. His wealth exploded in later decades because compound growth is exponential — the longer it runs, the more dramatic the results.' }
+    ),
+
+    // Step 6 — Third Teaching Slide (Case Study)
+    caseStudy(
+      'Amazon: From $18 to $3,000+',
+      [
+        { date: 'May 1997', event: 'Amazon IPOs at $18 per share', context: 'Jeff Bezos takes Amazon public. The company sells books online and has never turned a profit. Most Wall Street analysts are skeptical.' },
+        { date: '2001', event: 'Stock crashes to $6 during Dotcom bust', context: 'Amazon loses 90% of its value. Headlines declare e-commerce dead. Investors who panic-sell lock in massive losses.' },
+        { date: '2009', event: 'Stock recovers to $85 — launches AWS', context: 'Amazon Web Services becomes a cash machine. Patient investors who held through the crash are now up 370% from the IPO.' },
+        { date: '2024', event: 'Stock exceeds $3,000 (split-adjusted equivalent)', context: 'A $1,000 investment at the IPO is worth over $166,000. The key wasn\'t picking the right stock — it was having the patience to hold through two major crashes.' }
+      ],
+      'Amazon\'s story illustrates the most important principle in investing: time in the market beats timing the market. Investors who sold during the crashes missed the recoveries. Those who held — even through 90% drops — saw life-changing returns. Patience and a long time horizon are an investor\'s greatest advantages.'
+    ),
+
+    // Step 7 — Fourth Teaching Slide (Misconceptions)
+    misconceptions(
+      'COMMON MISTAKES',
+      'What most people get wrong about investing',
+      [
+        {
+          myth: 'You need thousands of dollars to start investing.',
+          truth: 'You can start with as little as $1. Most brokerages now offer fractional shares and zero-commission trading.',
+          explanation: 'This misconception persists from an era when brokerages charged $50 per trade and required minimum balances. Apps like Fidelity, Schwab, and Robinhood eliminated those barriers entirely.'
+        },
+        {
+          myth: 'Investing is basically gambling — you\'ll probably lose everything.',
+          truth: 'A diversified portfolio held for 20+ years has never lost money in U.S. market history. The S&P 500 has returned ~10% annually on average since 1926.',
+          explanation: 'Individual stocks can go to zero, but a diversified index fund spreads your money across hundreds of companies. Even including crashes (1929, 2008, 2020), long-term investors always came out ahead.'
+        },
+        {
+          myth: 'You need to watch the market every day and pick the right stocks.',
+          truth: '80% of professional fund managers fail to beat a simple index fund over 15 years. Passive investing outperforms active stock-picking for most people.',
+          explanation: 'The data is overwhelming: buying and holding an index fund beats most professional strategies. Time and consistency matter far more than stock-picking skill.'
+        }
+      ]
+    ),
+
+    // Step 8 — Key Terms Reference Cards
+    keyTermsCards([
+      { term: 'Asset', definition: 'Anything you own that has financial value. In investing, assets include stocks, bonds, real estate, and cash equivalents.', example: 'Owning 10 shares of Apple stock means you hold $1,700+ in stock assets.', sentence: 'She diversified her assets across stocks, bonds, and real estate to reduce her overall portfolio risk.' },
+      { term: 'Return', definition: 'The profit or loss on an investment over a specific period, expressed as a percentage of the original investment.', example: 'If you invest $5,000 and it grows to $5,500 in a year, your annual return is 10%.', sentence: 'The fund delivered a 12% return last year, outperforming its benchmark by 2 percentage points.' },
+      { term: 'Inflation', definition: 'The rate at which prices rise across the economy, reducing the purchasing power of each dollar you hold.', example: 'At 3% inflation, a $30 meal this year will cost $30.90 next year.', sentence: 'With inflation running at 4%, her savings account\'s 1% interest rate meant she was actually losing 3% in real purchasing power.' },
+      { term: 'Portfolio', definition: 'The total collection of all your investments. A portfolio can contain any mix of stocks, bonds, real estate, and cash.', example: 'A common starter portfolio: 80% stocks (via an S&P 500 ETF) and 20% bonds.', sentence: 'He rebalanced his portfolio quarterly to maintain his target allocation of 70% stocks and 30% bonds.' },
+      { term: 'Liquidity', definition: 'How quickly and easily you can convert an investment into cash without significantly affecting its price.', example: 'Stocks are highly liquid — you can sell in seconds. Real estate is illiquid — selling a house takes months.', sentence: 'She kept 3 months of expenses in a high-yield savings account for liquidity, while investing the rest for long-term growth.' },
+      { term: 'Diversification', definition: 'Spreading your investments across different asset classes, industries, and regions to reduce the impact of any single loss.', example: 'Instead of buying one stock, an S&P 500 ETF gives you exposure to 500 companies at once.', sentence: 'Diversification is the only free lunch in investing — it reduces risk without necessarily reducing expected returns.' }
     ]),
-    // Screen 4 — Key terms tap-to-reveal
-    tr('Key Terms',[
-      ['Asset','Anything you own that has financial value'],
-      ['Return','The profit or loss on an investment, expressed as a percentage'],
-      ['Inflation','The rate at which prices rise over time, eroding purchasing power'],
-      ['Portfolio','The collection of all investments you own'],
-      ['Liquidity','How quickly you can convert an investment to cash']
-    ]),
-    // Screen 5 — Fill in the blank
+
+    // ═══════════════════════════════════════════
+    // PHASE 3 — PRACTICE (Steps 9–16)
+    // ═══════════════════════════════════════════
+
+    // Step 9 — Fill in the Blank
     fb('Investing is putting money to work so it grows faster than ___.',['inflation','taxes','bills','debt'],0),
-    // Screen 6 — True/False
-    tf([
-      {s:'Saving alone is enough to build long-term wealth',a:false},
-      {s:'Stocks represent ownership in a company',a:true},
-      {s:'Bonds are higher risk than stocks',a:false},
-      {s:'Inflation erodes the purchasing power of cash',a:true}
+
+    // Step 10 — Multiple Choice (Scenario-based)
+    q('Sarah has $10,000 sitting in a checking account earning 0.01% interest. Inflation is currently 3.2%. After 5 years, what has actually happened to her money?',
+      ['It grew slightly because it earned interest','It stayed the same because it\'s in a safe account','It lost about 15% of its purchasing power despite the balance barely changing','It doubled because banks protect against inflation'],
+      2,
+      'Correct. At 0.01% interest vs 3.2% inflation, Sarah loses ~3.19% of purchasing power per year. After 5 years, her $10,000 can only buy about $8,500 worth of goods in today\'s dollars — even though her bank balance reads $10,005. This is the "invisible tax" of inflation on savers.'
+    ),
+
+    // Step 11 — Tap to Reveal
+    tr('Investment Facts You Should Know',[
+      ['What was the S&P 500\'s average annual return since 1926?','Approximately 10% per year — despite depressions, wars, pandemics, and financial crises.'],
+      ['How much would $1,000 invested in 1990 be worth today?','About $23,000 in a simple S&P 500 index fund — a 2,200% total return.'],
+      ['What percentage of active fund managers beat the S&P 500 over 15 years?','Only about 8%. The other 92% would have done better with a simple index fund.'],
+      ['How long has the U.S. market taken to recover from its worst crashes?','The longest recovery was ~5.5 years (2007-2013). Patient investors were rewarded every time.']
     ]),
-    // Screen 7 — Asset Class Sorter (drag-sort)
+
+    // Step 12 — Drag and Drop: Categorize
     ds('Sort each item into the correct asset class: Stocks, Bonds, Real Estate, or Cash',[
       'Apple stock → Stocks',
       'US Treasury Bond → Bonds',
@@ -39,36 +158,134 @@ const lessons = [
       'High-yield savings account → Cash',
       'Corporate bond from Amazon → Bonds',
       'S&P 500 index fund → Stocks',
-      'Gold → Cash',
-      'Checking account → Cash',
       'REIT fund → Real Estate',
-      'Bitcoin → Stocks'
+      'Checking account → Cash',
+      'Municipal bond → Bonds',
+      'Tesla shares → Stocks'
     ]),
-    // Screen 8 — Matching exercise
+
+    // Step 13 — Scenario Simulation (Interactive Diagram replacement)
+    sc('You have $5,000 to invest for retirement in 30 years. You\'re choosing between three approaches. Which strategy will likely produce the best long-term result?',[
+      {label:'Keep it all in a savings account at 1.5% — safe and guaranteed',outcome:'After 30 years: $7,832. Inflation at 3% means this is actually worth about $3,700 in today\'s dollars. Playing it "safe" actually guaranteed you\'d lose purchasing power.',correct:false},
+      {label:'Invest in a diversified stock index fund averaging 10% — accept short-term volatility',outcome:'After 30 years: $87,247. Even accounting for inflation, this is worth about $41,000 in today\'s dollars. Time in the market smoothed out the volatility.',correct:true},
+      {label:'Wait for a market crash to invest — buy low',outcome:'Historically, investors who wait for crashes miss more gains than they save. Studies show that investing immediately beats waiting for a dip 75% of the time over any 10-year period.',correct:false}
+    ]),
+
+    // Step 14 — Slider Prediction
+    sl('What percentage of your final retirement wealth comes from compound returns (not your original contributions) after 30 years of investing?',10,100,90,'%'),
+
+    // Step 15 — True/False Rapid Set
+    tf([
+      {s:'Saving alone is enough to build long-term wealth if you save enough',a:false},
+      {s:'The stock market has always recovered from crashes — eventually',a:true},
+      {s:'You need to be an expert to start investing successfully',a:false},
+      {s:'Starting to invest at 25 vs 35 can mean 2-3x more money at retirement',a:true},
+      {s:'A diversified portfolio of stocks has lost money over every 20-year period in history',a:false}
+    ]),
+
+    // Step 16 — Match Pairs
     m('Match the Asset to Its Profile',[
-      ['Stocks','Highest potential return, highest risk'],
-      ['Bonds','Steady income, lower risk'],
-      ['Real Estate','Rental income and appreciation'],
-      ['Cash','Safest, lowest return']
+      ['Stocks','Highest potential return, highest volatility — ownership in companies'],
+      ['Bonds','Steady income, lower risk — loans to governments or corporations'],
+      ['Real Estate','Rental income and appreciation — requires more capital to enter'],
+      ['Cash','Safest, lowest return — savings accounts and money market funds']
     ]),
-    // Screen 9 — Slider: savings vs investing comparison
-    sl('If you invest $1,000 at 8% annual return, roughly how much will you have after 10 years?',1000,3000,2159,'$'),
-    // Screen 10 — Scenario simulation
-    sc('You have $1,000 saved. Inflation is 3%. Your savings account pays 1%. What happens to your purchasing power over 10 years?',[
-      {label:'It stays the same',outcome:'Wrong — at 1% interest vs 3% inflation, you lose 2% purchasing power per year.',correct:false},
-      {label:'It decreases steadily',outcome:'Correct. After 10 years your $1,000 buys only about $820 worth of goods in today\'s dollars.',correct:true},
-      {label:'It increases slightly',outcome:'Your nominal balance grows, but inflation eats more than your interest earns.',correct:false}
+
+    // ═══════════════════════════════════════════
+    // PHASE 4 — APPLY (Steps 17–18)
+    // ═══════════════════════════════════════════
+
+    // Step 17 — Applied Scenario Question
+    q('Your friend Marcos just graduated college and has $3,000 saved. He says: "I\'ll wait until I have $50,000 to start investing — $3,000 isn\'t enough to matter." He plans to save in a regular bank account until then. Using what you\'ve learned about compound growth, inflation, and the accessibility of modern investing, what is the best response?',
+      [
+        'He\'s right — $3,000 is too little to make a difference in investing',
+        'He should start investing now because compound growth rewards early starters exponentially, even with small amounts',
+        'He should put it all in bonds since he doesn\'t have much money',
+        'He should wait for a market crash to get better prices'
+      ],
+      1,
+      'Starting early is far more important than starting big. $3,000 invested at 22 at 10% average return becomes $132,000 by age 65. If he waits until he saves $50,000 and starts at 32, even that larger amount only grows to $109,000 in the same timeframe. Modern brokerages have no minimums and offer fractional shares. Every year of delay costs more than any amount of additional savings can compensate for.'
+    ),
+
+    // Step 18 — Simulation Finale
+    simulationFinale(
+      'You Inherit $10,000',
+      'A relative has left you $10,000. The stock market just dropped 25% in the past month. Headlines are panicking. You need to make a series of decisions about what to do with this money.',
+      [
+        {
+          prompt: 'Decision 1: The market just crashed 25%. What do you do with the $10,000?',
+          options: [
+            { label: 'Invest all $10,000 immediately in a diversified index fund', consequence: 'Bold move. Historically, investing during crashes has produced the best long-term returns. Markets have always recovered. You\'re buying stocks "on sale."', score: 3 },
+            { label: 'Invest $5,000 now and $5,000 over the next 6 months', consequence: 'Smart compromise. Dollar-cost averaging reduces the risk of investing everything at the worst possible moment while still getting money working.', score: 2 },
+            { label: 'Keep it all in savings and wait for the market to recover', consequence: 'You feel safe, but history shows investors who wait for recovery miss the biggest gains. The best days in the market often come right after the worst.', score: 0 }
+          ]
+        },
+        {
+          prompt: 'Decision 2: Two months later, your investment has dropped another 10%. A coworker says "get out before you lose everything." What do you do?',
+          options: [
+            { label: 'Sell everything — cut your losses', consequence: 'You locked in your losses. Historically, the worst thing an investor can do is sell during a downturn. You turned a temporary paper loss into a permanent real loss.', score: 0 },
+            { label: 'Hold steady — do nothing', consequence: 'Patience pays. Markets are volatile in the short term but have always trended up over 10+ year periods. Doing nothing during panic is often the smartest strategy.', score: 2 },
+            { label: 'Buy more — stocks are even cheaper now', consequence: 'This is contrarian but historically optimal. Buying during maximum pessimism has produced the highest long-term returns. You\'re lowering your average cost.', score: 3 }
+          ]
+        },
+        {
+          prompt: 'Decision 3: One year later, markets have recovered and your portfolio is up 15% from where you started. A friend says a hot stock could double your money. What do you do?',
+          options: [
+            { label: 'Move everything into the hot stock tip', consequence: 'Concentrated bets are gambling, not investing. If the stock drops, you lose everything. Diversification exists specifically to prevent this kind of risk.', score: 0 },
+            { label: 'Stay diversified and keep investing regularly', consequence: 'Consistency and diversification are the proven path. You\'re not chasing excitement — you\'re building wealth systematically.', score: 3 },
+            { label: 'Take profits and move to cash — you\'re up, lock it in', consequence: 'Selling winners and sitting in cash means inflation erodes your gains. Long-term investors stay invested through ups and downs.', score: 1 }
+          ]
+        },
+        {
+          prompt: 'Decision 4: Five years have passed. Your portfolio has doubled. You\'re considering your strategy going forward. What do you do?',
+          options: [
+            { label: 'Increase contributions and maintain your diversified strategy', consequence: 'The compounding engine is running. Adding more fuel (contributions) while staying diversified maximizes long-term growth.', score: 3 },
+            { label: 'Stop contributing — you\'ve made enough', consequence: 'Stopping contributions halts the compounding effect. Even a doubled portfolio benefits enormously from continued regular investment.', score: 1 },
+            { label: 'Move everything to bonds — protect your gains', consequence: 'At this stage of wealth-building, being too conservative sacrifices decades of compound growth. Asset allocation should match your timeline, not your emotions.', score: 1 }
+          ]
+        }
+      ],
+      'Investing immediately, holding through the crash, staying diversified, and continuing to invest regularly — scoring 12/12.',
+      'The best investment decisions often feel uncomfortable in the moment. Investing during crashes, ignoring panic, and staying consistent are the three behaviors that separate successful investors from everyone else. Emotions are the biggest threat to your portfolio — not market crashes.'
+    ),
+
+    // ═══════════════════════════════════════════
+    // PHASE 5 — CONSOLIDATE (Steps 20–22)
+    // ═══════════════════════════════════════════
+
+    // Step 20 — Summary Cards
+    summaryCards('Introduction to Investing', [
+      { takeaway: 'Investing beats saving', detail: 'Saving at 1% loses to inflation. Investing at 8-10% average return is the only reliable way to build real wealth over time.' },
+      { takeaway: 'Four asset classes', detail: 'Stocks (highest return, highest risk), Bonds (steady income, lower risk), Real Estate (appreciation + income), and Cash (safest, lowest return). Every portfolio combines these.' },
+      { takeaway: 'Time is your superpower', detail: 'Compound growth is exponential. Starting 10 years earlier can mean 2-3x more wealth at retirement. The best time to start investing was yesterday.' }
     ]),
-    // Screen 11 — Quiz
-    q('What is the primary goal of investing?',['Get rich overnight','Build wealth steadily over time by owning assets that grow','Avoid paying taxes','Beat other investors'],1,'The goal of investing is not to get rich overnight. It is to build wealth steadily by owning assets that grow.'),
-    // Screen 12 — Summary concept
-    c('🎯','What to Remember','Investing is putting money to work so it grows faster than inflation. Saving alone will not build wealth. There are four asset classes — stocks, bonds, real estate, and cash — each with a different risk and return profile.')
+
+    // Step 22 — What's Next
+    whatsNext(
+      'Introduction to Investing',
+      'Stocks Explained',
+      'You\'ll learn exactly what a stock is, how stock prices are determined, and why companies issue shares. This builds directly on the asset classes you just learned.',
+      25
+    )
   ],[
-    cq('What is the key difference between saving and investing?',['There is no difference','Saving grows money faster','Investing puts money to work for higher potential growth','Saving is riskier'],2,'Investing seeks higher returns by accepting more risk than saving.'),
-    cq('Why is inflation a problem for savers?',['It makes banks fail','It erodes purchasing power when returns are below inflation','It only affects rich people','It increases savings account rates'],1,'When inflation exceeds your return, your money buys less over time.'),
-    cq('Which asset class has the highest potential return and highest risk?',['Bonds','Cash','Real estate','Stocks'],3,'Stocks offer the highest potential return but come with the most volatility.'),
-    cq('A US Treasury Bond belongs to which asset class?',['Stocks','Bonds','Real Estate','Cash'],1,'Treasury bonds are loans to the government — a classic bond investment.'),
-    cq('What does liquidity mean?',['How much an investment is worth','How risky an investment is','How quickly you can convert an investment to cash','The interest rate on a bond'],2,'Liquidity measures how fast you can turn an asset into cash.')
+    // ═══════════════════════════════════════════
+    // CHALLENGE ROUND (Step 19) — 5 Questions
+    // ═══════════════════════════════════════════
+    cq('A friend has $10,000 in a savings account earning 0.5% interest while inflation runs at 3.5%. After 10 years, approximately how much purchasing power have they lost?',
+      ['None — savings accounts are safe','About $3,000 in real purchasing power','About $500','Their money doubled'],
+      1,'At 0.5% interest vs 3.5% inflation, they lose ~3% of purchasing power per year. Over 10 years, that\'s roughly $3,000 in real value — their $10,000 can only buy what $7,000 could when they started.'),
+    cq('Why has the S&P 500 historically returned ~10% per year despite multiple crashes, wars, and recessions?',
+      ['The government guarantees stock returns','Companies innovate and grow revenue, and stock prices reflect long-term earnings growth','Stocks always go up every year','Professional traders prop up the market'],
+      1,'Stock prices ultimately reflect corporate earnings. Over decades, companies grow revenues through innovation, expansion, and productivity gains. Short-term crashes are noise; long-term earnings growth is the signal.'),
+    cq('Which combination correctly matches ALL asset classes to their risk profiles?',
+      ['Stocks=Low risk, Bonds=High risk, Real Estate=No risk, Cash=Medium risk','Stocks=Highest risk/return, Bonds=Moderate risk/return, Real Estate=Illiquid/moderate return, Cash=Lowest risk/return','All asset classes have equal risk','Bonds are riskier than stocks because companies can default'],
+      1,'Stocks offer the highest potential return with the highest volatility. Bonds provide steady income with lower risk. Real estate offers appreciation but is illiquid. Cash is safest but barely keeps pace with inflation.'),
+    cq('An investor puts $5,000 per year into an index fund starting at age 25, earning 10% average annual return. Another starts the same strategy at age 35. By age 65, approximately how much more does the early starter have?',
+      ['About $100,000 more','About $500,000 more','About $1,500,000 more','About the same amount'],
+      2,'Starting at 25: ~$2.4 million. Starting at 35: ~$900,000. That 10-year head start generates over $1.5 million in additional wealth thanks to compound growth. Time is the most powerful variable in investing.'),
+    cq('During the 2008 financial crisis, the S&P 500 dropped 57%. An investor who sold at the bottom in March 2009 and waited to "feel safe" before reinvesting in 2013 missed approximately what percentage of the recovery gains?',
+      ['About 25%','About 80%','About 140%','About 10%'],
+      2,'From the March 2009 bottom to early 2013, the S&P 500 gained approximately 140%. Investors who sold at the bottom and waited for confidence to return missed the entire recovery — turning a temporary paper loss into a permanent real loss.')
   ]),
 
   L(2,'Stocks Explained',25,[
