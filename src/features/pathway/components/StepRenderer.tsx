@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Slider } from '@/components/ui/slider';
+import { ArrowRight, TrendingUp, BarChart3, Shield, Home, Coins } from 'lucide-react';
 import type {
   LessonStep, ConceptStep, TapRevealStep, FillBlankStep, DragSortStep,
   QuizStep, TrueFalseStep, MatchStep, SliderStep, ScenarioStep,
@@ -27,7 +28,7 @@ interface Props {
 /* ─── Concept ─── */
 function ConceptView({ step, onComplete }: { step: ConceptStep; onComplete: (c: boolean) => void }) {
   return (
-    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col items-center gap-6 text-center px-4">
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col items-center gap-6 text-center px-6 min-h-[85vh]">
       <span className="text-6xl">{step.emoji}</span>
       <h2 className="text-2xl font-black text-foreground">{step.title}</h2>
       <p className="text-muted-foreground leading-relaxed max-w-md text-base">{step.body}</p>
@@ -36,40 +37,75 @@ function ConceptView({ step, onComplete }: { step: ConceptStep; onComplete: (c: 
   );
 }
 
-/* ─── Tap Reveal — cards START HIDDEN ─── */
+/* ─── Tap Reveal — Desktop 2x2 grid with card flip ─── */
 function TapRevealView({ step, onComplete }: { step: TapRevealStep; onComplete: (c: boolean) => void }) {
   const [revealed, setRevealed] = useState<Set<number>>(new Set());
   const toggle = (i: number) => setRevealed(prev => new Set(prev).add(i));
   const allDone = revealed.size === step.cards.length;
+
+  const cardTints = [
+    'rgba(59,130,246,0.08)',   // dark blue
+    'rgba(16,185,129,0.08)',   // dark green
+    'rgba(139,92,246,0.08)',   // dark purple
+    'rgba(245,158,11,0.08)',   // dark amber
+  ];
+  const cardBorders = [
+    'rgba(59,130,246,0.3)',
+    'rgba(16,185,129,0.3)',
+    'rgba(139,92,246,0.3)',
+    'rgba(245,158,11,0.3)',
+  ];
+
   return (
-    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col items-center gap-5 px-4 w-full max-w-lg mx-auto">
-      <h2 className="text-xl font-bold text-foreground">{step.title}</h2>
-      <p className="text-sm text-muted-foreground">Tap each card to reveal</p>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full">
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col items-center gap-5 px-6 w-full min-h-[85vh]" style={{ maxWidth: '900px', margin: '0 auto' }}>
+      <span className="text-xs font-bold text-primary uppercase tracking-widest">✦ TAP TO REVEAL</span>
+      <h2 className="text-xl lg:text-2xl font-bold text-foreground">{step.title}</h2>
+      <p className="text-sm text-muted-foreground">Tap each card to reveal the answer</p>
+      {/* Desktop: 2x2 grid, each card 280px tall, 380px+ wide */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 w-full">
         {step.cards.map(([front, back], i) => (
-          <motion.div key={i} whileTap={{ scale: 0.95 }} onClick={() => toggle(i)}
-            className={cn("p-4 rounded-xl border cursor-pointer min-h-[100px] flex items-center justify-center text-center transition-all",
-              revealed.has(i)
-                ? "border-primary/40"
-                : "border-border hover:border-primary/50"
-            )}
-            style={{
-              pointerEvents: 'auto',
-              background: revealed.has(i) ? 'rgba(139,92,246,0.08)' : 'rgba(255,255,255,0.02)',
-            }}>
-            {revealed.has(i) ? (
-              <motion.div initial={{ opacity: 0, rotateX: 90 }} animate={{ opacity: 1, rotateX: 0 }} transition={{ duration: 0.3 }}>
-                <p className="font-bold text-sm text-primary">{front}</p>
-                <p className="text-xs text-muted-foreground mt-1">{back}</p>
-              </motion.div>
-            ) : (
-              <div className="flex flex-col items-center gap-2">
-                <span className="text-3xl text-muted-foreground/30">?</span>
-                <p className="text-sm font-medium text-foreground">{front}</p>
-                <span className="text-[10px] text-muted-foreground/50">Tap to reveal</span>
+          <div key={i} className="perspective-1000" style={{ perspective: '1000px' }}>
+            <motion.div
+              onClick={() => toggle(i)}
+              className="cursor-pointer relative"
+              style={{
+                transformStyle: 'preserve-3d',
+                minHeight: '280px',
+                pointerEvents: 'auto',
+              }}
+              animate={{ rotateY: revealed.has(i) ? 180 : 0 }}
+              transition={{ duration: 0.4 }}
+            >
+              {/* Front face */}
+              <div
+                className={cn("absolute inset-0 rounded-2xl border-2 flex flex-col items-center justify-center text-center p-6 backface-hidden")}
+                style={{
+                  background: cardTints[i % 4],
+                  borderColor: revealed.has(i) ? 'transparent' : cardBorders[i % 4],
+                  backfaceVisibility: 'hidden',
+                  animation: !revealed.has(i) ? 'pulse-border 2s ease-in-out infinite' : 'none',
+                  boxShadow: !revealed.has(i) ? `0 0 20px ${cardBorders[i % 4]}` : 'none',
+                }}
+              >
+                <span className="text-4xl text-muted-foreground/30 mb-3">?</span>
+                <p className="text-base lg:text-lg font-semibold text-foreground">{front}</p>
+                <span className="text-xs text-muted-foreground/50 mt-3">Tap to reveal</span>
               </div>
-            )}
-          </motion.div>
+              {/* Back face */}
+              <div
+                className="absolute inset-0 rounded-2xl border-2 flex flex-col items-center justify-center text-center p-6"
+                style={{
+                  background: cardTints[i % 4],
+                  borderColor: cardBorders[i % 4],
+                  backfaceVisibility: 'hidden',
+                  transform: 'rotateY(180deg)',
+                }}
+              >
+                <p className="font-bold text-base text-primary mb-2">{front}</p>
+                <p className="text-sm text-foreground/80 leading-relaxed">{back}</p>
+              </div>
+            </motion.div>
+          </div>
         ))}
       </div>
       <Button onClick={() => onComplete(true)}
@@ -95,12 +131,12 @@ function FillBlankView({ step, onComplete }: { step: FillBlankStep; onComplete: 
   const submit = () => {
     if (sel === null || submitted) return;
     setSubmitted(true);
-    setTimeout(() => onComplete(sel === step.correct), 2000);
   };
 
   return (
-    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col items-center gap-6 px-4 w-full max-w-lg mx-auto">
-      <p className="text-lg text-foreground text-center leading-relaxed">
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col items-center gap-6 px-6 w-full min-h-[85vh]" style={{ maxWidth: '720px', margin: '0 auto' }}>
+      <span className="text-xs font-bold text-primary uppercase tracking-widest">✦ FILL IN THE BLANK</span>
+      <p className="text-lg lg:text-xl text-foreground text-center leading-relaxed" style={{ maxWidth: '720px' }}>
         {parts[0]}
         <span className={cn("inline-block px-3 py-1 mx-1 rounded-lg font-bold min-w-[80px] text-center transition-all",
           submitted
@@ -109,106 +145,165 @@ function FillBlankView({ step, onComplete }: { step: FillBlankStep; onComplete: 
         )}>{sel !== null ? step.options[sel] : '\u00A0\u00A0\u00A0'}</span>
         {parts.slice(1).join('')}
       </p>
-      <div className="grid grid-cols-2 gap-2 w-full">
+      <div className="grid grid-cols-2 gap-3 w-full" style={{ maxWidth: '680px' }}>
         {step.options.map((o, i) => (
           <Button key={i}
             variant={submitted && i === sel ? (i === step.correct ? "default" : "destructive") : sel === i ? "default" : "outline"}
             onClick={() => pick(i)} disabled={submitted}
-            className={cn("text-sm rounded-xl transition-all",
+            className={cn("text-[17px] rounded-xl transition-all py-5",
               submitted && i === step.correct && "border-emerald-500 bg-emerald-500/10 text-emerald-400"
             )}>{o}</Button>
         ))}
       </div>
       {sel !== null && !submitted && (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-          <Button onClick={submit} className="px-8 rounded-xl">Submit</Button>
+          <Button onClick={submit} className="px-10 rounded-xl text-base" size="lg">Submit</Button>
         </motion.div>
       )}
       {submitted && (
-        <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-          className={cn("text-sm text-center p-4 rounded-xl w-full leading-relaxed",
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="w-full flex flex-col items-center gap-4" style={{ maxWidth: '680px' }}>
+          <p className={cn("text-sm text-center p-4 rounded-xl w-full leading-relaxed",
             sel === step.correct ? "bg-emerald-500/10 text-emerald-400" : "bg-red-500/10 text-red-400"
           )}>
-          {sel === step.correct
-            ? "Correct! Well done."
-            : `The correct answer is "${step.options[step.correct]}".`}
-        </motion.p>
+            {sel === step.correct
+              ? "Correct! Well done."
+              : `The correct answer is "${step.options[step.correct]}".`}
+          </p>
+          <Button onClick={() => onComplete(sel === step.correct)} className="px-12 rounded-xl gap-2 text-base font-bold" size="lg" style={{ width: '100%', maxWidth: '600px' }}>
+            Continue <ArrowRight className="w-4 h-4" />
+          </Button>
+        </motion.div>
       )}
     </motion.div>
   );
 }
 
-/* ─── Drag Sort (tap-to-order) ─── */
+/* ─── Drag Sort (tap-to-order) — Desktop sized ─── */
 function DragSortView({ step, onComplete }: { step: DragSortStep; onComplete: (c: boolean) => void }) {
   const [shuffled] = useState(() => [...step.items].sort(() => Math.random() - 0.5));
   const [order, setOrder] = useState<string[]>([]);
-  const [done, setDone] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [isCorrect, setIsCorrect] = useState(false);
+
   const addItem = (item: string) => {
-    if (order.includes(item) || done) return;
-    const next = [...order, item];
-    setOrder(next);
-    if (next.length === shuffled.length) {
-      setDone(true);
-      const correct = next.every((v, i) => v === step.items[i]);
-      setTimeout(() => onComplete(correct), 1000);
-    }
+    if (order.includes(item) || submitted) return;
+    setOrder(prev => [...prev, item]);
   };
-  const reset = () => { setOrder([]); setDone(false); };
+  const removeItem = (idx: number) => {
+    if (submitted) return;
+    setOrder(prev => prev.filter((_, i) => i !== idx));
+  };
+  const reset = () => { setOrder([]); setSubmitted(false); };
+
+  const handleSubmit = () => {
+    const correct = order.every((v, i) => v === step.items[i]);
+    setIsCorrect(correct);
+    setSubmitted(true);
+  };
+
+  const allFilled = order.length === shuffled.length;
+
+  const ordinalLabels = ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th'];
+
   return (
-    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col items-center gap-5 px-4 w-full max-w-2xl mx-auto">
-      <h2 className="text-lg font-bold text-foreground text-center">{step.prompt}</h2>
-      <p className="text-xs text-muted-foreground">Tap items in the correct order</p>
-      <div className="flex flex-col gap-2 w-full min-h-[120px] p-3 rounded-xl" style={{
-        background: 'rgba(255,255,255,0.02)',
-        border: '1px dashed rgba(139,92,246,0.25)',
-      }}>
-        {order.length === 0 && <p className="text-xs text-muted-foreground text-center py-4">Tap items below to order them</p>}
-        {order.map((item, i) => (
-          <div key={i} className="flex items-center gap-2 p-2 rounded-lg" style={{
-            background: 'rgba(139,92,246,0.08)', border: '1px solid rgba(139,92,246,0.2)'
-          }}>
-            <span className="text-xs font-bold text-primary w-5">{i + 1}.</span>
-            <span className="text-sm text-foreground">{item}</span>
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col items-center gap-5 px-6 w-full min-h-[85vh]" style={{ maxWidth: '900px', margin: '0 auto' }}>
+      <span className="text-xs font-bold text-primary uppercase tracking-widest">✦ PUT IN ORDER</span>
+      <h2 className="text-lg lg:text-xl font-bold text-foreground text-center" style={{ maxWidth: '720px' }}>{step.prompt}</h2>
+
+      {/* Slots — horizontal row on desktop */}
+      <div className="flex flex-wrap gap-3 w-full justify-center">
+        {step.items.map((_, i) => (
+          <div key={i}
+            onClick={() => order[i] && removeItem(i)}
+            className={cn(
+              "rounded-xl border-2 border-dashed flex items-center justify-center text-center transition-all cursor-pointer",
+              order[i]
+                ? submitted
+                  ? order[i] === step.items[i] ? "border-emerald-500/50 bg-emerald-500/10" : "border-red-500/50 bg-red-500/10"
+                  : "border-primary/40 bg-primary/5"
+                : "border-border/40"
+            )}
+            style={{ minWidth: '180px', height: '60px', pointerEvents: 'auto' }}
+          >
+            {order[i] ? (
+              <span className="text-sm font-medium text-foreground px-3">{order[i]}</span>
+            ) : (
+              <span className="text-xs text-muted-foreground/50">{ordinalLabels[i] || `${i+1}th`}</span>
+            )}
           </div>
         ))}
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 w-full">
+
+      {/* Item bank */}
+      <div className="flex flex-wrap gap-3 w-full justify-center">
         {shuffled.map((item, i) => (
-          <Button key={i} variant="outline" size="sm" onClick={() => addItem(item)}
-            disabled={order.includes(item)} className={cn("text-xs rounded-xl whitespace-normal h-auto py-2 text-left", order.includes(item) && "opacity-30")}>{item}</Button>
+          <Button key={i} variant="outline" onClick={() => addItem(item)}
+            disabled={order.includes(item)}
+            className={cn("text-sm rounded-xl whitespace-normal h-auto py-3 px-5 text-left", order.includes(item) && "opacity-30")}
+            style={{ minWidth: '160px' }}
+          >{item}</Button>
         ))}
       </div>
-      {done && !order.every((v, i) => v === step.items[i]) && (
-        <Button variant="outline" size="sm" onClick={reset} className="rounded-xl">Try Again</Button>
+
+      <div className="flex gap-3 items-center">
+        {order.length > 0 && !submitted && (
+          <Button variant="ghost" onClick={reset} className="text-sm text-muted-foreground">Reset All</Button>
+        )}
+        {allFilled && !submitted && (
+          <Button onClick={handleSubmit} className="px-10 rounded-xl text-base" size="lg">Submit</Button>
+        )}
+      </div>
+
+      {submitted && (
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="w-full flex flex-col items-center gap-4" style={{ maxWidth: '680px' }}>
+          <p className={cn("text-sm text-center p-4 rounded-xl w-full",
+            isCorrect ? "bg-emerald-500/10 text-emerald-400" : "bg-red-500/10 text-red-400"
+          )}>
+            {isCorrect ? "Perfect order! Well done." : "Not quite right. Try again!"}
+          </p>
+          {isCorrect ? (
+            <Button onClick={() => onComplete(true)} className="px-12 rounded-xl gap-2 text-base font-bold" size="lg" style={{ width: '100%', maxWidth: '600px' }}>
+              Continue <ArrowRight className="w-4 h-4" />
+            </Button>
+          ) : (
+            <Button variant="outline" onClick={reset} className="rounded-xl">Try Again</Button>
+          )}
+        </motion.div>
       )}
     </motion.div>
   );
 }
 
-/* ─── Quiz ─── */
+/* ─── Quiz — Manual continue, desktop sized ─── */
 function QuizView({ step, onComplete }: { step: QuizStep; onComplete: (c: boolean) => void }) {
   const [sel, setSel] = useState<number | null>(null);
   const pick = (i: number) => {
     if (sel !== null) return;
     setSel(i);
-    setTimeout(() => onComplete(i === step.correct), 2500);
   };
   return (
-    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col items-center gap-5 px-4 w-full max-w-2xl mx-auto">
-      <h2 className="text-lg font-bold text-foreground text-center leading-snug">{step.question}</h2>
-      <div className="flex flex-col gap-3 w-full">
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col items-center gap-5 px-6 w-full min-h-[85vh]" style={{ maxWidth: '800px', margin: '0 auto' }}>
+      <span className="text-xs font-bold text-primary uppercase tracking-widest">✦ MULTIPLE CHOICE</span>
+      <h2 className="text-lg lg:text-xl font-bold text-foreground text-center leading-snug" style={{ maxWidth: '720px' }}>{step.question}</h2>
+      <div className="flex flex-col gap-3 w-full" style={{ maxWidth: '680px' }}>
         {step.options.map((o, i) => (
           <Button key={i} variant={sel === i ? (i === step.correct ? "default" : "destructive") : "outline"}
             onClick={() => pick(i)} disabled={sel !== null}
-            className={cn("justify-start text-left text-sm rounded-xl h-auto py-3.5 px-5 whitespace-normal leading-relaxed min-h-[48px]",
+            className={cn("justify-start text-left rounded-xl h-auto whitespace-normal leading-relaxed",
+              "text-[17px] py-5 px-5",
               sel !== null && i === step.correct && "border-emerald-500 bg-emerald-500/10 text-emerald-400"
             )}>{o}</Button>
         ))}
       </div>
       {sel !== null && (
-        <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className={cn("text-sm text-center p-4 rounded-xl leading-relaxed",
-          sel === step.correct ? "bg-emerald-500/10 text-emerald-400" : "bg-red-500/10 text-red-400"
-        )}>{step.explanation}</motion.p>
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="w-full flex flex-col items-center gap-4" style={{ maxWidth: '680px' }}>
+          <p className={cn("text-sm text-center p-4 rounded-xl leading-relaxed w-full",
+            sel === step.correct ? "bg-emerald-500/10 text-emerald-400" : "bg-red-500/10 text-red-400"
+          )}>{step.explanation}</p>
+          <Button onClick={() => onComplete(sel === step.correct)} className="px-12 rounded-xl gap-2 text-base font-bold" size="lg" style={{ width: '100%', maxWidth: '600px' }}>
+            Continue <ArrowRight className="w-4 h-4" />
+          </Button>
+        </motion.div>
       )}
     </motion.div>
   );
@@ -242,7 +337,6 @@ function TrueFalseView({ step, onComplete }: { step: TrueFalseStep; onComplete: 
     }
   };
 
-  // Explanation texts for common statements
   const getExplanation = () => {
     const s = current.s.toLowerCase();
     if (s.includes('expert')) {
@@ -264,36 +358,37 @@ function TrueFalseView({ step, onComplete }: { step: TrueFalseStep; onComplete: 
   };
 
   return (
-    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col items-center gap-6 px-4 w-full max-w-lg mx-auto">
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col items-center gap-6 px-6 w-full min-h-[85vh]" style={{ maxWidth: '700px', margin: '0 auto' }}>
+      <span className="text-xs font-bold text-primary uppercase tracking-widest">✦ TRUE OR FALSE</span>
       <p className="text-xs text-muted-foreground">{idx + 1} of {step.statements.length}</p>
       <AnimatePresence mode="wait">
         <motion.div key={idx} initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }}
           className={cn("w-full p-6 rounded-2xl border text-center",
             lastCorrect === true ? "border-emerald-500/50 bg-emerald-500/10" :
             lastCorrect === false ? "border-red-500/50 bg-red-500/10" : "border-border"
-          )} style={{ background: lastCorrect === null ? 'rgba(255,255,255,0.03)' : undefined }}>
-          <p className="text-lg font-semibold text-foreground">{current.s}</p>
+          )} style={{ background: lastCorrect === null ? 'rgba(255,255,255,0.03)' : undefined, maxWidth: '680px' }}>
+          <p className="text-lg lg:text-xl font-semibold text-foreground">{current.s}</p>
         </motion.div>
       </AnimatePresence>
       {!answered && (
         <div className="flex gap-4">
-          <Button variant="outline" onClick={() => answer(true)} className="px-8 rounded-xl text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/10">True</Button>
-          <Button variant="outline" onClick={() => answer(false)} className="px-8 rounded-xl text-red-400 border-red-500/30 hover:bg-red-500/10">False</Button>
+          <Button variant="outline" onClick={() => answer(true)} className="px-10 py-5 rounded-xl text-lg text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/10">True</Button>
+          <Button variant="outline" onClick={() => answer(false)} className="px-10 py-5 rounded-xl text-lg text-red-400 border-red-500/30 hover:bg-red-500/10">False</Button>
         </div>
       )}
-      {/* Explanation panel */}
       <AnimatePresence>
         {showExplanation && (
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 20 }}
             className="w-full p-5 rounded-2xl" style={{
               background: 'rgba(255,255,255,0.04)',
               border: '1px solid rgba(139,92,246,0.2)',
+              maxWidth: '680px',
             }}>
             <p className={cn("text-sm font-bold mb-2", lastCorrect ? "text-emerald-400" : "text-red-400")}>
               {lastCorrect ? '✓ Correct!' : '✗ Incorrect'}
             </p>
             <p className="text-sm text-foreground/90 leading-relaxed mb-4">{getExplanation()}</p>
-            <Button onClick={dismiss} size="sm" className="rounded-xl">
+            <Button onClick={dismiss} className="rounded-xl px-8" size="lg">
               {idx + 1 < step.statements.length ? 'Next Statement' : 'Finish'}
             </Button>
           </motion.div>
@@ -303,13 +398,13 @@ function TrueFalseView({ step, onComplete }: { step: TrueFalseStep; onComplete: 
   );
 }
 
-/* ─── Match ─── */
+/* ─── Match — Desktop two-column with icons and progress counter ─── */
 function MatchView({ step, onComplete }: { step: MatchStep; onComplete: (c: boolean) => void }) {
   const [shuffledRight] = useState(() => [...step.pairs.map(p => p[1])].sort(() => Math.random() - 0.5));
   const [selLeft, setSelLeft] = useState<number | null>(null);
   const [matched, setMatched] = useState<Map<number, number>>(new Map());
-  const [wrong, setWrong] = useState<number | null>(null);
-  const tapLeft = (i: number) => { if (!matched.has(i)) setSelLeft(i); };
+  const [wrong, setWrong] = useState<{ left: number; right: number } | null>(null);
+  const tapLeft = (i: number) => { if (!matched.has(i)) { setSelLeft(i); setWrong(null); } };
   const tapRight = (ri: number) => {
     if (selLeft === null) return;
     const correctRight = step.pairs[selLeft][1];
@@ -318,33 +413,59 @@ function MatchView({ step, onComplete }: { step: MatchStep; onComplete: (c: bool
       setMatched(next); setSelLeft(null);
       if (next.size === step.pairs.length) setTimeout(() => onComplete(true), 600);
     } else {
-      setWrong(ri);
+      setWrong({ left: selLeft, right: ri });
       setTimeout(() => { setWrong(null); setSelLeft(null); }, 600);
     }
   };
+
+  const matchedRightIndices = new Set(matched.values());
+
+  // Icons for common asset matching
+  const getIcon = (term: string) => {
+    const t = term.toLowerCase();
+    if (t.includes('stock')) return <TrendingUp className="w-5 h-5 text-primary/60" />;
+    if (t.includes('bond')) return <Shield className="w-5 h-5 text-primary/60" />;
+    if (t.includes('real estate')) return <Home className="w-5 h-5 text-primary/60" />;
+    if (t.includes('cash')) return <Coins className="w-5 h-5 text-primary/60" />;
+    return <BarChart3 className="w-5 h-5 text-primary/60" />;
+  };
+
   return (
-    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col items-center gap-4 px-4 w-full max-w-lg mx-auto">
-      <h2 className="text-lg font-bold text-foreground">{step.title}</h2>
-      <p className="text-xs text-muted-foreground">Tap a term, then tap its match</p>
-      <div className="grid grid-cols-2 gap-3 w-full">
-        <div className="flex flex-col gap-2">
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col items-center gap-4 px-6 w-full min-h-[85vh]" style={{ maxWidth: '900px', margin: '0 auto' }}>
+      <span className="text-xs font-bold text-primary uppercase tracking-widest">✦ MATCH THE PAIRS</span>
+      <h2 className="text-lg lg:text-xl font-bold text-foreground">{step.title}</h2>
+      <p className="text-sm text-muted-foreground">{matched.size} of {step.pairs.length} matched</p>
+
+      {/* Desktop: two columns, 380px each, 48px gap */}
+      <div className="flex flex-col lg:flex-row gap-6 lg:gap-12 w-full justify-center">
+        {/* Left column — asset names with icons */}
+        <div className="flex flex-col gap-3" style={{ width: '100%', maxWidth: '380px' }}>
           {step.pairs.map((p, i) => (
-            <motion.div key={i} whileTap={{ scale: 0.95 }} onClick={() => tapLeft(i)}
-              className={cn("p-3 rounded-xl border text-sm cursor-pointer transition-all text-center",
+            <motion.div key={i} whileTap={{ scale: 0.97 }} onClick={() => tapLeft(i)}
+              className={cn("flex items-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all",
                 matched.has(i) ? "bg-emerald-500/10 border-emerald-500/40 opacity-60" :
-                selLeft === i ? "bg-primary/20 border-primary" : "border-border hover:border-primary/50"
-              )} style={{ pointerEvents: 'auto', background: matched.has(i) ? undefined : 'rgba(255,255,255,0.02)' }}>{p[0]}</motion.div>
+                selLeft === i ? "bg-primary/15 border-primary ring-2 ring-primary/20" :
+                wrong?.left === i ? "bg-red-500/10 border-red-500/40" :
+                "border-border/60 hover:border-primary/50"
+              )} style={{ height: '90px', pointerEvents: 'auto', background: matched.has(i) ? undefined : 'rgba(255,255,255,0.02)' }}>
+              {getIcon(p[0])}
+              <span className="text-base font-medium text-foreground">{p[0]}</span>
+            </motion.div>
           ))}
         </div>
-        <div className="flex flex-col gap-2">
-          {shuffledRight.map((r, i) => {
-            const isMatched = [...matched.values()].includes(i);
+        {/* Right column — descriptions */}
+        <div className="flex flex-col gap-3" style={{ width: '100%', maxWidth: '380px' }}>
+          {shuffledRight.map((r, ri) => {
+            const isMatched = matchedRightIndices.has(ri);
             return (
-              <motion.div key={i} whileTap={{ scale: 0.95 }} onClick={() => tapRight(i)}
-                className={cn("p-3 rounded-xl border text-sm cursor-pointer transition-all text-center",
+              <motion.div key={ri} whileTap={{ scale: 0.97 }} onClick={() => tapRight(ri)}
+                className={cn("flex items-center p-4 rounded-xl border-2 cursor-pointer transition-all",
                   isMatched ? "bg-emerald-500/10 border-emerald-500/40 opacity-60" :
-                  wrong === i ? "bg-red-500/10 border-red-500/40" : "border-border hover:border-primary/50"
-                )} style={{ pointerEvents: 'auto', background: isMatched ? undefined : 'rgba(255,255,255,0.02)' }}>{r}</motion.div>
+                  wrong?.right === ri ? "bg-red-500/10 border-red-500/40" :
+                  selLeft !== null ? "border-border/60 hover:border-accent" : "border-border/40"
+                )} style={{ height: '90px', pointerEvents: 'auto', background: isMatched ? undefined : 'rgba(255,255,255,0.02)' }}>
+                <span className="text-sm text-foreground leading-relaxed">{r}</span>
+              </motion.div>
             );
           })}
         </div>
@@ -353,7 +474,7 @@ function MatchView({ step, onComplete }: { step: MatchStep; onComplete: (c: bool
   );
 }
 
-/* ─── Slider — with reveal state ─── */
+/* ─── Slider — with reveal state, manual continue ─── */
 function SliderView({ step, onComplete }: { step: SliderStep; onComplete: (c: boolean) => void }) {
   const [val, setVal] = useState(Math.round((step.min + step.max) / 2));
   const [submitted, setSubmitted] = useState(false);
@@ -361,16 +482,17 @@ function SliderView({ step, onComplete }: { step: SliderStep; onComplete: (c: bo
 
   const submit = () => {
     setSubmitted(true);
-    // Animate slider to correct answer
     setTimeout(() => setShowReveal(true), 300);
-    const tolerance = (step.max - step.min) * 0.15;
-    setTimeout(() => onComplete(Math.abs(val - step.correct) <= tolerance), 3000);
   };
 
+  const tolerance = (step.max - step.min) * 0.15;
+  const isClose = Math.abs(val - step.correct) <= tolerance;
+
   return (
-    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col items-center gap-6 px-4 w-full max-w-lg mx-auto">
-      <h2 className="text-lg font-bold text-foreground text-center">{step.question}</h2>
-      <div className="w-full px-4">
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col items-center gap-6 px-6 w-full min-h-[85vh]" style={{ maxWidth: '700px', margin: '0 auto' }}>
+      <span className="text-xs font-bold text-primary uppercase tracking-widest">✦ SLIDER PREDICTION</span>
+      <h2 className="text-lg lg:text-xl font-bold text-foreground text-center" style={{ maxWidth: '720px' }}>{step.question}</h2>
+      <div className="w-full px-4" style={{ maxWidth: '680px' }}>
         <Slider min={step.min} max={step.max} step={1}
           value={[submitted && showReveal ? step.correct : val]}
           onValueChange={([v]) => !submitted && setVal(v)}
@@ -381,6 +503,7 @@ function SliderView({ step, onComplete }: { step: SliderStep; onComplete: (c: bo
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
           className="w-full p-5 rounded-2xl text-center" style={{
             background: 'rgba(139,92,246,0.08)', border: '1px solid rgba(139,92,246,0.2)',
+            maxWidth: '680px',
           }}>
           <p className="text-sm text-muted-foreground mb-1">The actual answer is</p>
           <p className="text-2xl font-black text-primary mb-3">~{step.correct}{step.unit}</p>
@@ -389,39 +512,53 @@ function SliderView({ step, onComplete }: { step: SliderStep; onComplete: (c: bo
           </p>
         </motion.div>
       )}
-      {!submitted && <Button onClick={submit} className="px-8 rounded-xl">Submit</Button>}
+      {!submitted && <Button onClick={submit} className="px-10 rounded-xl text-base" size="lg">Submit</Button>}
+      {showReveal && (
+        <Button onClick={() => onComplete(isClose)} className="px-12 rounded-xl gap-2 text-base font-bold" size="lg" style={{ width: '100%', maxWidth: '600px' }}>
+          Continue <ArrowRight className="w-4 h-4" />
+        </Button>
+      )}
     </motion.div>
   );
 }
 
-/* ─── Scenario ─── */
+/* ─── Scenario — Manual continue ─── */
 function ScenarioView({ step, onComplete }: { step: ScenarioStep; onComplete: (c: boolean) => void }) {
   const [sel, setSel] = useState<number | null>(null);
   const pick = (i: number) => {
     if (sel !== null) return;
     setSel(i);
-    setTimeout(() => onComplete(step.choices[i].correct), 2500);
   };
   return (
-    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col items-center gap-5 px-4 w-full max-w-lg mx-auto">
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col items-center gap-5 px-6 w-full min-h-[85vh]" style={{ maxWidth: '800px', margin: '0 auto' }}>
+      <span className="text-xs font-bold text-primary uppercase tracking-widest">✦ SCENARIO</span>
       {/* Scenario card */}
       <div className="w-full p-5 rounded-2xl" style={{
         background: 'rgba(139,92,246,0.06)', border: '1px solid rgba(139,92,246,0.15)',
+        maxWidth: '720px',
       }}>
         <p className="text-base text-foreground leading-relaxed">{step.situation}</p>
       </div>
-      <div className="flex flex-col gap-2 w-full">
+      <div className="flex flex-col gap-3 w-full" style={{ maxWidth: '680px' }}>
         {step.choices.map((ch, i) => (
           <div key={i}>
             <Button variant={sel === i ? (ch.correct ? "default" : "destructive") : "outline"}
-              onClick={() => pick(i)} disabled={sel !== null} className="w-full justify-start text-sm rounded-xl h-auto py-3 px-4 whitespace-normal leading-relaxed text-left">{ch.label}</Button>
+              onClick={() => pick(i)} disabled={sel !== null}
+              className="w-full justify-start text-left rounded-xl h-auto py-4 px-5 whitespace-normal leading-relaxed text-[17px]">{ch.label}</Button>
             {sel === i && (
               <motion.p initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}
-                className={cn("text-xs mt-1 p-3 rounded-lg leading-relaxed", ch.correct ? "bg-emerald-500/10 text-emerald-400" : "bg-red-500/10 text-red-400")}>{ch.outcome}</motion.p>
+                className={cn("text-sm mt-2 p-4 rounded-xl leading-relaxed", ch.correct ? "bg-emerald-500/10 text-emerald-400" : "bg-red-500/10 text-red-400")}>{ch.outcome}</motion.p>
             )}
           </div>
         ))}
       </div>
+      {sel !== null && (
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="w-full flex justify-center">
+          <Button onClick={() => onComplete(step.choices[sel].correct)} className="px-12 rounded-xl gap-2 text-base font-bold" size="lg" style={{ width: '100%', maxWidth: '600px' }}>
+            Continue <ArrowRight className="w-4 h-4" />
+          </Button>
+        </motion.div>
+      )}
     </motion.div>
   );
 }
@@ -438,7 +575,7 @@ function BuildItView({ step, onComplete }: { step: BuildItStep; onComplete: (c: 
   };
   const allFilled = selections.every(s => s !== null);
   return (
-    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col items-center gap-5 px-4 w-full max-w-lg mx-auto">
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col items-center gap-5 px-6 w-full min-h-[85vh]" style={{ maxWidth: '700px', margin: '0 auto' }}>
       <h2 className="text-lg font-bold text-foreground">{step.title}</h2>
       <p className="text-sm text-muted-foreground">{step.instruction}</p>
       <div className="flex flex-col gap-4 w-full">
@@ -476,7 +613,7 @@ function ProgressiveCalcView({ step, onComplete }: { step: ProgressiveCalcStep; 
     }, 800);
   };
   return (
-    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col items-center gap-5 px-4 w-full max-w-lg mx-auto">
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col items-center gap-5 px-6 w-full min-h-[85vh]" style={{ maxWidth: '700px', margin: '0 auto' }}>
       <h2 className="text-lg font-bold text-foreground">{step.title}</h2>
       <p className="text-xs text-muted-foreground">Step {idx + 1} of {step.calcSteps.length}</p>
       <AnimatePresence mode="wait">
@@ -485,7 +622,7 @@ function ProgressiveCalcView({ step, onComplete }: { step: ProgressiveCalcStep; 
           <p className="text-base text-foreground">{current.prompt}</p>
         </motion.div>
       </AnimatePresence>
-      <div className="grid grid-cols-2 gap-2 w-full">
+      <div className="grid grid-cols-2 gap-2 w-full" style={{ maxWidth: '680px' }}>
         {current.options.map((o, i) => (
           <Button key={i} variant={sel === i ? (i === current.correct ? "default" : "destructive") : "outline"}
             onClick={() => pick(i)} disabled={sel !== null} className="text-sm rounded-xl">{o}</Button>
@@ -501,20 +638,29 @@ function VisualInteractiveView({ step, onComplete }: { step: VisualInteractiveSt
   const pick = (i: number) => {
     if (sel !== null) return;
     setSel(i);
-    setTimeout(() => onComplete(i === step.correct), 1200);
   };
   return (
-    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col items-center gap-5 px-4 w-full max-w-lg mx-auto">
-      <div className="w-full p-5 rounded-2xl border border-border text-center" style={{ background: 'rgba(255,255,255,0.03)' }}>
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col items-center gap-5 px-6 w-full min-h-[85vh]" style={{ maxWidth: '800px', margin: '0 auto' }}>
+      <div className="w-full p-5 rounded-2xl border border-border text-center" style={{ background: 'rgba(255,255,255,0.03)', maxWidth: '720px' }}>
         <p className="text-sm text-muted-foreground italic">{step.description}</p>
       </div>
-      <h2 className="text-lg font-bold text-foreground text-center">{step.question}</h2>
-      <div className="flex flex-col gap-2 w-full">
+      <h2 className="text-lg lg:text-xl font-bold text-foreground text-center" style={{ maxWidth: '720px' }}>{step.question}</h2>
+      <div className="flex flex-col gap-3 w-full" style={{ maxWidth: '680px' }}>
         {step.options.map((o, i) => (
           <Button key={i} variant={sel === i ? (i === step.correct ? "default" : "destructive") : "outline"}
-            onClick={() => pick(i)} disabled={sel !== null} className="justify-start text-sm rounded-xl h-auto py-3 px-4 whitespace-normal leading-relaxed">{o}</Button>
+            onClick={() => pick(i)} disabled={sel !== null}
+            className={cn("justify-start text-left rounded-xl h-auto py-4 px-5 whitespace-normal leading-relaxed text-[17px]",
+              sel !== null && i === step.correct && "border-emerald-500 bg-emerald-500/10 text-emerald-400"
+            )}>{o}</Button>
         ))}
       </div>
+      {sel !== null && (
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="w-full flex justify-center">
+          <Button onClick={() => onComplete(sel === step.correct)} className="px-12 rounded-xl gap-2 text-base font-bold" size="lg" style={{ width: '100%', maxWidth: '600px' }}>
+            Continue <ArrowRight className="w-4 h-4" />
+          </Button>
+        </motion.div>
+      )}
     </motion.div>
   );
 }
@@ -534,7 +680,6 @@ export function StepRenderer({ step, onComplete, onClose }: Props) {
     case 'buildIt': return <BuildItView step={step} onComplete={onComplete} />;
     case 'progressiveCalc': return <ProgressiveCalcView step={step} onComplete={onComplete} />;
     case 'visualInteractive': return <VisualInteractiveView step={step} onComplete={onComplete} />;
-    // New template types
     case 'hookOpener': return <HookOpenerView step={step} onComplete={onComplete} />;
     case 'stakesCard': return <StakesCardView step={step} onComplete={onComplete} />;
     case 'teachingSlide': return <TeachingSlideView step={step} onComplete={onComplete} />;
