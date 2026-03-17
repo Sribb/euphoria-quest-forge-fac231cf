@@ -101,13 +101,13 @@ export const CoinShop = ({ onNavigate }: CoinShopProps) => {
         </h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           {[
-            { icon: "📚", label: "Complete Lessons", amount: "+50-100" },
-            { icon: "🔥", label: "Daily Streaks", amount: "+25" },
-            { icon: "🎮", label: "Win Games", amount: "+10-50" },
-            { icon: "📅", label: "Daily Challenges", amount: "+30" },
+            { icon: "open-book", label: "Complete Lessons", amount: "+50-100" },
+            { icon: "flame", label: "Daily Streaks", amount: "+25" },
+            { icon: "controller", label: "Win Games", amount: "+10-50" },
+            { icon: "shop-calendar", label: "Daily Challenges", amount: "+30" },
           ].map(item => (
             <div key={item.label} className="text-center p-3 bg-background/50 rounded-lg">
-              <span className="text-2xl">{item.icon}</span>
+              <EuphoriaIcon name={item.icon} size={28} className="mx-auto" />
               <p className="text-xs text-muted-foreground mt-1">{item.label}</p>
               <p className="text-sm font-bold text-emerald-400">{item.amount}</p>
             </div>
