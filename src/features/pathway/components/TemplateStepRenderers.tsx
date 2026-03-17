@@ -28,9 +28,9 @@ export function HookOpenerView({ step, onComplete }: { step: HookOpenerStep; onC
       {/* Visual area */}
       <div className="w-full flex-1 flex items-center justify-center bg-gradient-to-b from-primary/10 via-primary/5 to-transparent px-6 py-10">
         <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.3, duration: 0.8 }}
-          className="w-full max-w-md">
-          {/* SVG Chart visualization */}
-          <svg viewBox="0 0 400 200" className="w-full h-auto" style={{ pointerEvents: 'auto' }}>
+          className="w-full max-w-xl">
+          {/* SVG Chart visualization — expanded viewBox for label room */}
+          <svg viewBox="0 0 420 230" className="w-full h-auto" style={{ pointerEvents: 'auto' }}>
             <defs>
               <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity="0.3" />
@@ -38,36 +38,36 @@ export function HookOpenerView({ step, onComplete }: { step: HookOpenerStep; onC
               </linearGradient>
             </defs>
             {/* Grid lines */}
-            {[40, 80, 120, 160].map(y => (
+            {[60, 100, 140, 180].map(y => (
               <line key={y} x1="40" y1={y} x2="380" y2={y} stroke="hsl(var(--border))" strokeWidth="0.5" strokeDasharray="4 4" />
             ))}
-            {/* Growth curve */}
+            {/* Growth curve — shifted down so labels aren't clipped */}
             <motion.path
-              d="M40,170 Q100,165 140,155 Q180,140 220,120 Q260,90 300,55 Q340,25 380,10"
+              d="M40,185 Q100,180 140,170 Q180,155 220,135 Q260,105 300,70 Q340,40 370,30"
               fill="none" stroke="hsl(var(--primary))" strokeWidth="3" strokeLinecap="round"
               initial={{ pathLength: 0 }} animate={{ pathLength: animPhase >= 1 ? 1 : 0 }}
               transition={{ duration: 2, ease: "easeOut" }}
             />
             {/* Area under curve */}
             <motion.path
-              d="M40,170 Q100,165 140,155 Q180,140 220,120 Q260,90 300,55 Q340,25 380,10 L380,180 L40,180 Z"
+              d="M40,185 Q100,180 140,170 Q180,155 220,135 Q260,105 300,70 Q340,40 370,30 L370,200 L40,200 Z"
               fill="url(#chartGrad)"
               initial={{ opacity: 0 }} animate={{ opacity: animPhase >= 2 ? 0.6 : 0 }}
               transition={{ duration: 0.8 }}
             />
             {/* Milestone labels */}
             <motion.g initial={{ opacity: 0 }} animate={{ opacity: animPhase >= 2 ? 1 : 0 }} transition={{ delay: 0.3 }}>
-              <text x="40" y="195" fill="hsl(var(--muted-foreground))" fontSize="10" textAnchor="middle">1990</text>
-              <text x="140" y="195" fill="hsl(var(--muted-foreground))" fontSize="10" textAnchor="middle">2000</text>
-              <text x="260" y="195" fill="hsl(var(--muted-foreground))" fontSize="10" textAnchor="middle">2010</text>
-              <text x="380" y="195" fill="hsl(var(--muted-foreground))" fontSize="10" textAnchor="middle">2024</text>
+              <text x="40" y="218" fill="hsl(var(--muted-foreground))" fontSize="10" textAnchor="middle">1990</text>
+              <text x="140" y="218" fill="hsl(var(--muted-foreground))" fontSize="10" textAnchor="middle">2000</text>
+              <text x="260" y="218" fill="hsl(var(--muted-foreground))" fontSize="10" textAnchor="middle">2010</text>
+              <text x="370" y="218" fill="hsl(var(--muted-foreground))" fontSize="10" textAnchor="middle">2024</text>
             </motion.g>
-            {/* Value labels */}
+            {/* Value labels — positioned with room above */}
             <motion.g initial={{ opacity: 0 }} animate={{ opacity: animPhase >= 3 ? 1 : 0 }}>
-              <circle cx="40" cy="170" r="4" fill="hsl(var(--primary))" />
-              <text x="40" y="162" fill="hsl(var(--foreground))" fontSize="11" fontWeight="bold" textAnchor="middle">$1K</text>
-              <circle cx="380" cy="10" r="5" fill="hsl(var(--primary))" />
-              <text x="380" y="6" fill="hsl(var(--foreground))" fontSize="12" fontWeight="bold" textAnchor="middle">$23K</text>
+              <circle cx="40" cy="185" r="4" fill="hsl(var(--primary))" />
+              <text x="50" y="178" fill="hsl(var(--foreground))" fontSize="12" fontWeight="bold" textAnchor="start">$1K</text>
+              <circle cx="370" cy="30" r="5" fill="hsl(var(--primary))" />
+              <text x="358" y="20" fill="hsl(var(--foreground))" fontSize="13" fontWeight="bold" textAnchor="end">$23K</text>
             </motion.g>
           </svg>
           <p className="text-xs text-center text-muted-foreground mt-2 italic">{step.visualDescription}</p>
@@ -322,7 +322,7 @@ export function InteractiveGraphView({ step, onComplete }: { step: InteractiveGr
   }, [step.graphType, values, step.sliders]);
 
   return (
-    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col gap-5 px-4 w-full max-w-lg mx-auto">
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col gap-5 px-4 w-full max-w-2xl mx-auto">
       <div className="flex items-center gap-2">
         <TrendingUp className="w-4 h-4 text-primary" />
         <span className="text-xs font-bold text-primary uppercase tracking-widest">{step.sectionLabel}</span>
@@ -330,10 +330,10 @@ export function InteractiveGraphView({ step, onComplete }: { step: InteractiveGr
       <h2 className="text-2xl font-black text-foreground">{step.title}</h2>
 
       {/* Interactive Graph */}
-      <div className="w-full p-4 rounded-2xl bg-card border border-border/50">
+      <div className="w-full p-6 rounded-2xl bg-card border border-border/50">
         {step.graphType === 'exponential' && (
           <>
-            <svg viewBox="0 0 400 200" className="w-full h-auto mb-2" style={{ pointerEvents: 'auto' }}>
+            <svg viewBox="0 0 400 220" className="w-full h-auto mb-4" style={{ pointerEvents: 'auto', minHeight: '220px' }}>
               <defs>
                 <linearGradient id="igGrad" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity="0.3" />
