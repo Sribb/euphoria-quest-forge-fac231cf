@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -85,6 +85,25 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
   const [legendaryLessonId, setLegendaryLessonId] = useState<string | null>(null);
   const [showDailyRewards, setShowDailyRewards] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [headerVisible, setHeaderVisible] = useState(true);
+  const lastScrollY = useRef(0);
+
+  // Auto-hide header on scroll down, show on scroll up
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentY = window.scrollY;
+      if (currentY < 80) {
+        setHeaderVisible(true);
+      } else if (currentY > lastScrollY.current + 8) {
+        setHeaderVisible(false);
+      } else if (currentY < lastScrollY.current - 8) {
+        setHeaderVisible(true);
+      }
+      lastScrollY.current = currentY;
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   // Persist pathway selection
   useEffect(() => {
@@ -264,32 +283,39 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
 
   return (
     <div className="min-h-screen w-full">
-      {/* Top Nav */}
-      <CourseTopNav
-        activeView={activeView}
-        onViewChange={setActiveView}
-      />
+      {/* Combined sticky header: top nav + pathway tabs */}
+      <div
+        className={`sticky top-0 z-10 transition-transform duration-300 ${
+          headerVisible ? 'translate-y-0' : '-translate-y-full'
+        }`}
+      >
+        {/* Top Nav */}
+        <CourseTopNav
+          activeView={activeView}
+          onViewChange={setActiveView}
+        />
 
-      {/* Pathway Selector Bar */}
-      <div className="sticky top-[56px] z-10 border-b border-border/20">
-        <div
-          ref={scrollContainerRef}
-          className="flex gap-2 overflow-x-auto scrollbar-hide px-6 py-3.5 max-w-6xl mx-auto"
-        >
-          {PATHWAY_TABS.map((tab) => (
-            <button
-              key={tab.id}
-              data-active={activePathway === tab.id}
-              onClick={() => setActivePathway(tab.id)}
-              className={`flex-shrink-0 px-5 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-200 ${
-                activePathway === tab.id
-                  ? 'bg-primary text-primary-foreground shadow-md shadow-primary/25'
-                  : 'text-muted-foreground/70 hover:text-foreground/90'
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
+        {/* Pathway Selector */}
+        <div className="border-b border-border/20">
+          <div
+            ref={scrollContainerRef}
+            className="flex gap-2 overflow-x-auto scrollbar-hide px-6 py-3 max-w-6xl mx-auto"
+          >
+            {PATHWAY_TABS.map((tab) => (
+              <button
+                key={tab.id}
+                data-active={activePathway === tab.id}
+                onClick={() => setActivePathway(tab.id)}
+                className={`flex-shrink-0 px-5 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-200 ${
+                  activePathway === tab.id
+                    ? 'bg-primary text-primary-foreground shadow-md shadow-primary/25'
+                    : 'text-muted-foreground/70 hover:text-foreground/90'
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
