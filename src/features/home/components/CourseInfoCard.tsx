@@ -1,4 +1,5 @@
 import { BookOpen, Dumbbell } from "lucide-react";
+import { EuphoriaIcon } from "@/components/icons/EuphoriaIcon";
 
 interface CourseInfoCardProps {
   title: string;
@@ -8,15 +9,15 @@ interface CourseInfoCardProps {
   illustration?: React.ReactNode;
 }
 
-const COURSE_ILLUSTRATIONS: Record<string, { emoji: string; gradient: string }> = {
-  "Investing Fundamentals": { emoji: "📈", gradient: "from-emerald-500/20 to-teal-500/10" },
-  "Corporate Finance": { emoji: "🏢", gradient: "from-blue-500/20 to-indigo-500/10" },
-  "Personal Finance": { emoji: "💰", gradient: "from-violet-500/20 to-purple-500/10" },
-  "Trading & Technical Analysis": { emoji: "📊", gradient: "from-orange-500/20 to-amber-500/10" },
-  "Alternative Assets": { emoji: "🌐", gradient: "from-rose-500/20 to-pink-500/10" },
-  "Economics": { emoji: "🏛️", gradient: "from-cyan-500/20 to-sky-500/10" },
-  "Business & Entrepreneurship": { emoji: "💼", gradient: "from-amber-500/20 to-yellow-500/10" },
-  "Marketing Fundamentals": { emoji: "📣", gradient: "from-fuchsia-500/20 to-pink-500/10" },
+const COURSE_ILLUSTRATIONS: Record<string, { icon: string; gradient: string }> = {
+  "Investing Fundamentals": { icon: "stocks", gradient: "from-emerald-500/20 to-teal-500/10" },
+  "Corporate Finance": { icon: "corp", gradient: "from-blue-500/20 to-indigo-500/10" },
+  "Personal Finance": { icon: "finance", gradient: "from-violet-500/20 to-purple-500/10" },
+  "Trading & Technical Analysis": { icon: "data", gradient: "from-orange-500/20 to-amber-500/10" },
+  "Alternative Assets": { icon: "global", gradient: "from-rose-500/20 to-pink-500/10" },
+  "Economics": { icon: "govt", gradient: "from-cyan-500/20 to-sky-500/10" },
+  "Business & Entrepreneurship": { icon: "business", gradient: "from-amber-500/20 to-yellow-500/10" },
+  "Marketing Fundamentals": { icon: "marketing", gradient: "from-fuchsia-500/20 to-pink-500/10" },
 };
 
 export const CourseInfoCard = ({
@@ -25,7 +26,7 @@ export const CourseInfoCard = ({
   totalLessons,
   completedLessons,
 }: CourseInfoCardProps) => {
-  const illus = COURSE_ILLUSTRATIONS[title] || { emoji: "📚", gradient: "from-primary/20 to-primary/5" };
+  const illus = COURSE_ILLUSTRATIONS[title] || { icon: "fallback", gradient: "from-primary/20 to-primary/5" };
   const exercises = totalLessons * 15; // ~15 exercises per lesson
 
   return (
@@ -33,7 +34,7 @@ export const CourseInfoCard = ({
       <div className="rounded-2xl border border-border/60 bg-card/80 backdrop-blur-sm overflow-hidden">
         {/* Illustration area */}
         <div className={`h-40 bg-gradient-to-br ${illus.gradient} flex items-center justify-center`}>
-          <span className="text-7xl select-none">{illus.emoji}</span>
+          <EuphoriaIcon name={illus.icon} size={80} />
         </div>
 
         {/* Info */}
