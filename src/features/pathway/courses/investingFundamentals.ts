@@ -47,13 +47,13 @@ const lessons = [
       { company: 'Vanguard', metric: 'Total Stock Market Index Fund (VTSAX)', outcome: 'averaged 10.4% annual return since 1992', explanation: 'A single index fund holding the entire U.S. stock market has turned $10,000 into over $200,000 in 30 years — with zero stock-picking required.' }
     ),
 
-    // Step 4 — Embedded Micro-Check
+    // Step 4 — Embedded Micro-Check (Application-based)
     microCheck(
-      'What is the primary difference between saving and investing?',
-      ['Saving is safer so it always earns more', 'Investing puts money to work for higher potential growth', 'There is no difference', 'Investing means buying a house'],
+      'Maria has $5,000 in a savings account earning 1% interest. Inflation this year is 3.2%. At the end of the year, what has actually happened to her money?',
+      ['It grew by $50 so she\'s better off', 'It lost purchasing power despite the balance increasing slightly', 'It stayed exactly the same in real terms', 'It doubled in real value due to compound interest'],
       1,
-      'Correct! Investing seeks higher returns by accepting more risk, which is essential to beat inflation and build long-term wealth.',
-      'Not quite. Saving keeps money safe but usually earns less than inflation. Investing puts money to work for higher potential growth — that\'s the key difference.'
+      'Correct! Her balance went up by $50, but inflation eroded $160 of purchasing power. She actually lost $110 in real terms. This is why keeping money in savings long-term guarantees losing wealth.',
+      'Not quite. Her balance technically went up by $50 (1% of $5,000), but inflation at 3.2% eroded $160 of purchasing power. She actually lost $110 in real terms — her money buys less than before.'
     ),
 
     // Step 5 — Second Teaching Slide (Interactive Graph)
