@@ -20,10 +20,10 @@ interface CertificatesProps {
 }
 
 const PRESTIGE_TIERS = [
-  { key: "easy", label: "Beginner", icon: Star, gradient: "from-emerald-500 to-teal-500", count: 0, total: 0 },
-  { key: "medium", label: "Advanced", icon: TrendingUp, gradient: "from-blue-500 to-indigo-500", count: 0, total: 0 },
-  { key: "hard", label: "Elite", icon: Shield, gradient: "from-purple-500 to-violet-500", count: 0, total: 0 },
-  { key: "master", label: "Fellow", icon: Crown, gradient: "from-amber-500 to-orange-500", count: 0, total: 0 },
+  { key: "easy", label: "Beginner", icon: Star, accent: "emerald", bgClass: "bg-emerald-500/10", borderClass: "border-emerald-500/30", textClass: "text-emerald-400", ringColor: "stroke-emerald-500", gradient: "from-emerald-500 to-teal-500", count: 0, total: 0 },
+  { key: "medium", label: "Advanced", icon: TrendingUp, accent: "blue", bgClass: "bg-blue-500/10", borderClass: "border-blue-500/30", textClass: "text-blue-400", ringColor: "stroke-blue-500", gradient: "from-blue-500 to-indigo-500", count: 0, total: 0 },
+  { key: "hard", label: "Elite", icon: Shield, accent: "purple", bgClass: "bg-primary/10", borderClass: "border-primary/30", textClass: "text-primary", ringColor: "stroke-[hsl(var(--primary))]", gradient: "from-purple-500 to-violet-500", count: 0, total: 0 },
+  { key: "master", label: "Fellow", icon: Crown, accent: "amber", bgClass: "bg-amber-500/10", borderClass: "border-amber-500/30", textClass: "text-amber-400", ringColor: "stroke-amber-500", gradient: "from-amber-500 to-orange-500", count: 0, total: 0 },
 ];
 
 const Certificates = ({ onNavigate }: CertificatesProps) => {
