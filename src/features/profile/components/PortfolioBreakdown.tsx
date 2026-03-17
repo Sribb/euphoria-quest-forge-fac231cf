@@ -142,29 +142,31 @@ export const PortfolioBreakdown = ({ assets, cashBalance }: PortfolioBreakdownPr
             );
           })}
 
-          {/* Center content */}
-          {hoveredSeg ? (
-            <>
-              <text x={cx} y={cy - 12} textAnchor="middle" className="fill-foreground font-bold" style={{ fontSize: 13 }}>
-                {hoveredSeg.name}
-              </text>
-              <text x={cx} y={cy + 6} textAnchor="middle" className="fill-foreground font-bold" style={{ fontSize: 18 }}>
-                {Math.round(hoveredSeg.pct)}%
-              </text>
-              <text x={cx} y={cy + 22} textAnchor="middle" className="fill-muted-foreground" style={{ fontSize: 11 }}>
-                ${hoveredSeg.value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-              </text>
-            </>
-          ) : (
-            <>
-              <text x={cx} y={cy - 4} textAnchor="middle" className="fill-foreground font-bold" style={{ fontSize: 16 }}>
-                ${(total / 1000).toFixed(1)}k
-              </text>
-              <text x={cx} y={cy + 12} textAnchor="middle" className="fill-muted-foreground" style={{ fontSize: 10 }}>
-                Total
-              </text>
-            </>
-          )}
+          {/* Center content - pointer-events none so hover works */}
+          <g style={{ pointerEvents: "none" }}>
+            {hoveredSeg ? (
+              <>
+                <text x={cx} y={cy - 12} textAnchor="middle" className="fill-foreground font-bold" style={{ fontSize: 13 }}>
+                  {hoveredSeg.name}
+                </text>
+                <text x={cx} y={cy + 6} textAnchor="middle" className="fill-foreground font-bold" style={{ fontSize: 18 }}>
+                  {Math.round(hoveredSeg.pct)}%
+                </text>
+                <text x={cx} y={cy + 22} textAnchor="middle" className="fill-muted-foreground" style={{ fontSize: 11 }}>
+                  ${hoveredSeg.value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                </text>
+              </>
+            ) : (
+              <>
+                <text x={cx} y={cy - 4} textAnchor="middle" className="fill-foreground font-bold" style={{ fontSize: 16 }}>
+                  ${(total / 1000).toFixed(1)}k
+                </text>
+                <text x={cx} y={cy + 12} textAnchor="middle" className="fill-muted-foreground" style={{ fontSize: 10 }}>
+                  Total
+                </text>
+              </>
+            )}
+          </g>
         </svg>
       </div>
     </motion.div>
