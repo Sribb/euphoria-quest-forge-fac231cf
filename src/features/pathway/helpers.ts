@@ -31,9 +31,10 @@ export const hookOpener = (title: string, fact: string, outcome: string, visualD
 
 export const stakesCard = (
   without: { label: string; detail: string },
-  with_: { label: string; detail: string }
+  with_: { label: string; detail: string },
+  opts?: { withoutSvg?: string; withSvg?: string; withoutLabel?: string; withLabel?: string }
 ): StakesCardStep => ({
-  type: 'stakesCard', without, with: with_
+  type: 'stakesCard', without, with: with_, ...opts
 });
 
 export const teachingSlide = (
