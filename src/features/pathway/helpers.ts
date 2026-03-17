@@ -25,8 +25,8 @@ export const cq = (question: string, options: string[], correct: number, explana
 export const L = (num: number, title: string, xp: number, steps: LessonStep[], challenge: ChallengeQuestion[]): PathwayLesson => ({ num, title, xp, steps, challenge });
 
 // ─── New Template Helpers ───
-export const hookOpener = (title: string, fact: string, outcome: string, visualDescription: string): HookOpenerStep => ({
-  type: 'hookOpener', title, fact, outcome, visualDescription
+export const hookOpener = (title: string, fact: string, outcome: string, visualDescription: string, chartSvg?: string): HookOpenerStep => ({
+  type: 'hookOpener', title, fact, outcome, visualDescription, ...(chartSvg && { chartSvg })
 });
 
 export const stakesCard = (
