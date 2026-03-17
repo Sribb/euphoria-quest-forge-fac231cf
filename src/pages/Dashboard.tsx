@@ -271,7 +271,7 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
       />
 
       {/* Pathway Selector Bar */}
-      <div className="sticky top-[56px] z-10 bg-background/60 backdrop-blur-2xl border-b border-border/20">
+      <div className="sticky top-[56px] z-10 border-b border-border/20">
         <div
           ref={scrollContainerRef}
           className="flex gap-2 overflow-x-auto scrollbar-hide px-6 py-3.5 max-w-6xl mx-auto"
