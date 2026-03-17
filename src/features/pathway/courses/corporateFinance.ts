@@ -4,6 +4,134 @@ import { L, c, tr, fb, ds, q, tf, m, sl, sc, bi, pc, vi, cq,
   caseStudy, misconceptions, keyTermsCards, simulationFinale, summaryCards, whatsNext
 } from '../helpers';
 
+// ═══════════════════════════════════════════════════════════════
+// UNIQUE SVG GRAPHICS FOR CORPORATE FINANCE LESSON 1
+// ═══════════════════════════════════════════════════════════════
+
+const CF1_HOOK_CHART = `<svg viewBox="0 0 700 350" style="width:100%;min-height:280px">
+  <defs>
+    <linearGradient id="cfGrad1" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f59e0b" stop-opacity="0.25"/>
+      <stop offset="100%" stop-color="#f59e0b" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="cfGrad2" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#f59e0b" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#10b981" stop-opacity="0.8"/>
+    </linearGradient>
+  </defs>
+  <!-- Grid -->
+  <line x1="80" y1="60" x2="660" y2="60" stroke="rgba(245,158,11,0.08)" stroke-width="0.5" stroke-dasharray="4 4"/>
+  <line x1="80" y1="120" x2="660" y2="120" stroke="rgba(245,158,11,0.08)" stroke-width="0.5" stroke-dasharray="4 4"/>
+  <line x1="80" y1="180" x2="660" y2="180" stroke="rgba(245,158,11,0.08)" stroke-width="0.5" stroke-dasharray="4 4"/>
+  <line x1="80" y1="240" x2="660" y2="240" stroke="rgba(245,158,11,0.08)" stroke-width="0.5" stroke-dasharray="4 4"/>
+  <!-- Revenue flow line -->
+  <path d="M80,280 C160,275 200,260 260,220 C320,180 360,140 420,100 C480,60 540,45 600,30 L660,25" fill="none" stroke="url(#cfGrad2)" stroke-width="3" stroke-linecap="round"/>
+  <!-- Area fill -->
+  <path d="M80,280 C160,275 200,260 260,220 C320,180 360,140 420,100 C480,60 540,45 600,30 L660,25 L660,300 L80,300 Z" fill="url(#cfGrad1)"/>
+  <!-- Decision nodes -->
+  <circle cx="260" cy="220" r="8" fill="#f59e0b" opacity="0.9"/>
+  <text x="260" y="248" text-anchor="middle" fill="rgba(255,255,255,0.6)" font-size="11">Invest</text>
+  <circle cx="420" cy="100" r="8" fill="#10b981" opacity="0.9"/>
+  <text x="420" y="128" text-anchor="middle" fill="rgba(255,255,255,0.6)" font-size="11">Finance</text>
+  <circle cx="600" cy="30" r="8" fill="#8b5cf6" opacity="0.9"/>
+  <text x="600" y="58" text-anchor="middle" fill="rgba(255,255,255,0.6)" font-size="11">Distribute</text>
+  <!-- Labels -->
+  <text x="80" y="300" fill="rgba(255,255,255,0.4)" font-size="12">Revenue</text>
+  <text x="660" y="20" fill="#10b981" font-size="15" font-weight="bold" text-anchor="end">$100B+</text>
+  <text x="80" y="296" fill="#f59e0b" font-size="14" font-weight="bold">Apple Cash Flow</text>
+  <!-- Year labels -->
+  <text x="120" y="320" fill="rgba(255,255,255,0.4)" font-size="11" text-anchor="middle">2015</text>
+  <text x="370" y="320" fill="rgba(255,255,255,0.4)" font-size="11" text-anchor="middle">2020</text>
+  <text x="620" y="320" fill="rgba(255,255,255,0.4)" font-size="11" text-anchor="middle">2024</text>
+</svg>`;
+
+const CF1_STAKES_WITHOUT = `<svg viewBox="0 0 360 220" style="width:100%;max-width:420px">
+  <!-- Building crumbling -->
+  <rect x="120" y="50" width="120" height="130" rx="8" fill="rgba(239,68,68,0.08)" stroke="rgba(239,68,68,0.3)" stroke-width="1.5"/>
+  <!-- Windows -->
+  <rect x="138" y="68" width="24" height="18" rx="3" fill="rgba(239,68,68,0.15)" stroke="rgba(239,68,68,0.25)" stroke-width="1"/>
+  <rect x="178" y="68" width="24" height="18" rx="3" fill="rgba(239,68,68,0.15)" stroke="rgba(239,68,68,0.25)" stroke-width="1"/>
+  <rect x="138" y="100" width="24" height="18" rx="3" fill="rgba(239,68,68,0.12)" stroke="rgba(239,68,68,0.2)" stroke-width="1"/>
+  <rect x="178" y="100" width="24" height="18" rx="3" fill="rgba(239,68,68,0.12)" stroke="rgba(239,68,68,0.2)" stroke-width="1"/>
+  <rect x="138" y="132" width="24" height="18" rx="3" fill="rgba(239,68,68,0.08)" stroke="rgba(239,68,68,0.15)" stroke-width="1"/>
+  <rect x="178" y="132" width="24" height="18" rx="3" fill="rgba(239,68,68,0.08)" stroke="rgba(239,68,68,0.15)" stroke-width="1"/>
+  <!-- Door -->
+  <rect x="165" y="155" width="30" height="25" rx="3" fill="rgba(239,68,68,0.2)" stroke="rgba(239,68,68,0.35)" stroke-width="1"/>
+  <!-- Crack lines -->
+  <line x1="200" y1="50" x2="220" y2="90" stroke="rgba(239,68,68,0.5)" stroke-width="1.5" stroke-dasharray="3 2"/>
+  <line x1="220" y1="90" x2="210" y2="130" stroke="rgba(239,68,68,0.4)" stroke-width="1.5" stroke-dasharray="3 2"/>
+  <!-- Debt label -->
+  <rect x="245" y="70" width="80" height="32" rx="6" fill="rgba(239,68,68,0.15)" stroke="rgba(239,68,68,0.35)" stroke-width="1"/>
+  <text x="285" y="91" text-anchor="middle" fill="#f87171" font-size="13" font-weight="bold">$7.5B debt</text>
+  <!-- Down arrow -->
+  <line x1="180" y1="185" x2="180" y2="210" stroke="#ef4444" stroke-width="2"/>
+  <polygon points="174,207 180,218 186,207" fill="#ef4444"/>
+  <text x="180" y="14" text-anchor="middle" fill="#ef4444" font-size="12" font-weight="600">No growth investment</text>
+  <text x="180" y="32" text-anchor="middle" fill="rgba(239,68,68,0.6)" font-size="11">Toys "R" Us</text>
+</svg>`;
+
+const CF1_STAKES_WITH = `<svg viewBox="0 0 320 220" style="width:100%;max-width:380px">
+  <!-- Building growing upward -->
+  <rect x="100" y="30" width="120" height="150" rx="8" fill="rgba(16,185,129,0.08)" stroke="rgba(16,185,129,0.35)" stroke-width="1.5"/>
+  <!-- Windows (lit up) -->
+  <rect x="118" y="48" width="24" height="18" rx="3" fill="rgba(16,185,129,0.2)" stroke="rgba(16,185,129,0.4)" stroke-width="1"/>
+  <rect x="158" y="48" width="24" height="18" rx="3" fill="rgba(16,185,129,0.2)" stroke="rgba(16,185,129,0.4)" stroke-width="1"/>
+  <rect x="118" y="80" width="24" height="18" rx="3" fill="rgba(16,185,129,0.25)" stroke="rgba(16,185,129,0.45)" stroke-width="1"/>
+  <rect x="158" y="80" width="24" height="18" rx="3" fill="rgba(16,185,129,0.25)" stroke="rgba(16,185,129,0.45)" stroke-width="1"/>
+  <rect x="118" y="112" width="24" height="18" rx="3" fill="rgba(16,185,129,0.3)" stroke="rgba(16,185,129,0.5)" stroke-width="1"/>
+  <rect x="158" y="112" width="24" height="18" rx="3" fill="rgba(16,185,129,0.3)" stroke="rgba(16,185,129,0.5)" stroke-width="1"/>
+  <!-- Door -->
+  <rect x="145" y="155" width="30" height="25" rx="3" fill="rgba(16,185,129,0.25)" stroke="rgba(16,185,129,0.5)" stroke-width="1"/>
+  <!-- Growth arrow -->
+  <line x1="160" y1="25" x2="160" y2="5" stroke="#10b981" stroke-width="2.5"/>
+  <polygon points="154,8 160,-4 166,8" fill="#10b981"/>
+  <!-- Value labels -->
+  <text x="160" y="200" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="11">Microsoft</text>
+  <!-- Growth bars -->
+  <rect x="30" y="140" width="40" height="40" rx="5" fill="rgba(16,185,129,0.12)" stroke="rgba(16,185,129,0.3)" stroke-width="1"/>
+  <text x="50" y="165" text-anchor="middle" fill="#10b981" font-size="10" font-weight="bold">$300B</text>
+  <rect x="250" y="60" width="40" height="120" rx="5" fill="rgba(16,185,129,0.2)" stroke="rgba(16,185,129,0.45)" stroke-width="1.5"/>
+  <text x="270" y="125" text-anchor="middle" fill="#10b981" font-size="10" font-weight="bold">$3T</text>
+  <!-- Arrow between bars -->
+  <line x1="75" y1="155" x2="95" y2="130" stroke="rgba(16,185,129,0.4)" stroke-width="1" stroke-dasharray="4 3"/>
+  <line x1="225" y1="110" x2="245" y2="110" stroke="rgba(16,185,129,0.4)" stroke-width="1" stroke-dasharray="4 3"/>
+  <text x="160" y="215" text-anchor="middle" fill="#10b981" font-size="12" font-weight="bold">10x growth via Azure</text>
+</svg>`;
+
+const CF1_DIAGRAM = `<svg viewBox="0 0 480 520" style="width:100%;min-height:420px">
+  <!-- Central hub -->
+  <circle cx="240" cy="260" r="55" fill="rgba(139,92,246,0.12)" stroke="rgba(139,92,246,0.4)" stroke-width="2"/>
+  <text x="240" y="255" text-anchor="middle" fill="white" font-size="13" font-weight="bold">Maximize</text>
+  <text x="240" y="273" text-anchor="middle" fill="#a78bfa" font-size="12">Value</text>
+  <!-- Investment Decision (top) -->
+  <rect x="155" y="40" width="170" height="80" rx="14" fill="rgba(245,158,11,0.12)" stroke="rgba(245,158,11,0.4)" stroke-width="2"/>
+  <text x="240" y="72" text-anchor="middle" fill="white" font-size="14" font-weight="bold">Investment</text>
+  <text x="240" y="95" text-anchor="middle" fill="#fbbf24" font-size="11">What to invest in?</text>
+  <!-- Arrow from Investment to center -->
+  <line x1="240" y1="125" x2="240" y2="200" stroke="rgba(245,158,11,0.4)" stroke-width="1.5"/>
+  <polygon points="234,198 240,210 246,198" fill="rgba(245,158,11,0.5)"/>
+  <!-- Financing Decision (bottom-left) -->
+  <rect x="20" y="380" width="170" height="80" rx="14" fill="rgba(59,130,246,0.12)" stroke="rgba(59,130,246,0.4)" stroke-width="2"/>
+  <text x="105" y="412" text-anchor="middle" fill="white" font-size="14" font-weight="bold">Financing</text>
+  <text x="105" y="435" text-anchor="middle" fill="#60a5fa" font-size="11">How to fund it?</text>
+  <!-- Arrow from Financing to center -->
+  <line x1="145" y1="378" x2="205" y2="300" stroke="rgba(59,130,246,0.4)" stroke-width="1.5"/>
+  <polygon points="200,304 210,296 206,310" fill="rgba(59,130,246,0.5)"/>
+  <!-- Dividend Decision (bottom-right) -->
+  <rect x="290" y="380" width="170" height="80" rx="14" fill="rgba(16,185,129,0.12)" stroke="rgba(16,185,129,0.4)" stroke-width="2"/>
+  <text x="375" y="412" text-anchor="middle" fill="white" font-size="14" font-weight="bold">Dividend</text>
+  <text x="375" y="435" text-anchor="middle" fill="#34d399" font-size="11">How much to return?</text>
+  <!-- Arrow from Dividend to center -->
+  <line x1="335" y1="378" x2="275" y2="300" stroke="rgba(16,185,129,0.4)" stroke-width="1.5"/>
+  <polygon points="270,304 280,296 274,310" fill="rgba(16,185,129,0.5)"/>
+  <!-- Cash flow arrows (circular) -->
+  <path d="M130,130 Q50,200 60,370" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1" stroke-dasharray="4 4"/>
+  <path d="M350,130 Q430,200 420,370" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1" stroke-dasharray="4 4"/>
+  <path d="M195,460 Q240,490 285,460" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1" stroke-dasharray="4 4"/>
+  <!-- Label -->
+  <text x="240" y="510" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="11">The Three Core Decisions</text>
+</svg>`;
+
 const lessons = [
   L(1,'What Is Corporate Finance?',30,[
     // ═══════════════════════════════════════════
@@ -15,13 +143,15 @@ const lessons = [
       'What Is Corporate Finance?',
       'Apple generates over $100 billion in cash every year — but deciding how to spend it is the single biggest challenge a CFO faces.',
       'By the end of this lesson, you\'ll understand what corporate finance is, the three core decisions every company must make, and why these decisions determine whether a company thrives or dies.',
-      'Corporate cash flow cycle showing revenue flowing into three decision buckets'
+      'Corporate cash flow cycle showing revenue flowing into three decision buckets',
+      CF1_HOOK_CHART
     ),
 
     // Step 2 — Stakes Card
     stakesCard(
       { label: 'Company with no financial strategy', detail: 'Toys "R" Us took on $7.5 billion in debt with no plan to invest in growth. Within 10 years the company went bankrupt, closing 800 stores and laying off 30,000 workers.' },
-      { label: 'Company with disciplined corporate finance', detail: 'Microsoft reinvested profits into cloud computing (Azure), growing its market cap from $300B to over $3 trillion in a decade. Strategic capital allocation transformed the company.' }
+      { label: 'Company with disciplined corporate finance', detail: 'Microsoft reinvested profits into cloud computing (Azure), growing its market cap from $300B to over $3 trillion in a decade. Strategic capital allocation transformed the company.' },
+      { withoutSvg: CF1_STAKES_WITHOUT, withSvg: CF1_STAKES_WITH, withoutLabel: 'No Strategy', withLabel: 'Disciplined Finance' }
     ),
 
     // ═══════════════════════════════════════════
@@ -44,7 +174,8 @@ const lessons = [
         { term: 'Stakeholders', definition: 'All parties affected by a company\'s decisions: shareholders, employees, customers, suppliers, and the community.', example: 'When a company closes a factory, shareholders may benefit but employees and the local community lose out.' }
       ],
       'Three interconnected gears labeled "Invest," "Finance," and "Distribute," with arrows showing cash flowing between them and a central hub labeled "Maximize Value."',
-      { company: 'Apple', metric: 'Capital allocation (2018–2024)', outcome: 'Returned $600B+ to shareholders through buybacks and dividends while still investing $25B+ per year in R&D', explanation: 'Apple generates so much cash that it can simultaneously invest heavily in new products (Vision Pro, Apple Intelligence) and return massive amounts to shareholders. This is the gold standard of corporate finance.' }
+      { company: 'Apple', metric: 'Capital allocation (2018–2024)', outcome: 'Returned $600B+ to shareholders through buybacks and dividends while still investing $25B+ per year in R&D', explanation: 'Apple generates so much cash that it can simultaneously invest heavily in new products (Vision Pro, Apple Intelligence) and return massive amounts to shareholders. This is the gold standard of corporate finance.' },
+      CF1_DIAGRAM
     ),
 
     // Step 4 — Embedded Micro-Check
