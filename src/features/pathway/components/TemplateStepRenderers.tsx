@@ -135,6 +135,9 @@ export function StakesCardView({ step, onComplete }: { step: StakesCardStep; onC
   }
 
   const renderWithoutSVG = () => {
+    if (step.withoutSvg) {
+      return <div dangerouslySetInnerHTML={{ __html: step.withoutSvg }} className="w-full flex items-center justify-center" />;
+    }
     switch (lessonNum) {
       case 2: return <StakesIllustrationRisk />;
       case 3: return <StakesIllustrationLateStart />;
