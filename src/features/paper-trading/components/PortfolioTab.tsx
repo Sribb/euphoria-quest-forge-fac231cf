@@ -13,7 +13,6 @@ export const PortfolioTab = ({ onSelectStock, onSwitchTab }: Props) => {
   const [showReset, setShowReset] = useState(false);
   const symbols = Object.keys(data.paper_holdings);
 
-  // Fetch current prices for all holdings
   const { data: prices, isLoading: pricesLoading } = useQuery({
     queryKey: ["portfolio-prices", symbols.join(",")],
     queryFn: async () => {
@@ -37,39 +36,41 @@ export const PortfolioTab = ({ onSelectStock, onSwitchTab }: Props) => {
   const returnPct = ((portfolioValue - 10000) / 10000) * 100;
   const positive = totalReturn >= 0;
 
-  if (isLoading) return <div className="space-y-3">{Array(4).fill(0).map((_, i) => <Skeleton key={i} className="h-20 rounded-xl" />)}</div>;
+  if (isLoading) return <div className="space-y-3">{Array(4).fill(0).map((_, i) => <Skeleton key={i} className="h-20 rounded-[12px]" />)}</div>;
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
       {/* Summary Cards */}
       <div className="grid grid-cols-2 gap-3">
         {[
-          { label: "Portfolio Value", value: `$${portfolioValue.toFixed(2)}`, icon: TrendingUp, color: "text-primary" },
-          { label: "Total Return", value: `${positive ? '+' : ''}$${totalReturn.toFixed(2)} (${returnPct.toFixed(1)}%)`, icon: DollarSign, color: positive ? "text-success" : "text-destructive" },
-          { label: "Cash Available", value: `$${data.paper_cash.toFixed(2)}`, icon: Briefcase, color: "text-foreground" },
+          { label: "Portfolio Value", value: `$${portfolioValue.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, icon: TrendingUp, color: "text-primary" },
+          { label: "Total Return", value: `${positive ? '+' : ''}$${totalReturn.toFixed(2)} (${returnPct.toFixed(1)}%)`, icon: DollarSign, color: positive ? "text-emerald-400" : "text-destructive" },
+          { label: "Cash Available", value: `$${data.paper_cash.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, icon: Briefcase, color: "text-foreground" },
           { label: "Open Positions", value: `${symbols.length}`, icon: PieChart, color: "text-foreground" },
         ].map((c) => (
-          <div key={c.label} className="bg-card/60 border border-border rounded-xl p-3.5">
-            <div className="flex items-center gap-1.5 mb-1">
+          <div key={c.label} className="bg-muted/20 border border-border/40 rounded-[12px] p-4">
+            <div className="flex items-center gap-1.5 mb-1.5">
               <c.icon className="w-3.5 h-3.5 text-muted-foreground" />
-              <span className="text-[11px] text-muted-foreground">{c.label}</span>
+              <span className="text-[11px] text-muted-foreground font-medium">{c.label}</span>
             </div>
-            <div className={`text-base font-bold ${c.color}`}>{c.value}</div>
+            <div className={`text-base font-bold tabular-nums ${c.color}`}>{c.value}</div>
           </div>
         ))}
       </div>
 
       {/* Holdings */}
       {symbols.length === 0 ? (
-        <div className="text-center py-12 space-y-3">
+        <div className="text-center py-16 space-y-3">
           <div className="text-4xl">📊</div>
-          <p className="font-semibold">No positions yet</p>
+          <p className="font-bold text-lg">No positions yet</p>
           <p className="text-sm text-muted-foreground">Head to Discover to make your first trade</p>
-          <Button onClick={() => onSwitchTab("discover")} variant="outline">Explore Stocks</Button>
+          <Button onClick={() => onSwitchTab("discover")} variant="outline" className="rounded-[8px] mt-2">
+            Explore Stocks
+          </Button>
         </div>
       ) : (
         <div>
-          <h3 className="text-sm font-semibold mb-2">Your Positions</h3>
+          <h3 className="text-sm font-bold text-muted-foreground mb-3 tracking-wide uppercase">Your Positions</h3>
           <div className="space-y-1">
             {symbols.map((s) => (
               <HoldingRow key={s} symbol={s} holding={data.paper_holdings[s]} currentPrice={prices?.[s]} onSelect={onSelectStock} />
@@ -81,15 +82,17 @@ export const PortfolioTab = ({ onSelectStock, onSwitchTab }: Props) => {
       {/* Reset */}
       <div className="pt-4 text-center">
         {showReset ? (
-          <div className="space-y-2 bg-destructive/10 border border-destructive/30 rounded-xl p-4">
-            <p className="text-sm">This will reset your cash to $10,000 and clear all positions and history. This cannot be undone.</p>
+          <div className="space-y-3 bg-destructive/5 border border-destructive/20 rounded-[12px] p-5">
+            <p className="text-sm text-muted-foreground">This will reset your cash to $10,000 and clear all positions and history. This cannot be undone.</p>
             <div className="flex gap-2 justify-center">
-              <Button variant="destructive" size="sm" onClick={() => { reset(); setShowReset(false); }}>Confirm Reset</Button>
-              <Button variant="outline" size="sm" onClick={() => setShowReset(false)}>Cancel</Button>
+              <Button variant="destructive" size="sm" className="rounded-[8px]" onClick={() => { reset(); setShowReset(false); }}>Confirm Reset</Button>
+              <Button variant="outline" size="sm" className="rounded-[8px]" onClick={() => setShowReset(false)}>Cancel</Button>
             </div>
           </div>
         ) : (
-          <button onClick={() => setShowReset(true)} className="text-xs text-muted-foreground hover:text-destructive transition-colors">Reset Portfolio</button>
+          <button onClick={() => setShowReset(true)} className="text-xs text-muted-foreground hover:text-destructive transition-colors">
+            Reset Portfolio
+          </button>
         )}
       </div>
     </div>
@@ -104,11 +107,11 @@ function HoldingRow({ symbol, holding, currentPrice, onSelect }: { symbol: strin
   const positive = pnl >= 0;
 
   return (
-    <button onClick={() => onSelect(symbol)} className="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-muted/30 transition-colors">
+    <button onClick={() => onSelect(symbol)} className="w-full flex items-center gap-3 px-3 py-3 rounded-[12px] hover:bg-muted/20 transition-all">
       {profile?.logo ? (
-        <img src={profile.logo} alt={symbol} className="w-9 h-9 rounded-full object-contain bg-white" />
+        <img src={profile.logo} alt={symbol} className="w-9 h-9 rounded-[8px] object-contain bg-white/10 p-0.5" />
       ) : (
-        <div className="w-9 h-9 rounded-full flex items-center justify-center text-white text-xs font-bold" style={{ backgroundColor: tickerColor(symbol) }}>
+        <div className="w-9 h-9 rounded-[8px] flex items-center justify-center text-white text-xs font-bold" style={{ backgroundColor: tickerColor(symbol) }}>
           {symbol.slice(0, 2)}
         </div>
       )}
@@ -117,8 +120,8 @@ function HoldingRow({ symbol, holding, currentPrice, onSelect }: { symbol: strin
         <div className="text-xs text-muted-foreground">{holding.shares} shares @ avg ${holding.avgCost.toFixed(2)}</div>
       </div>
       <div className="text-right">
-        <div className="text-sm font-semibold">${(price * holding.shares).toFixed(2)}</div>
-        <div className={`text-xs font-medium flex items-center justify-end gap-0.5 ${positive ? 'text-success' : 'text-destructive'}`}>
+        <div className="text-sm font-bold tabular-nums">${(price * holding.shares).toFixed(2)}</div>
+        <div className={`text-xs font-semibold flex items-center justify-end gap-0.5 tabular-nums ${positive ? 'text-emerald-400' : 'text-destructive'}`}>
           {positive ? <ArrowUp className="w-3 h-3" /> : <ArrowDown className="w-3 h-3" />}
           {positive ? '+' : ''}${pnl.toFixed(2)} ({pnlPct.toFixed(1)}%)
         </div>
