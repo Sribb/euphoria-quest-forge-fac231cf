@@ -130,7 +130,7 @@ export const SettingsTab = ({ userId, onboarding, placementLesson, refetchOnboar
       icon: Palette,
       title: "Appearance",
       summary: `${darkMode ? "Dark" : "Light"} · ${THEME_PRESETS.find(t => t.color === primaryColor)?.name || "Custom"}`,
-      span: "md:col-span-2",
+      span: "",
     },
     {
       id: "notifications" as const,
@@ -172,7 +172,7 @@ export const SettingsTab = ({ userId, onboarding, placementLesson, refetchOnboar
   return (
     <div className="space-y-4 animate-fade-in">
       {/* Bento Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+      <div className="grid grid-cols-2 md:grid-cols-2 gap-3">
         {cards.map((card, i) => {
           const Icon = card.icon;
           const isExpanded = expanded === card.id;
@@ -183,7 +183,7 @@ export const SettingsTab = ({ userId, onboarding, placementLesson, refetchOnboar
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.04 }}
-              className={cn(card.span, isExpanded && "md:col-span-2 lg:col-span-3")}
+              className={cn(card.span, isExpanded && "col-span-2")}
             >
               <Card
                 className={cn(
