@@ -3,16 +3,19 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Lock, Trophy, Sparkles, Search } from "lucide-react";
+import { Lock, Trophy, Sparkles, Search, ChevronDown, ChevronUp } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { useBadgeProgress, BadgeWithProgress } from "../hooks/useBadgeProgress";
 import { BADGE_CATEGORIES, RARITY_CONFIG, BadgeCategory } from "../data/badgeDefinitions";
 
+const NEXT_ACHIEVABLE_COUNT = 6;
+
 export const BadgesShowcase = () => {
   const { badges, totalEarned, totalBadges, isLoading } = useBadgeProgress();
   const [activeCategory, setActiveCategory] = useState<BadgeCategory | "all">("all");
   const [search, setSearch] = useState("");
+  const [showAllLocked, setShowAllLocked] = useState(false);
 
   const filtered = badges
     .filter(b => activeCategory === "all" || b.category === activeCategory)
@@ -20,6 +23,8 @@ export const BadgesShowcase = () => {
 
   const earned = filtered.filter(b => b.earned);
   const locked = filtered.filter(b => !b.earned).sort((a, b) => b.progress - a.progress);
+  const nextAchievable = locked.slice(0, NEXT_ACHIEVABLE_COUNT);
+  const remainingLocked = locked.slice(NEXT_ACHIEVABLE_COUNT);
 
   if (isLoading) {
     return <div className="flex items-center justify-center py-20 text-muted-foreground">Loading badges...</div>;
@@ -28,9 +33,9 @@ export const BadgesShowcase = () => {
   return (
     <div className="space-y-6 pb-24 pt-4">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 animate-fade-in">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center shadow-glow animate-pulse">
+          <div className="w-10 h-10 md:w-12 md:h-12 rounded-[12px] bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center">
             <Trophy className="w-5 h-5 md:w-6 md:h-6 text-white" />
           </div>
           <div>
@@ -45,7 +50,7 @@ export const BadgesShowcase = () => {
       </div>
 
       {/* Overall progress */}
-      <Card className="p-4 bg-gradient-to-r from-primary/5 to-primary/10 border-primary/20 animate-fade-in">
+      <Card className="p-4 border-border/60">
         <div className="flex items-center justify-between mb-2">
           <span className="text-sm font-medium">Collection Progress</span>
           <span className="text-sm font-bold text-primary">{totalEarned}/{totalBadges}</span>
@@ -57,7 +62,7 @@ export const BadgesShowcase = () => {
             const total = badges.filter(b => b.rarity === key).length;
             return (
               <div key={key} className="text-center">
-                <p className={cn("text-lg font-bold", cfg.text)}>{count}</p>
+                <p className={cn("text-lg font-bold tabular-nums", cfg.text)}>{count}<span className="text-xs text-muted-foreground font-normal">/{total}</span></p>
                 <p className="text-[10px] text-muted-foreground">{cfg.label}</p>
               </div>
             );
@@ -66,7 +71,7 @@ export const BadgesShowcase = () => {
       </Card>
 
       {/* Search + Categories */}
-      <div className="space-y-3 animate-fade-in">
+      <div className="space-y-3">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <Input
@@ -115,7 +120,7 @@ export const BadgesShowcase = () => {
 
       {/* Earned Badges */}
       {earned.length > 0 && (
-        <div className="space-y-3 animate-fade-in">
+        <div className="space-y-3">
           <h2 className="text-lg font-bold flex items-center gap-2">
             <span>🏆</span> Earned ({earned.length})
           </h2>
@@ -127,17 +132,38 @@ export const BadgesShowcase = () => {
         </div>
       )}
 
-      {/* Locked Badges */}
-      {locked.length > 0 && (
-        <div className="space-y-3 animate-fade-in">
+      {/* Next Achievable */}
+      {nextAchievable.length > 0 && (
+        <div className="space-y-3">
           <h2 className="text-lg font-bold flex items-center gap-2">
-            <Lock className="w-4 h-4" /> Locked ({locked.length})
+            <Sparkles className="w-4 h-4 text-primary" /> Almost There
           </h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
-            {locked.map(badge => (
+            {nextAchievable.map(badge => (
               <BadgeCard key={badge.id} badge={badge} />
             ))}
           </div>
+        </div>
+      )}
+
+      {/* Remaining Locked — collapsed by default */}
+      {remainingLocked.length > 0 && (
+        <div className="space-y-3">
+          <button
+            onClick={() => setShowAllLocked(prev => !prev)}
+            className="flex items-center gap-2 text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <Lock className="w-4 h-4" />
+            <span>{showAllLocked ? "Hide" : "Show"} Locked ({remainingLocked.length})</span>
+            {showAllLocked ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+          </button>
+          {showAllLocked && (
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+              {remainingLocked.map(badge => (
+                <BadgeCard key={badge.id} badge={badge} />
+              ))}
+            </div>
+          )}
         </div>
       )}
     </div>
@@ -152,57 +178,62 @@ function BadgeCard({ badge }: { badge: BadgeWithProgress }) {
       className={cn(
         "relative p-4 flex flex-col items-center text-center transition-all duration-300 overflow-hidden group",
         badge.earned
-          ? `bg-gradient-to-br ${rarity.bg} ${rarity.border} border-2 hover:-translate-y-1 hover:shadow-lg`
-          : "bg-card/40 border-border/50 opacity-70 hover:opacity-90"
+          ? cn("border-2 hover:-translate-y-1 hover:shadow-lg", rarity.border, rarity.bg)
+          : "bg-card/30 border-border/40 blur-[0.5px] opacity-50 hover:opacity-70 hover:blur-0"
       )}
     >
-      {/* Glow for earned */}
+      {/* Shimmer border effect for earned badges */}
       {badge.earned && (
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute w-20 h-20 bg-white/5 rounded-full blur-2xl top-0 right-0 animate-pulse" />
+        <div className="absolute inset-0 pointer-events-none overflow-hidden rounded-[inherit]">
+          <div
+            className="absolute -top-1/2 -left-1/2 w-[200%] h-[200%] animate-[spin_4s_linear_infinite]"
+            style={{
+              background: `conic-gradient(from 0deg, transparent 0%, ${rarity.text.replace('text-', '').includes('amber') ? 'rgba(251,191,36,0.15)' : rarity.text.replace('text-', '').includes('purple') ? 'rgba(192,132,252,0.15)' : rarity.text.replace('text-', '').includes('blue') ? 'rgba(96,165,250,0.15)' : rarity.text.replace('text-', '').includes('emerald') ? 'rgba(52,211,153,0.15)' : 'rgba(148,163,184,0.1)'} 25%, transparent 50%)`,
+            }}
+          />
         </div>
       )}
 
       {/* Icon */}
       <div className={cn(
-        "text-4xl mb-2 transition-transform group-hover:scale-110",
-        !badge.earned && "grayscale opacity-50"
+        "text-4xl mb-2 transition-transform group-hover:scale-110 relative z-[1]",
+        !badge.earned && "grayscale"
       )}>
         {badge.icon}
       </div>
 
       {/* Title */}
-      <h3 className={cn("font-bold text-sm mb-1 line-clamp-1", badge.earned ? "" : "text-muted-foreground")}>
+      <h3 className={cn("font-bold text-sm mb-1 line-clamp-1 relative z-[1]", badge.earned ? "" : "text-muted-foreground")}>
         {badge.title}
       </h3>
 
-      {/* Rarity */}
+      {/* Rarity badge with colored border */}
       <Badge
         variant="outline"
-        className={cn("text-[10px] mb-2", rarity.border, rarity.text)}
+        className={cn("text-[10px] mb-2 relative z-[1]", rarity.border, rarity.text)}
       >
         {rarity.label}
       </Badge>
 
       {/* Description */}
-      <p className="text-[11px] text-muted-foreground mb-2 line-clamp-2 leading-tight">
+      <p className="text-[11px] text-muted-foreground mb-2 line-clamp-2 leading-tight relative z-[1]">
         {badge.description}
       </p>
 
-      {/* Progress */}
+      {/* Progress for locked */}
       {!badge.earned && (
-        <div className="w-full mt-auto">
+        <div className="w-full mt-auto relative z-[1]">
           <div className="flex justify-between text-[10px] text-muted-foreground mb-1">
             <span>{badge.requirement.label}</span>
-            <span>{Math.round(badge.progress)}%</span>
+            <span className="tabular-nums">{Math.round(badge.progress)}%</span>
           </div>
           <Progress value={badge.progress} className="h-1.5" />
         </div>
       )}
 
       {badge.earned && (
-        <div className="mt-auto">
-          <Badge className={cn("text-[10px] bg-gradient-to-r text-white", rarity.color)}>
+        <div className="mt-auto relative z-[1]">
+          <Badge className={cn("text-[10px] bg-gradient-to-r text-white border-0", rarity.color)}>
             ✓ Earned
           </Badge>
         </div>
