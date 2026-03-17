@@ -189,7 +189,7 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
     if (courseId) {
       // Find the lesson's order_index to map to lesson number
       const lesson = lessons.find((l) => l.id === activeLessonId);
-      const lessonNumber = lesson ? lesson.order_index + 1 : 1;
+      const lessonNumber = lesson ? lesson.order_index : 1;
       return (
         <PathwayLessonViewer
           courseId={courseId}
