@@ -142,19 +142,19 @@ function QuizView({ step, onComplete }: { step: QuizStep; onComplete: (c: boolea
     setTimeout(() => onComplete(i === step.correct), 1500);
   };
   return (
-    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col items-center gap-5 px-4 w-full max-w-lg mx-auto">
-      <h2 className="text-lg font-bold text-foreground text-center">{step.question}</h2>
-      <div className="flex flex-col gap-2 w-full">
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col items-center gap-5 px-4 w-full max-w-2xl mx-auto">
+      <h2 className="text-lg font-bold text-foreground text-center leading-snug">{step.question}</h2>
+      <div className="flex flex-col gap-3 w-full">
         {step.options.map((o, i) => (
           <Button key={i} variant={sel === i ? (i === step.correct ? "default" : "destructive") : "outline"}
             onClick={() => pick(i)} disabled={sel !== null}
-            className={cn("justify-start text-left text-sm rounded-xl h-auto py-3 px-4",
+            className={cn("justify-start text-left text-sm rounded-xl h-auto py-3.5 px-5 whitespace-normal leading-relaxed min-h-[48px]",
               sel !== null && i === step.correct && "border-emerald-500 bg-emerald-500/10 text-emerald-400"
             )}>{o}</Button>
         ))}
       </div>
       {sel !== null && (
-        <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className={cn("text-sm text-center p-3 rounded-xl",
+        <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className={cn("text-sm text-center p-4 rounded-xl leading-relaxed",
           sel === step.correct ? "bg-emerald-500/10 text-emerald-400" : "bg-red-500/10 text-red-400"
         )}>{step.explanation}</motion.p>
       )}
