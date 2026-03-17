@@ -183,7 +183,7 @@ export const SettingsTab = ({ userId, onboarding, placementLesson, refetchOnboar
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.04 }}
-              className={cn(card.span, isExpanded && "md:col-span-2 lg:col-span-3")}
+              className={cn(card.span, isExpanded && "col-span-2")}
             >
               <Card
                 className={cn(
