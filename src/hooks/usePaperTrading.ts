@@ -47,8 +47,8 @@ export const usePaperTrading = () => {
       if (!data) return { paper_cash: 10000, paper_holdings: {}, paper_trades: [] };
       return {
         paper_cash: data.paper_cash as number,
-        paper_holdings: (data.paper_holdings || {}) as Record<string, PaperHolding>,
-        paper_trades: (data.paper_trades || []) as PaperTrade[],
+        paper_holdings: (data.paper_holdings as unknown as Record<string, PaperHolding>) || {},
+        paper_trades: (data.paper_trades as unknown as PaperTrade[]) || [],
       };
     },
     enabled: !!user?.id,
