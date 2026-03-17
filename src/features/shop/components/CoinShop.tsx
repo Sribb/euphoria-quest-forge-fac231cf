@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 import { useCoinShop } from "../hooks/useCoinShop";
 import { SHOP_ITEMS, SHOP_CATEGORIES, ShopCategory } from "../data/shopItems";
 import { motion, AnimatePresence } from "framer-motion";
+import { EuphoriaIcon } from "@/components/icons/EuphoriaIcon";
 
 const RARITY_STYLES = {
   common: { border: "border-slate-400/30", bg: "from-slate-500/10 to-slate-600/10", text: "text-slate-400", label: "Common" },
@@ -71,13 +72,13 @@ export const CoinShop = ({ onNavigate }: CoinShopProps) => {
           </div>
           <div className="flex flex-wrap gap-2">
             {hasDoubleXP && (
-              <Badge className="bg-amber-500/20 text-amber-400 border border-amber-500/30">
-                ⚡ Double XP Active
+              <Badge className="bg-amber-500/20 text-amber-400 border border-amber-500/30 flex items-center gap-1">
+                <EuphoriaIcon name="lightning" size={14} /> Double XP Active
               </Badge>
             )}
             {hintCount > 0 && (
-              <Badge className="bg-blue-500/20 text-blue-400 border border-blue-500/30">
-                💡 {hintCount} Hints Available
+              <Badge className="bg-blue-500/20 text-blue-400 border border-blue-500/30 flex items-center gap-1">
+                <EuphoriaIcon name="sparkle" size={14} /> {hintCount} Hints Available
               </Badge>
             )}
             {activePowerups.filter(p => p.powerup_type === "double_xp").map(p => {
@@ -100,13 +101,13 @@ export const CoinShop = ({ onNavigate }: CoinShopProps) => {
         </h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           {[
-            { icon: "📚", label: "Complete Lessons", amount: "+50-100" },
-            { icon: "🔥", label: "Daily Streaks", amount: "+25" },
-            { icon: "🎮", label: "Win Games", amount: "+10-50" },
-            { icon: "📅", label: "Daily Challenges", amount: "+30" },
+            { icon: "open-book", label: "Complete Lessons", amount: "+50-100" },
+            { icon: "flame", label: "Daily Streaks", amount: "+25" },
+            { icon: "controller", label: "Win Games", amount: "+10-50" },
+            { icon: "shop-calendar", label: "Daily Challenges", amount: "+30" },
           ].map(item => (
             <div key={item.label} className="text-center p-3 bg-background/50 rounded-lg">
-              <span className="text-2xl">{item.icon}</span>
+              <EuphoriaIcon name={item.icon} size={28} className="mx-auto" />
               <p className="text-xs text-muted-foreground mt-1">{item.label}</p>
               <p className="text-sm font-bold text-emerald-400">{item.amount}</p>
             </div>
@@ -128,7 +129,7 @@ export const CoinShop = ({ onNavigate }: CoinShopProps) => {
                   : "bg-muted/50 text-muted-foreground border-border hover:bg-muted"
               )}
             >
-              <span>{cat.icon}</span>
+              <EuphoriaIcon name={cat.icon} size={16} />
               <span>{cat.label}</span>
             </button>
           ))}
@@ -168,8 +169,8 @@ export const CoinShop = ({ onNavigate }: CoinShopProps) => {
                   <div className="relative z-10">
                     {/* Header */}
                     <div className="flex items-start justify-between mb-3">
-                      <span className="text-4xl group-hover:scale-110 transition-transform inline-block">
-                        {item.icon}
+                      <span className="group-hover:scale-110 transition-transform inline-block">
+                        <EuphoriaIcon name={item.icon} size={40} />
                       </span>
                       <Badge variant="outline" className={cn("text-[10px]", rarity.border, rarity.text)}>
                         {rarity.label}

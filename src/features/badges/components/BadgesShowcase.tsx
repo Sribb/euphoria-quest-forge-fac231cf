@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { useBadgeProgress, BadgeWithProgress } from "../hooks/useBadgeProgress";
 import { BADGE_CATEGORIES, RARITY_CONFIG, BadgeCategory } from "../data/badgeDefinitions";
+import { EuphoriaIcon } from "@/components/icons/EuphoriaIcon";
 
 const NEXT_ACHIEVABLE_COUNT = 6;
 
@@ -108,7 +109,7 @@ export const BadgesShowcase = () => {
                       : "bg-muted/50 text-muted-foreground border-border hover:bg-muted"
                   )}
                 >
-                  <span>{cat.icon}</span>
+                  <EuphoriaIcon name={cat.icon} size={16} />
                   <span>{cat.label}</span>
                   <span className="opacity-60">({earnedCount}/{count})</span>
                 </button>
@@ -122,7 +123,7 @@ export const BadgesShowcase = () => {
       {earned.length > 0 && (
         <div className="space-y-3">
           <h2 className="text-lg font-bold flex items-center gap-2">
-            <span>🏆</span> Earned ({earned.length})
+            <EuphoriaIcon name="trophy" size={20} /> Earned ({earned.length})
           </h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
             {earned.map(badge => (
@@ -196,10 +197,10 @@ function BadgeCard({ badge }: { badge: BadgeWithProgress }) {
 
       {/* Icon */}
       <div className={cn(
-        "text-4xl mb-2 transition-transform group-hover:scale-110 relative z-[1]",
+        "mb-2 transition-transform group-hover:scale-110 relative z-[1]",
         !badge.earned && "grayscale"
       )}>
-        {badge.icon}
+        <EuphoriaIcon name={badge.icon} size={40} />
       </div>
 
       {/* Title */}
