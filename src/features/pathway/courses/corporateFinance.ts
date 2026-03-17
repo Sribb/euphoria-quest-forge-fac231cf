@@ -44,43 +44,33 @@ const CF1_HOOK_CHART = `<svg viewBox="0 0 700 370" style="width:100%;min-height:
   <text x="620" y="348" fill="rgba(255,255,255,0.4)" font-size="11" text-anchor="middle">2024</text>
 </svg>`;
 
-const CF1_STAKES_WITHOUT = `<svg viewBox="0 0 300 240" style="width:100%;max-width:360px">
-  <!-- Declining chart bar -->
-  <rect x="60" y="40" width="180" height="140" rx="10" fill="rgba(239,68,68,0.06)" stroke="rgba(239,68,68,0.2)" stroke-width="1.5"/>
+const CF1_STAKES_WITHOUT = `<svg viewBox="0 0 260 200" style="width:100%;max-width:320px;display:block;margin:0 auto">
   <!-- Declining bars -->
-  <rect x="85" y="70" width="28" height="90" rx="4" fill="rgba(239,68,68,0.25)" stroke="rgba(239,68,68,0.4)" stroke-width="1"/>
-  <rect x="125" y="90" width="28" height="70" rx="4" fill="rgba(239,68,68,0.2)" stroke="rgba(239,68,68,0.35)" stroke-width="1"/>
-  <rect x="165" y="115" width="28" height="45" rx="4" fill="rgba(239,68,68,0.15)" stroke="rgba(239,68,68,0.3)" stroke-width="1"/>
-  <rect x="205" y="135" width="28" height="25" rx="4" fill="rgba(239,68,68,0.1)" stroke="rgba(239,68,68,0.25)" stroke-width="1"/>
-  <!-- Decline trendline -->
-  <line x1="85" y1="68" x2="233" y2="133" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="5 3" opacity="0.6"/>
+  <rect x="35" y="30" width="36" height="110" rx="4" fill="rgba(239,68,68,0.25)" stroke="rgba(239,68,68,0.4)" stroke-width="1"/>
+  <rect x="85" y="55" width="36" height="85" rx="4" fill="rgba(239,68,68,0.2)" stroke="rgba(239,68,68,0.35)" stroke-width="1"/>
+  <rect x="135" y="80" width="36" height="60" rx="4" fill="rgba(239,68,68,0.15)" stroke="rgba(239,68,68,0.3)" stroke-width="1"/>
+  <rect x="185" y="105" width="36" height="35" rx="4" fill="rgba(239,68,68,0.1)" stroke="rgba(239,68,68,0.25)" stroke-width="1"/>
   <!-- Debt badge -->
-  <rect x="100" y="190" width="100" height="28" rx="14" fill="rgba(239,68,68,0.15)" stroke="rgba(239,68,68,0.4)" stroke-width="1"/>
-  <text x="150" y="209" text-anchor="middle" fill="#f87171" font-size="12" font-weight="bold">$7.5B debt</text>
-  <!-- Company label -->
-  <text x="150" y="18" text-anchor="middle" fill="#ef4444" font-size="12" font-weight="600">Toys "R" Us</text>
-  <text x="150" y="235" text-anchor="middle" fill="rgba(239,68,68,0.5)" font-size="10">Revenue decline → bankruptcy</text>
+  <rect x="80" y="155" width="100" height="28" rx="14" fill="rgba(239,68,68,0.15)" stroke="rgba(239,68,68,0.4)" stroke-width="1"/>
+  <text x="130" y="174" text-anchor="middle" fill="#f87171" font-size="12" font-weight="bold">$7.5B debt</text>
+  <!-- Label -->
+  <text x="130" y="16" text-anchor="middle" fill="#ef4444" font-size="12" font-weight="600">Toys "R" Us</text>
 </svg>`;
 
-const CF1_STAKES_WITH = `<svg viewBox="0 0 300 240" style="width:100%;max-width:360px">
-  <!-- Growing chart area -->
-  <rect x="60" y="40" width="180" height="140" rx="10" fill="rgba(16,185,129,0.06)" stroke="rgba(16,185,129,0.2)" stroke-width="1.5"/>
+const CF1_STAKES_WITH = `<svg viewBox="0 0 260 200" style="width:100%;max-width:320px;display:block;margin:0 auto">
   <!-- Growing bars -->
-  <rect x="85" y="135" width="28" height="25" rx="4" fill="rgba(16,185,129,0.15)" stroke="rgba(16,185,129,0.3)" stroke-width="1"/>
-  <rect x="125" y="115" width="28" height="45" rx="4" fill="rgba(16,185,129,0.2)" stroke="rgba(16,185,129,0.35)" stroke-width="1"/>
-  <rect x="165" y="85" width="28" height="75" rx="4" fill="rgba(16,185,129,0.25)" stroke="rgba(16,185,129,0.4)" stroke-width="1"/>
-  <rect x="205" y="55" width="28" height="105" rx="4" fill="rgba(16,185,129,0.3)" stroke="rgba(16,185,129,0.5)" stroke-width="1"/>
-  <!-- Growth trendline -->
-  <line x1="85" y1="133" x2="233" y2="53" stroke="#10b981" stroke-width="1.5" stroke-dasharray="5 3" opacity="0.6"/>
+  <rect x="35" y="105" width="36" height="35" rx="4" fill="rgba(16,185,129,0.15)" stroke="rgba(16,185,129,0.3)" stroke-width="1"/>
+  <rect x="85" y="80" width="36" height="60" rx="4" fill="rgba(16,185,129,0.2)" stroke="rgba(16,185,129,0.35)" stroke-width="1"/>
+  <rect x="135" y="50" width="36" height="90" rx="4" fill="rgba(16,185,129,0.25)" stroke="rgba(16,185,129,0.4)" stroke-width="1"/>
+  <rect x="185" y="25" width="36" height="115" rx="4" fill="rgba(16,185,129,0.3)" stroke="rgba(16,185,129,0.5)" stroke-width="1"/>
   <!-- Value badges -->
-  <rect x="70" y="190" width="60" height="28" rx="14" fill="rgba(16,185,129,0.1)" stroke="rgba(16,185,129,0.3)" stroke-width="1"/>
-  <text x="100" y="209" text-anchor="middle" fill="#10b981" font-size="11" font-weight="bold">$300B</text>
-  <text x="150" y="209" text-anchor="middle" fill="rgba(16,185,129,0.5)" font-size="14">→</text>
-  <rect x="170" y="190" width="60" height="28" rx="14" fill="rgba(16,185,129,0.2)" stroke="rgba(16,185,129,0.5)" stroke-width="1"/>
-  <text x="200" y="209" text-anchor="middle" fill="#10b981" font-size="11" font-weight="bold">$3T</text>
-  <!-- Company label -->
-  <text x="150" y="18" text-anchor="middle" fill="#10b981" font-size="12" font-weight="600">Microsoft</text>
-  <text x="150" y="235" text-anchor="middle" fill="rgba(16,185,129,0.5)" font-size="10">10x growth via Azure cloud pivot</text>
+  <rect x="40" y="155" width="60" height="28" rx="14" fill="rgba(16,185,129,0.1)" stroke="rgba(16,185,129,0.3)" stroke-width="1"/>
+  <text x="70" y="174" text-anchor="middle" fill="#10b981" font-size="11" font-weight="bold">$300B</text>
+  <text x="130" y="174" text-anchor="middle" fill="rgba(16,185,129,0.5)" font-size="14">→</text>
+  <rect x="160" y="155" width="60" height="28" rx="14" fill="rgba(16,185,129,0.2)" stroke="rgba(16,185,129,0.5)" stroke-width="1"/>
+  <text x="190" y="174" text-anchor="middle" fill="#10b981" font-size="11" font-weight="bold">$3T</text>
+  <!-- Label -->
+  <text x="130" y="16" text-anchor="middle" fill="#10b981" font-size="12" font-weight="600">Microsoft</text>
 </svg>`;
 
 const CF1_DIAGRAM = `<svg viewBox="0 0 480 520" style="width:100%;min-height:420px">
