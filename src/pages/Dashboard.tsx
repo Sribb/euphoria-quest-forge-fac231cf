@@ -8,9 +8,17 @@ import { CourseInfoCard } from "@/features/home/components/CourseInfoCard";
 import { PathwayTrail } from "@/features/home/components/PathwayTrail";
 import { CoursesGrid } from "@/features/home/components/CoursesGrid";
 import { ThreePhaseLessonViewer } from "@/features/learning/components/ThreePhaseLessonViewer";
+import { PathwayLessonViewer } from "@/features/pathway/components/PathwayLessonViewer";
 import { LegendaryChallenge } from "@/features/learning/components/LegendaryChallenge";
 import { DailyRewardsModal } from "@/features/learning/components/DailyRewardsModal";
 import { EuphoriaSpinner } from "@/shared/components/EuphoriaSpinner";
+
+// Map dashboard pathway slugs to file-based courseIds
+const PATHWAY_TO_COURSE: Record<string, string> = {
+  investing: 'investing-fundamentals',
+  'personal-finance': 'personal-finance',
+  economics: 'global-economics',
+};
 
 const PATHWAY_META: Record<string, { title: string; description: string }> = {
   investing: {
@@ -177,6 +185,28 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
 
   // Active lesson view
   if (activeLessonId) {
+    const courseId = PATHWAY_TO_COURSE[activePathway];
+    if (courseId) {
+      // Find the lesson's order_index to map to lesson number
+      const lesson = lessons.find((l) => l.id === activeLessonId);
+      const lessonNumber = lesson ? lesson.order_index + 1 : 1;
+      return (
+        <PathwayLessonViewer
+          courseId={courseId}
+          lessonNumber={lessonNumber}
+          onClose={() => { setActiveLessonId(null); refetch(); }}
+          onNextLesson={() => {
+            const nextLesson = lessons.find((l) => l.order_index === (lesson?.order_index ?? 0) + 1 && (l as any).pathway === activePathway);
+            if (nextLesson) {
+              setActiveLessonId(nextLesson.id);
+            } else {
+              setActiveLessonId(null);
+              refetch();
+            }
+          }}
+        />
+      );
+    }
     return (
       <ThreePhaseLessonViewer
         lessonId={activeLessonId}
