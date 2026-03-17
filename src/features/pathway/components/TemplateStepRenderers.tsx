@@ -322,7 +322,7 @@ export function InteractiveGraphView({ step, onComplete }: { step: InteractiveGr
   }, [step.graphType, values, step.sliders]);
 
   return (
-    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col gap-5 px-4 w-full max-w-lg mx-auto">
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col gap-5 px-4 w-full max-w-2xl mx-auto">
       <div className="flex items-center gap-2">
         <TrendingUp className="w-4 h-4 text-primary" />
         <span className="text-xs font-bold text-primary uppercase tracking-widest">{step.sectionLabel}</span>
@@ -330,10 +330,10 @@ export function InteractiveGraphView({ step, onComplete }: { step: InteractiveGr
       <h2 className="text-2xl font-black text-foreground">{step.title}</h2>
 
       {/* Interactive Graph */}
-      <div className="w-full p-4 rounded-2xl bg-card border border-border/50">
+      <div className="w-full p-6 rounded-2xl bg-card border border-border/50">
         {step.graphType === 'exponential' && (
           <>
-            <svg viewBox="0 0 400 200" className="w-full h-auto mb-2" style={{ pointerEvents: 'auto' }}>
+            <svg viewBox="0 0 400 220" className="w-full h-auto mb-4" style={{ pointerEvents: 'auto', minHeight: '220px' }}>
               <defs>
                 <linearGradient id="igGrad" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity="0.3" />
