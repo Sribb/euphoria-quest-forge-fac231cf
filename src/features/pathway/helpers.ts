@@ -42,9 +42,10 @@ export const teachingSlide = (
   paragraphs: string[],
   highlightedTerms: { term: string; definition: string; example: string }[],
   diagramDescription: string,
-  realExample?: { company: string; metric: string; outcome: string; explanation: string }
+  realExample?: { company: string; metric: string; outcome: string; explanation: string },
+  diagramSvg?: string
 ): TeachingSlideStep => ({
-  type: 'teachingSlide', sectionLabel, title, paragraphs, highlightedTerms, diagramDescription, realExample
+  type: 'teachingSlide', sectionLabel, title, paragraphs, highlightedTerms, diagramDescription, realExample, ...(diagramSvg && { diagramSvg })
 });
 
 export const microCheck = (
