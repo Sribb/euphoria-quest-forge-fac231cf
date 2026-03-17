@@ -42,6 +42,10 @@ export function HookOpenerView({ step, onComplete }: { step: HookOpenerStep; onC
   }, []);
 
   const renderChart = () => {
+    // If the step provides custom SVG, render it directly
+    if (step.chartSvg) {
+      return <div dangerouslySetInnerHTML={{ __html: step.chartSvg }} className="w-full flex items-center justify-center" style={{ minHeight: '280px' }} />;
+    }
     switch (lessonNum) {
       case 2: return <HookChartRiskReward animPhase={animPhase} />;
       case 3: return <HookChartCompounding animPhase={animPhase} />;
