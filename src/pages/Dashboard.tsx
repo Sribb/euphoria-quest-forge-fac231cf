@@ -342,10 +342,6 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
         </div>
       )}
 
-      <DailyRewardsModal
-        isOpen={showDailyRewards}
-        onClose={() => setShowDailyRewards(false)}
-      />
     </div>
   );
 };
