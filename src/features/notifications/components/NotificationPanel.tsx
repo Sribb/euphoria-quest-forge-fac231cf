@@ -56,15 +56,20 @@ export const NotificationPanel = ({ onNavigate }: NotificationPanelProps) => {
   }, []);
 
   const handleNotificationClick = (notification: Notification) => {
+    // Daily reward notifications open the claim popup
+    if (notification.notification_type === "daily_reward" && !notification.is_read) {
+      setDailyRewardNotifId(notification.id);
+      setIsOpen(false);
+      return;
+    }
+
     if (!notification.is_read) {
       markAsRead(notification.id);
     }
     if (notification.action_url && onNavigate) {
-      // Parse action_url like "community?conversation=xxx"
       const [tab, queryString] = notification.action_url.replace("/", "").split("?");
       const params = new URLSearchParams(queryString || "");
       const conversationId = params.get("conversation");
-      
       if (conversationId) {
         onNavigate(`community?conversation=${conversationId}`);
       } else {
