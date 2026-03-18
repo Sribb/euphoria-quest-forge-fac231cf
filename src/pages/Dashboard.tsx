@@ -10,7 +10,7 @@ import { CoursesGrid } from "@/features/home/components/CoursesGrid";
 import { ThreePhaseLessonViewer } from "@/features/learning/components/ThreePhaseLessonViewer";
 import { PathwayLessonViewer } from "@/features/pathway/components/PathwayLessonViewer";
 import { LegendaryChallenge } from "@/features/learning/components/LegendaryChallenge";
-import { DailyRewardsModal } from "@/features/learning/components/DailyRewardsModal";
+import { useDailyRewardNotification } from "@/features/learning/hooks/useDailyRewardNotification";
 import { EuphoriaSpinner } from "@/shared/components/EuphoriaSpinner";
 
 // Map dashboard pathway slugs to file-based courseIds
