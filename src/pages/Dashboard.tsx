@@ -84,7 +84,7 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
   });
   const [activeLessonId, setActiveLessonId] = useState<string | null>(null);
   const [legendaryLessonId, setLegendaryLessonId] = useState<string | null>(null);
-  const [showDailyRewards, setShowDailyRewards] = useState(false);
+  useDailyRewardNotification();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [headerVisible, setHeaderVisible] = useState(true);
   const lastScrollY = useRef(0);
