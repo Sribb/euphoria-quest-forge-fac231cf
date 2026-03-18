@@ -256,6 +256,13 @@ export const NotificationPanel = ({ onNavigate }: NotificationPanelProps) => {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Daily Reward claim popup */}
+      <DailyRewardClaimPopup
+        isOpen={!!dailyRewardNotifId}
+        onClose={() => setDailyRewardNotifId(null)}
+        notificationId={dailyRewardNotifId || ""}
+      />
     </div>
   );
 };
