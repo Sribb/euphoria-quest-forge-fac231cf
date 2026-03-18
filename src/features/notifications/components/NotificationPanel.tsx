@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 import { useNotifications, Notification } from "../hooks/useNotifications";
 import { formatDistanceToNow } from "date-fns";
 import { motion, AnimatePresence } from "framer-motion";
+import { DailyRewardClaimPopup } from "@/features/learning/components/DailyRewardClaimPopup";
 
 interface NotificationPanelProps {
   onNavigate?: (path: string) => void;
