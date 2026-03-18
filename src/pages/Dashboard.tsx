@@ -121,29 +121,6 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
     }
   }, [activePathway]);
 
-  // Streak check for daily rewards
-  const { data: streakData } = useQuery({
-    queryKey: ["streak", user?.id],
-    queryFn: async () => {
-      if (!user?.id) return null;
-      const { data } = await supabase.from("streaks").select("*").eq("user_id", user.id).single();
-      return data;
-    },
-    enabled: !!user?.id,
-  });
-
-  useEffect(() => {
-    if (!streakData || !user?.id) return;
-    const today = new Date().toDateString();
-    const storageKey = `daily_rewards_shown_${user.id}_${today}`;
-    const lastLogin = streakData.last_login_date;
-    if (!lastLogin || new Date(lastLogin).toDateString() !== today) {
-      if (!localStorage.getItem(storageKey)) {
-        setShowDailyRewards(true);
-        localStorage.setItem(storageKey, "true");
-      }
-    }
-  }, [streakData, user?.id]);
 
   // Fetch all lessons
   const { data: lessons = [], isLoading, refetch } = useQuery({
