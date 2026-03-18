@@ -10,7 +10,7 @@ import { CoursesGrid } from "@/features/home/components/CoursesGrid";
 import { ThreePhaseLessonViewer } from "@/features/learning/components/ThreePhaseLessonViewer";
 import { PathwayLessonViewer } from "@/features/pathway/components/PathwayLessonViewer";
 import { LegendaryChallenge } from "@/features/learning/components/LegendaryChallenge";
-import { DailyRewardsModal } from "@/features/learning/components/DailyRewardsModal";
+import { useDailyRewardNotification } from "@/features/learning/hooks/useDailyRewardNotification";
 import { EuphoriaSpinner } from "@/shared/components/EuphoriaSpinner";
 
 // Map dashboard pathway slugs to file-based courseIds
@@ -84,7 +84,7 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
   });
   const [activeLessonId, setActiveLessonId] = useState<string | null>(null);
   const [legendaryLessonId, setLegendaryLessonId] = useState<string | null>(null);
-  const [showDailyRewards, setShowDailyRewards] = useState(false);
+  useDailyRewardNotification();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [headerVisible, setHeaderVisible] = useState(true);
   const lastScrollY = useRef(0);
@@ -121,29 +121,6 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
     }
   }, [activePathway]);
 
-  // Streak check for daily rewards
-  const { data: streakData } = useQuery({
-    queryKey: ["streak", user?.id],
-    queryFn: async () => {
-      if (!user?.id) return null;
-      const { data } = await supabase.from("streaks").select("*").eq("user_id", user.id).single();
-      return data;
-    },
-    enabled: !!user?.id,
-  });
-
-  useEffect(() => {
-    if (!streakData || !user?.id) return;
-    const today = new Date().toDateString();
-    const storageKey = `daily_rewards_shown_${user.id}_${today}`;
-    const lastLogin = streakData.last_login_date;
-    if (!lastLogin || new Date(lastLogin).toDateString() !== today) {
-      if (!localStorage.getItem(storageKey)) {
-        setShowDailyRewards(true);
-        localStorage.setItem(storageKey, "true");
-      }
-    }
-  }, [streakData, user?.id]);
 
   // Fetch all lessons
   const { data: lessons = [], isLoading, refetch } = useQuery({
@@ -365,10 +342,6 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
         </div>
       )}
 
-      <DailyRewardsModal
-        isOpen={showDailyRewards}
-        onClose={() => setShowDailyRewards(false)}
-      />
     </div>
   );
 };

@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 import { useNotifications, Notification } from "../hooks/useNotifications";
 import { formatDistanceToNow } from "date-fns";
 import { motion, AnimatePresence } from "framer-motion";
+import { DailyRewardClaimPopup } from "@/features/learning/components/DailyRewardClaimPopup";
 
 interface NotificationPanelProps {
   onNavigate?: (path: string) => void;
@@ -39,6 +40,7 @@ export const NotificationPanel = ({ onNavigate }: NotificationPanelProps) => {
 
   const [isOpen, setIsOpen] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [dailyRewardNotifId, setDailyRewardNotifId] = useState<string | null>(null);
   const panelRef = useRef<HTMLDivElement>(null);
 
   // Close on outside click
@@ -54,15 +56,20 @@ export const NotificationPanel = ({ onNavigate }: NotificationPanelProps) => {
   }, []);
 
   const handleNotificationClick = (notification: Notification) => {
+    // Daily reward notifications open the claim popup
+    if (notification.notification_type === "daily_reward" && !notification.is_read) {
+      setDailyRewardNotifId(notification.id);
+      setIsOpen(false);
+      return;
+    }
+
     if (!notification.is_read) {
       markAsRead(notification.id);
     }
     if (notification.action_url && onNavigate) {
-      // Parse action_url like "community?conversation=xxx"
       const [tab, queryString] = notification.action_url.replace("/", "").split("?");
       const params = new URLSearchParams(queryString || "");
       const conversationId = params.get("conversation");
-      
       if (conversationId) {
         onNavigate(`community?conversation=${conversationId}`);
       } else {
@@ -249,6 +256,13 @@ export const NotificationPanel = ({ onNavigate }: NotificationPanelProps) => {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Daily Reward claim popup */}
+      <DailyRewardClaimPopup
+        isOpen={!!dailyRewardNotifId}
+        onClose={() => setDailyRewardNotifId(null)}
+        notificationId={dailyRewardNotifId || ""}
+      />
     </div>
   );
 };
