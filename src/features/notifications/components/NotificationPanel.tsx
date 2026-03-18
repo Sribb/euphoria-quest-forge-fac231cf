@@ -40,6 +40,7 @@ export const NotificationPanel = ({ onNavigate }: NotificationPanelProps) => {
 
   const [isOpen, setIsOpen] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [dailyRewardNotifId, setDailyRewardNotifId] = useState<string | null>(null);
   const panelRef = useRef<HTMLDivElement>(null);
 
   // Close on outside click
