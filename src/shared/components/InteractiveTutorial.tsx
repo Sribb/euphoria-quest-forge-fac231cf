@@ -116,6 +116,7 @@ export function InteractiveTutorial({ onComplete, activeTab, onNavigate }: Inter
     } else {
       setStep(nextStep);
       setTargetRect(null);
+      setHasScrolled(false);
     }
   };
 
