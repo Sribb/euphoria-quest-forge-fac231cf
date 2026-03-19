@@ -213,7 +213,7 @@ export const PathwayTrail = ({
                         <div className="w-3 h-3 rotate-45 bg-card border-l border-t border-border/60" />
                       </div>
                       <div className="bg-card border border-border/60 rounded-2xl p-4 shadow-xl shadow-black/20">
-                        <h4 className="font-bold text-foreground text-sm">{lesson.title}</h4>
+                        <h4 className="font-semibold text-foreground text-sm">{lesson.title}</h4>
                         <p className="text-xs text-muted-foreground mt-1">{lesson.duration} · {lesson.difficulty}</p>
 
                         <Button

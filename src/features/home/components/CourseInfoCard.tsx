@@ -39,7 +39,7 @@ export const CourseInfoCard = ({
 
         {/* Info */}
         <div className="p-5 space-y-3">
-          <h2 className="text-lg font-bold text-foreground leading-tight">{title}</h2>
+          <h2 className="text-lg font-semibold text-foreground leading-tight">{title}</h2>
           <p className="text-sm text-muted-foreground leading-relaxed">{description}</p>
 
           {/* Progress */}

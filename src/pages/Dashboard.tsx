@@ -321,7 +321,7 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
             <div className="flex-1 min-w-0">
               {/* Mobile course info */}
               <div className="lg:hidden mb-6 p-4 rounded-2xl border border-border/60 bg-card/80">
-                <h2 className="text-base font-bold text-foreground">{meta.title}</h2>
+                <h2 className="text-base font-semibold text-foreground">{meta.title}</h2>
                 <p className="text-xs text-muted-foreground mt-1">{meta.description}</p>
                 <div className="flex items-center gap-2 mt-2">
                   <div className="flex-1 h-1.5 bg-muted rounded-full overflow-hidden">

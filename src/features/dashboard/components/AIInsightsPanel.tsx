@@ -117,7 +117,7 @@ export const AIInsightsPanel = ({ onNavigate }: AIInsightsPanelProps) => {
         <div className="w-8 h-8 rounded-2xl bg-primary/10 flex items-center justify-center">
           <Brain className="w-4 h-4 text-primary" />
         </div>
-        <h3 className="font-bold text-foreground">Insights</h3>
+        <h3 className="font-semibold text-foreground">Insights</h3>
       </div>
       <div className="flex gap-3 overflow-x-auto pb-2 -mx-1 px-1 scrollbar-hide">
         {insights.map((insight) => (

@@ -49,7 +49,7 @@ export const CourseTopNav = ({ activeView, onViewChange }: CourseTopNavProps) =>
       <div className="flex items-center justify-between px-6 h-16 border-b border-border/40">
         {/* Left: Logo + tabs */}
         <div className="flex items-center gap-8">
-          <span className="text-sm font-bold text-foreground">Home</span>
+          <span className="text-sm font-semibold text-foreground">Home</span>
         </div>
 
         {/* Right: Stats pills + menu */}
