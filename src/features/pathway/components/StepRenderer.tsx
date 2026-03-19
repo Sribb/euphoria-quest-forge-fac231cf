@@ -5,6 +5,8 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Slider } from '@/components/ui/slider';
 import { ArrowRight, TrendingUp, BarChart3, Shield, Home, Coins } from 'lucide-react';
+import { playCorrect, playIncorrect, playReward, playLevelUp, playStreak, playNav, playError, playSnap, playUnlock, playMilestone } from '@/lib/soundEffects';
+import { fireSmallConfetti, fireStarConfetti } from '@/lib/confetti';
 import type {
   LessonStep, ConceptStep, TapRevealStep, FillBlankStep, DragSortStep,
   QuizStep, TrueFalseStep, MatchStep, SliderStep, ScenarioStep,
