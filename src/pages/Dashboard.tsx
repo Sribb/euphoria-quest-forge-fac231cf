@@ -276,7 +276,11 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
         </div>
       </div>
 
-      {activeView === "courses" ? (
+      {activeView === "trade" ? (
+        <div className="max-w-6xl mx-auto px-6 py-8">
+          <TradeDashboard />
+        </div>
+      ) : activeView === "courses" ? (
         <CoursesGrid
           lessons={lessons}
           activePathway={activePathway}
