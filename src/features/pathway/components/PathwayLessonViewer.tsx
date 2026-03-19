@@ -5,10 +5,12 @@ import { Button } from '@/components/ui/button';
 import { X } from 'lucide-react';
 import { StepRenderer } from './StepRenderer';
 import { CompletionScreen } from './CompletionScreen';
+import { ChallengeRound } from './ChallengeRound';
 import { loadCourseLessons } from '../courseIndex';
 import { usePathwayProgress } from '../usePathwayProgress';
 import type { PathwayLesson } from '../types';
 import { EuphoriaSpinner } from '@/shared/components/EuphoriaSpinner';
+import { playSlideForward } from '@/lib/soundEffects';
 
 interface Props {
   courseId: string;
@@ -17,7 +19,7 @@ interface Props {
   onNextLesson?: () => void;
 }
 
-type Phase = 'steps' | 'complete';
+type Phase = 'steps' | 'challenge' | 'complete';
 
 /* Ambient glow orb positions alternate per step */
 function getOrbPositions(stepIdx: number) {
@@ -49,20 +51,45 @@ export function PathwayLessonViewer({ courseId, lessonNumber, onClose, onNextLes
   );
 
   const totalSteps = lesson.steps.length;
-  const progress = phase === 'steps' ? ((stepIdx + 1) / totalSteps) * 100 : 100;
+  const hasChallenge = lesson.challenge && lesson.challenge.length >= 4;
+  
+  const progress = phase === 'steps'
+    ? ((stepIdx + 1) / totalSteps) * (hasChallenge ? 80 : 100)
+    : phase === 'challenge' ? 90 : 100;
 
-  const stepLabel = phase === 'steps' ? `${stepIdx + 1}/${totalSteps}` : 'Done';
+  const stepLabel = phase === 'steps'
+    ? `${stepIdx + 1}/${totalSteps}`
+    : phase === 'challenge' ? 'Challenge' : 'Done';
 
   const handleStepComplete = (correct: boolean) => {
     if (correct) setCorrectSteps(c => c + 1);
+    
+    // Play slide forward sound for step transitions
+    playSlideForward();
+    
     if (stepIdx + 1 < totalSteps) {
       setStepIdx(i => i + 1);
     } else {
-      // All steps done — complete the lesson
-      const xpEarned = lesson.xp;
-      completeLesson.mutate({ courseId, lessonNumber, score: correctSteps + (correct ? 1 : 0), xpEarned });
-      setPhase('complete');
+      // All steps done — go to challenge if available
+      if (hasChallenge) {
+        setPhase('challenge');
+      } else {
+        const xpEarned = lesson.xp;
+        completeLesson.mutate({ courseId, lessonNumber, score: correctSteps + (correct ? 1 : 0), xpEarned });
+        setPhase('complete');
+      }
     }
+  };
+
+  const handleChallengePass = () => {
+    const xpEarned = lesson.xp;
+    completeLesson.mutate({ courseId, lessonNumber, score: correctSteps, xpEarned });
+    setPhase('complete');
+  };
+
+  const handleChallengeFail = () => {
+    // Exit the lesson — they can retry later
+    onClose();
   };
 
   const handleRetry = () => {
@@ -135,6 +162,21 @@ export function PathwayLessonViewer({ courseId, lessonNumber, onClose, onNextLes
                 borderRight: '1px solid rgba(139, 92, 246, 0.08)',
               }}>
                 <StepRenderer step={lesson.steps[stepIdx]} onComplete={handleStepComplete} onClose={onClose} />
+              </div>
+            </motion.div>
+          )}
+          {phase === 'challenge' && lesson.challenge && (
+            <motion.div key="challenge" initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -40 }}
+              className="w-full min-h-full">
+              <div className="w-full min-h-[calc(100vh-56px)] px-4 sm:px-6 pt-8 pb-12 flex items-center justify-center" style={{
+                background: 'rgba(255, 255, 255, 0.02)',
+              }}>
+                <ChallengeRound
+                  questions={lesson.challenge}
+                  onPass={handleChallengePass}
+                  onFail={handleChallengeFail}
+                  lessonTitle={lesson.title}
+                />
               </div>
             </motion.div>
           )}
