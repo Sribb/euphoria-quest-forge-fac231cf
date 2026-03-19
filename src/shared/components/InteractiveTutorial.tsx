@@ -41,6 +41,7 @@ export function InteractiveTutorial({ onComplete, activeTab, onNavigate }: Inter
   const [step, setStep] = useState(-1); // -1 = welcome splash
   const [targetRect, setTargetRect] = useState<DOMRect | null>(null);
   const [visible, setVisible] = useState(true);
+  const [hasScrolled, setHasScrolled] = useState(false);
 
   // Ensure we're on the dashboard tab for the tutorial
   useEffect(() => {
@@ -55,20 +56,37 @@ export function InteractiveTutorial({ onComplete, activeTab, onNavigate }: Inter
     const selector = STEPS[step].targetSelector;
     const el = document.querySelector(selector);
     if (el) {
+      if (!hasScrolled) {
+        el.scrollIntoView({ behavior: "smooth", block: "center" });
+        setHasScrolled(true);
+      }
       const rect = el.getBoundingClientRect();
       setTargetRect(rect);
     } else {
       setTargetRect(null);
     }
-  }, [step]);
+  }, [step, hasScrolled]);
 
   useEffect(() => {
     updateTargetPosition();
     const interval = setInterval(updateTargetPosition, 200);
     window.addEventListener("resize", updateTargetPosition);
     window.addEventListener("scroll", updateTargetPosition, true);
+
+    // If target not found after 2s, skip this step
+    const timeout = setTimeout(() => {
+      if (step >= 0 && step < STEPS.length) {
+        const el = document.querySelector(STEPS[step].targetSelector);
+        if (!el) {
+          // Target doesn't exist — finish tutorial
+          finish();
+        }
+      }
+    }, 2000);
+
     return () => {
       clearInterval(interval);
+      clearTimeout(timeout);
       window.removeEventListener("resize", updateTargetPosition);
       window.removeEventListener("scroll", updateTargetPosition, true);
     };
@@ -98,6 +116,7 @@ export function InteractiveTutorial({ onComplete, activeTab, onNavigate }: Inter
     } else {
       setStep(nextStep);
       setTargetRect(null);
+      setHasScrolled(false);
     }
   };
 
