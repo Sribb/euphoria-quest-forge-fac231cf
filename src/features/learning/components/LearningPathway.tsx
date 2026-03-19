@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { ChallengeModal } from "./ChallengeModal";
 import { Trophy, Lock, ArrowLeft, CheckCircle2, Zap, GraduationCap, Crown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -43,24 +42,11 @@ export const LearningPathway = ({
   pathwayColor,
   onBack,
 }: LearningPathwayProps) => {
-  const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
   const [hovered, setHovered] = useState<string | null>(null);
 
   const handleNodeClick = (lesson: Lesson) => {
-    if (!lesson.is_locked) setSelectedLesson(lesson);
-  };
-
-  const handleStartChallenge = () => {
-    if (selectedLesson) {
-      onLessonSelect(selectedLesson.id);
-      setSelectedLesson(null);
-    }
-  };
-
-  const handleStartLegendary = () => {
-    if (selectedLesson && onLegendarySelect) {
-      onLegendarySelect(selectedLesson.id);
-      setSelectedLesson(null);
+    if (!lesson.is_locked) {
+      onLessonSelect(lesson.id);
     }
   };
 
@@ -364,22 +350,6 @@ export const LearningPathway = ({
         </div>
       </div>
 
-      {selectedLesson && (
-        <ChallengeModal
-          isOpen={!!selectedLesson}
-          onClose={() => setSelectedLesson(null)}
-          onStart={handleStartChallenge}
-          onStartLegendary={selectedLesson.completed && !selectedLesson.legendary_completed && onLegendarySelect ? handleStartLegendary : undefined}
-          title={selectedLesson.title}
-          description={selectedLesson.description}
-          duration={selectedLesson.duration}
-          difficulty={selectedLesson.difficulty}
-          orderIndex={selectedLesson.order_index}
-          isCompleted={selectedLesson.completed}
-          isLegendaryCompleted={selectedLesson.legendary_completed}
-          stars={0}
-        />
-      )}
     </div>
   );
 };

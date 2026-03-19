@@ -4,7 +4,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { X } from 'lucide-react';
 import { StepRenderer } from './StepRenderer';
-import { ChallengeRound } from './ChallengeRound';
 import { CompletionScreen } from './CompletionScreen';
 import { loadCourseLessons } from '../courseIndex';
 import { usePathwayProgress } from '../usePathwayProgress';
@@ -18,7 +17,7 @@ interface Props {
   onNextLesson?: () => void;
 }
 
-type Phase = 'steps' | 'challenge' | 'complete';
+type Phase = 'steps' | 'complete';
 
 /* Ambient glow orb positions alternate per step */
 function getOrbPositions(stepIdx: number) {
@@ -34,7 +33,6 @@ export function PathwayLessonViewer({ courseId, lessonNumber, onClose, onNextLes
   const [phase, setPhase] = useState<Phase>('steps');
   const [stepIdx, setStepIdx] = useState(0);
   const [correctSteps, setCorrectSteps] = useState(0);
-  const [challengeScore, setChallengeScore] = useState(0);
   const { completeLesson } = usePathwayProgress();
 
   useEffect(() => {
@@ -51,54 +49,37 @@ export function PathwayLessonViewer({ courseId, lessonNumber, onClose, onNextLes
   );
 
   const totalSteps = lesson.steps.length;
-  const totalWithChallenge = totalSteps + 1; // challenge is last numbered step
-  const progress = phase === 'steps' ? ((stepIdx + 1) / totalWithChallenge) * 100
-    : phase === 'challenge' ? (totalSteps / totalWithChallenge) * 100
-    : 100;
+  const progress = phase === 'steps' ? ((stepIdx + 1) / totalSteps) * 100 : 100;
 
-  const stepLabel = phase === 'steps' ? `${stepIdx + 1}/${totalWithChallenge}`
-    : phase === 'challenge' ? `${totalSteps + 1}/${totalWithChallenge}`
-    : 'Done';
+  const stepLabel = phase === 'steps' ? `${stepIdx + 1}/${totalSteps}` : 'Done';
 
   const handleStepComplete = (correct: boolean) => {
     if (correct) setCorrectSteps(c => c + 1);
     if (stepIdx + 1 < totalSteps) {
       setStepIdx(i => i + 1);
     } else {
-      setPhase('challenge');
+      // All steps done — complete the lesson
+      const xpEarned = lesson.xp;
+      completeLesson.mutate({ courseId, lessonNumber, score: correctSteps + (correct ? 1 : 0), xpEarned });
+      setPhase('complete');
     }
-  };
-
-  const handleChallengeComplete = (score: number) => {
-    setChallengeScore(score);
-    const baseXp = lesson.xp;
-    const bonus = score === lesson.challenge.length ? Math.round(baseXp * 0.5) : 0;
-    const totalXp = baseXp + bonus;
-    completeLesson.mutate({ courseId, lessonNumber, score, xpEarned: totalXp });
-    setPhase('complete');
   };
 
   const handleRetry = () => {
     setPhase('steps');
     setStepIdx(0);
     setCorrectSteps(0);
-    setChallengeScore(0);
   };
 
-  const xpEarned = lesson.xp + (challengeScore === lesson.challenge.length ? Math.round(lesson.xp * 0.5) : 0);
-
   const orbPos = getOrbPositions(stepIdx);
-  const isChallenge = phase === 'challenge';
 
   return (
     <div className="fixed inset-0 z-50 flex flex-col overflow-hidden">
       {/* ── LAYERED BACKGROUND ── */}
-      {/* Base: deep purple radial gradient */}
       <div className="absolute inset-0" style={{
         background: 'radial-gradient(ellipse at 30% 20%, #1a0a2e 0%, #0d0618 40%, #07030f 100%)'
       }} />
 
-      {/* Grid dot pattern at 4% opacity */}
       <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ opacity: 0.04 }}>
         <defs>
           <pattern id="dotGrid" width="24" height="24" patternUnits="userSpaceOnUse">
@@ -108,25 +89,16 @@ export function PathwayLessonViewer({ courseId, lessonNumber, onClose, onNextLes
         <rect width="100%" height="100%" fill="url(#dotGrid)" />
       </svg>
 
-      {/* Ambient glow orbs — alternate position per step */}
       <div className="absolute pointer-events-none" style={{
         ...orbPos.orb1,
-        width: isChallenge ? '400px' : '300px',
-        height: isChallenge ? '400px' : '300px',
-        borderRadius: '50%',
-        background: isChallenge
-          ? 'radial-gradient(circle, rgba(124, 58, 237, 0.15) 0%, transparent 70%)'
-          : 'radial-gradient(circle, rgba(124, 58, 237, 0.08) 0%, transparent 70%)',
+        width: '300px', height: '300px', borderRadius: '50%',
+        background: 'radial-gradient(circle, rgba(124, 58, 237, 0.08) 0%, transparent 70%)',
         transition: 'all 0.6s ease',
       }} />
       <div className="absolute pointer-events-none" style={{
         ...orbPos.orb2,
-        width: isChallenge ? '500px' : '400px',
-        height: isChallenge ? '500px' : '400px',
-        borderRadius: '50%',
-        background: isChallenge
-          ? 'radial-gradient(circle, rgba(109, 40, 217, 0.12) 0%, transparent 70%)'
-          : 'radial-gradient(circle, rgba(109, 40, 217, 0.06) 0%, transparent 70%)',
+        width: '400px', height: '400px', borderRadius: '50%',
+        background: 'radial-gradient(circle, rgba(109, 40, 217, 0.06) 0%, transparent 70%)',
         transition: 'all 0.6s ease',
       }} />
 
@@ -157,23 +129,12 @@ export function PathwayLessonViewer({ courseId, lessonNumber, onClose, onNextLes
           {phase === 'steps' && (
             <motion.div key={`step-${stepIdx}`} initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -40 }}
               className="w-full min-h-full">
-              {/* Frosted content surface */}
               <div className="w-full min-h-[calc(100vh-56px)] px-4 sm:px-6 pt-8 pb-12" style={{
                 background: 'rgba(255, 255, 255, 0.02)',
                 borderLeft: '1px solid rgba(139, 92, 246, 0.08)',
                 borderRight: '1px solid rgba(139, 92, 246, 0.08)',
               }}>
                 <StepRenderer step={lesson.steps[stepIdx]} onComplete={handleStepComplete} onClose={onClose} />
-              </div>
-            </motion.div>
-          )}
-          {phase === 'challenge' && (
-            <motion.div key="challenge" initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-              className="w-full min-h-full">
-              <div className="w-full min-h-[calc(100vh-56px)] px-4 sm:px-6 pt-8 pb-12" style={{
-                background: 'rgba(255, 255, 255, 0.02)',
-              }}>
-                <ChallengeRound questions={lesson.challenge} onComplete={handleChallengeComplete} />
               </div>
             </motion.div>
           )}
@@ -184,9 +145,7 @@ export function PathwayLessonViewer({ courseId, lessonNumber, onClose, onNextLes
                 background: 'rgba(255, 255, 255, 0.02)',
               }}>
                 <CompletionScreen
-                  score={challengeScore}
-                  total={lesson.challenge.length}
-                  xpEarned={xpEarned}
+                  xpEarned={lesson.xp}
                   lessonTitle={lesson.title}
                   onContinue={onNextLesson || onClose}
                   onRetry={handleRetry}

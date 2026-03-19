@@ -7,9 +7,7 @@ import { CourseTopNav } from "@/features/home/components/CourseTopNav";
 import { CourseInfoCard } from "@/features/home/components/CourseInfoCard";
 import { PathwayTrail } from "@/features/home/components/PathwayTrail";
 import { CoursesGrid } from "@/features/home/components/CoursesGrid";
-import { ThreePhaseLessonViewer } from "@/features/learning/components/ThreePhaseLessonViewer";
 import { PathwayLessonViewer } from "@/features/pathway/components/PathwayLessonViewer";
-import { LegendaryChallenge } from "@/features/learning/components/LegendaryChallenge";
 import { useDailyRewardNotification } from "@/features/learning/hooks/useDailyRewardNotification";
 import { EuphoriaSpinner } from "@/shared/components/EuphoriaSpinner";
 
@@ -83,7 +81,7 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
     catch { return "investing"; }
   });
   const [activeLessonId, setActiveLessonId] = useState<string | null>(null);
-  const [legendaryLessonId, setLegendaryLessonId] = useState<string | null>(null);
+  const [_legendaryLessonId, setLegendaryLessonId] = useState<string | null>(null);
   useDailyRewardNotification();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [headerVisible, setHeaderVisible] = useState(true);
@@ -194,23 +192,6 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
     staleTime: 30000,
   });
 
-  // Legendary challenge view
-  if (legendaryLessonId) {
-    const lesson = lessons.find((l) => l.id === legendaryLessonId);
-    return (
-      <div className="fixed inset-0 bg-background/95 z-50 overflow-y-auto">
-        <div className="max-w-4xl mx-auto p-6">
-          <LegendaryChallenge
-            lessonId={legendaryLessonId}
-            lessonTitle={lesson?.title || "Lesson"}
-            onComplete={(passed) => { if (passed) refetch(); }}
-            onClose={() => { setLegendaryLessonId(null); refetch(); }}
-          />
-        </div>
-      </div>
-    );
-  }
-
   // Active lesson view
   if (activeLessonId) {
     const courseId = PATHWAY_TO_COURSE[activePathway];
@@ -234,12 +215,9 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
         />
       );
     }
-    return (
-      <ThreePhaseLessonViewer
-        lessonId={activeLessonId}
-        onClose={() => { setActiveLessonId(null); refetch(); }}
-      />
-    );
+    // Fallback: close if no course mapping exists
+    setActiveLessonId(null);
+    return null;
   }
 
   const pathwayLessons = lessons.filter((l) => (l as any).pathway === activePathway);
