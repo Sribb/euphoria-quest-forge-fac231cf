@@ -35,6 +35,7 @@ const Learn = ({ onNavigate, selectedLesson, onLessonSelect }: LearnProps) => {
   const { user } = useAuth();
   const { placementLesson } = useOnboarding();
   const [selectedPathway, setSelectedPathway] = useState<string | null>(null);
+  const [activeView, setActiveView] = useState<LearnView>("home");
 
   const { data: lessons = [], isLoading, refetch } = useQuery({
     queryKey: ["lessons", user?.id, placementLesson],
