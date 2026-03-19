@@ -78,7 +78,7 @@ const StockSearch = ({ onNavigate, onSelectStock, onBack }: StockSearchProps) =>
             >
               <div className="flex items-center justify-between mb-2">
                 <div>
-                  <h3 className="font-bold text-lg">{stock.symbol}</h3>
+                  <h3 className="font-semibold text-lg">{stock.symbol}</h3>
                   <p className="text-sm text-muted-foreground">{stock.name}</p>
                 </div>
                 <TrendingUp className="w-5 h-5 text-success" />

@@ -58,7 +58,7 @@ const VerifyCertificate = () => {
       <div className="min-h-screen flex items-center justify-center bg-background px-4">
         <Card className="max-w-md w-full p-8 text-center">
           <Shield className="w-16 h-16 text-destructive mx-auto mb-4" />
-          <h1 className="text-2xl font-bold mb-2">Certificate Not Found</h1>
+          <h1 className="text-2xl font-semibold mb-2">Certificate Not Found</h1>
           <p className="text-muted-foreground">
             The credential ID "{credentialId}" does not match any certificate in our records.
           </p>

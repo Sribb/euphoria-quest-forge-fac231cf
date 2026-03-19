@@ -18,7 +18,7 @@ const Privacy = () => {
           Back
         </button>
 
-        <h1 className="text-3xl font-bold mb-2">Privacy Policy</h1>
+        <h1 className="text-3xl font-semibold mb-2">Privacy Policy</h1>
         <p className="text-muted-foreground mb-8 text-sm">Last updated: March 2026</p>
 
         <div className="space-y-6">

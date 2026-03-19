@@ -22,7 +22,7 @@ export function LeaderboardPanel() {
               <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-amber-500 to-yellow-600 flex items-center justify-center shadow-md">
                 <Trophy className="h-4 w-4 text-white" />
               </div>
-              <h3 className="font-bold text-foreground">Leaderboard</h3>
+              <h3 className="font-semibold text-foreground">Leaderboard</h3>
             </div>
           </div>
           <TabsList className="w-full bg-muted/50">

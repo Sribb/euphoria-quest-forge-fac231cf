@@ -166,10 +166,7 @@ const Learn = ({ onNavigate, selectedLesson, onLessonSelect }: LearnProps) => {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[600px]">
-        <div className="space-y-6 text-center">
-          <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
-          <p className="text-muted-foreground">Loading your learning pathways...</p>
-        </div>
+        <EuphoriaSpinner size="lg" label="Loading your learning pathways..." />
       </div>
     );
   }

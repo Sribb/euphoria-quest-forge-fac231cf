@@ -144,7 +144,7 @@ const Games = ({ onNavigate }: GamesProps) => {
           <Gamepad2 className="w-6 h-6 text-white" />
         </div>
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold">Investment Games</h1>
+          <h1 className="text-2xl md:text-3xl font-semibold">Investment Games</h1>
           <p className="text-sm text-muted-foreground">Learn investing through interactive challenges</p>
         </div>
       </motion.div>
