@@ -47,7 +47,7 @@ const StockSearch = ({ onNavigate, onSelectStock, onBack }: StockSearchProps) =>
           <ArrowLeft className="w-5 h-5" />
         </Button>
         <div className="flex-1">
-          <h1 className="text-2xl font-bold">Stock Search</h1>
+          <h1 className="text-2xl font-semibold">Stock Search</h1>
           <p className="text-muted-foreground">Find and analyze individual stocks</p>
         </div>
       </div>
@@ -78,7 +78,7 @@ const StockSearch = ({ onNavigate, onSelectStock, onBack }: StockSearchProps) =>
             >
               <div className="flex items-center justify-between mb-2">
                 <div>
-                  <h3 className="font-bold text-lg">{stock.symbol}</h3>
+                  <h3 className="font-semibold text-lg">{stock.symbol}</h3>
                   <p className="text-sm text-muted-foreground">{stock.name}</p>
                 </div>
                 <TrendingUp className="w-5 h-5 text-success" />

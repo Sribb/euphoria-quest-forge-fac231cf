@@ -118,7 +118,7 @@ const Community = ({ onNavigate, initialConversationId }: CommunityProps) => {
           <Users className="w-5 h-5 md:w-6 md:h-6 text-white" />
         </div>
         <div>
-          <h1 className="text-xl md:text-2xl font-bold">Community</h1>
+          <h1 className="text-xl md:text-2xl font-semibold">Community</h1>
           <p className="text-sm text-muted-foreground">Connect, discuss & grow together</p>
         </div>
       </div>

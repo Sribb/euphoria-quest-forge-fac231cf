@@ -63,7 +63,7 @@ const Legal = () => {
 
         <div className="flex items-center gap-3 mb-2">
           <img src={logo} alt="Euphoria" className="w-8 h-8 object-contain" />
-          <h1 className="text-3xl font-bold">Legal</h1>
+          <h1 className="text-3xl font-semibold">Legal</h1>
         </div>
         <p className="text-muted-foreground text-sm mb-10">
           Policies, terms, and compliance documentation for students, parents, and school districts.

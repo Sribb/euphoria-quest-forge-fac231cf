@@ -32,7 +32,7 @@ const DpaPortal = () => {
 
         <div className="flex items-center gap-3 mb-2">
           <img src={logo} alt="Euphoria" className="w-8 h-8 object-contain" />
-          <h1 className="text-3xl font-bold text-foreground">Data Processing Agreements</h1>
+          <h1 className="text-3xl font-semibold text-foreground">Data Processing Agreements</h1>
         </div>
         <p className="text-muted-foreground text-sm mb-10">
           Self-service DPA generation for district administrators. No legal back-and-forth — generate, download, and sign instantly.

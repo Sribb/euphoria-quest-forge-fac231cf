@@ -38,7 +38,7 @@ const Trade = ({ onNavigate }: TradeProps) => {
             <TrendingUp className="w-5 h-5 text-white" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold tracking-tight">Paper Trading</h1>
+            <h1 className="text-2xl font-semibold tracking-tight">Paper Trading</h1>
             <p className="text-xs text-muted-foreground mt-0.5">Virtual money — practice risk free</p>
           </div>
         </div>

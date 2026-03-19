@@ -136,7 +136,7 @@ const Certificates = ({ onNavigate }: CertificatesProps) => {
             <Trophy className="w-5 h-5 text-primary-foreground" />
           </div>
           <div>
-            <h1 className="text-xl font-bold">Awards</h1>
+            <h1 className="text-xl font-semibold">Awards</h1>
             <p className="text-xs text-muted-foreground">{totalEarned} certs · {totalBadgesEarned} badges earned</p>
           </div>
         </div>
