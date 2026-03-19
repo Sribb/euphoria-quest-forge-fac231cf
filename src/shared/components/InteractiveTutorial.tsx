@@ -158,10 +158,15 @@ export function InteractiveTutorial({ onComplete, activeTab, onNavigate }: Inter
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-[200] pointer-events-none"
+          className="fixed inset-0 z-[200]"
+          style={{ pointerEvents: "none" }}
         >
-          {/* Dark overlay with cutout */}
-          <div className="absolute inset-0 pointer-events-auto" onClick={() => !currentStep.requireClick && advance()}>
+          {/* Dark overlay — blocks clicks outside cutout */}
+          <div
+            className="absolute inset-0"
+            style={{ pointerEvents: "auto" }}
+            onClick={() => !currentStep.requireClick && advance()}
+          >
             <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
               <defs>
                 <mask id="tutorial-mask">
@@ -187,22 +192,37 @@ export function InteractiveTutorial({ onComplete, activeTab, onNavigate }: Inter
             </svg>
           </div>
 
+          {/* Transparent click-through zone over the cutout so real element receives clicks */}
+          {targetRect && currentStep.requireClick && (
+            <div
+              className="absolute"
+              style={{
+                left: targetRect.left - 12,
+                top: targetRect.top - 12,
+                width: targetRect.width + 24,
+                height: targetRect.height + 24,
+                pointerEvents: "none",
+              }}
+            />
+          )}
+
           {/* Highlight ring */}
           {targetRect && (
             <div
-              className="absolute pointer-events-none"
+              className="absolute"
               style={{
                 left: targetRect.left - 14,
                 top: targetRect.top - 14,
                 width: targetRect.width + 28,
                 height: targetRect.height + 28,
+                pointerEvents: "none",
               }}
             >
               <div className="w-full h-full rounded-2xl border-2 border-primary/60 shadow-[0_0_20px_4px_hsl(var(--primary)/0.3)]" />
             </div>
           )}
 
-          {/* Arrow + message */}
+          {/* Tooltip */}
           {targetRect && (
             <TutorialTooltip
               targetRect={targetRect}
