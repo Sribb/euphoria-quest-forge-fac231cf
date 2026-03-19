@@ -41,6 +41,7 @@ export function InteractiveTutorial({ onComplete, activeTab, onNavigate }: Inter
   const [step, setStep] = useState(-1); // -1 = welcome splash
   const [targetRect, setTargetRect] = useState<DOMRect | null>(null);
   const [visible, setVisible] = useState(true);
+  const [hasScrolled, setHasScrolled] = useState(false);
 
   // Ensure we're on the dashboard tab for the tutorial
   useEffect(() => {
