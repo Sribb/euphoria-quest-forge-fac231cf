@@ -200,5 +200,6 @@ export function PathwayLessonViewer({ courseId, lessonNumber, onClose, onNextLes
         </AnimatePresence>
       </div>
     </div>
+    </HintProvider>
   );
 }
