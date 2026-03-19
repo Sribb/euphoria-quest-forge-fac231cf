@@ -199,7 +199,6 @@ export function InteractiveTutorial({ onComplete, activeTab, onNavigate }: Inter
               }}
             >
               <div className="w-full h-full rounded-2xl border-2 border-primary/60 shadow-[0_0_20px_4px_hsl(var(--primary)/0.3)]" />
-              <div className="absolute inset-0 rounded-2xl border-2 border-primary/30 animate-ping" style={{ animationDuration: "2s" }} />
             </div>
           )}
 
