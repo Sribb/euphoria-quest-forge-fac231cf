@@ -199,7 +199,6 @@ export function InteractiveTutorial({ onComplete, activeTab, onNavigate }: Inter
               }}
             >
               <div className="w-full h-full rounded-2xl border-2 border-primary/60 shadow-[0_0_20px_4px_hsl(var(--primary)/0.3)]" />
-              <div className="absolute inset-0 rounded-2xl border-2 border-primary/30 animate-ping" style={{ animationDuration: "2s" }} />
             </div>
           )}
 
@@ -305,23 +304,6 @@ function TutorialTooltip({
 
   return (
     <>
-      {/* Animated purple arrow */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0 }}
-        animate={{ opacity: 1, scale: 1 }}
-        className="absolute pointer-events-none z-[210]"
-        style={arrowStyle}
-      >
-        <motion.div
-          animate={{ y: direction === "up" ? [0, -8, 0] : direction === "down" ? [0, 8, 0] : 0, x: direction === "left" ? [-8, 0, -8] : direction === "right" ? [8, 0, 8] : 0 }}
-          transition={{ duration: 1.2, repeat: Infinity, ease: "easeInOut" }}
-        >
-          <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M16 4L28 24H4L16 4Z" fill="hsl(var(--primary))" stroke="hsl(var(--primary))" strokeWidth="2" strokeLinejoin="round" />
-          </svg>
-        </motion.div>
-      </motion.div>
-
       {/* Tooltip card */}
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
