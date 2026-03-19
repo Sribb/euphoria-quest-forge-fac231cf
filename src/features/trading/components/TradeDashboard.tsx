@@ -21,9 +21,9 @@ export const TradeDashboard = ({ onNavigate }: TradeDashboardProps) => {
   return (
     <motion.div
       className="space-y-6 pb-8"
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.35, ease: "easeOut" }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3 }}
     >
       {/* Live stock ticker bar */}
       <StockTickerBar />
@@ -33,12 +33,22 @@ export const TradeDashboard = ({ onNavigate }: TradeDashboardProps) => {
 
       {/* Two-column: Allocation + Quick Trade */}
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-        <div className="lg:col-span-3">
+        <motion.div
+          className="lg:col-span-3"
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.25, duration: 0.5 }}
+        >
           <AllocationPieChart />
-        </div>
-        <div className="lg:col-span-2">
+        </motion.div>
+        <motion.div
+          className="lg:col-span-2"
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.35, duration: 0.5 }}
+        >
           <QuickTradePanel />
-        </div>
+        </motion.div>
       </div>
 
       {/* Ask Pluto floating assistant */}
