@@ -366,22 +366,6 @@ export const LearningPathway = ({
         </div>
       </div>
 
-      {selectedLesson && (
-        <ChallengeModal
-          isOpen={!!selectedLesson}
-          onClose={() => setSelectedLesson(null)}
-          onStart={handleStartChallenge}
-          onStartLegendary={selectedLesson.completed && !selectedLesson.legendary_completed && onLegendarySelect ? handleStartLegendary : undefined}
-          title={selectedLesson.title}
-          description={selectedLesson.description}
-          duration={selectedLesson.duration}
-          difficulty={selectedLesson.difficulty}
-          orderIndex={selectedLesson.order_index}
-          isCompleted={selectedLesson.completed}
-          isLegendaryCompleted={selectedLesson.legendary_completed}
-          stars={0}
-        />
-      )}
     </div>
   );
 };
