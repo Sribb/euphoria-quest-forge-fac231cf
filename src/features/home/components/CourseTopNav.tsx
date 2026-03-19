@@ -51,13 +51,13 @@ export const CourseTopNav = ({ activeView, onViewChange }: CourseTopNavProps) =>
   return (
     <div className="w-full">
       <div className="flex items-center justify-between px-6 h-16 border-b border-border/40">
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-6 h-full">
           {tabs.map((tab) => (
             <button
               key={tab.id}
               onClick={() => onViewChange(tab.id)}
               className={cn(
-                "text-sm font-semibold transition-colors relative pb-0.5",
+                "text-sm font-semibold transition-colors relative h-full flex items-center",
                 activeView === tab.id
                   ? "text-foreground"
                   : "text-muted-foreground hover:text-foreground/80"
@@ -65,7 +65,7 @@ export const CourseTopNav = ({ activeView, onViewChange }: CourseTopNavProps) =>
             >
               {tab.label}
               {activeView === tab.id && (
-                <span className="absolute -bottom-[17px] left-0 right-0 h-[2px] bg-primary rounded-full" />
+                <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-primary rounded-full" />
               )}
             </button>
           ))}

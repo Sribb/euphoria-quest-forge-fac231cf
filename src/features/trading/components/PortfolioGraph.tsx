@@ -2,66 +2,62 @@ import { useState, useMemo } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { usePaperTrading, type PaperTrade } from "@/hooks/usePaperTrading";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { getQuote } from "@/lib/finnhub";
 import {
-  AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer,
-  CartesianGrid,
+  AreaChart, Area, Tooltip, ResponsiveContainer,
 } from "recharts";
-import { TrendingUp, TrendingDown } from "lucide-react";
+import { TrendingUp, TrendingDown, RefreshCw } from "lucide-react";
 import { formatDollar } from "@/lib/formatters";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 
 type TimeFrame = "1D" | "1W" | "1M" | "3M" | "1Y" | "ALL";
 
-const CustomTooltip = ({ active, payload, label }: any) => {
+const CustomTooltip = ({ active, payload }: any) => {
   if (!active || !payload?.length) return null;
-  const data = payload[0]?.payload;
-  if (!data) return null;
+  const value = payload[0]?.payload?.value;
+  if (value == null) return null;
 
   return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      className="rounded-xl border border-border/50 bg-popover/95 backdrop-blur-xl p-3.5 shadow-2xl min-w-[160px]"
-    >
-      <p className="text-[10px] text-muted-foreground font-medium mb-1.5">{data.fullDate ? new Date(data.fullDate).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : label}</p>
-      <p className="text-lg font-bold text-foreground">{formatDollar(data.value, 2)}</p>
-      {data.trade && (
-        <p className="text-[10px] text-primary font-medium mt-1 pt-1 border-t border-border/40">{data.trade}</p>
-      )}
-    </motion.div>
+    <div className="rounded-lg border border-border/50 bg-popover/95 backdrop-blur-xl px-3 py-1.5 shadow-xl">
+      <p className="text-sm font-bold text-foreground">{formatDollar(value, 2)}</p>
+    </div>
   );
 };
 
 /**
- * Build portfolio value over time from paper_trades history.
- * Each trade changes cash ± total; we reconstruct the portfolio value timeline.
+ * Build portfolio value over time from paper_trades history,
+ * using live prices for current holdings value.
  */
-function buildChartData(trades: PaperTrade[], currentCash: number, currentHoldings: Record<string, { shares: number; avgCost: number }>) {
+function buildChartData(
+  trades: PaperTrade[],
+  currentCash: number,
+  currentHoldings: Record<string, { shares: number; avgCost: number }>,
+  livePrices: Record<string, number>
+) {
+  const now = new Date();
+
+  // Current value using live prices
+  const currentHoldingsValue = Object.entries(currentHoldings).reduce((sum, [sym, h]) => {
+    const price = livePrices[sym] || h.avgCost;
+    return sum + h.shares * price;
+  }, 0);
+  const currentTotal = currentCash + currentHoldingsValue;
+
   if (!trades || trades.length === 0) {
-    // No trades yet — flat line at starting balance
-    const now = new Date();
     return [
-      { date: "Start", fullDate: new Date(now.getTime() - 86400000 * 7).toISOString(), value: 10000 },
-      { date: "Now", fullDate: now.toISOString(), value: currentCash },
+      { fullDate: new Date(now.getTime() - 86400000 * 7).toISOString(), value: 10000 },
+      { fullDate: now.toISOString(), value: currentTotal },
     ];
   }
 
-  // Trades are newest-first in the array; reverse for chronological
   const sorted = [...trades].reverse();
-
-  // Walk forward: start from $10,000 and replay trades to compute portfolio value at each point
-  // We approximate portfolio value as cash + sum(holdings * avgCost) at each trade
   let cash = 10000;
   const holdings: Record<string, { shares: number; avgCost: number }> = {};
-  const points: { date: string; fullDate: string; value: number; trade?: string }[] = [];
+  const points: { fullDate: string; value: number }[] = [];
 
-  // Starting point
-  points.push({
-    date: new Date(sorted[0].timestamp).toLocaleDateString("en-US", { month: "short", day: "numeric" }),
-    fullDate: sorted[0].timestamp,
-    value: 10000,
-  });
+  points.push({ fullDate: sorted[0].timestamp, value: 10000 });
 
   for (const t of sorted) {
     if (t.type === "BUY") {
@@ -83,36 +79,58 @@ function buildChartData(trades: PaperTrade[], currentCash: number, currentHoldin
       }
     }
 
-    // Portfolio value = cash + sum(shares * avgCost) — using avgCost as approximation
-    const holdingsValue = Object.values(holdings).reduce((sum, h) => sum + h.shares * h.avgCost, 0);
-    const totalValue = cash + holdingsValue;
+    // Use live price if available, otherwise trade-time price
+    const holdingsValue = Object.entries(holdings).reduce((sum, [sym, h]) => {
+      return sum + h.shares * h.avgCost;
+    }, 0);
 
-    points.push({
-      date: new Date(t.timestamp).toLocaleDateString("en-US", { month: "short", day: "numeric" }),
-      fullDate: t.timestamp,
-      value: totalValue,
-      trade: `${t.type} ${t.shares} ${t.symbol} @ $${t.price.toFixed(2)}`,
-    });
+    points.push({ fullDate: t.timestamp, value: cash + holdingsValue });
   }
 
-  // Add current value
-  const currentHoldingsValue = Object.values(currentHoldings).reduce((sum, h) => sum + h.shares * h.avgCost, 0);
-  points.push({
-    date: "Now",
-    fullDate: new Date().toISOString(),
-    value: currentCash + currentHoldingsValue,
-  });
+  // Final "now" point uses live prices
+  points.push({ fullDate: now.toISOString(), value: currentTotal });
 
   return points;
 }
 
 export const PortfolioGraph = () => {
   const { data } = usePaperTrading();
+  const queryClient = useQueryClient();
   const [timeFrame, setTimeFrame] = useState<TimeFrame>("ALL");
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  // Fetch live prices for all held symbols
+  const holdingSymbols = Object.keys(data.paper_holdings);
+  const { data: livePrices = {} } = useQuery({
+    queryKey: ["live-portfolio-prices", holdingSymbols.sort().join(",")],
+    queryFn: async () => {
+      const prices: Record<string, number> = {};
+      await Promise.all(
+        holdingSymbols.map(async (sym) => {
+          try {
+            const q = await getQuote(sym);
+            if (q?.c) prices[sym] = q.c;
+          } catch { /* use avgCost fallback */ }
+        })
+      );
+      return prices;
+    },
+    enabled: holdingSymbols.length > 0,
+    staleTime: 60000,
+    refetchOnWindowFocus: true,
+  });
+
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    await queryClient.invalidateQueries({ queryKey: ["live-portfolio-prices"] });
+    await queryClient.invalidateQueries({ queryKey: ["paper-trading"] });
+    await queryClient.invalidateQueries({ queryKey: ["quote"] });
+    setTimeout(() => setIsRefreshing(false), 800);
+  };
 
   const allChartData = useMemo(
-    () => buildChartData(data.paper_trades, data.paper_cash, data.paper_holdings),
-    [data.paper_trades, data.paper_cash, data.paper_holdings]
+    () => buildChartData(data.paper_trades, data.paper_cash, data.paper_holdings, livePrices),
+    [data.paper_trades, data.paper_cash, data.paper_holdings, livePrices]
   );
 
   const chartData = useMemo(() => {
@@ -140,9 +158,14 @@ export const PortfolioGraph = () => {
   const strokeColor = isPositive ? "hsl(var(--success))" : "hsl(var(--destructive))";
   const gradientId = isPositive ? "gradPositive" : "gradNegative";
 
+  // Positions value using live prices
+  const positionsValue = Object.entries(data.paper_holdings).reduce((sum, [sym, h]) => {
+    const price = livePrices[sym] || h.avgCost;
+    return sum + h.shares * price;
+  }, 0);
+
   return (
     <Card className="overflow-hidden border border-border/50 bg-card/60 backdrop-blur-sm relative">
-      {/* Subtle glow */}
       <div
         className="absolute -top-32 -right-32 w-72 h-72 rounded-full blur-3xl pointer-events-none opacity-30"
         style={{
@@ -154,7 +177,7 @@ export const PortfolioGraph = () => {
 
       {/* Header */}
       <div className="relative p-6 pb-3">
-        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+        <div className="flex items-start justify-between">
           <div className="space-y-1">
             <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-[0.15em]">
               Portfolio Value
@@ -184,9 +207,17 @@ export const PortfolioGraph = () => {
               {isPositive ? "+" : ""}{formatDollar(changeAmount, 2)} ({timeFrame})
             </p>
           </div>
+
+          {/* Refresh button */}
+          <button
+            onClick={handleRefresh}
+            className="p-2 rounded-lg hover:bg-muted/50 transition-colors"
+            title="Refresh prices"
+          >
+            <RefreshCw className={`w-4 h-4 text-muted-foreground ${isRefreshing ? "animate-spin" : ""}`} />
+          </button>
         </div>
 
-        {/* Time frame selectors */}
         <div className="flex items-center gap-1 mt-4 p-0.5 bg-muted/40 border border-border/40 rounded-lg w-fit">
           {timeFrames.map((tf) => (
             <Button
@@ -206,16 +237,16 @@ export const PortfolioGraph = () => {
         </div>
       </div>
 
-      {/* Chart */}
+      {/* Chart — no axes, no grid, no labels */}
       <motion.div
         key={timeFrame}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.4 }}
-        className="h-64 md:h-72 px-2"
+        className="h-56 md:h-64 px-4"
       >
         <ResponsiveContainer width="100%" height="100%">
-          <AreaChart data={chartData} margin={{ top: 8, right: 16, left: 0, bottom: 0 }}>
+          <AreaChart data={chartData} margin={{ top: 4, right: 4, left: 4, bottom: 4 }}>
             <defs>
               <linearGradient id="gradPositive" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stopColor="hsl(142, 71%, 45%)" stopOpacity={0.3} />
@@ -234,25 +265,6 @@ export const PortfolioGraph = () => {
               </filter>
             </defs>
 
-            <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.1} vertical={false} />
-            <XAxis
-              dataKey="date"
-              stroke="hsl(var(--muted-foreground))"
-              fontSize={10}
-              tickLine={false}
-              axisLine={false}
-              dy={8}
-              interval="preserveStartEnd"
-            />
-            <YAxis
-              stroke="hsl(var(--muted-foreground))"
-              fontSize={10}
-              tickLine={false}
-              axisLine={false}
-              tickFormatter={(v) => `$${(v / 1000).toFixed(1)}k`}
-              width={48}
-              domain={["auto", "auto"]}
-            />
             <Tooltip content={<CustomTooltip />} cursor={{ stroke: "hsl(var(--muted-foreground))", strokeWidth: 1, strokeDasharray: "4 4" }} />
             <Area
               type="monotone"
@@ -279,7 +291,7 @@ export const PortfolioGraph = () => {
       <div className="grid grid-cols-3 gap-3 p-6 pt-4">
         {[
           { label: "Buying Power", value: formatDollar(data.paper_cash, 2), color: "text-success" },
-          { label: "Positions", value: formatDollar(Object.values(data.paper_holdings).reduce((s, h) => s + h.shares * h.avgCost, 0), 2), color: "text-primary" },
+          { label: "Positions", value: formatDollar(positionsValue, 2), color: "text-primary" },
           { label: "Trades", value: String(data.paper_trades.length), color: "text-foreground" },
         ].map((stat) => (
           <div key={stat.label} className="p-3 rounded-xl bg-muted/30 border border-border/30">

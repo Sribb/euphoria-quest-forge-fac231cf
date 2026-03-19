@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { PortfolioGraph } from "./PortfolioGraph";
 import { AllocationPieChart } from "./AllocationPieChart";
-import { MarketTicker } from "./MarketTicker";
 import { QuickTradePanel } from "./QuickTradePanel";
 import { AskPluto } from "./AskPluto";
 import { StockTickerBar } from "./StockTickerBar";
@@ -28,9 +27,6 @@ export const TradeDashboard = ({ onNavigate }: TradeDashboardProps) => {
     >
       {/* Live stock ticker bar */}
       <StockTickerBar />
-
-      {/* Market cards row */}
-      <MarketTicker onSelect={setSelectedStock} />
 
       {/* Portfolio performance chart */}
       <PortfolioGraph />
