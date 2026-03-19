@@ -6,33 +6,6 @@
 All colors MUST be HSL.
 */
 
-/* Cursor fix — outside @layer for higher specificity */
-*, *::before, *::after {
-  cursor: default !important;
-}
-
-img, svg, canvas, video, picture {
-  cursor: default !important;
-  pointer-events: none;
-  user-select: none;
-  -webkit-user-select: none;
-}
-
-a, button, [role="button"], input, textarea, select, label[for], summary,
-[tabindex]:not([tabindex="-1"]), .cursor-pointer {
-  cursor: pointer !important;
-}
-
-a img, button img, [role="button"] img {
-  pointer-events: auto;
-}
-
-input[type="text"], input[type="email"], input[type="password"],
-input[type="search"], input[type="url"], input[type="tel"],
-input[type="number"], input:not([type]), textarea, [contenteditable="true"] {
-  cursor: text !important;
-}
-
 @layer base {
   :root {
     --background: 0 0% 98%;
@@ -53,7 +26,7 @@ input[type="number"], input:not([type]), textarea, [contenteditable="true"] {
     --muted: 240 5% 95%;
     --muted-foreground: 240 4% 46%;
 
-    --accent: 263 84% 58%;
+    --accent: 273 84% 65%;
     --accent-foreground: 0 0% 100%;
 
     --success: 142 71% 45%;
@@ -114,7 +87,7 @@ input[type="number"], input:not([type]), textarea, [contenteditable="true"] {
     --muted: 240 10% 15%;
     --muted-foreground: 240 5% 46%;
 
-    --accent: 263 84% 58%;
+    --accent: 273 84% 65%;
     --accent-foreground: 0 0% 100%;
 
     --success: 142 71% 45%;
@@ -179,9 +152,6 @@ input[type="number"], input:not([type]), textarea, [contenteditable="true"] {
     background-size: 256px 256px;
   }
 
-  * {
-    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
-  }
 
   html {
     /* Removed CSS smooth-scroll to prevent conflicts with programmatic scrolling */
