@@ -108,8 +108,19 @@ const authSchema = z.object({
     .regex(/[0-9]/, "Must contain at least one number"),
 });
 
-type SignupRole = "student" | "educator" | null;
-type AuthStep = "choose-role" | "form" | "educator-info";
+// ── Input wrapper with icon (must be top-level to avoid remounts) ──
+const IconInput = ({
+  icon: Icon,
+  children,
+}: {
+  icon: React.ComponentType<{ className?: string }>;
+  children: React.ReactNode;
+}) => (
+  <div className="relative">
+    <Icon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
+    {children}
+  </div>
+);
 
 // ── Main Component ───────────────────────────────────────────────────
 const Auth = () => {
