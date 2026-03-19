@@ -3,7 +3,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useOnboarding } from "@/hooks/useOnboarding";
-import { CourseTopNav } from "@/features/home/components/CourseTopNav";
+import { CourseTopNav, type LearnView } from "@/features/home/components/CourseTopNav";
 import { CourseInfoCard } from "@/features/home/components/CourseInfoCard";
 import { PathwayTrail } from "@/features/home/components/PathwayTrail";
 import { CoursesGrid } from "@/features/home/components/CoursesGrid";
