@@ -8,6 +8,7 @@ import { CourseInfoCard } from "@/features/home/components/CourseInfoCard";
 import { PathwayTrail } from "@/features/home/components/PathwayTrail";
 import { CoursesGrid } from "@/features/home/components/CoursesGrid";
 import { PathwayLessonViewer } from "@/features/pathway/components/PathwayLessonViewer";
+import { TradeDashboard } from "@/features/trading/components/TradeDashboard";
 import { useDailyRewardNotification } from "@/features/learning/hooks/useDailyRewardNotification";
 import { EuphoriaSpinner } from "@/shared/components/EuphoriaSpinner";
 
