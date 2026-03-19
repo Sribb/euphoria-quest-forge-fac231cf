@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { playNav } from "@/lib/soundEffects";
+
 import { useAuth } from "@/hooks/useAuth";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -75,7 +75,6 @@ export const DuoSidebar = ({ activeTab, onTabChange }: DuoSidebarProps) => {
   const handleNavClick = (tabId: string) => {
     onTabChange(tabId);
     setMobileOpen(false);
-    playNav();
   };
 
   // Mobile: bottom tab bar (top 5 items)

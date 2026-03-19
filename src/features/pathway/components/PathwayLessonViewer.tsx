@@ -10,7 +10,7 @@ import { loadCourseLessons } from '../courseIndex';
 import { usePathwayProgress } from '../usePathwayProgress';
 import type { PathwayLesson } from '../types';
 import { EuphoriaSpinner } from '@/shared/components/EuphoriaSpinner';
-import { playSlideForward } from '@/lib/soundEffects';
+import { playClick } from '@/lib/soundEffects';
 
 interface Props {
   courseId: string;
@@ -64,8 +64,8 @@ export function PathwayLessonViewer({ courseId, lessonNumber, onClose, onNextLes
   const handleStepComplete = (correct: boolean) => {
     if (correct) setCorrectSteps(c => c + 1);
     
-    // Play slide forward sound for step transitions
-    playSlideForward();
+    // Play click sound for step transitions
+    playClick();
     
     if (stepIdx + 1 < totalSteps) {
       setStepIdx(i => i + 1);
