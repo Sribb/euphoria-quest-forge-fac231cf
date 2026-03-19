@@ -73,7 +73,7 @@ export const TopNavigation = ({ activeTab, onTabChange }: TopNavigationProps) =>
             />
             <h1 
               onClick={() => handleNavClick("profile")}
-              className="text-lg md:text-xl font-bold text-foreground cursor-pointer hover:scale-105 transition-transform truncate max-w-[120px] md:max-w-none"
+              className="text-lg md:text-xl font-semibold text-foreground cursor-pointer hover:scale-105 transition-transform truncate max-w-[120px] md:max-w-none"
             >
               {displayName}
             </h1>
