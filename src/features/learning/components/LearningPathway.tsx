@@ -47,7 +47,9 @@ export const LearningPathway = ({
   const [hovered, setHovered] = useState<string | null>(null);
 
   const handleNodeClick = (lesson: Lesson) => {
-    if (!lesson.is_locked) setSelectedLesson(lesson);
+    if (!lesson.is_locked) {
+      onLessonSelect(lesson.id);
+    }
   };
 
   const handleStartChallenge = () => {
