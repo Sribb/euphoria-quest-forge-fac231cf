@@ -3,6 +3,8 @@ import { PathwaySelector } from "@/features/learning/components/PathwaySelector"
 import { PathwayLessonViewer } from "@/features/pathway/components/PathwayLessonViewer";
 import { LearningPathway } from "@/features/learning/components/LearningPathway";
 import { useQuery } from "@tanstack/react-query";
+import { CourseTopNav, type LearnView } from "@/features/home/components/CourseTopNav";
+import { TradeDashboard } from "@/features/trading/components/TradeDashboard";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useOnboarding } from "@/hooks/useOnboarding";
