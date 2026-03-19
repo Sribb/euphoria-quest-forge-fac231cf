@@ -4,7 +4,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
-export type LearnView = "home" | "trade";
+export type LearnView = "home" | "trade" | "courses";
 
 interface CourseTopNavProps {
   activeView: LearnView;
