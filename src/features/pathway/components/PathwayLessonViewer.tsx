@@ -6,6 +6,7 @@ import { X } from 'lucide-react';
 import { StepRenderer } from './StepRenderer';
 import { CompletionScreen } from './CompletionScreen';
 import { ChallengeRound } from './ChallengeRound';
+import { HintProvider } from './HintContext';
 import { loadCourseLessons } from '../courseIndex';
 import { usePathwayProgress } from '../usePathwayProgress';
 import type { PathwayLesson } from '../types';
