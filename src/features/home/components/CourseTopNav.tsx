@@ -3,11 +3,12 @@ import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import logo from "@/assets/euphoria-logo-button.png";
+
+export type LearnView = "home" | "trade";
 
 interface CourseTopNavProps {
-  activeView: "home" | "courses";
-  onViewChange: (view: "home" | "courses") => void;
+  activeView: LearnView;
+  onViewChange: (view: LearnView) => void;
 }
 
 export const CourseTopNav = ({ activeView, onViewChange }: CourseTopNavProps) => {
@@ -41,34 +42,46 @@ export const CourseTopNav = ({ activeView, onViewChange }: CourseTopNavProps) =>
 
   const streak = streakData?.current_streak ?? 0;
   const gems = profile?.coins ?? 0;
-  
+
+  const tabs: { id: LearnView; label: string }[] = [
+    { id: "home", label: "Home" },
+    { id: "trade", label: "Trade" },
+  ];
 
   return (
     <div className="w-full">
-      {/* Main nav */}
       <div className="flex items-center justify-between px-6 h-16 border-b border-border/40">
-        {/* Left: Logo + tabs */}
-        <div className="flex items-center gap-8">
-          <span className="text-sm font-semibold text-foreground">Home</span>
+        <div className="flex items-center gap-6">
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => onViewChange(tab.id)}
+              className={cn(
+                "text-sm font-semibold transition-colors relative pb-0.5",
+                activeView === tab.id
+                  ? "text-foreground"
+                  : "text-muted-foreground hover:text-foreground/80"
+              )}
+            >
+              {tab.label}
+              {activeView === tab.id && (
+                <span className="absolute -bottom-[17px] left-0 right-0 h-[2px] bg-primary rounded-full" />
+              )}
+            </button>
+          ))}
         </div>
 
-        {/* Right: Stats pills + menu */}
         <div className="flex items-center gap-2">
-          {/* Streak */}
           <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-orange-500/10 border border-orange-500/20">
             <Flame className="w-4 h-4 text-orange-500" />
             <span className="text-xs font-bold text-orange-500">{streak}</span>
           </div>
-
-          {/* Gems / Euphorium */}
           <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20">
             <Gem className="w-4 h-4 text-primary" />
             <span className="text-xs font-bold text-primary">{gems}</span>
           </div>
-
         </div>
       </div>
-
     </div>
   );
 };
