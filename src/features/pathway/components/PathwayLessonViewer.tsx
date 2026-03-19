@@ -102,6 +102,7 @@ export function PathwayLessonViewer({ courseId, lessonNumber, onClose, onNextLes
   const orbPos = getOrbPositions(stepIdx);
 
   return (
+    <HintProvider>
     <div className="fixed inset-0 z-50 flex flex-col overflow-hidden">
       {/* ── LAYERED BACKGROUND ── */}
       <div className="absolute inset-0" style={{
