@@ -56,14 +56,16 @@ export function InteractiveTutorial({ onComplete, activeTab, onNavigate }: Inter
     const selector = STEPS[step].targetSelector;
     const el = document.querySelector(selector);
     if (el) {
-      // Scroll into view if needed
-      el.scrollIntoView({ behavior: "smooth", block: "center" });
+      if (!hasScrolled) {
+        el.scrollIntoView({ behavior: "smooth", block: "center" });
+        setHasScrolled(true);
+      }
       const rect = el.getBoundingClientRect();
       setTargetRect(rect);
     } else {
       setTargetRect(null);
     }
-  }, [step]);
+  }, [step, hasScrolled]);
 
   useEffect(() => {
     updateTargetPosition();
