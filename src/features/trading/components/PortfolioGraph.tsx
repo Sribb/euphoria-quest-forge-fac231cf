@@ -129,17 +129,48 @@ export const PortfolioGraph = () => {
 
   const chartData = useMemo(() => {
     const now = Date.now();
-    const cutoffs: Record<TimeFrame, number> = {
-      "1D": now - 86400000,
-      "1W": now - 7 * 86400000,
-      "1M": now - 30 * 86400000,
-      "3M": now - 90 * 86400000,
-      "1Y": now - 365 * 86400000,
+    const durations: Record<TimeFrame, number> = {
+      "1D": 86400000,
+      "1W": 7 * 86400000,
+      "1M": 30 * 86400000,
+      "3M": 90 * 86400000,
+      "1Y": 365 * 86400000,
       "ALL": 0,
     };
-    const cutoff = cutoffs[timeFrame];
+    const duration = durations[timeFrame];
+    const cutoff = duration > 0 ? now - duration : 0;
+
+    // Filter points within the timeframe
     const filtered = allChartData.filter((p) => new Date(p.fullDate).getTime() >= cutoff);
-    return filtered.length >= 2 ? filtered : allChartData;
+
+    if (filtered.length >= 2) return filtered;
+
+    // Not enough data points in this range — interpolate a synthetic line
+    // Find the value at the cutoff boundary by looking at the last point before it
+    const allSorted = [...allChartData].sort(
+      (a, b) => new Date(a.fullDate).getTime() - new Date(b.fullDate).getTime()
+    );
+    let startVal = 10000;
+    for (const p of allSorted) {
+      if (new Date(p.fullDate).getTime() <= cutoff) startVal = p.value;
+      else break;
+    }
+    const endVal = allSorted[allSorted.length - 1]?.value ?? startVal;
+
+    // Generate evenly-spaced points across the timeframe
+    const pointCount = timeFrame === "1D" ? 24 : timeFrame === "1W" ? 7 : 12;
+    const step = (duration > 0 ? duration : now) / pointCount;
+    const points: { fullDate: string; value: number }[] = [];
+    for (let i = 0; i <= pointCount; i++) {
+      const t = (duration > 0 ? cutoff : 0) + step * i;
+      // Linear interpolation between start and end
+      const ratio = i / pointCount;
+      points.push({
+        fullDate: new Date(t).toISOString(),
+        value: startVal + (endVal - startVal) * ratio,
+      });
+    }
+    return points;
   }, [allChartData, timeFrame]);
 
   const startValue = chartData[0]?.value || 10000;
