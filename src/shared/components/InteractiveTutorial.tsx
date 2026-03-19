@@ -132,9 +132,7 @@ export function InteractiveTutorial({ onComplete, activeTab, onNavigate }: Inter
             transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
             className="max-w-sm text-center"
           >
-            <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-primary to-accent mx-auto flex items-center justify-center mb-6 shadow-lg shadow-primary/30">
-              <Sparkles className="w-10 h-10 text-primary-foreground" />
-            </div>
+            <img src={euphoriaLogo} alt="Euphoria" className="w-20 h-20 object-contain mx-auto mb-6" />
             <h1 className="text-3xl font-black text-foreground mb-3">Welcome to Euphoria!</h1>
             <p className="text-muted-foreground text-lg mb-8 leading-relaxed">
               Let us give you a quick tour so you know where everything is.
