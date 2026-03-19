@@ -702,8 +702,12 @@ function ProgressiveCalcView({ step, onComplete }: { step: ProgressiveCalcStep; 
 /* ─── Visual Interactive ─── */
 function VisualInteractiveView({ step, onComplete }: { step: VisualInteractiveStep; onComplete: (c: boolean) => void }) {
   const [sel, setSel] = useState<number | null>(null);
+  const hintCtx = useHintContext();
+
+  useEffect(() => { hintCtx?.resetEliminated(); }, []);
+
   const pick = (i: number) => {
-    if (sel !== null) return;
+    if (sel !== null || hintCtx?.eliminated.has(i)) return;
     setSel(i);
     if (i === step.correct) {
       playCorrect();
@@ -717,14 +721,20 @@ function VisualInteractiveView({ step, onComplete }: { step: VisualInteractiveSt
       <div className="w-full p-5 rounded-2xl border border-border text-center" style={{ background: 'rgba(255,255,255,0.03)', maxWidth: '720px' }}>
         <p className="text-sm text-muted-foreground italic">{step.description}</p>
       </div>
-      <h2 className="text-lg lg:text-xl font-bold text-foreground text-center" style={{ maxWidth: '720px' }}>{step.question}</h2>
+      <div className="flex items-center justify-between w-full" style={{ maxWidth: '680px' }}>
+        <h2 className="text-lg lg:text-xl font-bold text-foreground text-center" style={{ maxWidth: '620px' }}>{step.question}</h2>
+        {sel === null && <HintButton correctIndex={step.correct} totalOptions={step.options.length} />}
+      </div>
       <div className="flex flex-col gap-3 w-full" style={{ maxWidth: '680px' }}>
         {step.options.map((o, i) => (
-          <Button key={i} variant={sel === i ? (i === step.correct ? "default" : "destructive") : "outline"}
-            onClick={() => pick(i)} disabled={sel !== null}
-            className={cn("justify-start text-left rounded-xl h-auto py-4 px-5 whitespace-normal leading-relaxed text-[17px]",
-              sel !== null && i === step.correct && "border-emerald-500 bg-emerald-500/10 text-emerald-400"
-            )}>{o}</Button>
+          <motion.div key={i} animate={hintCtx?.eliminated.has(i) ? { opacity: 0.3, scale: 0.95 } : { opacity: 1, scale: 1 }}>
+            <Button variant={sel === i ? (i === step.correct ? "default" : "destructive") : "outline"}
+              onClick={() => pick(i)} disabled={sel !== null || hintCtx?.eliminated.has(i)}
+              className={cn("justify-start text-left rounded-xl h-auto py-4 px-5 whitespace-normal leading-relaxed text-[17px] w-full",
+                sel !== null && i === step.correct && "border-emerald-500 bg-emerald-500/10 text-emerald-400",
+                hintCtx?.eliminated.has(i) && "line-through"
+              )}>{o}</Button>
+          </motion.div>
         ))}
       </div>
       {sel !== null && (
