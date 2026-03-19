@@ -413,6 +413,12 @@ export function MicroCheckView({ step, onComplete }: { step: MicroCheckStep; onC
   const pick = (i: number) => {
     if (sel !== null) return;
     setSel(i);
+    if (i === step.correct) {
+      playCorrect();
+      fireSmallConfetti();
+    } else {
+      playIncorrect();
+    }
   };
 
   return (

@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { LearningPathway } from "@/features/learning/components/LearningPathway";
 import { PathwaySelector } from "@/features/learning/components/PathwaySelector";
 import { PathwayLessonViewer } from "@/features/pathway/components/PathwayLessonViewer";
+import { LearningPathway } from "@/features/learning/components/LearningPathway";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -151,7 +151,6 @@ const Learn = ({ onNavigate, selectedLesson, onLessonSelect }: LearnProps) => {
           <LearningPathway
             lessons={filtered}
             onLessonSelect={onLessonSelect}
-            onLegendarySelect={() => {}}
             completedCount={completedCount}
             totalCount={filtered.length}
             pathwayTitle={meta.title}

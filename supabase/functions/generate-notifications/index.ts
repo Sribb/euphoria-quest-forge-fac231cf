@@ -82,7 +82,7 @@ serve(async (req) => {
       action_url?: string;
     }> = [];
 
-    // 1. Streak protection alerts
+    // 1. Streak protection alerts (deduplicated — max 1 per day)
     if (preferences.streak_alerts) {
       const { data: streak } = await supabase
         .from("streaks")
@@ -101,16 +101,28 @@ serve(async (req) => {
           const diffDays = Math.floor((today.getTime() - lastDate.getTime()) / (1000 * 60 * 60 * 24));
 
           if (diffDays === 1) {
-            // Haven't logged in today yet
-            notifications.push({
-              user_id: userId,
-              title: "🔥 Protect Your Streak!",
-              message: `Your ${streak.current_streak}-day streak is at risk! Complete a lesson today to keep it alive.`,
-              notification_type: "streak_alert",
-              category: "urgent",
-              icon: "🔥",
-              action_url: "/learn",
-            });
+            // Check if we already sent a streak alert today
+            const todayStart = new Date();
+            todayStart.setHours(0, 0, 0, 0);
+            const { data: existingStreak } = await supabase
+              .from("notifications")
+              .select("id")
+              .eq("user_id", userId)
+              .eq("notification_type", "streak_alert")
+              .gte("created_at", todayStart.toISOString())
+              .limit(1);
+
+            if (!existingStreak || existingStreak.length === 0) {
+              notifications.push({
+                user_id: userId,
+                title: "🔥 Protect Your Streak!",
+                message: `Your ${streak.current_streak}-day streak is at risk! Complete a lesson today to keep it alive.`,
+                notification_type: "streak_alert",
+                category: "urgent",
+                icon: "🔥",
+                action_url: "/learn",
+              });
+            }
           }
         }
       }
