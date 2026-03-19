@@ -794,6 +794,7 @@ export function CaseStudyView({ step, onComplete }: { step: CaseStudyStep; onCom
 
   const revealNext = () => {
     if (revealedIdx < step.events.length) {
+      playClick();
       setRevealedIdx(prev => prev + 1);
     }
   };
