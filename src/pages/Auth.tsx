@@ -108,6 +108,9 @@ const authSchema = z.object({
     .regex(/[0-9]/, "Must contain at least one number"),
 });
 
+type SignupRole = "student" | "educator" | null;
+type AuthStep = "choose-role" | "form" | "educator-info";
+
 // ── Input wrapper with icon (must be top-level to avoid remounts) ──
 const IconInput = ({
   icon: Icon,
