@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { DuoSidebar } from "@/shared/components/DuoSidebar";
 import { PersonalizedWelcomeOverlay } from "@/shared/components/PersonalizedWelcomeOverlay";
+import { InteractiveTutorial, useTutorialNeeded } from "@/shared/components/InteractiveTutorial";
 import { AnimatePresence } from "framer-motion";
 import { GlobalAIAssistant } from "@/shared/components/GlobalAIAssistant";
 import { AmbientBackground } from "@/shared/components/AmbientBackground";
@@ -37,16 +38,26 @@ const Index = () => {
   const [showStockSearch, setShowStockSearch] = useState(false);
   const [showWelcome, setShowWelcome] = useState(false);
   const [pendingConversationId, setPendingConversationId] = useState<string | null>(null);
+  const tutorialNeeded = useTutorialNeeded();
+  const [showTutorial, setShowTutorial] = useState(false);
 
   useEffect(() => {
     const seen = localStorage.getItem("euphoria_welcome_seen");
-    if (!seen) setShowWelcome(true);
-  }, []);
+    if (!seen) {
+      setShowWelcome(true);
+    } else if (tutorialNeeded) {
+      setShowTutorial(true);
+    }
+  }, [tutorialNeeded]);
 
   const handleWelcomeComplete = (navigateTo?: string) => {
     localStorage.setItem("euphoria_welcome_seen", "true");
     setShowWelcome(false);
     if (navigateTo) setActiveTab(navigateTo);
+    // Show tutorial after welcome overlay closes
+    if (tutorialNeeded) {
+      setShowTutorial(true);
+    }
   };
 
   const handleNavigate = (tab: string) => {
@@ -167,6 +178,14 @@ const Index = () => {
       <AnimatePresence>
         {showWelcome && <PersonalizedWelcomeOverlay onComplete={handleWelcomeComplete} />}
       </AnimatePresence>
+
+      {showTutorial && !showWelcome && (
+        <InteractiveTutorial
+          onComplete={() => setShowTutorial(false)}
+          activeTab={activeTab}
+          onNavigate={handleNavigate}
+        />
+      )}
 
       {showSidebar && <DuoSidebar activeTab={activeTab} onTabChange={handleNavigate} />}
 
