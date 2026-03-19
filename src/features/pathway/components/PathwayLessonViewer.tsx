@@ -10,7 +10,7 @@ import { loadCourseLessons } from '../courseIndex';
 import { usePathwayProgress } from '../usePathwayProgress';
 import type { PathwayLesson } from '../types';
 import { EuphoriaSpinner } from '@/shared/components/EuphoriaSpinner';
-import { playSlideForward } from '@/lib/soundEffects';
+import { playClick } from '@/lib/soundEffects';
 
 interface Props {
   courseId: string;
