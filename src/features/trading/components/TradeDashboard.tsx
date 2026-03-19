@@ -4,6 +4,7 @@ import { AllocationPieChart } from "./AllocationPieChart";
 import { MarketTicker } from "./MarketTicker";
 import { QuickTradePanel } from "./QuickTradePanel";
 import { AskPluto } from "./AskPluto";
+import { StockTickerBar } from "./StockTickerBar";
 import { StockDetailModal } from "@/features/paper-trading/components/StockDetailModal";
 import { motion } from "framer-motion";
 
@@ -25,11 +26,14 @@ export const TradeDashboard = ({ onNavigate }: TradeDashboardProps) => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35, ease: "easeOut" }}
     >
+      {/* Live stock ticker bar */}
+      <StockTickerBar />
+
+      {/* Market cards row */}
+      <MarketTicker onSelect={setSelectedStock} />
+
       {/* Portfolio performance chart */}
       <PortfolioGraph />
-
-      {/* Market ticker row */}
-      <MarketTicker onSelect={setSelectedStock} />
 
       {/* Two-column: Allocation + Quick Trade */}
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
