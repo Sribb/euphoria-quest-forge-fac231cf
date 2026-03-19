@@ -577,8 +577,13 @@ function SliderView({ step, onComplete }: { step: SliderStep; onComplete: (c: bo
 /* ─── Scenario — Manual continue ─── */
 function ScenarioView({ step, onComplete }: { step: ScenarioStep; onComplete: (c: boolean) => void }) {
   const [sel, setSel] = useState<number | null>(null);
+  const hintCtx = useHintContext();
+  const correctIdx = step.choices.findIndex(c => c.correct);
+
+  useEffect(() => { hintCtx?.resetEliminated(); }, []);
+
   const pick = (i: number) => {
-    if (sel !== null) return;
+    if (sel !== null || hintCtx?.eliminated.has(i)) return;
     setSel(i);
     if (step.choices[i].correct) {
       playCorrect();
@@ -589,8 +594,10 @@ function ScenarioView({ step, onComplete }: { step: ScenarioStep; onComplete: (c
   };
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col items-center gap-5 px-6 w-full min-h-[85vh]" style={{ maxWidth: '800px', margin: '0 auto' }}>
-      <span className="text-xs font-bold text-primary uppercase tracking-widest">✦ SCENARIO</span>
-      {/* Scenario card */}
+      <div className="flex items-center justify-between w-full" style={{ maxWidth: '720px' }}>
+        <span className="text-xs font-bold text-primary uppercase tracking-widest">✦ SCENARIO</span>
+        {sel === null && <HintButton correctIndex={correctIdx >= 0 ? correctIdx : 0} totalOptions={step.choices.length} />}
+      </div>
       <div className="w-full p-5 rounded-2xl" style={{
         background: 'rgba(139,92,246,0.06)', border: '1px solid rgba(139,92,246,0.15)',
         maxWidth: '720px',
@@ -599,15 +606,17 @@ function ScenarioView({ step, onComplete }: { step: ScenarioStep; onComplete: (c
       </div>
       <div className="flex flex-col gap-3 w-full" style={{ maxWidth: '680px' }}>
         {step.choices.map((ch, i) => (
-          <div key={i}>
+          <motion.div key={i} animate={hintCtx?.eliminated.has(i) ? { opacity: 0.3, scale: 0.95 } : { opacity: 1, scale: 1 }}>
             <Button variant={sel === i ? (ch.correct ? "default" : "destructive") : "outline"}
-              onClick={() => pick(i)} disabled={sel !== null}
-              className="w-full justify-start text-left rounded-xl h-auto py-4 px-5 whitespace-normal leading-relaxed text-[17px]">{ch.label}</Button>
+              onClick={() => pick(i)} disabled={sel !== null || hintCtx?.eliminated.has(i)}
+              className={cn("w-full justify-start text-left rounded-xl h-auto py-4 px-5 whitespace-normal leading-relaxed text-[17px]",
+                hintCtx?.eliminated.has(i) && "line-through"
+              )}>{ch.label}</Button>
             {sel === i && (
               <motion.p initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}
                 className={cn("text-sm mt-2 p-4 rounded-xl leading-relaxed", ch.correct ? "bg-emerald-500/10 text-emerald-400" : "bg-red-500/10 text-red-400")}>{ch.outcome}</motion.p>
             )}
-          </div>
+          </motion.div>
         ))}
       </div>
       {sel !== null && (
