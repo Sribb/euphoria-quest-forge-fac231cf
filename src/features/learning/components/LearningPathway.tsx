@@ -42,26 +42,11 @@ export const LearningPathway = ({
   pathwayColor,
   onBack,
 }: LearningPathwayProps) => {
-  const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
   const [hovered, setHovered] = useState<string | null>(null);
 
   const handleNodeClick = (lesson: Lesson) => {
     if (!lesson.is_locked) {
       onLessonSelect(lesson.id);
-    }
-  };
-
-  const handleStartChallenge = () => {
-    if (selectedLesson) {
-      onLessonSelect(selectedLesson.id);
-      setSelectedLesson(null);
-    }
-  };
-
-  const handleStartLegendary = () => {
-    if (selectedLesson && onLegendarySelect) {
-      onLegendarySelect(selectedLesson.id);
-      setSelectedLesson(null);
     }
   };
 
