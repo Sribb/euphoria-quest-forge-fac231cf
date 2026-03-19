@@ -75,7 +75,6 @@ export const DuoSidebar = ({ activeTab, onTabChange }: DuoSidebarProps) => {
   const handleNavClick = (tabId: string) => {
     onTabChange(tabId);
     setMobileOpen(false);
-    playNav();
   };
 
   // Mobile: bottom tab bar (top 5 items)

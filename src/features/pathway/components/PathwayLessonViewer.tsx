@@ -64,8 +64,8 @@ export function PathwayLessonViewer({ courseId, lessonNumber, onClose, onNextLes
   const handleStepComplete = (correct: boolean) => {
     if (correct) setCorrectSteps(c => c + 1);
     
-    // Play slide forward sound for step transitions
-    playSlideForward();
+    // Play click sound for step transitions
+    playClick();
     
     if (stepIdx + 1 < totalSteps) {
       setStepIdx(i => i + 1);

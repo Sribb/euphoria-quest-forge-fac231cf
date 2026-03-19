@@ -185,26 +185,40 @@ const playShimmer = (ctx: AudioContext, startTime: number, duration: number, vol
 
 // ── SOUND EFFECTS ───────────────────────────────────────
 
-/** Soft, gentle tap — a quiet rounded "boop" for UI interactions */
+/** Brilliant-style crisp, satisfying click — rounded pop with subtle harmonic ring */
 export const playClick = () => {
   if (!isSoundEnabled()) return;
   const ctx = getCtx();
   const t = ctx.currentTime;
 
-  // Soft sine boop — warm, low-pitched, gentle
-  const osc = ctx.createOscillator();
-  osc.type = "sine";
-  osc.frequency.setValueAtTime(520, t);
-  osc.frequency.exponentialRampToValueAtTime(380, t + 0.06);
+  // Primary body — a clean, rounded pop
+  const osc1 = ctx.createOscillator();
+  osc1.type = "sine";
+  osc1.frequency.setValueAtTime(880, t);
+  osc1.frequency.exponentialRampToValueAtTime(440, t + 0.04);
 
-  const gain = ctx.createGain();
-  gain.gain.setValueAtTime(0.001, t);
-  gain.gain.linearRampToValueAtTime(0.09, t + 0.008);
-  gain.gain.exponentialRampToValueAtTime(0.001, t + 0.07);
+  const gain1 = ctx.createGain();
+  gain1.gain.setValueAtTime(0.001, t);
+  gain1.gain.linearRampToValueAtTime(0.13, t + 0.004);
+  gain1.gain.exponentialRampToValueAtTime(0.001, t + 0.06);
 
-  osc.connect(gain).connect(ctx.destination);
-  osc.start(t);
-  osc.stop(t + 0.08);
+  osc1.connect(gain1).connect(ctx.destination);
+  osc1.start(t);
+  osc1.stop(t + 0.07);
+
+  // Subtle harmonic ring for warmth
+  const osc2 = ctx.createOscillator();
+  osc2.type = "sine";
+  osc2.frequency.value = 1320;
+
+  const gain2 = ctx.createGain();
+  gain2.gain.setValueAtTime(0.001, t);
+  gain2.gain.linearRampToValueAtTime(0.03, t + 0.003);
+  gain2.gain.exponentialRampToValueAtTime(0.001, t + 0.045);
+
+  osc2.connect(gain2).connect(ctx.destination);
+  osc2.start(t);
+  osc2.stop(t + 0.05);
 };
 
 /** ✅ Correct — Duolingo's signature rising major-third chime */
