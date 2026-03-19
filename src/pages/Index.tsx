@@ -50,6 +50,10 @@ const Index = () => {
     localStorage.setItem("euphoria_welcome_seen", "true");
     setShowWelcome(false);
     if (navigateTo) setActiveTab(navigateTo);
+    // Show tutorial after welcome overlay closes
+    if (tutorialNeeded) {
+      setShowTutorial(true);
+    }
   };
 
   const handleNavigate = (tab: string) => {
