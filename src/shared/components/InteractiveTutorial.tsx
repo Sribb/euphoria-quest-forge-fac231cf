@@ -16,18 +16,52 @@ interface TutorialStep {
 
 const STEPS: TutorialStep[] = [
   {
-    targetSelector: '[data-tutorial="learn-tab"]',
-    message: "This is your learning hub!",
-    subMessage: "All your courses and lessons live here. Let's explore.",
-    arrowDirection: "left",
-    requireClick: false,
+    targetSelector: '[data-tutorial="tab-dashboard"]',
+    message: "Learn",
+    subMessage: "Your learning hub — courses, lessons, and your pathway trail all live here.",
+    arrowDirection: "right",
   },
   {
-    targetSelector: '[data-tutorial="first-lesson"]',
-    message: "Tap here to start your first lesson!",
-    subMessage: "Each circle is a lesson. Complete them to progress through the trail.",
-    arrowDirection: "up",
-    requireClick: true,
+    targetSelector: '[data-tutorial="tab-feed"]',
+    message: "Feed",
+    subMessage: "Bite-sized financial tips and micro-lessons delivered daily.",
+    arrowDirection: "right",
+  },
+  {
+    targetSelector: '[data-tutorial="tab-trade"]',
+    message: "Trade",
+    subMessage: "Practice trading with virtual money in a realistic AI-powered market simulator.",
+    arrowDirection: "right",
+  },
+  {
+    targetSelector: '[data-tutorial="tab-games"]',
+    message: "Games",
+    subMessage: "Sharpen your financial skills with fun, interactive games and earn XP.",
+    arrowDirection: "right",
+  },
+  {
+    targetSelector: '[data-tutorial="tab-shop"]',
+    message: "Shop",
+    subMessage: "Spend your earned Euphorium on power-ups, themes, and cosmetics.",
+    arrowDirection: "right",
+  },
+  {
+    targetSelector: '[data-tutorial="tab-community"]',
+    message: "Social",
+    subMessage: "Connect with other learners, share insights, and discuss strategies.",
+    arrowDirection: "right",
+  },
+  {
+    targetSelector: '[data-tutorial="tab-certificates"]',
+    message: "Awards",
+    subMessage: "View your badges, certificates, and achievements as you level up.",
+    arrowDirection: "right",
+  },
+  {
+    targetSelector: '[data-tutorial="tab-profile"]',
+    message: "Profile",
+    subMessage: "Your stats, settings, and activity history — all in one place.",
+    arrowDirection: "right",
   },
 ];
 
