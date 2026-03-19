@@ -179,6 +179,14 @@ const Index = () => {
         {showWelcome && <PersonalizedWelcomeOverlay onComplete={handleWelcomeComplete} />}
       </AnimatePresence>
 
+      {showTutorial && !showWelcome && (
+        <InteractiveTutorial
+          onComplete={() => setShowTutorial(false)}
+          activeTab={activeTab}
+          onNavigate={handleNavigate}
+        />
+      )}
+
       {showSidebar && <DuoSidebar activeTab={activeTab} onTabChange={handleNavigate} />}
 
       <main className={`flex-1 ${isMobile ? 'pt-16 pb-20 px-4' : 'ml-[220px] px-6 py-6'}`}>
