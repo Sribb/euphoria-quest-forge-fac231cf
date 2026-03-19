@@ -343,7 +343,13 @@ function TrueFalseView({ step, onComplete }: { step: TrueFalseStep; onComplete: 
     setAnswered(true);
     const correct = val === current.a;
     setLastCorrect(correct);
-    if (correct) setScore(s => s + 1);
+    if (correct) {
+      setScore(s => s + 1);
+      playCorrect();
+      fireSmallConfetti();
+    } else {
+      playIncorrect();
+    }
     setShowExplanation(true);
   };
 
