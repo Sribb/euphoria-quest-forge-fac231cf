@@ -68,7 +68,7 @@ export const TopNavigation = ({ activeTab, onTabChange }: TopNavigationProps) =>
             <img 
               src={logo} 
               alt="Logo" 
-              className="w-8 h-8 md:w-10 md:h-10 object-contain cursor-pointer hover:scale-105 transition-transform"
+              className="w-8 h-8 md:w-10 md:h-10 object-contain cursor-pointer hover:scale-110 active:scale-95 transition-transform"
               onClick={() => handleNavClick("profile")}
             />
             <h1 
