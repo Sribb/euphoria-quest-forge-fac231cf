@@ -41,7 +41,7 @@ export const CourseTopNav = ({ activeView, onViewChange }: CourseTopNavProps) =>
 
   const streak = streakData?.current_streak ?? 0;
   const gems = profile?.coins ?? 0;
-  const energy = 5; // Static hearts for now
+  
 
   return (
     <div className="w-full">
