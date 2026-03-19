@@ -1,4 +1,5 @@
 import { usePaperTrading, PaperTrade } from "@/hooks/usePaperTrading";
+import { TrendingUp } from "lucide-react";
 
 export const HistoryTab = () => {
   const { data } = usePaperTrading();
