@@ -302,8 +302,12 @@ function DragSortView({ step, onComplete }: { step: DragSortStep; onComplete: (c
 /* ─── Quiz — Manual continue, desktop sized ─── */
 function QuizView({ step, onComplete }: { step: QuizStep; onComplete: (c: boolean) => void }) {
   const [sel, setSel] = useState<number | null>(null);
+  const hintCtx = useHintContext();
+
+  useEffect(() => { hintCtx?.resetEliminated(); }, []);
+
   const pick = (i: number) => {
-    if (sel !== null) return;
+    if (sel !== null || hintCtx?.eliminated.has(i)) return;
     setSel(i);
     if (i === step.correct) {
       playCorrect();
@@ -314,16 +318,22 @@ function QuizView({ step, onComplete }: { step: QuizStep; onComplete: (c: boolea
   };
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col items-center gap-5 px-6 w-full min-h-[85vh]" style={{ maxWidth: '800px', margin: '0 auto' }}>
-      <span className="text-xs font-bold text-primary uppercase tracking-widest">✦ MULTIPLE CHOICE</span>
+      <div className="flex items-center justify-between w-full" style={{ maxWidth: '680px' }}>
+        <span className="text-xs font-bold text-primary uppercase tracking-widest">✦ MULTIPLE CHOICE</span>
+        {sel === null && <HintButton correctIndex={step.correct} totalOptions={step.options.length} />}
+      </div>
       <h2 className="text-lg lg:text-xl font-bold text-foreground text-center leading-snug" style={{ maxWidth: '720px' }}>{step.question}</h2>
       <div className="flex flex-col gap-3 w-full" style={{ maxWidth: '680px' }}>
         {step.options.map((o, i) => (
-          <Button key={i} variant={sel === i ? (i === step.correct ? "default" : "destructive") : "outline"}
-            onClick={() => pick(i)} disabled={sel !== null}
-            className={cn("justify-start text-left rounded-xl h-auto whitespace-normal leading-relaxed",
-              "text-[17px] py-5 px-5",
-              sel !== null && i === step.correct && "border-emerald-500 bg-emerald-500/10 text-emerald-400"
-            )}>{o}</Button>
+          <motion.div key={i} animate={hintCtx?.eliminated.has(i) ? { opacity: 0.3, scale: 0.95 } : { opacity: 1, scale: 1 }}>
+            <Button variant={sel === i ? (i === step.correct ? "default" : "destructive") : "outline"}
+              onClick={() => pick(i)} disabled={sel !== null || hintCtx?.eliminated.has(i)}
+              className={cn("justify-start text-left rounded-xl h-auto whitespace-normal leading-relaxed w-full",
+                "text-[17px] py-5 px-5",
+                sel !== null && i === step.correct && "border-emerald-500 bg-emerald-500/10 text-emerald-400",
+                hintCtx?.eliminated.has(i) && "line-through"
+              )}>{o}</Button>
+          </motion.div>
         ))}
       </div>
       {sel !== null && (
