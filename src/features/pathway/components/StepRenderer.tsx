@@ -133,6 +133,12 @@ function FillBlankView({ step, onComplete }: { step: FillBlankStep; onComplete: 
   const submit = () => {
     if (sel === null || submitted) return;
     setSubmitted(true);
+    if (sel === step.correct) {
+      playCorrect();
+      fireSmallConfetti();
+    } else {
+      playIncorrect();
+    }
   };
 
   return (
