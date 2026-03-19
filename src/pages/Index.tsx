@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { DuoSidebar } from "@/shared/components/DuoSidebar";
 import { PersonalizedWelcomeOverlay } from "@/shared/components/PersonalizedWelcomeOverlay";
+import { InteractiveTutorial, useTutorialNeeded } from "@/shared/components/InteractiveTutorial";
 import { AnimatePresence } from "framer-motion";
 import { GlobalAIAssistant } from "@/shared/components/GlobalAIAssistant";
 import { AmbientBackground } from "@/shared/components/AmbientBackground";

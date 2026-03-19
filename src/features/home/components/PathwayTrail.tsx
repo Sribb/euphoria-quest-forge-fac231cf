@@ -142,6 +142,7 @@ export const PathwayTrail = ({
                 <button
                   onClick={() => handleNodeClick(lesson, index)}
                   disabled={lesson.is_locked}
+                  data-tutorial={isNext ? "first-lesson" : undefined}
                   className={cn(
                     "relative w-[70px] h-[70px] rounded-full flex items-center justify-center z-10 transition-all duration-200",
                     // 3D shadow effect

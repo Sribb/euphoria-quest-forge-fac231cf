@@ -186,6 +186,7 @@ export const DuoSidebar = ({ activeTab, onTabChange }: DuoSidebarProps) => {
             <button
               key={item.id}
               onClick={() => handleNavClick(item.id)}
+              data-tutorial={item.id === "dashboard" ? "learn-tab" : undefined}
               className={cn(
                 "w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-left font-bold text-[15px] transition-all duration-200",
                 isActive
