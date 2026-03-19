@@ -5,6 +5,8 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Slider } from '@/components/ui/slider';
 import { ArrowRight, TrendingUp, BarChart3, Shield, Home, Coins } from 'lucide-react';
+import { playCorrect, playIncorrect, playReward, playLevelUp, playStreak, playNav, playError, playSnap, playUnlock, playMilestone } from '@/lib/soundEffects';
+import { fireSmallConfetti, fireStarConfetti } from '@/lib/confetti';
 import type {
   LessonStep, ConceptStep, TapRevealStep, FillBlankStep, DragSortStep,
   QuizStep, TrueFalseStep, MatchStep, SliderStep, ScenarioStep,
@@ -131,6 +133,12 @@ function FillBlankView({ step, onComplete }: { step: FillBlankStep; onComplete: 
   const submit = () => {
     if (sel === null || submitted) return;
     setSubmitted(true);
+    if (sel === step.correct) {
+      playCorrect();
+      fireSmallConfetti();
+    } else {
+      playIncorrect();
+    }
   };
 
   return (
@@ -199,6 +207,12 @@ function DragSortView({ step, onComplete }: { step: DragSortStep; onComplete: (c
     const correct = order.every((v, i) => v === step.items[i]);
     setIsCorrect(correct);
     setSubmitted(true);
+    if (correct) {
+      playCorrect();
+      fireSmallConfetti();
+    } else {
+      playIncorrect();
+    }
   };
 
   const allFilled = order.length === shuffled.length;
@@ -280,6 +294,12 @@ function QuizView({ step, onComplete }: { step: QuizStep; onComplete: (c: boolea
   const pick = (i: number) => {
     if (sel !== null) return;
     setSel(i);
+    if (i === step.correct) {
+      playCorrect();
+      fireSmallConfetti();
+    } else {
+      playIncorrect();
+    }
   };
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col items-center gap-5 px-6 w-full min-h-[85vh]" style={{ maxWidth: '800px', margin: '0 auto' }}>
@@ -323,7 +343,13 @@ function TrueFalseView({ step, onComplete }: { step: TrueFalseStep; onComplete: 
     setAnswered(true);
     const correct = val === current.a;
     setLastCorrect(correct);
-    if (correct) setScore(s => s + 1);
+    if (correct) {
+      setScore(s => s + 1);
+      playCorrect();
+      fireSmallConfetti();
+    } else {
+      playIncorrect();
+    }
     setShowExplanation(true);
   };
 
@@ -411,8 +437,13 @@ function MatchView({ step, onComplete }: { step: MatchStep; onComplete: (c: bool
     if (shuffledRight[ri] === correctRight) {
       const next = new Map(matched).set(selLeft, ri);
       setMatched(next); setSelLeft(null);
-      if (next.size === step.pairs.length) setTimeout(() => onComplete(true), 600);
+      playCorrect();
+      if (next.size === step.pairs.length) {
+        fireStarConfetti();
+        setTimeout(() => onComplete(true), 600);
+      }
     } else {
+      playIncorrect();
       setWrong({ left: selLeft, right: ri });
       setTimeout(() => { setWrong(null); setSelLeft(null); }, 600);
     }
@@ -528,6 +559,12 @@ function ScenarioView({ step, onComplete }: { step: ScenarioStep; onComplete: (c
   const pick = (i: number) => {
     if (sel !== null) return;
     setSel(i);
+    if (step.choices[i].correct) {
+      playCorrect();
+      fireSmallConfetti();
+    } else {
+      playIncorrect();
+    }
   };
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col items-center gap-5 px-6 w-full min-h-[85vh]" style={{ maxWidth: '800px', margin: '0 auto' }}>
@@ -638,6 +675,12 @@ function VisualInteractiveView({ step, onComplete }: { step: VisualInteractiveSt
   const pick = (i: number) => {
     if (sel !== null) return;
     setSel(i);
+    if (i === step.correct) {
+      playCorrect();
+      fireSmallConfetti();
+    } else {
+      playIncorrect();
+    }
   };
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col items-center gap-5 px-6 w-full min-h-[85vh]" style={{ maxWidth: '800px', margin: '0 auto' }}>

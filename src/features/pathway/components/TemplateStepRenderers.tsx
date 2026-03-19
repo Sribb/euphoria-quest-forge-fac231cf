@@ -5,6 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
 import { cn } from '@/lib/utils';
 import { ArrowRight, Check, X as XIcon, ChevronLeft, ChevronRight, Sparkles, TrendingUp, AlertTriangle, BookOpen, Zap, Heart } from 'lucide-react';
+import { playCorrect, playIncorrect, playReward, playMilestone, playUnlock } from '@/lib/soundEffects';
+import { fireSmallConfetti, fireStarConfetti } from '@/lib/confetti';
 import type {
   HookOpenerStep, StakesCardStep, TeachingSlideStep, MicroCheckStep,
   InteractiveGraphStep, CaseStudyStep, MisconceptionsStep, KeyTermsCardsStep,
@@ -411,6 +413,12 @@ export function MicroCheckView({ step, onComplete }: { step: MicroCheckStep; onC
   const pick = (i: number) => {
     if (sel !== null) return;
     setSel(i);
+    if (i === step.correct) {
+      playCorrect();
+      fireSmallConfetti();
+    } else {
+      playIncorrect();
+    }
   };
 
   return (

@@ -140,7 +140,7 @@ export const useNotifications = () => {
   const generateNotifications = useCallback(async () => {
     if (!user?.id) return;
     const now = Date.now();
-    if (now - lastGenerateRef.current < 5 * 60 * 1000) return;
+    if (now - lastGenerateRef.current < 30 * 60 * 1000) return;
     lastGenerateRef.current = now;
 
     try {
