@@ -1,4 +1,4 @@
-import { Flame, Gem, Heart } from "lucide-react";
+import { Flame, Gem } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
 import { useQuery } from "@tanstack/react-query";
