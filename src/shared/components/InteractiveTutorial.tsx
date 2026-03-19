@@ -55,6 +55,8 @@ export function InteractiveTutorial({ onComplete, activeTab, onNavigate }: Inter
     const selector = STEPS[step].targetSelector;
     const el = document.querySelector(selector);
     if (el) {
+      // Scroll into view if needed
+      el.scrollIntoView({ behavior: "smooth", block: "center" });
       const rect = el.getBoundingClientRect();
       setTargetRect(rect);
     } else {
@@ -67,8 +69,21 @@ export function InteractiveTutorial({ onComplete, activeTab, onNavigate }: Inter
     const interval = setInterval(updateTargetPosition, 200);
     window.addEventListener("resize", updateTargetPosition);
     window.addEventListener("scroll", updateTargetPosition, true);
+
+    // If target not found after 2s, skip this step
+    const timeout = setTimeout(() => {
+      if (step >= 0 && step < STEPS.length) {
+        const el = document.querySelector(STEPS[step].targetSelector);
+        if (!el) {
+          // Target doesn't exist — finish tutorial
+          finish();
+        }
+      }
+    }, 2000);
+
     return () => {
       clearInterval(interval);
+      clearTimeout(timeout);
       window.removeEventListener("resize", updateTargetPosition);
       window.removeEventListener("scroll", updateTargetPosition, true);
     };
