@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import euphoriaLogo from "@/assets/euphoria-logo-button.png";
 
 const TUTORIAL_KEY = "euphoria_tutorial_completed";
 
