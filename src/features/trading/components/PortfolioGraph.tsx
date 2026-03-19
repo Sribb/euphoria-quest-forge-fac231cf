@@ -5,7 +5,7 @@ import { usePaperTrading, type PaperTrade } from "@/hooks/usePaperTrading";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getQuote } from "@/lib/finnhub";
 import {
-  AreaChart, Area, Tooltip, ResponsiveContainer,
+  AreaChart, Area, Tooltip, ResponsiveContainer, YAxis,
 } from "recharts";
 import { TrendingUp, TrendingDown, RefreshCw, DollarSign, BarChart3, Activity } from "lucide-react";
 import { formatDollar } from "@/lib/formatters";
