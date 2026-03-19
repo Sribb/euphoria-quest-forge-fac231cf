@@ -207,6 +207,12 @@ function DragSortView({ step, onComplete }: { step: DragSortStep; onComplete: (c
     const correct = order.every((v, i) => v === step.items[i]);
     setIsCorrect(correct);
     setSubmitted(true);
+    if (correct) {
+      playCorrect();
+      fireSmallConfetti();
+    } else {
+      playIncorrect();
+    }
   };
 
   const allFilled = order.length === shuffled.length;
