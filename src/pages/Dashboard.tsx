@@ -7,9 +7,7 @@ import { CourseTopNav } from "@/features/home/components/CourseTopNav";
 import { CourseInfoCard } from "@/features/home/components/CourseInfoCard";
 import { PathwayTrail } from "@/features/home/components/PathwayTrail";
 import { CoursesGrid } from "@/features/home/components/CoursesGrid";
-import { ThreePhaseLessonViewer } from "@/features/learning/components/ThreePhaseLessonViewer";
 import { PathwayLessonViewer } from "@/features/pathway/components/PathwayLessonViewer";
-import { LegendaryChallenge } from "@/features/learning/components/LegendaryChallenge";
 import { useDailyRewardNotification } from "@/features/learning/hooks/useDailyRewardNotification";
 import { EuphoriaSpinner } from "@/shared/components/EuphoriaSpinner";
 
