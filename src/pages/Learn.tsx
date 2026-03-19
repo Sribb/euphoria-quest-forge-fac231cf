@@ -3,6 +3,8 @@ import { PathwaySelector } from "@/features/learning/components/PathwaySelector"
 import { PathwayLessonViewer } from "@/features/pathway/components/PathwayLessonViewer";
 import { LearningPathway } from "@/features/learning/components/LearningPathway";
 import { useQuery } from "@tanstack/react-query";
+import { CourseTopNav, type LearnView } from "@/features/home/components/CourseTopNav";
+import { TradeDashboard } from "@/features/trading/components/TradeDashboard";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useOnboarding } from "@/hooks/useOnboarding";
@@ -33,6 +35,7 @@ const Learn = ({ onNavigate, selectedLesson, onLessonSelect }: LearnProps) => {
   const { user } = useAuth();
   const { placementLesson } = useOnboarding();
   const [selectedPathway, setSelectedPathway] = useState<string | null>(null);
+  const [activeView, setActiveView] = useState<LearnView>("home");
 
   const { data: lessons = [], isLoading, refetch } = useQuery({
     queryKey: ["lessons", user?.id, placementLesson],
@@ -162,7 +165,7 @@ const Learn = ({ onNavigate, selectedLesson, onLessonSelect }: LearnProps) => {
     );
   }
 
-  if (isLoading) {
+  if (isLoading && activeView === "home") {
     return (
       <div className="flex items-center justify-center min-h-[600px]">
         <EuphoriaSpinner size="lg" label="Loading your learning pathways..." />
@@ -171,10 +174,19 @@ const Learn = ({ onNavigate, selectedLesson, onLessonSelect }: LearnProps) => {
   }
 
   return (
-    <PathwaySelector
-      lessons={lessons}
-      onSelectPathway={setSelectedPathway}
-    />
+    <div>
+      <CourseTopNav activeView={activeView} onViewChange={setActiveView} />
+      <div className="mt-6">
+        {activeView === "trade" ? (
+          <TradeDashboard onNavigate={onNavigate} />
+        ) : (
+          <PathwaySelector
+            lessons={lessons}
+            onSelectPathway={setSelectedPathway}
+          />
+        )}
+      </div>
+    </div>
   );
 };
 
