@@ -1,4 +1,5 @@
 import { usePaperTrading, PaperTrade } from "@/hooks/usePaperTrading";
+import { TrendingUp } from "lucide-react";
 
 export const HistoryTab = () => {
   const { data } = usePaperTrading();
@@ -7,8 +8,10 @@ export const HistoryTab = () => {
   if (trades.length === 0) {
     return (
       <div className="text-center py-16 space-y-3">
-        <div className="text-4xl">📋</div>
-        <p className="font-bold text-lg">No trades yet</p>
+        <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto">
+          <TrendingUp className="w-7 h-7 text-primary" />
+        </div>
+        <p className="text-lg font-semibold text-foreground">No trades yet</p>
         <p className="text-sm text-muted-foreground">Make your first trade on the Discover tab.</p>
       </div>
     );

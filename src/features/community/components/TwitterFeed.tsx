@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { MessageSquare } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -196,8 +197,12 @@ export const TwitterFeed = () => {
           <Loader2 className="w-7 h-7 animate-spin text-primary" />
         </div>
       ) : posts?.length === 0 ? (
-        <div className="py-16 text-center">
-          <p className="text-muted-foreground text-[15px]">No posts yet. Be the first to share something!</p>
+        <div className="py-16 text-center space-y-3">
+          <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto">
+            <MessageSquare className="w-7 h-7 text-primary" />
+          </div>
+          <p className="text-lg font-semibold text-foreground">Be the first to share</p>
+          <p className="text-sm text-muted-foreground">Start a conversation and connect with the community.</p>
         </div>
       ) : (
         posts?.map((post: any, i: number) => (

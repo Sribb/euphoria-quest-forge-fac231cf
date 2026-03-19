@@ -198,10 +198,12 @@ export const NotificationPanel = ({ onNavigate }: NotificationPanelProps) => {
             ) : (
               <ScrollArea className="max-h-[420px]">
                 {notifications.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center py-12 px-4">
-                    <Bell className="w-10 h-10 text-muted-foreground/40 mb-3" />
-                    <p className="text-sm font-semibold text-muted-foreground">No notifications yet</p>
-                    <p className="text-xs text-muted-foreground mt-1">
+                  <div className="flex flex-col items-center justify-center py-12 px-4 space-y-3">
+                    <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center">
+                      <Check className="w-7 h-7 text-primary" />
+                    </div>
+                    <p className="text-lg font-semibold text-foreground">You're all caught up!</p>
+                    <p className="text-xs text-muted-foreground text-center">
                       You'll see streak alerts, achievements, and more here
                     </p>
                   </div>

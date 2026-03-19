@@ -162,7 +162,7 @@ const Landing = () => {
 
   const fadeUp = {
     hidden: { opacity: 0, y: 24 },
-    show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] as const } },
+    show: { opacity: 1, y: 0, transition: { type: "spring" as const, stiffness: 300, damping: 30 } },
   };
 
   return (
@@ -308,8 +308,9 @@ const Landing = () => {
             >
               <Button
                 size="lg"
+                variant="gradient"
                 onClick={() => navigate("/auth?signup=true")}
-                className="px-8 py-3.5 bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl font-medium text-base shadow-md hover:shadow-lg hover:shadow-primary/20 transition-all duration-200"
+                className="px-8 py-3.5 rounded-xl font-medium text-base"
               >
                 Start Learning Free <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
@@ -429,8 +430,9 @@ const Landing = () => {
           >
             <Button
               size="lg"
+              variant="gradient"
               onClick={() => navigate("/auth?signup=true")}
-              className="px-10 py-3.5 bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl font-medium text-base shadow-md hover:shadow-lg hover:shadow-primary/20 transition-all duration-200"
+              className="px-10 py-3.5 rounded-xl font-medium text-base"
             >
               Start Now <ArrowRight className="w-4 h-4 ml-2" />
             </Button>
@@ -567,8 +569,9 @@ const Landing = () => {
             </p>
             <Button
               size="lg"
+              variant="gradient"
               onClick={() => navigate("/auth?signup=true")}
-              className="px-10 bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl font-medium text-base shadow-md hover:shadow-lg hover:shadow-primary/20 transition-all duration-200"
+              className="px-10 rounded-xl font-medium text-base"
             >
               Create Free Account <ArrowRight className="w-4 h-4 ml-2" />
             </Button>

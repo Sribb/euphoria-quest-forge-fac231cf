@@ -182,9 +182,12 @@ function LeaderboardList({
 
   if (!entries.length) {
     return (
-      <div className="p-8 text-center text-muted-foreground text-sm">
-        <Trophy className="h-8 w-8 mx-auto mb-2 opacity-30" />
-        No participants yet. Start earning XP!
+      <div className="p-8 text-center space-y-3">
+        <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto">
+          <Trophy className="w-7 h-7 text-primary" />
+        </div>
+        <p className="text-lg font-semibold text-foreground">You're first!</p>
+        <p className="text-sm text-muted-foreground">Invite friends to compete and climb the ranks.</p>
       </div>
     );
   }

@@ -177,6 +177,15 @@ const Certificates = ({ onNavigate }: CertificatesProps) => {
         </TabsList>
 
         <TabsContent value="certificates">
+          {totalEarned === 0 && (
+            <div className="text-center py-10 space-y-3 mb-6">
+              <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto">
+                <Award className="w-7 h-7 text-primary" />
+              </div>
+              <p className="text-lg font-semibold text-foreground">Complete a pathway to earn your first certificate</p>
+              <p className="text-sm text-muted-foreground">Keep learning and trading to unlock awards below.</p>
+            </div>
+          )}
           <div className="space-y-6">
             {(["easy", "medium", "hard", "master"] as const).map(tierKey => {
               const meta = TIER_META[tierKey];
