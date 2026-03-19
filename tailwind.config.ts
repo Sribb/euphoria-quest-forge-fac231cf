@@ -14,8 +14,8 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ['"SF Pro Text"', '"SF Pro Display"', '-apple-system', 'BlinkMacSystemFont', 'system-ui', 'sans-serif'],
-        heading: ['"SF Pro Display"', '"SF Pro Text"', '-apple-system', 'BlinkMacSystemFont', 'system-ui', 'sans-serif'],
+        sans: ['"DM Sans"', "system-ui", "sans-serif"],
+        heading: ['"DM Sans"', "system-ui", "sans-serif"],
         display: ['"EB Garamond"', "Georgia", "serif"],
       },
       colors: {

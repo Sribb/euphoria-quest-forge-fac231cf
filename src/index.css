@@ -152,9 +152,6 @@ All colors MUST be HSL.
     background-size: 256px 256px;
   }
 
-  * {
-    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
-  }
 
   html {
     /* Removed CSS smooth-scroll to prevent conflicts with programmatic scrolling */
