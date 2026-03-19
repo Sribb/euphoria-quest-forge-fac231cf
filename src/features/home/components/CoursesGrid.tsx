@@ -54,7 +54,7 @@ export const CoursesGrid = ({ lessons, activePathway, onSelectCourse }: CoursesG
   return (
     <div className="max-w-5xl mx-auto px-6 py-8">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-foreground mb-1">Courses</h1>
+        <h1 className="text-2xl font-semibold text-foreground mb-1">Courses</h1>
         <p className="text-sm text-muted-foreground">Choose a course to start or continue learning</p>
 
         <div className="relative mt-4 max-w-sm">
