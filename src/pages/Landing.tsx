@@ -308,8 +308,9 @@ const Landing = () => {
             >
               <Button
                 size="lg"
+                variant="gradient"
                 onClick={() => navigate("/auth?signup=true")}
-                className="px-8 py-3.5 bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl font-medium text-base shadow-md hover:shadow-lg hover:shadow-primary/20 transition-all duration-200"
+                className="px-8 py-3.5 rounded-xl font-medium text-base"
               >
                 Start Learning Free <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
