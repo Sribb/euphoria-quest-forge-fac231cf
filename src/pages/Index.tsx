@@ -43,8 +43,12 @@ const Index = () => {
 
   useEffect(() => {
     const seen = localStorage.getItem("euphoria_welcome_seen");
-    if (!seen) setShowWelcome(true);
-  }, []);
+    if (!seen) {
+      setShowWelcome(true);
+    } else if (tutorialNeeded) {
+      setShowTutorial(true);
+    }
+  }, [tutorialNeeded]);
 
   const handleWelcomeComplete = (navigateTo?: string) => {
     localStorage.setItem("euphoria_welcome_seen", "true");
