@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Slider } from '@/components/ui/slider';
 import { ArrowRight, TrendingUp, BarChart3, Shield, Home, Coins } from 'lucide-react';
-import { playCorrect, playIncorrect, playReward, playLevelUp, playStreak, playNav, playError, playSnap, playUnlock, playMilestone } from '@/lib/soundEffects';
+import { playClick, playCorrect, playIncorrect, playReward, playLevelUp, playStreak, playNav, playError, playSnap, playUnlock, playMilestone } from '@/lib/soundEffects';
 import { fireSmallConfetti, fireStarConfetti } from '@/lib/confetti';
 import type {
   LessonStep, ConceptStep, TapRevealStep, FillBlankStep, DragSortStep,
@@ -42,7 +42,7 @@ function ConceptView({ step, onComplete }: { step: ConceptStep; onComplete: (c: 
 /* ─── Tap Reveal — Desktop 2x2 grid with card flip ─── */
 function TapRevealView({ step, onComplete }: { step: TapRevealStep; onComplete: (c: boolean) => void }) {
   const [revealed, setRevealed] = useState<Set<number>>(new Set());
-  const toggle = (i: number) => setRevealed(prev => new Set(prev).add(i));
+  const toggle = (i: number) => { playClick(); setRevealed(prev => new Set(prev).add(i)); };
   const allDone = revealed.size === step.cards.length;
 
   const cardTints = [

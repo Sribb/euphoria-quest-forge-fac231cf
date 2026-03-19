@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
 import { cn } from '@/lib/utils';
 import { ArrowRight, Check, X as XIcon, ChevronLeft, ChevronRight, Sparkles, TrendingUp, AlertTriangle, BookOpen, Zap, Heart } from 'lucide-react';
-import { playCorrect, playIncorrect, playReward, playMilestone, playUnlock } from '@/lib/soundEffects';
+import { playClick, playCorrect, playIncorrect, playReward, playMilestone, playUnlock } from '@/lib/soundEffects';
 import { fireSmallConfetti, fireStarConfetti } from '@/lib/confetti';
 import type {
   HookOpenerStep, StakesCardStep, TeachingSlideStep, MicroCheckStep,
@@ -261,6 +261,7 @@ export function TeachingSlideView({ step, onComplete }: { step: TeachingSlideSte
   }, []);
 
   const toggleTerm = (term: string) => {
+    playClick();
     setRevealedTerms(prev => new Set(prev).add(term));
     setActiveTerm(activeTerm === term ? null : term);
   };
@@ -793,6 +794,7 @@ export function CaseStudyView({ step, onComplete }: { step: CaseStudyStep; onCom
 
   const revealNext = () => {
     if (revealedIdx < step.events.length) {
+      playClick();
       setRevealedIdx(prev => prev + 1);
     }
   };
@@ -882,7 +884,7 @@ export function MisconceptionsView({ step, onComplete }: { step: MisconceptionsS
           <motion.div key={i}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: i <= revealedIdx ? 1 : 0.3, y: i <= revealedIdx ? 0 : 10 }}
-            onClick={() => { if (i === revealedIdx && revealedIdx < step.items.length) setRevealedIdx(prev => prev + 1); }}
+            onClick={() => { if (i === revealedIdx && revealedIdx < step.items.length) { playClick(); setRevealedIdx(prev => prev + 1); } }}
             style={{ cursor: i === revealedIdx ? 'pointer' : 'default', pointerEvents: 'auto' }}
             className={cn("p-4 rounded-2xl border transition-all",
               i <= revealedIdx ? "border-border/50 bg-card/50" : "border-border/20 bg-card/20"
