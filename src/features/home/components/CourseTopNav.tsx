@@ -66,11 +66,6 @@ export const CourseTopNav = ({ activeView, onViewChange }: CourseTopNavProps) =>
             <span className="text-xs font-bold text-primary">{gems}</span>
           </div>
 
-          {/* Energy / Hearts */}
-          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20">
-            <Heart className="w-4 h-4 text-emerald-500 fill-emerald-500" />
-            <span className="text-xs font-bold text-emerald-500">{energy}</span>
-          </div>
         </div>
       </div>
 
