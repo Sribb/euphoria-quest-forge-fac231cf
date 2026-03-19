@@ -165,7 +165,7 @@ const Learn = ({ onNavigate, selectedLesson, onLessonSelect }: LearnProps) => {
     );
   }
 
-  if (isLoading) {
+  if (isLoading && activeView === "home") {
     return (
       <div className="flex items-center justify-center min-h-[600px]">
         <EuphoriaSpinner size="lg" label="Loading your learning pathways..." />
@@ -174,10 +174,19 @@ const Learn = ({ onNavigate, selectedLesson, onLessonSelect }: LearnProps) => {
   }
 
   return (
-    <PathwaySelector
-      lessons={lessons}
-      onSelectPathway={setSelectedPathway}
-    />
+    <div>
+      <CourseTopNav activeView={activeView} onViewChange={setActiveView} />
+      <div className="mt-6">
+        {activeView === "trade" ? (
+          <TradeDashboard onNavigate={onNavigate} />
+        ) : (
+          <PathwaySelector
+            lessons={lessons}
+            onSelectPathway={setSelectedPathway}
+          />
+        )}
+      </div>
+    </div>
   );
 };
 
