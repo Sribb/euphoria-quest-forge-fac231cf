@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Trophy, Lock, ArrowLeft, CheckCircle2, Zap, GraduationCap, Crown } from "lucide-react";
-import { Trophy, Lock, ArrowLeft, CheckCircle2, Zap, GraduationCap, Crown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
