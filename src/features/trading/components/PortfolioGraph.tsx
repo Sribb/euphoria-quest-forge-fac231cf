@@ -294,6 +294,7 @@ export const PortfolioGraph = () => {
                 </filter>
               </defs>
 
+              <YAxis domain={yDomain} hide />
               <Tooltip
                 content={() => null}
                 cursor={{ stroke: "hsl(var(--muted-foreground))", strokeWidth: 1, strokeDasharray: "4 4" }}
