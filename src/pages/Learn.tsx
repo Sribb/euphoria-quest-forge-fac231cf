@@ -7,6 +7,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useOnboarding } from "@/hooks/useOnboarding";
+import { EuphoriaSpinner } from "@/shared/components/EuphoriaSpinner";
 
 const PATHWAY_META: Record<string, { title: string; color: string }> = {
   investing: { title: "Investing Fundamentals", color: "from-emerald-500 to-teal-600" },
