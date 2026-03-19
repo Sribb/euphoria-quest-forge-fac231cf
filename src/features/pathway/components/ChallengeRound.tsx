@@ -1,11 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { Heart, ArrowRight, RotateCcw, Trophy } from 'lucide-react';
+import { Heart, ArrowRight, RotateCcw, Trophy, Lightbulb } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { ChallengeQuestion } from '../types';
 import { playCorrect, playIncorrect, playReward, playError } from '@/lib/soundEffects';
 import { fireSmallConfetti } from '@/lib/confetti';
+import { useHints } from '@/hooks/useHints';
 
 interface Props {
   questions: ChallengeQuestion[];
@@ -21,14 +22,33 @@ export function ChallengeRound({ questions, onPass, onFail, lessonTitle }: Props
   const [submitted, setSubmitted] = useState(false);
   const [correctCount, setCorrectCount] = useState(0);
   const [phase, setPhase] = useState<'quiz' | 'passed' | 'failed'>('quiz');
+  const [eliminated, setEliminated] = useState<Set<number>>(new Set());
+  const { hints, useHint, getResetTimeRemaining } = useHints();
 
-  // Take first 4 questions
   const activeQuestions = questions.slice(0, 4);
   const current = activeQuestions[currentIdx];
 
   const handleSelect = (idx: number) => {
-    if (submitted) return;
+    if (submitted || eliminated.has(idx)) return;
     setSelected(idx);
+  };
+
+  const handleUseHint = async () => {
+    if (submitted || !current || hints <= 0) return;
+    const success = await useHint();
+    if (!success) return;
+
+    // Eliminate one wrong answer that hasn't been eliminated yet
+    const wrongIndices = current.options
+      .map((_, i) => i)
+      .filter(i => i !== current.correct && !eliminated.has(i));
+
+    if (wrongIndices.length > 0) {
+      const toRemove = wrongIndices[Math.floor(Math.random() * wrongIndices.length)];
+      setEliminated(prev => new Set([...prev, toRemove]));
+      // If selected was eliminated, deselect
+      if (selected === toRemove) setSelected(null);
+    }
   };
 
   const handleSubmit = () => {
@@ -59,8 +79,8 @@ export function ChallengeRound({ questions, onPass, onFail, lessonTitle }: Props
       setCurrentIdx(i => i + 1);
       setSelected(null);
       setSubmitted(false);
+      setEliminated(new Set());
     } else {
-      // All questions answered with hearts remaining
       playReward();
       setPhase('passed');
     }
@@ -73,6 +93,7 @@ export function ChallengeRound({ questions, onPass, onFail, lessonTitle }: Props
     setSubmitted(false);
     setCorrectCount(0);
     setPhase('quiz');
+    setEliminated(new Set());
   };
 
   if (phase === 'passed') {
@@ -122,22 +143,42 @@ export function ChallengeRound({ questions, onPass, onFail, lessonTitle }: Props
 
   if (!current) return null;
 
+  const resetTime = getResetTimeRemaining();
+
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
       className="flex flex-col items-center gap-5 px-6 w-full min-h-[70vh]" style={{ maxWidth: '800px', margin: '0 auto' }}>
       
-      {/* Header with hearts */}
+      {/* Header with hearts and hints */}
       <div className="flex items-center justify-between w-full" style={{ maxWidth: '680px' }}>
         <div>
           <span className="text-xs font-bold text-primary uppercase tracking-widest">✦ MASTERY CHALLENGE</span>
           <p className="text-xs text-muted-foreground mt-0.5">{lessonTitle}</p>
         </div>
-        <div className="flex items-center gap-1">
-          {Array.from({ length: 3 }).map((_, i) => (
-            <motion.div key={i} animate={i >= hearts ? { scale: [1, 0.5, 0], opacity: [1, 0.5, 0] } : {}}>
-              <Heart className={cn("w-6 h-6 transition-all", i < hearts ? "text-red-500 fill-red-500" : "text-muted-foreground/20")} />
-            </motion.div>
-          ))}
+        <div className="flex items-center gap-3">
+          {/* Hint button */}
+          <button
+            onClick={handleUseHint}
+            disabled={submitted || hints <= 0}
+            className={cn(
+              "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-all",
+              hints > 0 && !submitted
+                ? "bg-amber-500/20 text-amber-400 hover:bg-amber-500/30 cursor-pointer"
+                : "bg-muted/20 text-muted-foreground/40 cursor-not-allowed"
+            )}
+            title={resetTime ? `Free hints reset in ${resetTime}` : 'Use a hint to eliminate a wrong answer'}
+          >
+            <Lightbulb className="w-4 h-4" />
+            {hints}
+          </button>
+          {/* Hearts */}
+          <div className="flex items-center gap-1">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <motion.div key={i} animate={i >= hearts ? { scale: [1, 0.5, 0], opacity: [1, 0.5, 0] } : {}}>
+                <Heart className={cn("w-6 h-6 transition-all", i < hearts ? "text-red-500 fill-red-500" : "text-muted-foreground/20")} />
+              </motion.div>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -162,20 +203,26 @@ export function ChallengeRound({ questions, onPass, onFail, lessonTitle }: Props
 
           <div className="flex flex-col gap-3 w-full">
             {current.options.map((option, i) => (
-              <Button key={i}
-                variant={submitted && i === selected
-                  ? (i === current.correct ? "default" : "destructive")
-                  : selected === i ? "default" : "outline"
-                }
-                onClick={() => handleSelect(i)}
-                disabled={submitted}
-                className={cn(
-                  "justify-start text-left rounded-xl h-auto whitespace-normal leading-relaxed text-[16px] py-4 px-5",
-                  submitted && i === current.correct && "border-emerald-500 bg-emerald-500/10 text-emerald-400"
-                )}
+              <motion.div key={i}
+                animate={eliminated.has(i) ? { opacity: 0.3, scale: 0.95, x: -8 } : { opacity: 1, scale: 1, x: 0 }}
+                transition={{ duration: 0.3 }}
               >
-                {option}
-              </Button>
+                <Button
+                  variant={submitted && i === selected
+                    ? (i === current.correct ? "default" : "destructive")
+                    : selected === i ? "default" : "outline"
+                  }
+                  onClick={() => handleSelect(i)}
+                  disabled={submitted || eliminated.has(i)}
+                  className={cn(
+                    "justify-start text-left rounded-xl h-auto whitespace-normal leading-relaxed text-[16px] py-4 px-5 w-full",
+                    submitted && i === current.correct && "border-emerald-500 bg-emerald-500/10 text-emerald-400",
+                    eliminated.has(i) && "line-through opacity-30"
+                  )}
+                >
+                  {option}
+                </Button>
+              </motion.div>
             ))}
           </div>
 
