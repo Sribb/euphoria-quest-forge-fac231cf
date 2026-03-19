@@ -7,6 +7,8 @@ import { Slider } from '@/components/ui/slider';
 import { ArrowRight, TrendingUp, BarChart3, Shield, Home, Coins } from 'lucide-react';
 import { playClick, playCorrect, playIncorrect, playReward, playLevelUp, playStreak, playNav, playError, playSnap, playUnlock, playMilestone } from '@/lib/soundEffects';
 import { fireSmallConfetti, fireStarConfetti } from '@/lib/confetti';
+import { useHintContext } from './HintContext';
+import { HintButton } from './HintButton';
 import type {
   LessonStep, ConceptStep, TapRevealStep, FillBlankStep, DragSortStep,
   QuizStep, TrueFalseStep, MatchStep, SliderStep, ScenarioStep,
