@@ -68,12 +68,12 @@ export const TopNavigation = ({ activeTab, onTabChange }: TopNavigationProps) =>
             <img 
               src={logo} 
               alt="Logo" 
-              className="w-8 h-8 md:w-10 md:h-10 object-contain cursor-pointer hover:scale-105 transition-transform"
+              className="w-8 h-8 md:w-10 md:h-10 object-contain cursor-pointer hover:scale-110 active:scale-95 transition-transform"
               onClick={() => handleNavClick("profile")}
             />
             <h1 
               onClick={() => handleNavClick("profile")}
-              className="text-lg md:text-xl font-bold text-foreground cursor-pointer hover:scale-105 transition-transform truncate max-w-[120px] md:max-w-none"
+              className="text-lg md:text-xl font-semibold text-foreground cursor-pointer hover:scale-105 transition-transform truncate max-w-[120px] md:max-w-none"
             >
               {displayName}
             </h1>
@@ -159,13 +159,13 @@ export const TopNavigation = ({ activeTab, onTabChange }: TopNavigationProps) =>
                   key={item.id}
                   onClick={() => handleNavClick(item.id)}
                   className={cn(
-                    "flex flex-col items-center gap-1 px-3 py-2 rounded-xl transition-all duration-300 min-w-[56px]",
+                    "flex flex-col items-center gap-1 px-3 py-2 rounded-xl transition-all duration-300 min-w-[56px] active:scale-95",
                     isActive
-                      ? "bg-gradient-primary text-white shadow-glow scale-105"
+                      ? "bg-gradient-primary text-white shadow-glow scale-[1.02]"
                       : "text-muted-foreground hover:text-foreground"
                   )}
                 >
-                  <Icon className={cn("w-5 h-5", isActive && "animate-bounce-subtle")} />
+                  <Icon className="w-5 h-5" />
                   <span className="text-[10px] font-medium">{item.label}</span>
                 </button>
               );

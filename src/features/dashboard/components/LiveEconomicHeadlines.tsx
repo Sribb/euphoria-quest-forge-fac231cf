@@ -71,7 +71,7 @@ export const LiveEconomicHeadlines = () => {
           <Newspaper className="w-6 h-6 text-primary" />
         </div>
         <div>
-          <h3 className="text-2xl font-bold text-foreground">Live Economic Headlines</h3>
+          <h3 className="text-2xl font-semibold text-foreground">Live Economic Headlines</h3>
           <p className="text-sm text-muted-foreground">Real-time global market updates</p>
         </div>
       </div>

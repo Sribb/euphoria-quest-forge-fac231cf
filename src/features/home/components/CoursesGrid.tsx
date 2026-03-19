@@ -54,7 +54,7 @@ export const CoursesGrid = ({ lessons, activePathway, onSelectCourse }: CoursesG
   return (
     <div className="max-w-5xl mx-auto px-6 py-8">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-foreground mb-1">Courses</h1>
+        <h1 className="text-2xl font-semibold text-foreground mb-1">Courses</h1>
         <p className="text-sm text-muted-foreground">Choose a course to start or continue learning</p>
 
         <div className="relative mt-4 max-w-sm">
@@ -103,7 +103,7 @@ export const CoursesGrid = ({ lessons, activePathway, onSelectCourse }: CoursesG
                   <Icon className="w-6 h-6 text-white" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-bold text-foreground text-base group-hover:text-primary transition-colors">
+                  <h3 className="font-semibold text-foreground text-base group-hover:text-primary transition-colors">
                     {course.title}
                   </h3>
                   <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{course.description}</p>

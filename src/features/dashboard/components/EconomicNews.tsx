@@ -82,7 +82,7 @@ export const EconomicNews = () => {
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <Newspaper className="w-5 h-5 text-primary" />
-          <h3 className="text-xl font-bold text-foreground">Live Economic Headlines</h3>
+          <h3 className="text-xl font-semibold text-foreground">Live Economic Headlines</h3>
         </div>
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
           <TrendingUp className="w-3 h-3 text-success animate-pulse" />

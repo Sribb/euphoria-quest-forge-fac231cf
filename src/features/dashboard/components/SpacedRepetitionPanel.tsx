@@ -69,7 +69,7 @@ export const SpacedRepetitionPanel = () => {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Brain className="w-5 h-5 text-primary" />
-          <h3 className="font-bold text-foreground">Skill Memory</h3>
+          <h3 className="font-semibold text-foreground">Skill Memory</h3>
         </div>
         <div className="flex items-center gap-2">
           {sr.dueCount > 0 && (

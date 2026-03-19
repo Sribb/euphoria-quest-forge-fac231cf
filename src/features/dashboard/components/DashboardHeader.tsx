@@ -36,7 +36,7 @@ export const DashboardHeader = () => {
           transition={{ duration: 0.4 }}
         >
           <p className="text-sm text-muted-foreground font-medium">{greeting}</p>
-          <h1 className="text-2xl md:text-3xl font-bold text-foreground tracking-tight">
+          <h1 className="text-2xl md:text-3xl font-semibold text-foreground tracking-tight">
             {displayName}
           </h1>
         </motion.div>
