@@ -8,7 +8,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { usePaperTrading } from "@/hooks/usePaperTrading";
-import { usePortfolioValue } from "@/hooks/usePortfolioValue";
 import ReactMarkdown from "react-markdown";
 
 interface Message {
@@ -25,7 +24,6 @@ const PRESETS = [
 export const AskPluto = () => {
   const { user } = useAuth();
   const { data: tradingData } = usePaperTrading();
-  const { totalValue, unrealizedPnL } = usePortfolioValue();
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
@@ -37,10 +35,13 @@ export const AskPluto = () => {
   }, [messages]);
 
   const buildContext = () => {
+    const holdingsValue = Object.entries(tradingData.paper_holdings).reduce((sum, [, h]) => sum + h.shares * h.avgCost, 0);
+    const totalValue = tradingData.paper_cash + holdingsValue;
+    const unrealizedPnL = totalValue - 10000;
     const holdings = Object.entries(tradingData.paper_holdings)
       .map(([sym, h]) => `${sym}: ${h.shares} shares @ $${h.avgCost.toFixed(2)} avg`)
       .join(", ");
-    return `User portfolio: Total value $${totalValue.toFixed(2)}, Cash $${tradingData.paper_cash.toFixed(2)}, Unrealized P&L $${unrealizedPnL.toFixed(2)}. Holdings: ${holdings || "None"}.`;
+    return `User portfolio: Total value $${totalValue.toFixed(2)}, Cash $${tradingData.paper_cash.toFixed(2)}, Unrealized P&L $${unrealizedPnL.toFixed(2)}, Total trades: ${tradingData.paper_trades.length}. Holdings: ${holdings || "None"}.`;
   };
 
   const sendMessage = async (text: string) => {
@@ -68,7 +69,7 @@ export const AskPluto = () => {
 
   return (
     <>
-      {/* Floating trigger */}
+      {/* Floating trigger with purple glow */}
       <AnimatePresence>
         {!isOpen && (
           <motion.button
@@ -76,7 +77,10 @@ export const AskPluto = () => {
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0, opacity: 0 }}
             onClick={() => setIsOpen(true)}
-            className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/30 flex items-center justify-center hover:scale-105 transition-transform"
+            className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-primary text-primary-foreground flex items-center justify-center hover:scale-105 transition-transform"
+            style={{
+              boxShadow: "0 0 24px 6px hsl(263 84% 58% / 0.35), 0 4px 16px hsl(263 84% 58% / 0.2)",
+            }}
           >
             <MessageCircle className="w-6 h-6" />
           </motion.button>
