@@ -161,48 +161,39 @@ export function InteractiveTutorial({ onComplete, activeTab, onNavigate }: Inter
           className="fixed inset-0 z-[200]"
           style={{ pointerEvents: "none" }}
         >
-          {/* Dark overlay — blocks clicks outside cutout */}
-          <div
-            className="absolute inset-0"
-            style={{ pointerEvents: "auto" }}
-            onClick={() => !currentStep.requireClick && advance()}
-          >
-            <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
-              <defs>
-                <mask id="tutorial-mask">
-                  <rect width="100%" height="100%" fill="white" />
-                  {targetRect && (
-                    <rect
-                      x={targetRect.left - 12}
-                      y={targetRect.top - 12}
-                      width={targetRect.width + 24}
-                      height={targetRect.height + 24}
-                      rx="16"
-                      fill="black"
-                    />
-                  )}
-                </mask>
-              </defs>
-              <rect
-                width="100%"
-                height="100%"
-                fill="hsl(var(--background) / 0.75)"
-                mask="url(#tutorial-mask)"
+          {/* Dark overlay pieces around the cutout — allows clicks through the hole */}
+          {targetRect ? (
+            <>
+              {/* Top */}
+              <div
+                className="absolute bg-background/75"
+                style={{ pointerEvents: "auto", top: 0, left: 0, right: 0, height: Math.max(0, targetRect.top - 12) }}
+                onClick={() => !currentStep.requireClick && advance()}
               />
-            </svg>
-          </div>
-
-          {/* Transparent click-through zone over the cutout so real element receives clicks */}
-          {targetRect && currentStep.requireClick && (
+              {/* Bottom */}
+              <div
+                className="absolute bg-background/75"
+                style={{ pointerEvents: "auto", top: targetRect.bottom + 12, left: 0, right: 0, bottom: 0 }}
+                onClick={() => !currentStep.requireClick && advance()}
+              />
+              {/* Left */}
+              <div
+                className="absolute bg-background/75"
+                style={{ pointerEvents: "auto", top: targetRect.top - 12, left: 0, width: Math.max(0, targetRect.left - 12), height: targetRect.height + 24 }}
+                onClick={() => !currentStep.requireClick && advance()}
+              />
+              {/* Right */}
+              <div
+                className="absolute bg-background/75"
+                style={{ pointerEvents: "auto", top: targetRect.top - 12, left: targetRect.right + 12, right: 0, height: targetRect.height + 24 }}
+                onClick={() => !currentStep.requireClick && advance()}
+              />
+            </>
+          ) : (
             <div
-              className="absolute"
-              style={{
-                left: targetRect.left - 12,
-                top: targetRect.top - 12,
-                width: targetRect.width + 24,
-                height: targetRect.height + 24,
-                pointerEvents: "none",
-              }}
+              className="absolute inset-0 bg-background/75"
+              style={{ pointerEvents: "auto" }}
+              onClick={() => !currentStep.requireClick && advance()}
             />
           )}
 
