@@ -7,6 +7,8 @@ import { cn } from '@/lib/utils';
 import { ArrowRight, Check, X as XIcon, ChevronLeft, ChevronRight, Sparkles, TrendingUp, AlertTriangle, BookOpen, Zap, Heart } from 'lucide-react';
 import { playClick, playCorrect, playIncorrect, playReward, playMilestone, playUnlock } from '@/lib/soundEffects';
 import { fireSmallConfetti, fireStarConfetti } from '@/lib/confetti';
+import { useHintContext } from './HintContext';
+import { HintButton } from './HintButton';
 import type {
   HookOpenerStep, StakesCardStep, TeachingSlideStep, MicroCheckStep,
   InteractiveGraphStep, CaseStudyStep, MisconceptionsStep, KeyTermsCardsStep,
