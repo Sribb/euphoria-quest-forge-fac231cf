@@ -75,7 +75,7 @@ interface DashboardProps {
 const Dashboard = ({ onNavigate }: DashboardProps) => {
   const { user } = useAuth();
   const { placementLesson } = useOnboarding();
-  const [activeView, setActiveView] = useState<"home" | "courses">("home");
+  const [activeView, setActiveView] = useState<LearnView>("home");
   const [activePathway, setActivePathway] = useState<string>(() => {
     try { return localStorage.getItem(STORAGE_KEY) || "investing"; }
     catch { return "investing"; }
