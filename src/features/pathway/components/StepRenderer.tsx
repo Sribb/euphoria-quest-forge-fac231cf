@@ -125,10 +125,13 @@ function TapRevealView({ step, onComplete }: { step: TapRevealStep; onComplete: 
 function FillBlankView({ step, onComplete }: { step: FillBlankStep; onComplete: (c: boolean) => void }) {
   const [sel, setSel] = useState<number | null>(null);
   const [submitted, setSubmitted] = useState(false);
+  const hintCtx = useHintContext();
   const parts = step.sentence.split('___');
 
+  useEffect(() => { hintCtx?.resetEliminated(); }, []);
+
   const pick = (i: number) => {
-    if (submitted) return;
+    if (submitted || hintCtx?.eliminated.has(i)) return;
     setSel(i);
   };
 
@@ -145,7 +148,10 @@ function FillBlankView({ step, onComplete }: { step: FillBlankStep; onComplete: 
 
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col items-center gap-6 px-6 w-full min-h-[85vh]" style={{ maxWidth: '720px', margin: '0 auto' }}>
-      <span className="text-xs font-bold text-primary uppercase tracking-widest">✦ FILL IN THE BLANK</span>
+      <div className="flex items-center justify-between w-full">
+        <span className="text-xs font-bold text-primary uppercase tracking-widest">✦ FILL IN THE BLANK</span>
+        {!submitted && <HintButton correctIndex={step.correct} totalOptions={step.options.length} />}
+      </div>
       <p className="text-lg lg:text-xl text-foreground text-center leading-relaxed" style={{ maxWidth: '720px' }}>
         {parts[0]}
         <span className={cn("inline-block px-3 py-1 mx-1 rounded-lg font-bold min-w-[80px] text-center transition-all",
@@ -157,12 +163,15 @@ function FillBlankView({ step, onComplete }: { step: FillBlankStep; onComplete: 
       </p>
       <div className="grid grid-cols-2 gap-3 w-full" style={{ maxWidth: '680px' }}>
         {step.options.map((o, i) => (
-          <Button key={i}
-            variant={submitted && i === sel ? (i === step.correct ? "default" : "destructive") : sel === i ? "default" : "outline"}
-            onClick={() => pick(i)} disabled={submitted}
-            className={cn("text-[17px] rounded-xl transition-all py-5",
-              submitted && i === step.correct && "border-emerald-500 bg-emerald-500/10 text-emerald-400"
-            )}>{o}</Button>
+          <motion.div key={i} animate={hintCtx?.eliminated.has(i) ? { opacity: 0.3, scale: 0.95 } : { opacity: 1, scale: 1 }}>
+            <Button
+              variant={submitted && i === sel ? (i === step.correct ? "default" : "destructive") : sel === i ? "default" : "outline"}
+              onClick={() => pick(i)} disabled={submitted || hintCtx?.eliminated.has(i)}
+              className={cn("text-[17px] rounded-xl transition-all py-5 w-full",
+                submitted && i === step.correct && "border-emerald-500 bg-emerald-500/10 text-emerald-400",
+                hintCtx?.eliminated.has(i) && "line-through"
+              )}>{o}</Button>
+          </motion.div>
         ))}
       </div>
       {sel !== null && !submitted && (
