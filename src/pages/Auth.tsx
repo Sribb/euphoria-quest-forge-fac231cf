@@ -338,19 +338,8 @@ const Auth = () => {
 
   const isSignupFormValid = signupRole === "student" ? isStudentFormValid : isEducatorFormValid;
 
-  // ── Input wrapper with icon ──
-  const IconInput = ({
-    icon: Icon,
-    children,
-  }: {
-    icon: React.ComponentType<{ className?: string }>;
-    children: React.ReactNode;
-  }) => (
-    <div className="relative">
-      <Icon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
-      {children}
-    </div>
-  );
+
+
 
   return (
     <div className="min-h-screen flex items-center justify-center relative overflow-hidden" style={{ backgroundColor: "#09090D" }}>
