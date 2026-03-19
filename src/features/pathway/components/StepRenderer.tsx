@@ -7,6 +7,8 @@ import { Slider } from '@/components/ui/slider';
 import { ArrowRight, TrendingUp, BarChart3, Shield, Home, Coins } from 'lucide-react';
 import { playClick, playCorrect, playIncorrect, playReward, playLevelUp, playStreak, playNav, playError, playSnap, playUnlock, playMilestone } from '@/lib/soundEffects';
 import { fireSmallConfetti, fireStarConfetti } from '@/lib/confetti';
+import { useHintContext } from './HintContext';
+import { HintButton } from './HintButton';
 import type {
   LessonStep, ConceptStep, TapRevealStep, FillBlankStep, DragSortStep,
   QuizStep, TrueFalseStep, MatchStep, SliderStep, ScenarioStep,
@@ -123,10 +125,13 @@ function TapRevealView({ step, onComplete }: { step: TapRevealStep; onComplete: 
 function FillBlankView({ step, onComplete }: { step: FillBlankStep; onComplete: (c: boolean) => void }) {
   const [sel, setSel] = useState<number | null>(null);
   const [submitted, setSubmitted] = useState(false);
+  const hintCtx = useHintContext();
   const parts = step.sentence.split('___');
 
+  useEffect(() => { hintCtx?.resetEliminated(); }, []);
+
   const pick = (i: number) => {
-    if (submitted) return;
+    if (submitted || hintCtx?.eliminated.has(i)) return;
     setSel(i);
   };
 
@@ -143,7 +148,10 @@ function FillBlankView({ step, onComplete }: { step: FillBlankStep; onComplete: 
 
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col items-center gap-6 px-6 w-full min-h-[85vh]" style={{ maxWidth: '720px', margin: '0 auto' }}>
-      <span className="text-xs font-bold text-primary uppercase tracking-widest">✦ FILL IN THE BLANK</span>
+      <div className="flex items-center justify-between w-full">
+        <span className="text-xs font-bold text-primary uppercase tracking-widest">✦ FILL IN THE BLANK</span>
+        {!submitted && <HintButton correctIndex={step.correct} totalOptions={step.options.length} />}
+      </div>
       <p className="text-lg lg:text-xl text-foreground text-center leading-relaxed" style={{ maxWidth: '720px' }}>
         {parts[0]}
         <span className={cn("inline-block px-3 py-1 mx-1 rounded-lg font-bold min-w-[80px] text-center transition-all",
@@ -155,12 +163,15 @@ function FillBlankView({ step, onComplete }: { step: FillBlankStep; onComplete: 
       </p>
       <div className="grid grid-cols-2 gap-3 w-full" style={{ maxWidth: '680px' }}>
         {step.options.map((o, i) => (
-          <Button key={i}
-            variant={submitted && i === sel ? (i === step.correct ? "default" : "destructive") : sel === i ? "default" : "outline"}
-            onClick={() => pick(i)} disabled={submitted}
-            className={cn("text-[17px] rounded-xl transition-all py-5",
-              submitted && i === step.correct && "border-emerald-500 bg-emerald-500/10 text-emerald-400"
-            )}>{o}</Button>
+          <motion.div key={i} animate={hintCtx?.eliminated.has(i) ? { opacity: 0.3, scale: 0.95 } : { opacity: 1, scale: 1 }}>
+            <Button
+              variant={submitted && i === sel ? (i === step.correct ? "default" : "destructive") : sel === i ? "default" : "outline"}
+              onClick={() => pick(i)} disabled={submitted || hintCtx?.eliminated.has(i)}
+              className={cn("text-[17px] rounded-xl transition-all py-5 w-full",
+                submitted && i === step.correct && "border-emerald-500 bg-emerald-500/10 text-emerald-400",
+                hintCtx?.eliminated.has(i) && "line-through"
+              )}>{o}</Button>
+          </motion.div>
         ))}
       </div>
       {sel !== null && !submitted && (
@@ -291,8 +302,12 @@ function DragSortView({ step, onComplete }: { step: DragSortStep; onComplete: (c
 /* ─── Quiz — Manual continue, desktop sized ─── */
 function QuizView({ step, onComplete }: { step: QuizStep; onComplete: (c: boolean) => void }) {
   const [sel, setSel] = useState<number | null>(null);
+  const hintCtx = useHintContext();
+
+  useEffect(() => { hintCtx?.resetEliminated(); }, []);
+
   const pick = (i: number) => {
-    if (sel !== null) return;
+    if (sel !== null || hintCtx?.eliminated.has(i)) return;
     setSel(i);
     if (i === step.correct) {
       playCorrect();
@@ -303,16 +318,22 @@ function QuizView({ step, onComplete }: { step: QuizStep; onComplete: (c: boolea
   };
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col items-center gap-5 px-6 w-full min-h-[85vh]" style={{ maxWidth: '800px', margin: '0 auto' }}>
-      <span className="text-xs font-bold text-primary uppercase tracking-widest">✦ MULTIPLE CHOICE</span>
+      <div className="flex items-center justify-between w-full" style={{ maxWidth: '680px' }}>
+        <span className="text-xs font-bold text-primary uppercase tracking-widest">✦ MULTIPLE CHOICE</span>
+        {sel === null && <HintButton correctIndex={step.correct} totalOptions={step.options.length} />}
+      </div>
       <h2 className="text-lg lg:text-xl font-bold text-foreground text-center leading-snug" style={{ maxWidth: '720px' }}>{step.question}</h2>
       <div className="flex flex-col gap-3 w-full" style={{ maxWidth: '680px' }}>
         {step.options.map((o, i) => (
-          <Button key={i} variant={sel === i ? (i === step.correct ? "default" : "destructive") : "outline"}
-            onClick={() => pick(i)} disabled={sel !== null}
-            className={cn("justify-start text-left rounded-xl h-auto whitespace-normal leading-relaxed",
-              "text-[17px] py-5 px-5",
-              sel !== null && i === step.correct && "border-emerald-500 bg-emerald-500/10 text-emerald-400"
-            )}>{o}</Button>
+          <motion.div key={i} animate={hintCtx?.eliminated.has(i) ? { opacity: 0.3, scale: 0.95 } : { opacity: 1, scale: 1 }}>
+            <Button variant={sel === i ? (i === step.correct ? "default" : "destructive") : "outline"}
+              onClick={() => pick(i)} disabled={sel !== null || hintCtx?.eliminated.has(i)}
+              className={cn("justify-start text-left rounded-xl h-auto whitespace-normal leading-relaxed w-full",
+                "text-[17px] py-5 px-5",
+                sel !== null && i === step.correct && "border-emerald-500 bg-emerald-500/10 text-emerald-400",
+                hintCtx?.eliminated.has(i) && "line-through"
+              )}>{o}</Button>
+          </motion.div>
         ))}
       </div>
       {sel !== null && (
@@ -556,8 +577,13 @@ function SliderView({ step, onComplete }: { step: SliderStep; onComplete: (c: bo
 /* ─── Scenario — Manual continue ─── */
 function ScenarioView({ step, onComplete }: { step: ScenarioStep; onComplete: (c: boolean) => void }) {
   const [sel, setSel] = useState<number | null>(null);
+  const hintCtx = useHintContext();
+  const correctIdx = step.choices.findIndex(c => c.correct);
+
+  useEffect(() => { hintCtx?.resetEliminated(); }, []);
+
   const pick = (i: number) => {
-    if (sel !== null) return;
+    if (sel !== null || hintCtx?.eliminated.has(i)) return;
     setSel(i);
     if (step.choices[i].correct) {
       playCorrect();
@@ -568,8 +594,10 @@ function ScenarioView({ step, onComplete }: { step: ScenarioStep; onComplete: (c
   };
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col items-center gap-5 px-6 w-full min-h-[85vh]" style={{ maxWidth: '800px', margin: '0 auto' }}>
-      <span className="text-xs font-bold text-primary uppercase tracking-widest">✦ SCENARIO</span>
-      {/* Scenario card */}
+      <div className="flex items-center justify-between w-full" style={{ maxWidth: '720px' }}>
+        <span className="text-xs font-bold text-primary uppercase tracking-widest">✦ SCENARIO</span>
+        {sel === null && <HintButton correctIndex={correctIdx >= 0 ? correctIdx : 0} totalOptions={step.choices.length} />}
+      </div>
       <div className="w-full p-5 rounded-2xl" style={{
         background: 'rgba(139,92,246,0.06)', border: '1px solid rgba(139,92,246,0.15)',
         maxWidth: '720px',
@@ -578,15 +606,17 @@ function ScenarioView({ step, onComplete }: { step: ScenarioStep; onComplete: (c
       </div>
       <div className="flex flex-col gap-3 w-full" style={{ maxWidth: '680px' }}>
         {step.choices.map((ch, i) => (
-          <div key={i}>
+          <motion.div key={i} animate={hintCtx?.eliminated.has(i) ? { opacity: 0.3, scale: 0.95 } : { opacity: 1, scale: 1 }}>
             <Button variant={sel === i ? (ch.correct ? "default" : "destructive") : "outline"}
-              onClick={() => pick(i)} disabled={sel !== null}
-              className="w-full justify-start text-left rounded-xl h-auto py-4 px-5 whitespace-normal leading-relaxed text-[17px]">{ch.label}</Button>
+              onClick={() => pick(i)} disabled={sel !== null || hintCtx?.eliminated.has(i)}
+              className={cn("w-full justify-start text-left rounded-xl h-auto py-4 px-5 whitespace-normal leading-relaxed text-[17px]",
+                hintCtx?.eliminated.has(i) && "line-through"
+              )}>{ch.label}</Button>
             {sel === i && (
               <motion.p initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}
                 className={cn("text-sm mt-2 p-4 rounded-xl leading-relaxed", ch.correct ? "bg-emerald-500/10 text-emerald-400" : "bg-red-500/10 text-red-400")}>{ch.outcome}</motion.p>
             )}
-          </div>
+          </motion.div>
         ))}
       </div>
       {sel !== null && (
@@ -672,8 +702,12 @@ function ProgressiveCalcView({ step, onComplete }: { step: ProgressiveCalcStep; 
 /* ─── Visual Interactive ─── */
 function VisualInteractiveView({ step, onComplete }: { step: VisualInteractiveStep; onComplete: (c: boolean) => void }) {
   const [sel, setSel] = useState<number | null>(null);
+  const hintCtx = useHintContext();
+
+  useEffect(() => { hintCtx?.resetEliminated(); }, []);
+
   const pick = (i: number) => {
-    if (sel !== null) return;
+    if (sel !== null || hintCtx?.eliminated.has(i)) return;
     setSel(i);
     if (i === step.correct) {
       playCorrect();
@@ -687,14 +721,20 @@ function VisualInteractiveView({ step, onComplete }: { step: VisualInteractiveSt
       <div className="w-full p-5 rounded-2xl border border-border text-center" style={{ background: 'rgba(255,255,255,0.03)', maxWidth: '720px' }}>
         <p className="text-sm text-muted-foreground italic">{step.description}</p>
       </div>
-      <h2 className="text-lg lg:text-xl font-bold text-foreground text-center" style={{ maxWidth: '720px' }}>{step.question}</h2>
+      <div className="flex items-center justify-between w-full" style={{ maxWidth: '680px' }}>
+        <h2 className="text-lg lg:text-xl font-bold text-foreground text-center" style={{ maxWidth: '620px' }}>{step.question}</h2>
+        {sel === null && <HintButton correctIndex={step.correct} totalOptions={step.options.length} />}
+      </div>
       <div className="flex flex-col gap-3 w-full" style={{ maxWidth: '680px' }}>
         {step.options.map((o, i) => (
-          <Button key={i} variant={sel === i ? (i === step.correct ? "default" : "destructive") : "outline"}
-            onClick={() => pick(i)} disabled={sel !== null}
-            className={cn("justify-start text-left rounded-xl h-auto py-4 px-5 whitespace-normal leading-relaxed text-[17px]",
-              sel !== null && i === step.correct && "border-emerald-500 bg-emerald-500/10 text-emerald-400"
-            )}>{o}</Button>
+          <motion.div key={i} animate={hintCtx?.eliminated.has(i) ? { opacity: 0.3, scale: 0.95 } : { opacity: 1, scale: 1 }}>
+            <Button variant={sel === i ? (i === step.correct ? "default" : "destructive") : "outline"}
+              onClick={() => pick(i)} disabled={sel !== null || hintCtx?.eliminated.has(i)}
+              className={cn("justify-start text-left rounded-xl h-auto py-4 px-5 whitespace-normal leading-relaxed text-[17px] w-full",
+                sel !== null && i === step.correct && "border-emerald-500 bg-emerald-500/10 text-emerald-400",
+                hintCtx?.eliminated.has(i) && "line-through"
+              )}>{o}</Button>
+          </motion.div>
         ))}
       </div>
       {sel !== null && (

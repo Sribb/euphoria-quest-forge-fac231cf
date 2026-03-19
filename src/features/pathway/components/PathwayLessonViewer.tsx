@@ -6,6 +6,7 @@ import { X } from 'lucide-react';
 import { StepRenderer } from './StepRenderer';
 import { CompletionScreen } from './CompletionScreen';
 import { ChallengeRound } from './ChallengeRound';
+import { HintProvider } from './HintContext';
 import { loadCourseLessons } from '../courseIndex';
 import { usePathwayProgress } from '../usePathwayProgress';
 import type { PathwayLesson } from '../types';
@@ -101,6 +102,7 @@ export function PathwayLessonViewer({ courseId, lessonNumber, onClose, onNextLes
   const orbPos = getOrbPositions(stepIdx);
 
   return (
+    <HintProvider>
     <div className="fixed inset-0 z-50 flex flex-col overflow-hidden">
       {/* ── LAYERED BACKGROUND ── */}
       <div className="absolute inset-0" style={{
@@ -198,5 +200,6 @@ export function PathwayLessonViewer({ courseId, lessonNumber, onClose, onNextLes
         </AnimatePresence>
       </div>
     </div>
+    </HintProvider>
   );
 }
