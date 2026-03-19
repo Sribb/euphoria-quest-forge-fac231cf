@@ -884,7 +884,7 @@ export function MisconceptionsView({ step, onComplete }: { step: MisconceptionsS
           <motion.div key={i}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: i <= revealedIdx ? 1 : 0.3, y: i <= revealedIdx ? 0 : 10 }}
-            onClick={() => { if (i === revealedIdx && revealedIdx < step.items.length) setRevealedIdx(prev => prev + 1); }}
+            onClick={() => { if (i === revealedIdx && revealedIdx < step.items.length) { playClick(); setRevealedIdx(prev => prev + 1); } }}
             style={{ cursor: i === revealedIdx ? 'pointer' : 'default', pointerEvents: 'auto' }}
             className={cn("p-4 rounded-2xl border transition-all",
               i <= revealedIdx ? "border-border/50 bg-card/50" : "border-border/20 bg-card/20"

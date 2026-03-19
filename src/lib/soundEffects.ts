@@ -185,12 +185,26 @@ const playShimmer = (ctx: AudioContext, startTime: number, duration: number, vol
 
 // ── SOUND EFFECTS ───────────────────────────────────────
 
-/** Duolingo tap — crisp pop with body */
+/** Soft, gentle tap — a quiet rounded "boop" for UI interactions */
 export const playClick = () => {
   if (!isSoundEnabled()) return;
   const ctx = getCtx();
   const t = ctx.currentTime;
-  playPop(ctx, t, 1000, 0.2);
+
+  // Soft sine boop — warm, low-pitched, gentle
+  const osc = ctx.createOscillator();
+  osc.type = "sine";
+  osc.frequency.setValueAtTime(520, t);
+  osc.frequency.exponentialRampToValueAtTime(380, t + 0.06);
+
+  const gain = ctx.createGain();
+  gain.gain.setValueAtTime(0.001, t);
+  gain.gain.linearRampToValueAtTime(0.09, t + 0.008);
+  gain.gain.exponentialRampToValueAtTime(0.001, t + 0.07);
+
+  osc.connect(gain).connect(ctx.destination);
+  osc.start(t);
+  osc.stop(t + 0.08);
 };
 
 /** ✅ Correct — Duolingo's signature rising major-third chime */
