@@ -261,6 +261,7 @@ export function TeachingSlideView({ step, onComplete }: { step: TeachingSlideSte
   }, []);
 
   const toggleTerm = (term: string) => {
+    playClick();
     setRevealedTerms(prev => new Set(prev).add(term));
     setActiveTerm(activeTerm === term ? null : term);
   };
