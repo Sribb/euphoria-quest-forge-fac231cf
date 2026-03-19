@@ -1,13 +1,19 @@
 import { useState } from "react";
 import { LearningPathway } from "@/features/learning/components/LearningPathway";
 import { PathwaySelector } from "@/features/learning/components/PathwaySelector";
-import { ThreePhaseLessonViewer } from "@/features/learning/components/ThreePhaseLessonViewer";
-import { LegendaryChallenge } from "@/features/learning/components/LegendaryChallenge";
+import { PathwayLessonViewer } from "@/features/pathway/components/PathwayLessonViewer";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useOnboarding } from "@/hooks/useOnboarding";
 import { EuphoriaSpinner } from "@/shared/components/EuphoriaSpinner";
+
+const PATHWAY_TO_COURSE: Record<string, string> = {
+  investing: 'investing-fundamentals',
+  'personal-finance': 'personal-finance',
+  economics: 'global-economics',
+  'corporate-finance': 'corporate-finance',
+};
 
 const PATHWAY_META: Record<string, { title: string; color: string }> = {
   investing: { title: "Investing Fundamentals", color: "from-emerald-500 to-teal-600" },
@@ -27,7 +33,6 @@ const Learn = ({ onNavigate, selectedLesson, onLessonSelect }: LearnProps) => {
   const { user } = useAuth();
   const { placementLesson } = useOnboarding();
   const [selectedPathway, setSelectedPathway] = useState<string | null>(null);
-  const [legendaryLessonId, setLegendaryLessonId] = useState<string | null>(null);
 
   const { data: lessons = [], isLoading, refetch } = useQuery({
     queryKey: ["lessons", user?.id, placementLesson],
@@ -57,7 +62,6 @@ const Learn = ({ onNavigate, selectedLesson, onLessonSelect }: LearnProps) => {
       
       if (progressError) throw progressError;
 
-      // Group lessons by pathway for proper unlock logic
       const lessonsByPathway: Record<string, typeof lessonsData> = {};
       lessonsData.forEach(l => {
         const pw = l.pathway || 'default';
@@ -73,7 +77,6 @@ const Learn = ({ onNavigate, selectedLesson, onLessonSelect }: LearnProps) => {
         const progress = progressData?.find((p) => p.lesson_id === lesson.id);
         const isActuallyCompleted = progress?.completed || false;
         
-        // Placement skip only applies to the 'investing' pathway
         const isInvestingPathway = lesson.pathway === 'investing';
         const isSkippedByPlacement = isInvestingPathway && lesson.order_index < placementLesson && !isActuallyCompleted;
         const isCompleted = isActuallyCompleted || isSkippedByPlacement;
@@ -86,7 +89,6 @@ const Learn = ({ onNavigate, selectedLesson, onLessonSelect }: LearnProps) => {
           ? progressData?.find((p) => p.lesson_id === previousInPathway.id)
           : null;
         
-        // Placement unlock only applies to investing pathway
         const isUnlockedByPlacement = isInvestingPathway && lesson.order_index <= placementLesson;
         const isUnlockedByProgress = previousProgress?.completed || false;
         const isFirstInPathway = indexInPathway === 0;
@@ -107,38 +109,35 @@ const Learn = ({ onNavigate, selectedLesson, onLessonSelect }: LearnProps) => {
     staleTime: 30000,
   });
 
-  // Legendary challenge view
-  if (legendaryLessonId) {
-    const lesson = lessons.find(l => l.id === legendaryLessonId);
-    return (
-      <div className="fixed inset-0 bg-background/95 z-50 overflow-y-auto">
-        <div className="max-w-4xl mx-auto p-6">
-          <LegendaryChallenge
-            lessonId={legendaryLessonId}
-            lessonTitle={lesson?.title || "Lesson"}
-            onComplete={(passed, score) => {
-              if (passed) refetch();
-            }}
-            onClose={() => {
-              setLegendaryLessonId(null);
-              refetch();
-            }}
-          />
-        </div>
-      </div>
-    );
-  }
-
+  // Active lesson view — use PathwayLessonViewer
   if (selectedLesson) {
-    return (
-      <ThreePhaseLessonViewer 
-        lessonId={selectedLesson} 
-        onClose={() => {
-          onLessonSelect(null);
-          refetch();
-        }} 
-      />
-    );
+    const lesson = lessons.find(l => l.id === selectedLesson);
+    const pathway = lesson?.pathway || selectedPathway || 'investing';
+    const courseId = PATHWAY_TO_COURSE[pathway];
+    if (courseId && lesson) {
+      return (
+        <PathwayLessonViewer
+          courseId={courseId}
+          lessonNumber={lesson.order_index}
+          onClose={() => {
+            onLessonSelect(null);
+            refetch();
+          }}
+          onNextLesson={() => {
+            const nextLesson = lessons.find(l => l.order_index === lesson.order_index + 1 && l.pathway === pathway);
+            if (nextLesson) {
+              onLessonSelect(nextLesson.id);
+            } else {
+              onLessonSelect(null);
+              refetch();
+            }
+          }}
+        />
+      );
+    }
+    // Fallback: close if no course mapping
+    onLessonSelect(null);
+    return null;
   }
 
   if (selectedPathway) {
@@ -152,7 +151,7 @@ const Learn = ({ onNavigate, selectedLesson, onLessonSelect }: LearnProps) => {
           <LearningPathway
             lessons={filtered}
             onLessonSelect={onLessonSelect}
-            onLegendarySelect={(lessonId) => setLegendaryLessonId(lessonId)}
+            onLegendarySelect={() => {}}
             completedCount={completedCount}
             totalCount={filtered.length}
             pathwayTitle={meta.title}
