@@ -81,7 +81,7 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
     catch { return "investing"; }
   });
   const [activeLessonId, setActiveLessonId] = useState<string | null>(null);
-  const [legendaryLessonId, setLegendaryLessonId] = useState<string | null>(null);
+  const [_legendaryLessonId, setLegendaryLessonId] = useState<string | null>(null);
   useDailyRewardNotification();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [headerVisible, setHeaderVisible] = useState(true);
