@@ -5,7 +5,7 @@ import { usePaperTrading, type PaperTrade } from "@/hooks/usePaperTrading";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getQuote } from "@/lib/finnhub";
 import {
-  AreaChart, Area, Tooltip, ResponsiveContainer,
+  AreaChart, Area, Tooltip, ResponsiveContainer, YAxis,
 } from "recharts";
 import { TrendingUp, TrendingDown, RefreshCw, DollarSign, BarChart3, Activity } from "lucide-react";
 import { formatDollar } from "@/lib/formatters";
@@ -151,6 +151,16 @@ export const PortfolioGraph = () => {
   const timeFrames: TimeFrame[] = ["1D", "1W", "1M", "3M", "1Y", "ALL"];
   const strokeColor = isPositive ? "hsl(142, 71%, 45%)" : "hsl(0, 84%, 60%)";
 
+  // Compute Y domain with padding so flat lines appear in the middle
+  const yDomain = useMemo(() => {
+    const values = chartData.map(d => d.value);
+    const min = Math.min(...values);
+    const max = Math.max(...values);
+    const range = max - min;
+    const padding = range > 0 ? range * 0.15 : max * 0.05;
+    return [Math.max(0, min - padding), max + padding] as [number, number];
+  }, [chartData]);
+
   // Positions value using live prices
   const positionsValue = Object.entries(data.paper_holdings).reduce((sum, [sym, h]) => {
     const price = livePrices[sym] || h.avgCost;
@@ -284,6 +294,7 @@ export const PortfolioGraph = () => {
                 </filter>
               </defs>
 
+              <YAxis domain={yDomain} hide />
               <Tooltip
                 content={() => null}
                 cursor={{ stroke: "hsl(var(--muted-foreground))", strokeWidth: 1, strokeDasharray: "4 4" }}
