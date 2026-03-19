@@ -437,8 +437,13 @@ function MatchView({ step, onComplete }: { step: MatchStep; onComplete: (c: bool
     if (shuffledRight[ri] === correctRight) {
       const next = new Map(matched).set(selLeft, ri);
       setMatched(next); setSelLeft(null);
-      if (next.size === step.pairs.length) setTimeout(() => onComplete(true), 600);
+      playCorrect();
+      if (next.size === step.pairs.length) {
+        fireStarConfetti();
+        setTimeout(() => onComplete(true), 600);
+      }
     } else {
+      playIncorrect();
       setWrong({ left: selLeft, right: ri });
       setTimeout(() => { setWrong(null); setSelLeft(null); }, 600);
     }
