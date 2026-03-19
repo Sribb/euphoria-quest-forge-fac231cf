@@ -559,6 +559,12 @@ function ScenarioView({ step, onComplete }: { step: ScenarioStep; onComplete: (c
   const pick = (i: number) => {
     if (sel !== null) return;
     setSel(i);
+    if (step.choices[i].correct) {
+      playCorrect();
+      fireSmallConfetti();
+    } else {
+      playIncorrect();
+    }
   };
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col items-center gap-5 px-6 w-full min-h-[85vh]" style={{ maxWidth: '800px', margin: '0 auto' }}>
